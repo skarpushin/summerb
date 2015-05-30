@@ -10,10 +10,9 @@
 		<url>https://github.com/skarpushin/summerb</url>
 	</scm>
 
-	<!-- In order to add this lib to your project add repository as follows: 
-		<repositories> <repository> <id>summerb-mvn-repo</id> <url>https://raw.github.com/skarpushin/summerb/mvn-repo/</url> 
-		<snapshots> <enabled>true</enabled> <updatePolicy>always</updatePolicy> </snapshots> 
-		</repository> </repositories> -->
+	<!-- In order to add this lib to your project add repository as follows: <repositories> <repository> <id>summerb-mvn-repo</id> 
+		<url>https://raw.github.com/skarpushin/summerb/mvn-repo/</url> <snapshots> <enabled>true</enabled> <updatePolicy>always</updatePolicy> 
+		</snapshots> </repository> </repositories> -->
 
 	<dependencies>
 		<dependency>
@@ -27,9 +26,38 @@
 			<version>18.0</version>
 		</dependency>
 		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>javax.mail-api</artifactId>
+			<version>1.5.3</version>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.16</version>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.mail</groupId>
+					<artifactId>mail</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.jms</groupId>
+					<artifactId>jms</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.sun.jdmk</groupId>
+					<artifactId>jmxtools</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.sun.jmx</groupId>
+					<artifactId>jmxri</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.7</version>
+			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -56,6 +84,17 @@
 	</properties>
 
 	<build>
+		<testResources>
+			<testResource>
+				<directory>${project.basedir}/src/test/java</directory>
+				<excludes>
+					<exclude>**/*.java</exclude>
+				</excludes>
+			</testResource>
+			<testResource>
+				<directory>${project.basedir}/src/test/resources</directory>
+			</testResource>
+		</testResources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

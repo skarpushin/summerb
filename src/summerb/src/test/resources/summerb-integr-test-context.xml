@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:cache="http://www.springframework.org/schema/cache"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/cache 
+		http://www.springframework.org/schema/cache/spring-cache.xsd
+		http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+	<bean id="props" class="org.summerb.spring.ExposePropertyPlaceholderConfigurer" p:ignoreResourceNotFound="true"
+		p:ignoreUnresolvablePlaceholders="true">
+		<property name="locations">
+			<list>
+				<!-- Default configuration values -->
+				<value>classpath:summerb-integr-test.properties</value>
+			</list>
+		</property>
+	</bean>
+
+	<context:annotation-config />
+
+	<bean id="emailMessageRepository" class="org.summerb.easymail.impl.EmailMessageRepositoryClasspathImpl">
+		<property name="pathPrefix" value="integr/org/summerb/easymail/templates/" />
+	</bean>
+	<bean id="emailSenderTransport" class="integr.org.summerb.easymail.EmailSenderTransportTestImpl" />
+	<bean id="emailSender" class="org.summerb.easymail.impl.EmailSenderImpl">
+		<property name="to">
+			<bean class="org.summerb.easymail.api.dto.EmailRecipient">
+				<property name="name" value="${support.emailToName}" />
+				<property name="email" value="${support.emailTos}" />
+			</bean>
+		</property>
+		<property name="emailMessageTemplateResolver">
+			<bean class="org.summerb.easymail.impl.EmailMessageTemplateResolverMapCachedImpl">
+				<property name="emailMessageTemplateCompiler">
+					<bean class="org.summerb.easymail.impl.EmailMessageTemplateCompilerImpl">
+						<property name="stringTemplateCompiler">
+							<bean class="org.summerb.stringtemplate.impl.StringTemplateCompilerlImpl" />
+						</property>
+					</bean>
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+</beans>
+
+
