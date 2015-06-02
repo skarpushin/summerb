@@ -18,7 +18,7 @@ public class MustBeEqualsValidationError extends ValidationError implements HasM
 
 	@SuppressWarnings("deprecation")
 	public MustBeEqualsValidationError(String aMessageCode, String bMessageCode, String fieldToken) {
-		super("validation.valuesMustBeEquals", fieldToken, null, aMessageCode, bMessageCode);
+		super("validation.valuesMustBeEquals", fieldToken, aMessageCode, bMessageCode);
 	}
 
 	@Override
