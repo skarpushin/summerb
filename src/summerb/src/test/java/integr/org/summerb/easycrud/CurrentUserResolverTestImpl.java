@@ -4,8 +4,8 @@ import java.util.Arrays;
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
-import org.summerb.security.api.CurrentUserResolver;
-import org.summerb.security.api.Roles;
+import org.summerb.approaches.security.api.CurrentUserResolver;
+import org.summerb.approaches.security.api.Roles;
 
 public class CurrentUserResolverTestImpl implements CurrentUserResolver {
 	public User user;

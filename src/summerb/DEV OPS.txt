@@ -1,0 +1,58 @@
+In order to get JAR file run maven with 
+	`package`
+	
+In order to export JAR dependencies run maven with 
+	`dependency:copy-dependencies`
+	
+In order to install it to local repo
+	install:install-file
+	-OR- 
+	Use Eclipse `Run` Maven item `Maven Install`  
+
+In order to add this lib to your project add repository as follows: 
+	<repositories>
+		<repository>
+			<id>summerb-mvn-repo</id>
+			<url>https://raw.github.com/skarpushin/summerb/mvn-repo/</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+		</repository>
+	</repositories>
+
+In order to add this lib as a dependency
+	<dependency>
+		<groupId>org.summerb</groupId>
+		<artifactId>summerb</artifactId>
+		<version>2.0.0</version>
+		<!-- in case exclusions are needed -->
+		<exclusions>
+			<exclusion>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-context</artifactId>
+			</exclusion>
+			<exclusion>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-web</artifactId>
+			</exclusion>
+			<exclusion>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-config</artifactId>
+			</exclusion>
+			<exclusion>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-webmvc</artifactId>
+			</exclusion>
+			<exclusion>
+				<groupId>mysql</groupId>
+				<artifactId>mysql-connector-java</artifactId>
+			</exclusion>
+			<exclusion>
+				<groupId>javax.mail</groupId>
+				<artifactId>mail</artifactId>
+			</exclusion>
+		</exclusions>
+	</dependency>
+
+	

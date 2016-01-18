@@ -14,15 +14,15 @@ import org.junit.Test;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.summerb.easycrud.api.EasyCrudService;
-import org.summerb.easycrud.api.dto.EntityChangedEvent;
-import org.summerb.easycrud.api.dto.EntityChangedEvent.ChangeType;
-import org.summerb.easycrud.api.dto.PagerParams;
-import org.summerb.easycrud.api.dto.PaginatedList;
-import org.summerb.easycrud.api.query.OrderBy;
-import org.summerb.easycrud.api.query.Query;
-import org.summerb.security.api.exceptions.NotAuthorizedException;
-import org.summerb.validation.FieldValidationException;
+import org.summerb.approaches.jdbccrud.api.EasyCrudService;
+import org.summerb.approaches.jdbccrud.api.dto.EntityChangedEvent;
+import org.summerb.approaches.jdbccrud.api.dto.EntityChangedEvent.ChangeType;
+import org.summerb.approaches.jdbccrud.api.dto.PagerParams;
+import org.summerb.approaches.jdbccrud.api.dto.PaginatedList;
+import org.summerb.approaches.jdbccrud.api.query.OrderBy;
+import org.summerb.approaches.jdbccrud.api.query.Query;
+import org.summerb.approaches.security.api.exceptions.NotAuthorizedException;
+import org.summerb.approaches.validation.FieldValidationException;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -296,10 +296,8 @@ public abstract class GenericCrudServiceTestTemplate {
 	public void testFindByQueryOr() throws Exception {
 		createTestData();
 
-		PaginatedList<TestDto1> result = getTestDto1Service()
-				.query(new PagerParams(0, 100),
-						Query.n().eq("majorVersion", 3L)
-								.or(Query.n().eq("minorVersion", 4L), Query.n().eq("minorVersion", 5L)));
+		PaginatedList<TestDto1> result = getTestDto1Service().query(new PagerParams(0, 100), Query.n()
+				.eq("majorVersion", 3L).or(Query.n().eq("minorVersion", 4L), Query.n().eq("minorVersion", 5L)));
 		assertEquals(2, result.getTotalResults());
 	}
 
@@ -391,8 +389,8 @@ public abstract class GenericCrudServiceTestTemplate {
 	public void testFindByQueryBooleanTrue() throws Exception {
 		createTestData();
 
-		PaginatedList<TestDto1> result = getTestDto1Service()
-				.query(new PagerParams(0, 100), Query.n().isTrue("active"));
+		PaginatedList<TestDto1> result = getTestDto1Service().query(new PagerParams(0, 100),
+				Query.n().isTrue("active"));
 		assertEquals(2, result.getTotalResults());
 
 		result = getTestDto1Service().query(new PagerParams(0, 100), Query.n().ne("active", false));

@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<emailMessage>
-	<subject>Subject includes ${username}</subject>
-	<body>Body: ${body}</body>
-</emailMessage>

@@ -2,9 +2,9 @@ package integr.org.summerb.easycrud;
 
 import java.io.Serializable;
 
-import org.summerb.easycrud.api.dto.HasAuthor;
-import org.summerb.easycrud.api.dto.HasTimestamps;
-import org.summerb.easycrud.api.dto.HasUuid;
+import org.summerb.approaches.jdbccrud.api.dto.HasAuthor;
+import org.summerb.approaches.jdbccrud.api.dto.HasTimestamps;
+import org.summerb.approaches.jdbccrud.api.dto.HasUuid;
 
 public class TestDto1 implements HasUuid, HasAuthor, HasTimestamps, Serializable {
 	private static final long serialVersionUID = -2954623750074589334L;
