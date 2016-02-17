@@ -1,3 +1,6 @@
+In order to deploy to maven at github
+	`deploy`
+
 In order to get JAR file run maven with 
 	`package`
 	
