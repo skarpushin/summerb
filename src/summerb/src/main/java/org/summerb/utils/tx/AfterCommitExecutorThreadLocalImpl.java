@@ -10,19 +10,12 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-/**
- * This impl is intended to be scoped for each request.
- * It will NOT work properly if instantiated as a singleton.
- * 
- * @author sergeyk
- *
- */
-public class AfterCommitExecutorImpl extends TransactionSynchronizationAdapter implements Executor {
-	private static Logger log = Logger.getLogger(AfterCommitExecutorImpl.class);
+public class AfterCommitExecutorThreadLocalImpl extends TransactionSynchronizationAdapter implements Executor {
+	private static Logger log = Logger.getLogger(AfterCommitExecutorThreadLocalImpl.class);
 
 	private ExecutorService executorService;
 
-	private Queue<Runnable> threadRunnables;
+	private static final ThreadLocal<Queue<Runnable>> RUNNABLES = new ThreadLocal<Queue<Runnable>>();
 
 	@Override
 	public void execute(Runnable runnable) {
@@ -33,8 +26,10 @@ public class AfterCommitExecutorImpl extends TransactionSynchronizationAdapter i
 			safeRun(runnable);
 			return;
 		}
+		Queue<Runnable> threadRunnables = RUNNABLES.get();
 		if (threadRunnables == null) {
 			threadRunnables = new LinkedList<Runnable>();
+			RUNNABLES.set(threadRunnables);
 			TransactionSynchronizationManager.registerSynchronization(this);
 		}
 		if (log.isDebugEnabled()) {
@@ -45,6 +40,7 @@ public class AfterCommitExecutorImpl extends TransactionSynchronizationAdapter i
 
 	@Override
 	public void afterCommit() {
+		Queue<Runnable> threadRunnables = RUNNABLES.get();
 		if (threadRunnables.size() == 0) {
 			return;
 		}
@@ -97,6 +93,7 @@ public class AfterCommitExecutorImpl extends TransactionSynchronizationAdapter i
 
 	@Override
 	public void afterCompletion(int status) {
+		RUNNABLES.remove();
 		if (log.isDebugEnabled()) {
 			String result = status == STATUS_COMMITTED ? "COMMITTED" : "ROLLED_BACK";
 			log.debug("Transaction completed with status " + result);
