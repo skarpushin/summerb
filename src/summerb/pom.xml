@@ -199,7 +199,7 @@
 					<noJekyll>true</noJekyll>
 					<outputDirectory>${project.build.directory}/mvn-repo</outputDirectory>
 					<branch>refs/heads/mvn-repo</branch>
-					<merge>false</merge>
+					<merge>true</merge>
 					<includes>
 						<include>**/*</include>
 					</includes>
