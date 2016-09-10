@@ -19,7 +19,7 @@ import org.summerb.approaches.jdbccrud.api.query.OrderBy;
 import org.summerb.approaches.jdbccrud.api.query.Query;
 import org.summerb.approaches.jdbccrud.common.DaoExceptionUtils;
 import org.summerb.approaches.jdbccrud.impl.EasyCrudExceptionStrategyDefaultImpl;
-import org.summerb.approaches.jdbccrud.impl.EasyCrudServiceSimpleAuthImpl;
+import org.summerb.approaches.jdbccrud.impl.EasyCrudServiceTableAuthImpl;
 import org.summerb.approaches.security.api.exceptions.NotAuthorizedException;
 import org.summerb.approaches.validation.FieldValidationException;
 import org.summerb.approaches.validation.ValidationContext;
@@ -31,7 +31,7 @@ import org.summerb.microservices.articles.api.dto.Attachment;
 
 import com.google.common.base.Preconditions;
 
-public class ArticleServiceImpl extends EasyCrudServiceSimpleAuthImpl<Long, Article>implements ArticleService {
+public class ArticleServiceImpl extends EasyCrudServiceTableAuthImpl<Long, Article>implements ArticleService {
 	private AttachmentService attachmentService;
 	private static Attachment[] attachmentArrayType = new Attachment[0];
 	private Locale fallbackToLocale = new Locale("en");

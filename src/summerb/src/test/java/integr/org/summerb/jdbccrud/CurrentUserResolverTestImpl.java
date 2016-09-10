@@ -1,4 +1,4 @@
-package integr.org.summerb.easycrud;
+package integr.org.summerb.jdbccrud;
 
 import java.util.Arrays;
 

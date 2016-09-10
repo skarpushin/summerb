@@ -1,6 +1,6 @@
 package org.summerb.approaches.jdbccrud.impl;
 
-import org.summerb.approaches.jdbccrud.api.EasyCrudBasicAuthStrategy;
+import org.summerb.approaches.jdbccrud.api.EasyCrudPerRowAuthStrategy;
 import org.summerb.approaches.security.api.exceptions.NotAuthorizedException;
 
 /**
@@ -9,7 +9,7 @@ import org.summerb.approaches.security.api.exceptions.NotAuthorizedException;
  *
  */
 @Deprecated
-public class EasyCrudBasicAuthStrategyNoOpImpl<TDto> implements EasyCrudBasicAuthStrategy<TDto> {
+public class EasyCrudPerRowAuthStrategyNoOpImpl<TDto> implements EasyCrudPerRowAuthStrategy<TDto> {
 
 	@Override
 	public void assertAuthorizedToCreate(TDto dto) throws NotAuthorizedException {

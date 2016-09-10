@@ -12,7 +12,7 @@ I tired of writing boiler plate code each time I start new project so I gathered
  * Service Layer
  * Validation
  * Authorization
- * Spriong MVC controller
+ * Spring MVC controller
  
 Initial codebase is donated by me (Sergey Karpushin) from my hobby project (www.eftracker.ru). I see this as very common to any other enterprise project I'm going to build in future. So why not share it, maybe someone else will make use of it.
 

@@ -1,4 +1,4 @@
-package integr.org.summerb.easycrud;
+package integr.org.summerb.jdbccrud;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -15,6 +15,7 @@ import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.summerb.approaches.jdbccrud.api.EasyCrudService;
+import org.summerb.approaches.jdbccrud.api.EasyCrudServiceResolver;
 import org.summerb.approaches.jdbccrud.api.dto.EntityChangedEvent;
 import org.summerb.approaches.jdbccrud.api.dto.EntityChangedEvent.ChangeType;
 import org.summerb.approaches.jdbccrud.api.dto.PagerParams;
@@ -35,11 +36,22 @@ public abstract class GenericCrudServiceTestTemplate {
 	@Autowired
 	protected CurrentUserResolverTestImpl currentUserResolver;
 
+	@Autowired
+	protected EasyCrudServiceResolver easyCrudServiceResolver;
+
 	public abstract EasyCrudService<String, TestDto1> getTestDto1Service();
 
 	public abstract EasyCrudService<Long, TestDto2> getTestDto2Service();
 
 	public abstract EasyCrudService<String, TestDto1> getTestDto1ServiceEb();
+
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void testServiceResolver_expectOneServicesFound() {
+		EasyCrudService service = easyCrudServiceResolver.resolveByEntityType(TestDto1.class.getCanonicalName());
+		assertNotNull(service);
+		assertEquals(TestDto1.class.getCanonicalName(), service.getEntityTypeMessageCode());
+	}
 
 	@Test
 	public void testBeanWrapper() throws Exception {

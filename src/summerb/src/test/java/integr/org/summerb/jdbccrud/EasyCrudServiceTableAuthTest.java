@@ -1,4 +1,4 @@
-package integr.org.summerb.easycrud;
+package integr.org.summerb.jdbccrud;
 
 import javax.annotation.Resource;
 
@@ -15,17 +15,17 @@ import org.summerb.approaches.jdbccrud.api.EasyCrudService;
 @ContextConfiguration("classpath:summerb-integr-test-context.xml")
 @ProfileValueSourceConfiguration(SystemProfileValueSource.class)
 @Transactional
-public class EasyCrudServiceBasicAuthTest extends GenericCrudServiceTestTemplate {
+public class EasyCrudServiceTableAuthTest extends GenericCrudServiceTestTemplate {
 	@Autowired
-	@Resource(name = "testDto1ServiceBasicAuth")
+	@Resource(name = "testDto1Service")
 	private EasyCrudService<String, TestDto1> testDto1Service;
 
 	@Autowired
-	@Resource(name = "testDto2ServiceBasicAuth")
+	@Resource(name = "testDto2Service")
 	private EasyCrudService<Long, TestDto2> testDto2Service;
 
 	@Autowired
-	@Resource(name = "testDto1ServiceBasicAuthEb")
+	@Resource(name = "testDto1ServiceEb")
 	private EasyCrudService<String, TestDto1> testDto1ServiceEb;
 
 	@Override

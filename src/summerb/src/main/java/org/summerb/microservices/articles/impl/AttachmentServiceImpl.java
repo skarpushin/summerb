@@ -5,7 +5,7 @@ import java.io.InputStream;
 
 import org.springframework.transaction.annotation.Transactional;
 import org.summerb.approaches.jdbccrud.api.EasyCrudValidationStrategy;
-import org.summerb.approaches.jdbccrud.impl.EasyCrudServiceSimpleAuthImpl;
+import org.summerb.approaches.jdbccrud.impl.EasyCrudServiceTableAuthImpl;
 import org.summerb.approaches.security.api.exceptions.NotAuthorizedException;
 import org.summerb.approaches.validation.FieldValidationException;
 import org.summerb.approaches.validation.ValidationContext;
@@ -13,7 +13,7 @@ import org.summerb.microservices.articles.api.AttachmentDao;
 import org.summerb.microservices.articles.api.AttachmentService;
 import org.summerb.microservices.articles.api.dto.Attachment;
 
-public class AttachmentServiceImpl extends EasyCrudServiceSimpleAuthImpl<Long, Attachment>implements AttachmentService {
+public class AttachmentServiceImpl extends EasyCrudServiceTableAuthImpl<Long, Attachment>implements AttachmentService {
 
 	public AttachmentServiceImpl() {
 		setDtoClass(Attachment.class);
@@ -64,7 +64,6 @@ public class AttachmentServiceImpl extends EasyCrudServiceSimpleAuthImpl<Long, A
 	@Override
 	public InputStream getContentInputStream(long id) throws NotAuthorizedException {
 		try {
-			simpleAuthStrategy.assertAuthorizedToRead();
 			AttachmentDao ourDao = (AttachmentDao) dao;
 			return ourDao.getContentInputStream(id);
 		} catch (Throwable t) {

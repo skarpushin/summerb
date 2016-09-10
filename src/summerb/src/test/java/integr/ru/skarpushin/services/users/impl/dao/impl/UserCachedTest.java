@@ -90,7 +90,7 @@ public class UserCachedTest {
 	public void testPerformance_expectCacheFaster() throws Exception {
 		User userToCreate = UserFactory.createNewUserTemplate();
 		userToCreate = userService.createUser(userToCreate);
-		int cycles = 2000;
+		int cycles = 1000;
 
 		long before = new Date().getTime();
 		for (int i = 0; i < cycles; i++) {

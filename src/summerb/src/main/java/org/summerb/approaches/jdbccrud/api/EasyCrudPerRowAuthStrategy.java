@@ -9,7 +9,7 @@ import org.summerb.approaches.security.api.exceptions.NotAuthorizedException;
  * @author sergeyk
  *
  */
-public interface EasyCrudBasicAuthStrategy<TDto> {
+public interface EasyCrudPerRowAuthStrategy<TDto> {
 	void assertAuthorizedToCreate(TDto dto) throws NotAuthorizedException;
 
 	void assertAuthorizedToUpdate(TDto existingVersion, TDto newVersion) throws NotAuthorizedException;

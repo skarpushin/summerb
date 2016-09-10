@@ -1,8 +1,8 @@
 package org.summerb.approaches.jdbccrud.impl;
 
-import org.summerb.approaches.jdbccrud.api.EasyCrudSimpleAuthStrategy;
+import org.summerb.approaches.jdbccrud.api.EasyCrudTableAuthStrategy;
 
-public class EasyCrudSimpleAuthStrategyNoOpImpl implements EasyCrudSimpleAuthStrategy {
+public class EasyCrudTableAuthStrategyNoOpImpl implements EasyCrudTableAuthStrategy {
 
 	@Override
 	public void assertAuthorizedToCreate() {

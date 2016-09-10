@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.summerb.approaches.jdbccrud.api.EasyCrudService;
-import org.summerb.approaches.jdbccrud.api.EasyCrudSimpleAuthStrategy;
-import org.summerb.approaches.jdbccrud.api.HasEasyCrudSimpleAuthStrategy;
+import org.summerb.approaches.jdbccrud.api.EasyCrudTableAuthStrategy;
+import org.summerb.approaches.jdbccrud.api.HasEasyCrudTableAuthStrategy;
 import org.summerb.approaches.jdbccrud.api.dto.HasId;
 import org.summerb.approaches.jdbccrud.api.dto.PagerParams;
 import org.summerb.approaches.jdbccrud.api.dto.PaginatedList;
@@ -86,9 +86,9 @@ public class EasyCrudControllerBase<TId, TDto extends HasId<TId>, TEasyCrudServi
 
 	protected Map<String, Boolean> getPermissionsMapForCurrentUser() {
 		Map<String, Boolean> ret = new HashMap<String, Boolean>();
-		if (service instanceof HasEasyCrudSimpleAuthStrategy) {
-			resolveEasyCrudSimpleAuthStrategyPermissions(
-					((HasEasyCrudSimpleAuthStrategy) service).getSimpleAuthStrategy(), ret);
+		if (service instanceof HasEasyCrudTableAuthStrategy) {
+			resolveEasyCrudTableAuthStrategyPermissions(
+					((HasEasyCrudTableAuthStrategy) service).getTableAuthStrategy(), ret);
 		} else {
 			throw new IllegalStateException("Not supported service type, can't resolve permissions for: " + service);
 		}
@@ -96,7 +96,7 @@ public class EasyCrudControllerBase<TId, TDto extends HasId<TId>, TEasyCrudServi
 		return ret;
 	}
 
-	private void resolveEasyCrudSimpleAuthStrategyPermissions(EasyCrudSimpleAuthStrategy auth,
+	private void resolveEasyCrudTableAuthStrategyPermissions(EasyCrudTableAuthStrategy auth,
 			Map<String, Boolean> ret) {
 		try {
 			auth.assertAuthorizedToCreate();

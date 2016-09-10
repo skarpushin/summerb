@@ -49,8 +49,8 @@ public class Query {
 		return list;
 	}
 
-	public Query or(Query a, Query b) {
-		list.add(new DisjunctionCondition(a, b));
+	public Query or(Query... subqueries) {
+		list.add(new DisjunctionCondition(subqueries));
 		return this;
 	}
 

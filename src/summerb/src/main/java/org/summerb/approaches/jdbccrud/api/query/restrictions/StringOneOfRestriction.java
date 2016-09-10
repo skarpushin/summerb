@@ -1,32 +1,33 @@
 package org.summerb.approaches.jdbccrud.api.query.restrictions;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.summerb.approaches.jdbccrud.api.query.Restriction;
 
 public class StringOneOfRestriction extends NegativableRestrictionBase implements Restriction<String> {
 	private static final long serialVersionUID = 37882511862667146L;
 
-	private List<String> values;
+	private Set<String> values;
 
 	public StringOneOfRestriction() {
 
 	}
 
-	public StringOneOfRestriction(List<String> values) {
+	public StringOneOfRestriction(Set<String> values) {
 		this.values = values;
 	}
 
 	public StringOneOfRestriction(String... values) {
-		this.values = Arrays.asList(values);
+		this.values = new HashSet<>(Arrays.asList(values));
 	}
 
-	public List<String> getValues() {
+	public Set<String> getValues() {
 		return values;
 	}
 
-	public void setValues(List<String> values) {
+	public void setValues(Set<String> values) {
 		this.values = values;
 	}
 
