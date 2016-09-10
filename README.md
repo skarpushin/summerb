@@ -1,21 +1,23 @@
-*This repository is about to be initialized in folowing 2 weeks. Currently it's blank.*
-
 # summerb
-Fundamental Enterprise Applications Building Blocks. 
+Summerb is a library, it contains a set of simple but yet important building blocks needed by every enterprise web application. 
 
-Being inspired and based on Spring goal of this project is to provide simple building blocks you might need when developing real world enterprise applications. As of now building blocks list identified as:
+I tired of writing boiler plate code each time I start new project so I gathered standard solutions for basic tasks and created this library. As of now set building blocks contains:
 * Internationalization
 * Validation
-* Authentication & Authorization
+* Cache helpers (TX-bound caches, JMX beans)
+* Authentication & Authorization tools
 * Simple email sender
 * Typical implementation for C.R.U.D. operations
- * Data Access Layer
+ * Data Access Layer (based on Spring JDBC)
  * Service Layer
  * Validation
  * Authorization
  * Spriong MVC controller
- * UI piece (server pages + javascript)
+ 
+Initial codebase is donated by me (Sergey Karpushin) from my hobby project (www.eftracker.ru). I see this as very common to any other enterprise project I'm going to build in future. So why not share it, maybe someone else will make use of it.
 
-Initial codebase is donated by me from my (Sergey Karpushin) hobby project for efforts tracking (www.eftracker.ru). I see this as very common to any other enterprise project I'm going to build in future. So why not share it, maybe someone else will make use of it.
+This project *DOES NOT* claim to be the one and the only right way to implement mentioned pieces for enterprise applications. Still I tried to design it in a way so it will be easy to substitute any part of it with your own implementation to make whole thing work.
 
-This project *DOES NOT* claim to be the one and the only right way to implemente mentioned pieces for enterprise application appliance. Still I tried to design it in a way so it will be easy to substitute any part of it with your own implementation to make whole thing work.
+CAUTION: This project is slowly, but constantly evolving, and as a result backward incompatibility is not maintained too much, API might change a little. 
+
+TBD: Detailed documentation will be defined later.
