@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.summerb</groupId>
 	<artifactId>summerb</artifactId>
-	<version>2.0.1</version>
+	<version>2.0.0</version>
 	<name>summerb</name>
 	<url>https://github.com/skarpushin/summerb</url>
 	<scm>
@@ -15,7 +15,7 @@
 		<github.global.server>github</github.global.server>
 		<maven.compiler.source>1.7</maven.compiler.source>
 		<maven.compiler.target>1.7</maven.compiler.target>
-		<org.springframework-version>4.2.7.RELEASE</org.springframework-version>
+		<org.springframework-version>4.1.6.RELEASE</org.springframework-version>
 	</properties>
 
 	<dependencies>
@@ -48,12 +48,6 @@
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-web</artifactId>
 			<version>4.0.0.RELEASE</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>spring-web</artifactId>
-					<groupId>org.springframework</groupId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
@@ -99,7 +93,7 @@
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
-			<version>1.2.17</version>
+			<version>1.2.16</version>
 			<exclusions>
 				<exclusion>
 					<groupId>javax.mail</groupId>
