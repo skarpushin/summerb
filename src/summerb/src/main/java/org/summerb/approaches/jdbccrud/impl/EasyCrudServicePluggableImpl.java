@@ -55,7 +55,7 @@ public class EasyCrudServicePluggableImpl<TId, TDto extends HasId<TId>, TDao ext
 	private EasyCrudWireTap<TId, TDto> wireTap;
 
 	protected TDao dao;
-	@Autowired
+	@Autowired(required = false)
 	protected CurrentUserResolver<?> currentUserResolver;
 	private Class<TDto> dtoClass;
 	private String entityTypeMessageCode;
@@ -85,12 +85,12 @@ public class EasyCrudServicePluggableImpl<TId, TDto extends HasId<TId>, TDao ext
 		try {
 			Preconditions.checkArgument(dto != null);
 
+			TDto ret = copyDto(dto);
+
 			boolean wireTapRequired = wireTap.requiresOnCreate();
 			if (wireTapRequired) {
-				wireTap.beforeCreate(dto);
+				wireTap.beforeCreate(ret);
 			}
-
-			TDto ret = copyDto(dto);
 
 			if (ret instanceof HasAuthor) {
 				HasAuthor hasAuthor = (HasAuthor) ret;
@@ -146,12 +146,13 @@ public class EasyCrudServicePluggableImpl<TId, TDto extends HasId<TId>, TDao ext
 			if (currentVersion == null) {
 				throw exceptionStrategy.buildNotFoundException(getEntityTypeMessageCode(), newVersion.getId());
 			}
+			
+			TDto ret = copyDto(newVersion);
+			
 			boolean wireTapRequired = wireTap.requiresOnUpdate();
 			if (wireTapRequired) {
-				wireTap.beforeUpdate(currentVersion, newVersion);
+				wireTap.beforeUpdate(currentVersion, ret);
 			}
-
-			TDto ret = copyDto(newVersion);
 
 			if (ret instanceof HasAuthor) {
 				HasAuthor hasAuthor = (HasAuthor) ret;

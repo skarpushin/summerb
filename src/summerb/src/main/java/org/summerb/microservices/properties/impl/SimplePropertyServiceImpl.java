@@ -49,7 +49,9 @@ public class SimplePropertyServiceImpl implements SimplePropertyService, Initial
 	}
 
 	private void fireSubjectPropertiesChanged(String subjectId) {
-		eventBus.post(EntityChangedEvent.updated(new SimplePropertiesSubject(appName, domainName, subjectId)));
+		if (eventBus != null) {
+			eventBus.post(EntityChangedEvent.updated(new SimplePropertiesSubject(appName, domainName, subjectId)));
+		}
 	}
 
 	@Override
@@ -99,7 +101,7 @@ public class SimplePropertyServiceImpl implements SimplePropertyService, Initial
 		return eventBus;
 	}
 
-	@Autowired
+	@Autowired(required = false)
 	public void setEventBus(EventBus eventBus) {
 		this.eventBus = eventBus;
 	}
