@@ -1,6 +1,7 @@
 package integr.ru.skarpushin.services.properties.impl.dao.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -67,6 +68,19 @@ public class PropertyServiceImplTest {
 		Map<String, String> result = propertyService.findSubjectProperties("test", "test.domain", "1");
 		assertTrue(result.containsKey("some.property1"));
 		assertTrue(result.containsKey("some.property2"));
+	}
+
+	@Test
+	public void testPutSubjectProperty_expectNullValuesHandledOk() throws Exception {
+		propertyService.putSubjectProperty("test", "test.domain", "1", "some.property1", "value1");
+		propertyService.putSubjectProperty("test", "test.domain", "1", "some.property2", null);
+
+		Map<String, String> result = propertyService.findSubjectProperties("test", "test.domain", "1");
+		assertEquals("value1", result.get("some.property1"));
+		assertNull(result.get("some.property2"));
+		
+		String value = propertyService.findSubjectProperty("test", "test.domain", "1", "some.property2");
+		assertNull(value);
 	}
 
 	@Test

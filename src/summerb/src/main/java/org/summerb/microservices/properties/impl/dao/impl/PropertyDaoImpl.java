@@ -23,14 +23,18 @@ public class PropertyDaoImpl extends DaoBase implements PropertyDao, Initializin
 	private RowMapper<String> propertyValueRowMapper = new RowMapper<String>() {
 		@Override
 		public String mapRow(ResultSet rs, int rowNum) throws SQLException {
-			return new String(rs.getString(VALUE_FIELD_NAME));
+			String value = rs.getString(VALUE_FIELD_NAME);
+			// TOOD: Can somebody explain why we would copu this string?
+			return value == null ? null : new String(value);
 		}
 	};
 
 	private RowMapper<NamedIdProperty> namedPropertyRowMapper = new RowMapper<NamedIdProperty>() {
 		@Override
 		public NamedIdProperty mapRow(ResultSet rs, int rowNum) throws SQLException {
-			return new NamedIdProperty(rs.getLong("name_id"), new String(rs.getString(VALUE_FIELD_NAME)));
+			String value = rs.getString(VALUE_FIELD_NAME);
+			// TOOD: Can somebody explain why we would copu this string?
+			return new NamedIdProperty(rs.getLong("name_id"), value == null ? null : new String(value));
 		}
 	};
 
