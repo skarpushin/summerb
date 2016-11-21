@@ -4,8 +4,6 @@ import java.util.LinkedList;
 
 import javax.sql.DataSource;
 
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-
 /**
  * Simple base class for all DAOs
  * 
@@ -14,7 +12,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
  */
 public abstract class DaoBase {
 	private DataSource dataSource;
-	protected NamedParameterJdbcTemplate jdbc;
+	protected NamedParameterJdbcTemplateEx jdbc;
 
 	public DataSource getDataSource() {
 		return dataSource;
@@ -22,7 +20,7 @@ public abstract class DaoBase {
 
 	public void setDataSource(DataSource dataSource) {
 		this.dataSource = dataSource;
-		jdbc = new NamedParameterJdbcTemplate(dataSource);
+		jdbc = new NamedParameterJdbcTemplateEx(dataSource);
 	}
 
 	public static LinkedList<Long> convertArrayOfLongsToListOfLongs(long[] longs) {

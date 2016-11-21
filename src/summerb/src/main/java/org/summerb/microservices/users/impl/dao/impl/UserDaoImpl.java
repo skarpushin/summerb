@@ -118,7 +118,7 @@ public class UserDaoImpl extends DaoBase implements InitializingBean, UserDao {
 		paramMap.put(PARAM_OFFSET, pagerParams.getOffset());
 		paramMap.put(PARAM_MAX, pagerParams.getMax());
 		List<User> results = jdbc.query(sqlSearchUsersByDisplayName, paramMap, rowMapper);
-		int totalResultsCount = jdbc.queryForObject(sqlSearchUsersByDisplayNameGetCount, new HashMap<String, Object>(), Integer.class);
+		int totalResultsCount = jdbc.queryForInt(sqlSearchUsersByDisplayNameGetCount, new HashMap<String, Object>());
 		return new PaginatedList<User>(pagerParams, results, totalResultsCount);
 	}
 

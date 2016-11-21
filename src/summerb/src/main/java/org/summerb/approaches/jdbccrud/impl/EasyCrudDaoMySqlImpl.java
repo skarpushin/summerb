@@ -248,7 +248,7 @@ public class EasyCrudDaoMySqlImpl<TId, TDto extends HasId<TId>> extends DaoBase
 				|| (pagerParams.getOffset() == 0 && list.size() < pagerParams.getMax()))) {
 			totalResultsCount = list.size();
 		} else {
-			totalResultsCount = jdbc.queryForObject(sqlFindByCustomQueryForCount + whereClause, params, Integer.class);
+			totalResultsCount = jdbc.queryForInt(sqlFindByCustomQueryForCount + whereClause, params);
 		}
 
 		return new PaginatedList<TDto>(pagerParams, list, totalResultsCount);

@@ -80,7 +80,7 @@ public class StringIdAliasDaoImpl extends DaoBase implements StringIdAliasDao, I
 		paramMap.put(PARAM_MAX, pagerParams.getMax());
 
 		List<AliasEntry> results = jdbc.query(sqlFindAllAliases, paramMap, rowMapper);
-		int totalResultsCount = jdbc.queryForObject(sqlLastStatementCount, new HashMap<String, Object>(), Integer.class);
+		int totalResultsCount = jdbc.queryForInt(sqlLastStatementCount, new HashMap<String, Object>());
 
 		return new PaginatedList<AliasEntry>(pagerParams, results, totalResultsCount);
 	}
