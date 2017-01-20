@@ -8,8 +8,8 @@ In order to deploy to maven at github
         <servers>
           <server>
             <id>github</id>
-            <username>skarpushin</username>
-            <password>rjvvbnbnm,1</password>
+            <username>GIT_HUB_USER</username>
+            <password>GIT_HUB_PASSWORD</password>
           </server>
         </servers>
         </settings>
