@@ -86,6 +86,9 @@ public class TransactionBoundCache<K, V> implements LoadingCache<K, V> {
 		TransactionSynchronizationManager.registerSynchronization(synchronization);
 		TransactionBoundCacheEntry newCache = new TransactionBoundCacheEntry<K, V>();
 		newCache.transactionBound = CacheBuilder.newBuilder().removalListener(localRemovalListener).build(loader);
+		// TODO: Instead of copy-on-write the whole thing, isn't it better to
+		// implement inheritance? Like if we didn't find it in this cache, ten
+		// lookup parent?
 		newCache.transactionBound.putAll(actual.asMap());
 		newCache.transactionBoundRemovals = new HashSet<K>();
 		transactionBoundCacheEntries.set(newCache);

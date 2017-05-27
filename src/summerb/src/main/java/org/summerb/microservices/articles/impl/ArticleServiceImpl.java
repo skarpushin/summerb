@@ -23,7 +23,6 @@ import org.summerb.approaches.jdbccrud.impl.EasyCrudServiceTableAuthImpl;
 import org.summerb.approaches.security.api.exceptions.NotAuthorizedException;
 import org.summerb.approaches.validation.FieldValidationException;
 import org.summerb.approaches.validation.ValidationContext;
-import org.summerb.approaches.validation.errors.DuplicateNameValidationError;
 import org.summerb.microservices.articles.api.ArticleService;
 import org.summerb.microservices.articles.api.AttachmentService;
 import org.summerb.microservices.articles.api.dto.Article;
@@ -31,7 +30,7 @@ import org.summerb.microservices.articles.api.dto.Attachment;
 
 import com.google.common.base.Preconditions;
 
-public class ArticleServiceImpl extends EasyCrudServiceTableAuthImpl<Long, Article>implements ArticleService {
+public class ArticleServiceImpl extends EasyCrudServiceTableAuthImpl<Long, Article> implements ArticleService {
 	private AttachmentService attachmentService;
 	private static Attachment[] attachmentArrayType = new Attachment[0];
 	private Locale fallbackToLocale = new Locale("en");
@@ -39,7 +38,6 @@ public class ArticleServiceImpl extends EasyCrudServiceTableAuthImpl<Long, Artic
 	public ArticleServiceImpl() {
 		setDtoClass(Article.class);
 		setEntityTypeMessageCode("term.articles.article");
-		setGenericExceptionStrategy(easyCrudExceptionStrategy);
 		setValidationStrategy(validationStrategy);
 	}
 
@@ -76,29 +74,6 @@ public class ArticleServiceImpl extends EasyCrudServiceTableAuthImpl<Long, Artic
 		@Override
 		public void validateForUpdate(Article existingVersion, Article newVersion) throws FieldValidationException {
 			validateForCreate(newVersion);
-		}
-	};
-
-	private EasyCrudExceptionStrategy<Long> easyCrudExceptionStrategy = new EasyCrudExceptionStrategyDefaultImpl<Long>(
-			"term.articles.article") {
-		@Override
-		protected RuntimeException buildUnexpectedAtCreate(Throwable t) throws FieldValidationException {
-			if (t instanceof DuplicateKeyException) {
-				DuplicateKeyException dke = (DuplicateKeyException) t;
-				String violatedConstraintName = DaoExceptionUtils.findViolatedConstraintName(dke);
-
-				// Handle case when uuid is duplicated
-				if (DaoExceptionUtils.CONSTRAINT_PRIMARY.equals(violatedConstraintName)) {
-					throw new IllegalArgumentException("Article with same id already exists", dke);
-				}
-
-				// Handle case when locale is duplicated within version
-				if ("articles_UNIQUE".equals(violatedConstraintName)) {
-					throw new FieldValidationException(new DuplicateNameValidationError(Article.FN_KEY));
-				}
-			}
-
-			return super.buildUnexpectedAtCreate(t);
 		}
 	};
 

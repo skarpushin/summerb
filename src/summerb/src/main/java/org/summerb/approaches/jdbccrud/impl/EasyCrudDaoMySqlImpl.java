@@ -1,6 +1,7 @@
 package org.summerb.approaches.jdbccrud.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -9,12 +10,14 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.util.StringUtils;
 import org.summerb.approaches.jdbccrud.api.EasyCrudDao;
 import org.summerb.approaches.jdbccrud.api.ParameterSourceBuilder;
@@ -30,12 +33,17 @@ import org.summerb.approaches.jdbccrud.api.dto.Top;
 import org.summerb.approaches.jdbccrud.api.query.OrderBy;
 import org.summerb.approaches.jdbccrud.api.query.Query;
 import org.summerb.approaches.jdbccrud.common.DaoBase;
+import org.summerb.approaches.jdbccrud.common.DaoExceptionUtils;
 import org.summerb.approaches.jdbccrud.impl.SimpleJdbcUpdate.SimpleJdbcUpdate;
 import org.summerb.approaches.jdbccrud.impl.SimpleJdbcUpdate.TableMetaDataContext;
 import org.summerb.approaches.jdbccrud.impl.SimpleJdbcUpdate.UpdateColumnsEnlisterStrategy;
+import org.summerb.approaches.validation.FieldValidationException;
 import org.summerb.approaches.validation.ValidationUtils;
+import org.summerb.approaches.validation.errors.DuplicateRecordValidationError;
+import org.summerb.utils.exceptions.ExceptionUtils;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Throwables;
 
 /**
  * 
@@ -44,6 +52,8 @@ import com.google.common.base.Preconditions;
  */
 public class EasyCrudDaoMySqlImpl<TId, TDto extends HasId<TId>> extends DaoBase
 		implements EasyCrudDao<TId, TDto>, InitializingBean {
+	private static final List<String> allowedSortDirections = Arrays.asList("asc", "desc");
+
 	private String tableName;
 	private Class<TDto> dtoClass;
 	private RowMapper<TDto> rowMapper;
@@ -143,7 +153,7 @@ public class EasyCrudDaoMySqlImpl<TId, TDto extends HasId<TId>> extends DaoBase
 	};
 
 	@Override
-	public void create(TDto dto) {
+	public void create(TDto dto) throws FieldValidationException {
 		if (dto instanceof HasUuid) {
 			HasUuid hasUuid = (HasUuid) dto;
 			if (!ValidationUtils.isValidNotNullableUuid(hasUuid.getId())) {
@@ -159,16 +169,45 @@ public class EasyCrudDaoMySqlImpl<TId, TDto extends HasId<TId>> extends DaoBase
 		}
 
 		SqlParameterSource params = parameterSourceBuilder.buildParameterSource(dto);
-		if (dto instanceof HasAutoincrementId) {
-			Number id = jdbcInsert.executeAndReturnKey(params);
-			((HasAutoincrementId) dto).setId(id.longValue());
-		} else {
-			jdbcInsert.execute(params);
+		try {
+			if (dto instanceof HasAutoincrementId) {
+				Number id = jdbcInsert.executeAndReturnKey(params);
+				((HasAutoincrementId) dto).setId(id.longValue());
+			} else {
+				jdbcInsert.execute(params);
+			}
+		} catch (Throwable t) {
+			processDuplicateEntryException(t);
+			Throwables.propagate(t);
 		}
 	}
 
+	private void processDuplicateEntryException(Throwable t) throws FieldValidationException {
+		DuplicateKeyException dke = ExceptionUtils.findExceptionOfType(t, DuplicateKeyException.class);
+		if (dke == null) {
+			return;
+		}
+
+		String constraint = DaoExceptionUtils.findViolatedConstraintName(dke);
+		// Handle case when uuid is duplicated
+		if (DaoExceptionUtils.MYSQL_CONSTRAINT_PRIMARY.equals(constraint)) {
+			throw new IllegalArgumentException("Row with same primary key already exists", dke);
+		}
+
+		if (!constraint.contains(DaoExceptionUtils.MYSQL_CONSTRAINT_UNIQUE)) {
+			throw new IllegalArgumentException("Constraint violation " + constraint, dke);
+		}
+
+		String fieldName = constraint.substring(0, constraint.indexOf(DaoExceptionUtils.MYSQL_CONSTRAINT_UNIQUE));
+		if (fieldName.contains("_")) {
+			fieldName = JdbcUtils.convertUnderscoreNameToPropertyName(fieldName);
+		}
+
+		throw new FieldValidationException(new DuplicateRecordValidationError(fieldName));
+	}
+
 	@Override
-	public int update(TDto dto) {
+	public int update(TDto dto) throws FieldValidationException {
 		MapSqlParameterSource restrictionParams = new MapSqlParameterSource();
 		restrictionParams.addValue(HasId.FN_ID, dto.getId());
 		if (dto instanceof HasTimestamps) {
@@ -180,7 +219,13 @@ public class EasyCrudDaoMySqlImpl<TId, TDto extends HasId<TId>> extends DaoBase
 
 		SqlParameterSource dtoParams = parameterSourceBuilder.buildParameterSource(dto);
 
-		return jdbcUpdate.execute(dtoParams, restrictionParams);
+		try {
+			return jdbcUpdate.execute(dtoParams, restrictionParams);
+		} catch (Throwable t) {
+			processDuplicateEntryException(t);
+			Throwables.propagate(t);
+			return Integer.MIN_VALUE; // never happens actually
+		}
 	}
 
 	@Override
@@ -269,6 +314,8 @@ public class EasyCrudDaoMySqlImpl<TId, TDto extends HasId<TId>> extends DaoBase
 			OrderBy o = orderBy[i];
 			ret.append(QueryToNativeSqlCompilerMySqlImpl.underscore(o.getFieldName()));
 			ret.append(" ");
+			Preconditions.checkArgument(allowedSortDirections.contains(o.getDirection().toLowerCase()),
+					"OrderBy not allowed: " + o.getDirection());
 			ret.append(o.getDirection());
 		}
 		return ret.toString();

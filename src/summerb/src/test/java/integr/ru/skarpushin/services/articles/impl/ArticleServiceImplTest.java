@@ -14,7 +14,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 import org.summerb.approaches.validation.FieldValidationException;
 import org.summerb.approaches.validation.errors.DataTooLongValidationError;
-import org.summerb.approaches.validation.errors.DuplicateNameValidationError;
+import org.summerb.approaches.validation.errors.DuplicateRecordValidationError;
 import org.summerb.microservices.articles.api.ArticleService;
 import org.summerb.microservices.articles.api.dto.Article;
 
@@ -52,7 +52,7 @@ public class ArticleServiceImplTest {
 			articleService.create(buildTestDto());
 			fail("FVE expected");
 		} catch (FieldValidationException fve) {
-			assertNotNull(fve.findErrorOfTypeForField(DuplicateNameValidationError.class, Article.FN_KEY));
+			assertNotNull(fve.findErrorOfTypeForField(DuplicateRecordValidationError.class, Article.FN_KEY));
 		}
 	}
 

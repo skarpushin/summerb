@@ -20,6 +20,7 @@ import org.summerb.approaches.jdbccrud.api.dto.PagerParams;
 import org.summerb.approaches.jdbccrud.api.dto.PaginatedList;
 import org.summerb.approaches.jdbccrud.api.query.Query;
 import org.summerb.approaches.jdbccrud.impl.EasyCrudDaoMySqlImpl;
+import org.summerb.approaches.validation.FieldValidationException;
 import org.summerb.microservices.articles.api.AttachmentDao;
 import org.summerb.microservices.articles.api.dto.Attachment;
 
@@ -104,7 +105,7 @@ public class AttachmentDaoExtFilesImpl extends EasyCrudDaoMySqlImpl<Long, Attach
 	};
 
 	@Override
-	public void create(Attachment dto) {
+	public void create(Attachment dto) throws FieldValidationException {
 		super.create(dto);
 		putContentInputStream(dto.getId(), dto.getContents());
 	}

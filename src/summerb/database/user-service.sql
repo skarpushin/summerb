@@ -1,3 +1,5 @@
+-- CREATE SCHEMA `summerb_tests` DEFAULT CHARACTER SET utf8 ;
+
 CREATE  TABLE `users` (
   `uuid` CHAR(36) NOT NULL ,
   `display_name` VARCHAR(45) NOT NULL ,

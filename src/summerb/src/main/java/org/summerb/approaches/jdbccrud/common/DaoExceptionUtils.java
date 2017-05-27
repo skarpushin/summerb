@@ -9,8 +9,8 @@ import org.summerb.approaches.validation.errors.DataTooLongValidationError;
 import org.summerb.utils.exceptions.ExceptionUtils;
 
 public class DaoExceptionUtils {
-
-	public static final String CONSTRAINT_PRIMARY = "PRIMARY";
+	public static final String MYSQL_CONSTRAINT_PRIMARY = "PRIMARY";
+	public static final String MYSQL_CONSTRAINT_UNIQUE = "_UNIQUE";
 
 	/**
 	 * Parse exception and find constraint name.
@@ -49,7 +49,7 @@ public class DaoExceptionUtils {
 	/**
 	 * @deprecated This feature will not actually work at least with mysql.
 	 *             MySql doesn't send the numbers - it sends only field name
-	 *             which were truncated.
+	 *             which was truncated.
 	 */
 	@Deprecated
 	public static void propagateIfTruncationError(Throwable t) throws FieldValidationException {
@@ -94,4 +94,5 @@ public class DaoExceptionUtils {
 
 		return fieldName;
 	}
+
 }

@@ -5,6 +5,7 @@ import org.summerb.approaches.jdbccrud.api.dto.PagerParams;
 import org.summerb.approaches.jdbccrud.api.dto.PaginatedList;
 import org.summerb.approaches.jdbccrud.api.query.OrderBy;
 import org.summerb.approaches.jdbccrud.api.query.Query;
+import org.summerb.approaches.validation.FieldValidationException;
 
 /**
  * 
@@ -12,7 +13,7 @@ import org.summerb.approaches.jdbccrud.api.query.Query;
  *
  */
 public interface EasyCrudDao<TId, TDto extends HasId<TId>> {
-	void create(TDto dto);
+	void create(TDto dto) throws FieldValidationException;
 
 	TDto findById(TId id);
 
@@ -22,7 +23,7 @@ public interface EasyCrudDao<TId, TDto extends HasId<TId>> {
 
 	int delete(TId id, long modifiedAt);
 
-	int update(TDto dto);
+	int update(TDto dto) throws FieldValidationException;
 
 	int deleteByQuery(Query query);
 

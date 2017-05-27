@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.util.CollectionUtils;
 import org.summerb.approaches.jdbccrud.api.ParameterSourceBuilder;
 import org.summerb.approaches.jdbccrud.impl.EasyCrudDaoMySqlImpl;
+import org.summerb.approaches.validation.FieldValidationException;
 import org.summerb.microservices.articles.api.AttachmentDao;
 import org.summerb.microservices.articles.api.dto.Attachment;
 
@@ -84,7 +85,7 @@ public class AttachmentDaoImpl extends EasyCrudDaoMySqlImpl<Long, Attachment>imp
 	};
 
 	@Override
-	public void create(Attachment dto) {
+	public void create(Attachment dto) throws FieldValidationException {
 		super.create(dto);
 		putContentInputStream(dto.getId(), dto.getContents());
 	}
