@@ -1,6 +1,8 @@
 package org.summerb.approaches.jdbccrud.api.dto.relations;
 
+import java.beans.Transient;
 import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * That dto describes reference from one object to another. It's designed to
@@ -78,18 +80,26 @@ public class Ref implements Serializable {
 		this.name = name;
 	}
 
+	@Transient
+	@JsonIgnore
 	public boolean isManyToOne() {
 		return quantity == RefQuantity.Many2One;
 	}
 
+	@Transient
+	@JsonIgnore
 	public boolean isOneToOne() {
 		return quantity == RefQuantity.One2One;
 	}
 
+	@Transient
+	@JsonIgnore
 	public boolean isOneToMany() {
 		return quantity == RefQuantity.One2Many;
 	}
 
+	@Transient
+	@JsonIgnore
 	public boolean isManyToMany() {
 		return quantity == RefQuantity.Many2Many;
 	}

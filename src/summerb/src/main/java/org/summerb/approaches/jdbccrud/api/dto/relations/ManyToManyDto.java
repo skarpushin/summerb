@@ -3,7 +3,7 @@ package org.summerb.approaches.jdbccrud.api.dto.relations;
 import org.summerb.approaches.jdbccrud.api.dto.HasAutoincrementId;
 import org.summerb.approaches.jdbccrud.common.DtoBase;
 
-public class ManyToManyDto<T1Id, T2Id> extends DtoBase implements HasAutoincrementId {
+public class ManyToManyDto<T1Id, T2Id> implements DtoBase, HasAutoincrementId {
 	private static final long serialVersionUID = 2609297133758985L;
 
 	public static final String FN_SRC = "src";

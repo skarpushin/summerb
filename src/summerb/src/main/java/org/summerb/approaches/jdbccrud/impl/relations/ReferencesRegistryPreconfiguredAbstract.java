@@ -21,27 +21,31 @@ import com.google.common.collect.Multimap;
  *
  */
 public abstract class ReferencesRegistryPreconfiguredAbstract implements ReferencesRegistry {
-	private Map<String, Ref> refsByName = new HashMap<>();
-	private Multimap<String, Ref> refsBySourceName = HashMultimap.create();
-	private Multimap<String, Ref> refsByAlias = HashMultimap.create();
-	private boolean isInitialized;
+	private Map<String, Ref> refsByName;
+	private Multimap<String, Ref> refsBySourceName;
+	private Multimap<String, Ref> refsByAlias;
 
 	public ReferencesRegistryPreconfiguredAbstract() {
 	}
 
 	private void initialize() {
-		refsBySourceName = discoverRefsBySources();
-		Preconditions.checkState(refsBySourceName != null);
+		Multimap<String, Ref> refsBySourceNameLocal = discoverRefsBySources();
+		Preconditions.checkState(refsBySourceNameLocal != null);
+		Map<String, Ref> refsByNameLocal = new HashMap<>();
 
-		for (Ref ref : refsBySourceName.values()) {
-			Ref previous = refsByName.put(ref.getName(), ref);
+		for (Ref ref : refsBySourceNameLocal.values()) {
+			Ref previous = refsByNameLocal.put(ref.getName(), ref);
 			if (previous != null) {
 				throw new RuntimeException("Duplicate reference name not allowed " + ref.getName());
 			}
 		}
 
-		refsByAlias = discoverAliases();
-		Preconditions.checkState(refsByAlias != null);
+		Multimap<String, Ref> refsByAliasLocal = discoverAliases();
+		Preconditions.checkState(refsByAliasLocal != null);
+
+		refsBySourceName = refsBySourceNameLocal;
+		refsByName = refsByNameLocal;
+		refsByAlias = refsByAliasLocal;
 	}
 
 	protected abstract Multimap<String, Ref> discoverRefsBySources();
@@ -57,7 +61,7 @@ public abstract class ReferencesRegistryPreconfiguredAbstract implements Referen
 	}
 
 	private void ensureInitialized() {
-		if (!isInitialized) {
+		if (refsByAlias == null) {
 			initialize();
 		}
 	}

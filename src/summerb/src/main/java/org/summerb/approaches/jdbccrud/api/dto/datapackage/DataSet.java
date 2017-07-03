@@ -1,11 +1,13 @@
 package org.summerb.approaches.jdbccrud.api.dto.datapackage;
 
+import java.beans.Transient;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Preconditions;
 
 /**
@@ -40,6 +42,8 @@ public class DataSet {
 		this.tables = tables;
 	}
 
+	@Transient
+	@JsonIgnore
 	public boolean isEmpty() {
 		if (CollectionUtils.isEmpty(tables)) {
 			return true;

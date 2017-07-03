@@ -5,7 +5,7 @@ import org.summerb.approaches.jdbccrud.api.dto.HasAutoincrementId;
 import org.summerb.approaches.jdbccrud.api.dto.HasTimestamps;
 import org.summerb.approaches.jdbccrud.common.DtoBase;
 
-public class Article extends DtoBase implements HasAutoincrementId, HasAuthor, HasTimestamps {
+public class Article implements DtoBase, HasAutoincrementId, HasAuthor, HasTimestamps {
 	private static final long serialVersionUID = -3559789221976911911L;
 
 	public static final String FN_KEY = "articleKey";

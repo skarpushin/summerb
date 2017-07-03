@@ -11,7 +11,7 @@ import org.summerb.microservices.users.api.UsersMessageCodes;
 
 import com.google.common.base.Preconditions;
 
-public class NotAuthorizedResult extends DtoBase implements HasMessageCode, HasMessageArgs, HasMessageArgsConverters {
+public class NotAuthorizedResult implements DtoBase, HasMessageCode, HasMessageArgs, HasMessageArgsConverters {
 	private static final transient long serialVersionUID = 1122164433294017483L;
 	private static final transient MessageArgConverter[] messageArgsConverters = new MessageArgConverter[] { null,
 			MessageCodeMessageArgConverter.INSTANCE, null };

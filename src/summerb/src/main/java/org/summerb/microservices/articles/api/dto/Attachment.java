@@ -6,7 +6,7 @@ import org.summerb.approaches.jdbccrud.api.dto.HasAutoincrementId;
 import org.summerb.approaches.jdbccrud.common.DtoBase;
 import org.summerb.utils.Clonnable;
 
-public class Attachment extends DtoBase implements HasAutoincrementId, Clonnable<Attachment> {
+public class Attachment implements DtoBase, HasAutoincrementId, Clonnable<Attachment> {
 	private static final long serialVersionUID = 6611992873465286245L;
 
 	public static final String FN_NAME = "name";
