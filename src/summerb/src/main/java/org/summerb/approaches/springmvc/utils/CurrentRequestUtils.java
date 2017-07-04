@@ -61,6 +61,11 @@ public class CurrentRequestUtils {
 		return defaultLocale;
 	}
 
+	/**
+	 * @deprecated WARNING this method won't work correclty in async environment
+	 *             (like i.e. when using DeferredResult)
+	 */
+	@Deprecated
 	public static WebApplicationContext getWac() {
 		return RequestContextUtils.getWebApplicationContext(get());
 	}

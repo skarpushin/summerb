@@ -1,20 +1,19 @@
-package org.summerb.utils.exceptions;
+package org.summerb.utils.exceptions.dto;
 
 import org.summerb.approaches.jdbccrud.common.DtoBase;
-import org.summerb.approaches.springmvc.utils.ExceptionDescription;
 
 public class GenericServerErrorResult implements DtoBase {
 	private static final long serialVersionUID = -3478702057346663837L;
 
 	private String allErrorsMessage;
-	private ExceptionDescription[] exceptions;
+	private ExceptionInfo exceptionInfo;
 
 	public GenericServerErrorResult() {
 	}
 
-	public GenericServerErrorResult(String allErrorsMessage, ExceptionDescription[] exceptions) {
+	public GenericServerErrorResult(String allErrorsMessage, ExceptionInfo exceptionInfo) {
 		this.allErrorsMessage = allErrorsMessage;
-		this.exceptions = exceptions;
+		this.exceptionInfo = exceptionInfo;
 	}
 
 	public String getAllErrorsMessage() {
@@ -25,11 +24,11 @@ public class GenericServerErrorResult implements DtoBase {
 		this.allErrorsMessage = allErrorsMessage;
 	}
 
-	public ExceptionDescription[] getExceptions() {
-		return exceptions;
+	public ExceptionInfo getExceptionInfo() {
+		return exceptionInfo;
 	}
 
-	public void setExceptions(ExceptionDescription[] exceptions) {
-		this.exceptions = exceptions;
+	public void setExceptionInfo(ExceptionInfo exceptionInfo) {
+		this.exceptionInfo = exceptionInfo;
 	}
 }

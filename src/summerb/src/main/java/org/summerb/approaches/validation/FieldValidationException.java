@@ -5,13 +5,15 @@ import java.util.List;
 
 import org.springframework.util.CollectionUtils;
 import org.summerb.approaches.i18n.HasMessageCode;
+import org.summerb.utils.exceptions.dto.HasErrorDescriptionObject;
 
 /**
  * 
  * @author sergey.karpushin
  *
  */
-public class FieldValidationException extends Exception implements HasMessageCode {
+public class FieldValidationException extends Exception
+		implements HasMessageCode, HasErrorDescriptionObject<ValidationErrors> {
 	private static final long serialVersionUID = -310812271204903287L;
 
 	protected List<ValidationError> errors = new ArrayList<ValidationError>();
@@ -69,5 +71,10 @@ public class FieldValidationException extends Exception implements HasMessageCod
 		}
 
 		return "FieldValidationException: " + ret.toString();
+	}
+
+	@Override
+	public ValidationErrors getErrorDescriptionObject() {
+		return new ValidationErrors(errors);
 	}
 }

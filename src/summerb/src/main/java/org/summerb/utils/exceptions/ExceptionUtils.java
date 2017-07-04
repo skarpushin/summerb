@@ -30,7 +30,10 @@ public class ExceptionUtils {
 				ret.append(" -> ");
 			}
 
+			ret.append(cur.getClass().getSimpleName());
+			ret.append(" (");
 			ret.append(cur.getLocalizedMessage());
+			ret.append(")");
 			cur = cur.getCause();
 		}
 

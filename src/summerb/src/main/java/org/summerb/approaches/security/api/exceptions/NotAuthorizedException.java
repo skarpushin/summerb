@@ -5,6 +5,7 @@ import org.summerb.approaches.i18n.HasMessageArgsConverters;
 import org.summerb.approaches.i18n.HasMessageCode;
 import org.summerb.approaches.i18n.MessageArgConverter;
 import org.summerb.approaches.security.api.dto.NotAuthorizedResult;
+import org.summerb.utils.exceptions.dto.HasErrorDescriptionObject;
 
 import com.google.common.base.Preconditions;
 
@@ -16,8 +17,8 @@ import com.google.common.base.Preconditions;
  * 
  */
 @SuppressWarnings("serial")
-public class NotAuthorizedException extends Exception
-		implements HasMessageCode, HasMessageArgs, HasMessageArgsConverters {
+public class NotAuthorizedException extends Exception implements HasMessageCode, HasMessageArgs,
+		HasMessageArgsConverters, HasErrorDescriptionObject<NotAuthorizedResult> {
 
 	private final NotAuthorizedResult result;
 
@@ -72,6 +73,11 @@ public class NotAuthorizedException extends Exception
 
 	public String getOperationMessageCode() {
 		return result.getOperationMessageCode();
+	}
+
+	@Override
+	public NotAuthorizedResult getErrorDescriptionObject() {
+		return result;
 	}
 
 }
