@@ -25,11 +25,11 @@ import java.util.Map;
 public interface PermissionService {
 	/**
 	 * 
-	 * @param domainName
+	 * @param optionalDomainName
 	 *            i.e. TSACCESS
 	 * @param userUuid
 	 *            i.e. 12312312-3123-123-123
-	 * @param subjectId
+	 * @param optionalSubjectId
 	 *            i.e. TS-123123-1231-23-123
 	 * @param permissionKey
 	 *            i.e. MEMBER
@@ -66,8 +66,6 @@ public interface PermissionService {
 	/**
 	 * Get list of users and their permissions for the given subject
 	 * 
-	 * @param optionalDomainName
-	 * @param optionalSubjectId
 	 * @return list of users and their permissions for the given subject
 	 */
 	Map<String, List<String>> findUsersAndTheirPermissionsForSubject(String optionalDomainName,

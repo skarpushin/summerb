@@ -336,7 +336,7 @@ public class EasyCrudServicePluggableImpl<TId, TDto extends HasId<TId>, TDao ext
 	}
 
 	/**
-	 * NOTE: Not required of Dto don't have HasAuthor
+	 * NOTE: Not required for Dto that don't have HasAuthor
 	 */
 	public void setCurrentUserResolver(CurrentUserResolver<?> currentUserResolver) {
 		this.currentUserResolver = currentUserResolver;

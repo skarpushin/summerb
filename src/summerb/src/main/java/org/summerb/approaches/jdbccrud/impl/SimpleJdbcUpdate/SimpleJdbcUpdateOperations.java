@@ -10,10 +10,6 @@ import org.springframework.jdbc.support.nativejdbc.NativeJdbcExtractor;
  * {@link SimpleJdbcUpdate}. This interface is not often used directly, but
  * provides the option to enhance testability, as it can easily be mocked or
  * stubbed.
- * 
- * @author Thomas Risberg
- * @author Florent Paillard
- * @since 3.0.5
  */
 public interface SimpleJdbcUpdateOperations {
 
@@ -66,7 +62,7 @@ public interface SimpleJdbcUpdateOperations {
 	/**
 	 * Specify the names of any columns that are to be part of the where clause.
 	 * 
-	 * @param columnNames
+	 * @param columnsToOperators
 	 *            one or more column names
 	 * @return the instance of this SimpleJdbcUpdate
 	 */
@@ -103,9 +99,9 @@ public interface SimpleJdbcUpdateOperations {
 	/**
 	 * Execute the update using the values passed in.
 	 * 
-	 * @param args
+	 * @param updatingValues
 	 *            Map containing column names and corresponding value
-	 * @param pkValues
+	 * @param restrictingValues
 	 *            List containing PK column values
 	 * @return the number of rows affected as returned by the JDBC driver
 	 */
@@ -114,9 +110,9 @@ public interface SimpleJdbcUpdateOperations {
 	/**
 	 * Execute the update using the values passed in.
 	 * 
-	 * @param args
+	 * @param updatingValues
 	 *            SqlParameterSource containing values to use for update
-	 * @param pkValues
+	 * @param restrictingValues
 	 *            List containing PK column values
 	 * @return the number of rows affected as returned by the JDBC driver
 	 */

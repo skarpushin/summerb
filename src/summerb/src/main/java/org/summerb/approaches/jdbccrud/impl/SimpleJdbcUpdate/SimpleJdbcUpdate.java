@@ -30,12 +30,6 @@ import org.springframework.jdbc.support.nativejdbc.NativeJdbcExtractor;
  * Many of the configuration methods return the current instance of the
  * SimpleJdbcUpdate to provide the ability to string multiple ones together in a
  * "fluid" interface style.
- * 
- * @author Thomas Risberg
- * @author Florent Paillard
- * @since 3.0.5
- * @see java.sql.DatabaseMetaData
- * @see org.springframework.jdbc.core.JdbcTemplate
  */
 public class SimpleJdbcUpdate extends AbstractJdbcUpdate implements SimpleJdbcUpdateOperations {
 

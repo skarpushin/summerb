@@ -21,9 +21,6 @@ public interface AuthTokenService {
 	 * auth token if all ok. In underhood will call
 	 * {@link #createAuthToken(String, String, String, String)}
 	 * 
-	 * @param userEmail
-	 * @param passwordPlain
-	 * @param clientIp
 	 * @return created auth token
 	 * @throws UserNotFoundException
 	 *             if such user not found
@@ -39,10 +36,6 @@ public interface AuthTokenService {
 	 * Low-level method which will just create auth token without any
 	 * chesk/validations
 	 * 
-	 * @param userEmail
-	 * @param clientIp
-	 * @param tokenUuid
-	 * @param tokenValueUuid
 	 * @return created auth token
 	 * @throws UserNotFoundException
 	 *             if such user not found
@@ -99,8 +92,7 @@ public interface AuthTokenService {
 	/**
 	 * Find all auth tokens for this user
 	 * 
-	 * @param userUuid
-	 * @return
+	 * @return non-null (might be empty) list
 	 * @throws UserNotFoundException
 	 */
 	List<AuthToken> findUserAuthTokens(String userUuid) throws UserNotFoundException;

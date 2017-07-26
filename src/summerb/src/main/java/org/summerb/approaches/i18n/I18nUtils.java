@@ -42,12 +42,8 @@ public abstract class I18nUtils {
 	}
 
 	/**
-	 * @Deprecated Do not use this class for exceptions translation. Use
+	 * @deprecated Do not use this class for exceptions translation. Use
 	 *             ExceptionTranslator infrastructure instead
-	 * 
-	 * @param t
-	 * @param messageSource
-	 * @return
 	 */
 	@Deprecated
 	public static String buildMessagesChain(Throwable t, MessageSource messageSource) {
@@ -114,12 +110,8 @@ public abstract class I18nUtils {
 	}
 
 	/**
-	 * @Deprecated Do not use this class for exceptions translation. Use
+	 * @deprecated Do not use this class for exceptions translation. Use
 	 *             ExceptionTranslator infrastructure instead
-	 * 
-	 * @param t
-	 * @param messageSource
-	 * @return
 	 */
 	@Deprecated
 	protected static String tryBuildMessageBasedOnExcClassName(Throwable cur, MessageSource messageSource,

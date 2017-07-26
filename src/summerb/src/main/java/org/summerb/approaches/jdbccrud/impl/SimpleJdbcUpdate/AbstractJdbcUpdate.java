@@ -318,9 +318,9 @@ public abstract class AbstractJdbcUpdate {
 	 * Method that provides execution of the update using the passed in
 	 * {@link SqlParameterSource}
 	 * 
-	 * @param parameterSource
+	 * @param updatingValues
 	 *            parameter names and values to be used in update
-	 * @param pkValues
+	 * @param restrictingValues
 	 *            List containing PK column values
 	 * @return number of rows affected
 	 */
@@ -337,9 +337,9 @@ public abstract class AbstractJdbcUpdate {
 	 * Method that provides execution of the update using the passed in Map of
 	 * parameters
 	 * 
-	 * @param args
+	 * @param updatingValues
 	 *            Map with parameter names and values to be used in update
-	 * @param pkValues
+	 * @param restrictingValues
 	 *            List containing PK column values
 	 * @return number of rows affected
 	 */

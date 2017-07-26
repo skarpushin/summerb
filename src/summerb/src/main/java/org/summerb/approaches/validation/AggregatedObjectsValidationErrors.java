@@ -35,7 +35,7 @@ public class AggregatedObjectsValidationErrors extends ValidationError implement
 	 *            collection, this field might be used to identify collection
 	 *            item instance (it might be item idx, guid or any other thing
 	 *            suitable for end-application)
-	 * @param aggregatedObjectValidationErrorsList
+	 * @param aggregatedObjectValidationErrors
 	 *            list of containers, which represent validation errors for
 	 *            specific items from collection
 	 */

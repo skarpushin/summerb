@@ -34,9 +34,6 @@ public class DataTable<TId, T extends HasId<TId>> {
 
 	/**
 	 * Just a shortCut method to put row into table
-	 * 
-	 * @param id
-	 * @param row
 	 */
 	public void put(T row) {
 		rows.put(row.getId(), row);

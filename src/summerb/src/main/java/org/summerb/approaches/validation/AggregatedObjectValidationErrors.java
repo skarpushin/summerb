@@ -27,8 +27,8 @@ public class AggregatedObjectValidationErrors extends ValidationError implements
 	 *            collection, this field might be used to identify collection
 	 *            item instance (it might be item idx, guid or any other thing
 	 *            suitable for end-application)
-	 * @param validationErrors
-	 *            list of errors for this object
+	 * @param childErrors
+	 *            list of child errors for this object
 	 */
 	@SuppressWarnings("deprecation")
 	public AggregatedObjectValidationErrors(String fieldToken, List<ValidationError> childErrors) {

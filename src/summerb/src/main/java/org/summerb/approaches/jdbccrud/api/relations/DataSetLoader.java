@@ -19,8 +19,8 @@ import org.summerb.approaches.security.api.exceptions.NotAuthorizedException;
  */
 public interface DataSetLoader {
 	/**
-	 * Simplified version of {@link #loadObjectsByIds(DataSet, Map<String,Set
-	 * <Object>>)} allows to load only objects of certain type
+	 * Simplified version of {@link #loadObjectsByIds(Map, DataSet)} allows to
+	 * load only objects of certain type
 	 * 
 	 * @param ids
 	 *            of objects to load

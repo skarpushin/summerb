@@ -10,8 +10,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * 
  * References are named so they could be used in data load plans by name.
  * 
- * In case this is many-to-many reference then {@link #via} must describe m2m
- * table.
+ * In case this is many-to-many reference then {@link #m2mEntity} must describe
+ * m2m table.
  * 
  * @author sergeyk
  *
@@ -58,7 +58,8 @@ public class Ref implements Serializable {
 		ret.setToEntity(getFromEntity());
 		ret.setToField(getFromField());
 
-		// NO sure how to set relation type
+		// NOT sure how to set relation type
+		// TODO: Impl
 
 		// quantity
 		if (quantity == RefQuantity.Many2Many || quantity == RefQuantity.One2One) {

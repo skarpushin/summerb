@@ -161,13 +161,6 @@ public class TableMetaDataContext {
 
 	/**
 	 * Process the current meta data with the provided configuration options.
-	 * 
-	 * @param dataSource
-	 *            the DataSource being used
-	 * @param declaredColumns
-	 *            any columns that are declared
-	 * @param generatedKeyNames
-	 *            name of generated keys
 	 */
 	public void processMetaData(DataSource dataSource) {
 		// TODO: comment to explain this HORRIBLE thing!

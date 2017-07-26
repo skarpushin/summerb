@@ -18,7 +18,7 @@ public class ExceptionInfo implements Serializable {
 	private ExceptionInfo cause;
 
 	/**
-	 * @Deprecated It's created for IO purposes only
+	 * @deprecated It's created for IO purposes only
 	 */
 	public ExceptionInfo() {
 	}

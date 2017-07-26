@@ -43,7 +43,7 @@ public class ValidationError implements Serializable, HasMessageCode, HasMessage
 	}
 
 	/**
-	 * @Deprecated Avoid using this class directly - create a subclass for it.
+	 * @deprecated Avoid using this class directly - create a subclass for it.
 	 *             Otherwise you might hit issue when deserializing from
 	 *             json/xml
 	 */
@@ -57,7 +57,7 @@ public class ValidationError implements Serializable, HasMessageCode, HasMessage
 	}
 
 	/**
-	 * @Deprecated Do not use this calss directly - create a subcluss for it
+	 * @deprecated Do not use this calss directly - create a subcluss for it
 	 */
 	@Deprecated
 	public ValidationError(String userMessageCode, String fieldToken, Object... args) {
