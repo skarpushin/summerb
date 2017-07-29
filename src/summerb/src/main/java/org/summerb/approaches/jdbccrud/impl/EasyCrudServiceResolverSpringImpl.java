@@ -26,6 +26,7 @@ public class EasyCrudServiceResolverSpringImpl implements EasyCrudServiceResolve
 
 	private ApplicationContext applicationContext;
 	private Map<String, EasyCrudService> servicesMap;
+	private Map<Class<?>, EasyCrudService> servicesMapByClass;
 
 	@Override
 	public EasyCrudService resolveByEntityType(String entityName) {
@@ -34,12 +35,20 @@ public class EasyCrudServiceResolverSpringImpl implements EasyCrudServiceResolve
 		return ret;
 	}
 
+	@Override
+	public EasyCrudService resolveByDtoClass(Class<?> entityClass) {
+		getServicesMap();
+		EasyCrudService ret = servicesMapByClass.get(entityClass);
+		Preconditions.checkArgument(ret != null, "Serivce for that entity (by class) wasn't found: " + entityClass);
+		return ret;
+	}
+
 	public Map<String, EasyCrudService> getServicesMap() {
 		if (servicesMap == null) {
 			synchronized (this) {
 				if (servicesMap == null) {
-					Map<String, EasyCrudService> discoveredMap = discoverServices();
-					servicesMap = discoveredMap;
+					servicesMap = discoverServices();
+					servicesMapByClass = discoverServicesByClass();
 				}
 			}
 		}
@@ -56,6 +65,21 @@ public class EasyCrudServiceResolverSpringImpl implements EasyCrudServiceResolve
 			if (wasOverwritten != null) {
 				log.warn("Ambigious EasyCrudService for same entityTypeMessageCode 1st " + wasOverwritten + " and 2nd "
 						+ service + " named " + entry.getKey());
+			}
+		}
+		return ret;
+	}
+
+	private Map<Class<?>, EasyCrudService> discoverServicesByClass() {
+		Preconditions.checkState(applicationContext != null, "applicationContext expected to be injected");
+		Map<String, EasyCrudService> foundBeans = applicationContext.getBeansOfType(EasyCrudService.class);
+		Map<Class<?>, EasyCrudService> ret = new HashMap<>();
+		for (Entry<String, EasyCrudService> entry : foundBeans.entrySet()) {
+			EasyCrudService service = entry.getValue();
+			EasyCrudService wasOverwritten = ret.put(service.getDtoClass(), service);
+			if (wasOverwritten != null) {
+				log.warn("Ambigious EasyCrudService for same dtoClass 1st " + wasOverwritten + " and 2nd " + service
+						+ " named " + entry.getKey());
 			}
 		}
 		return ret;
