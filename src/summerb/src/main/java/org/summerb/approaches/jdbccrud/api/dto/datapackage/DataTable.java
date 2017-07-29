@@ -11,7 +11,7 @@ public class DataTable<TId, T extends HasId<TId>> {
 	private String name;
 	private Map<TId, T> rows;
 
-	// TODO: We need some data structure to track one2many & many2many
+	// We need some data structure to track one2many & many2many
 	// references. It's like list of other objects that are referencing objects
 	// in this table
 	private RowIdToBackReferencesMap backRefs;

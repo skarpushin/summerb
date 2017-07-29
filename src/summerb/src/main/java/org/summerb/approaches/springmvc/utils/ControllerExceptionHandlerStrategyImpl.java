@@ -14,6 +14,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
+import org.springframework.web.util.NestedServletException;
 import org.summerb.approaches.security.api.Roles;
 import org.summerb.approaches.security.api.SecurityContextResolver;
 import org.summerb.approaches.security.api.dto.NotAuthorizedResult;
@@ -78,7 +79,8 @@ public class ControllerExceptionHandlerStrategyImpl
 
 		boolean isJsonOutputRequired = isAcceptJson || isContentTypeJson;
 
-		return isJsonOutputRequired ? buildJsonError(ex, req, res) : buildHtmlError(ex);
+		Throwable contained = ex instanceof NestedServletException ? ex.getCause() : ex;
+		return isJsonOutputRequired ? buildJsonError(contained, req, res) : buildHtmlError(contained);
 	}
 
 	protected ModelAndView buildHtmlError(Throwable ex) {
@@ -98,8 +100,11 @@ public class ControllerExceptionHandlerStrategyImpl
 
 	protected ModelAndView buildJsonError(Throwable ex, HttpServletRequest req, HttpServletResponse res) {
 		String msg = exceptionTranslator.buildUserMessage(ex, applicationContext, LocaleContextHolder.getLocale());
-		if (ex instanceof NotAuthorizedException) {
-			NotAuthorizedResult naeResult = ((NotAuthorizedException) ex).getResult();
+
+		NotAuthorizedException nae;
+		FieldValidationException fve;
+		if ((nae = ExceptionUtils.findExceptionOfType(ex, NotAuthorizedException.class)) != null) {
+			NotAuthorizedResult naeResult = nae.getResult();
 			res.setStatus(HttpServletResponse.SC_FORBIDDEN);
 			if (Boolean.TRUE.equals(Boolean.valueOf(req.getHeader(X_TRANSLATE_AUTHORIZATION_ERRORS)))) {
 				return new ModelAndView(jsonView, ControllerBase.ATTR_EXCEPTION, msg);
@@ -107,9 +112,9 @@ public class ControllerExceptionHandlerStrategyImpl
 				respondWithJson(naeResult, res);
 				return null;
 			}
-		} else if (ex instanceof FieldValidationException) {
+		} else if ((fve = ExceptionUtils.findExceptionOfType(ex, FieldValidationException.class)) != null) {
 			res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			ValidationErrorsPm vepm = new ValidationErrorsPm(((FieldValidationException) ex).getErrors());
+			ValidationErrorsPm vepm = new ValidationErrorsPm(fve.getErrors());
 			return new ModelAndView(jsonView, ControllerBase.ATTR_VALIDATION_ERRORS, vepm.getMsg());
 		}
 

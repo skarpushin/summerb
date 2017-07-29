@@ -5,23 +5,26 @@ import org.summerb.approaches.jdbccrud.common.DtoBase;
 public class GenericServerErrorResult implements DtoBase {
 	private static final long serialVersionUID = -3478702057346663837L;
 
-	private String allErrorsMessage;
+	private String exc;
 	private ExceptionInfo exceptionInfo;
 
 	public GenericServerErrorResult() {
 	}
-
+	
 	public GenericServerErrorResult(String allErrorsMessage, ExceptionInfo exceptionInfo) {
-		this.allErrorsMessage = allErrorsMessage;
+		this.exc = allErrorsMessage;
 		this.exceptionInfo = exceptionInfo;
 	}
 
-	public String getAllErrorsMessage() {
-		return allErrorsMessage;
+	/**
+	 * @return Exception message from whole chain
+	 */
+	public String getExc() {
+		return exc;
 	}
 
-	public void setAllErrorsMessage(String allErrorsMessage) {
-		this.allErrorsMessage = allErrorsMessage;
+	public void setExc(String allErrorsMessage) {
+		this.exc = allErrorsMessage;
 	}
 
 	public ExceptionInfo getExceptionInfo() {

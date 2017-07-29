@@ -13,6 +13,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
+import org.summerb.approaches.security.api.SecurityContextResolver;
 import org.summerb.approaches.springmvc.model.ListPm;
 import org.summerb.approaches.springmvc.model.PageMessage;
 import org.summerb.approaches.springmvc.utils.ControllerExceptionHandlerStrategy;
@@ -38,14 +39,18 @@ public abstract class ControllerBase implements ApplicationContextAware, Initial
 	public static final String ATTR_PAGE_MESSAGES = "pageMessages";
 
 	protected ApplicationContext applicationContext;
+	private SecurityContextResolver<?> securityContextResolver;
 
 	private ControllerExceptionHandlerStrategy exceptionHandlerStrategy;
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (exceptionHandlerStrategy == null) {
-			//log.info("exceptionHandlerStrategy is not set, Will use default");
-			exceptionHandlerStrategy = new ControllerExceptionHandlerStrategyImpl(applicationContext);
+			ControllerExceptionHandlerStrategyImpl handler = new ControllerExceptionHandlerStrategyImpl(
+					applicationContext);
+			handler.setSecurityContextResolver(securityContextResolver);
+			handler.afterPropertiesSet();
+			exceptionHandlerStrategy = handler;
 		}
 	}
 
@@ -98,5 +103,14 @@ public abstract class ControllerBase implements ApplicationContextAware, Initial
 	@Autowired(required = false)
 	public void setExceptionHandlerStrategy(ControllerExceptionHandlerStrategy exceptionHandlerStrategy) {
 		this.exceptionHandlerStrategy = exceptionHandlerStrategy;
+	}
+
+	public SecurityContextResolver<?> getSecurityContextResolver() {
+		return securityContextResolver;
+	}
+
+	@Autowired(required = false)
+	public void setSecurityContextResolver(SecurityContextResolver<?> securityContextResolver) {
+		this.securityContextResolver = securityContextResolver;
 	}
 }
