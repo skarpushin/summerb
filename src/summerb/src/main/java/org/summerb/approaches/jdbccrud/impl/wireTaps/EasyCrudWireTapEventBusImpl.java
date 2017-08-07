@@ -1,5 +1,6 @@
 package org.summerb.approaches.jdbccrud.impl.wireTaps;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.summerb.approaches.jdbccrud.api.dto.EntityChangedEvent;
 import org.summerb.approaches.jdbccrud.api.dto.HasId;
 import org.summerb.approaches.security.api.exceptions.NotAuthorizedException;
@@ -11,6 +12,7 @@ import com.google.common.eventbus.EventBus;
 public class EasyCrudWireTapEventBusImpl<TId, TDto extends HasId<TId>> extends EasyCrudWireTapNoOpImpl<TId, TDto> {
 	private EventBus eventBus;
 
+	@Autowired
 	public EasyCrudWireTapEventBusImpl(EventBus eventBus) {
 		Preconditions.checkArgument(eventBus != null);
 		this.eventBus = eventBus;

@@ -4,6 +4,15 @@ import java.io.Serializable;
 
 import com.google.common.base.Preconditions;
 
+/**
+ * Data structure used to contain and transmit entities changes within the
+ * application as well as across the process/machine border
+ * 
+ * @author sergeyk
+ *
+ * @param <T>
+ *            type of dto
+ */
 public class EntityChangedEvent<T> implements Serializable {
 	private static final long serialVersionUID = 8920065013673943648L;
 

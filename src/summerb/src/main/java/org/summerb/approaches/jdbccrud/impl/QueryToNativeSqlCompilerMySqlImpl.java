@@ -23,6 +23,7 @@ import org.summerb.approaches.jdbccrud.api.query.restrictions.StringLengthBetwee
 import org.summerb.approaches.jdbccrud.api.query.restrictions.StringOneOfRestriction;
 
 /**
+ * MySQL specific impl of {@link QueryToNativeSqlCompiler}
  * 
  * @author sergey.karpushin
  *

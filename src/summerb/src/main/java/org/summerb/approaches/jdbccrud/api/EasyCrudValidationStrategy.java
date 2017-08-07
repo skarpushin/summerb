@@ -3,6 +3,11 @@ package org.summerb.approaches.jdbccrud.api;
 import org.summerb.approaches.validation.FieldValidationException;
 
 /**
+ * Strategy interface that has method for validating DTO before creating and
+ * update.
+ * 
+ * Normally will be injected into {@link EasyCrudService} via
+ * {@link EasyCrudWireTap}, but also can be used separately
  * 
  * @author sergey.karpushin
  *

@@ -5,6 +5,9 @@ import java.util.Arrays;
 import org.springframework.beans.PropertyAccessor;
 
 /**
+ * By default {@link Query} adds all restrictions in conjunction. In order to
+ * use disjunction add instance of this {@link DisjunctionCondition} to root
+ * {@link Query}
  * 
  * @author sergey.karpushin
  *

@@ -3,6 +3,7 @@ package org.summerb.approaches.jdbccrud.api.dto;
 import java.io.Serializable;
 
 /**
+ * Pagination params for queries
  * 
  * @author sergey.karpushin
  *

@@ -2,6 +2,9 @@ package org.summerb.approaches.jdbccrud.api.dto.relations;
 
 import java.beans.Transient;
 import java.io.Serializable;
+
+import org.summerb.approaches.jdbccrud.api.EasyCrudService;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
@@ -49,6 +52,12 @@ public class Ref implements Serializable {
 		this.quantity = quantity;
 	}
 
+	/**
+	 * @return returns reversed reference
+	 * @deprecated avoid using it since reverse is not 100% implemented, doesn't
+	 *             cover all cases of {@link #relationType}
+	 */
+	@Deprecated
 	public Ref reverse() {
 		Ref ret = new Ref();
 		ret.setName(!name.endsWith(SUFFIX_BACK) ? name + SUFFIX_BACK
@@ -73,6 +82,9 @@ public class Ref implements Serializable {
 		return ret;
 	}
 
+	/**
+	 * @return Reference name, must be unique within application
+	 */
 	public String getName() {
 		return name;
 	}
@@ -105,6 +117,10 @@ public class Ref implements Serializable {
 		return quantity == RefQuantity.Many2Many;
 	}
 
+	/**
+	 * @return entity type message code See
+	 *         {@link EasyCrudService#getEntityTypeMessageCode()}
+	 */
 	public String getFromEntity() {
 		return fromEntity;
 	}
@@ -121,6 +137,10 @@ public class Ref implements Serializable {
 		this.fromField = fromField;
 	}
 
+	/**
+	 * @return entity type message code See
+	 *         {@link EasyCrudService#getEntityTypeMessageCode()}
+	 */
 	public String getToEntity() {
 		return toEntity;
 	}
@@ -137,6 +157,14 @@ public class Ref implements Serializable {
 		this.toField = toField;
 	}
 
+	/**
+	 * @return relation type that supposed to help application to handle cascade
+	 *         changes automaticall. Reserved for future used, not actually
+	 *         handled/implemented
+	 * 
+	 * @deprecated incubating functionality, davoid using
+	 */
+	@Deprecated
 	public RelationType getRelationType() {
 		return relationType;
 	}

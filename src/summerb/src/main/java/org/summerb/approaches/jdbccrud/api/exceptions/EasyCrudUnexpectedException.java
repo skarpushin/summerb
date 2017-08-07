@@ -7,7 +7,7 @@ import org.summerb.approaches.i18n.MessageArgConverter;
 import org.summerb.approaches.i18n.MessageCodeMessageArgConverter;
 
 /**
- * 
+ *  
  * @author sergey.karpushin
  *
  */

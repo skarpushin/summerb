@@ -3,10 +3,15 @@ package org.summerb.approaches.jdbccrud.api;
 import org.summerb.approaches.security.api.exceptions.NotAuthorizedException;
 
 /**
- * This auth strategy applies to situations when authorization happens on
- * object-based level.
+ * Strategy for authorizing operations on per-row basis.
  * 
- * @author sergeyk
+ * Normally injected into {@link EasyCrudService} via {@link EasyCrudWireTap},
+ * but also can be used separately.
+ * 
+ * In case you do not need that detailed authorization rows you can use
+ * {@link EasyCrudTableAuthStrategy}
+ * 
+ * @author sergey.karpushin
  *
  */
 public interface EasyCrudPerRowAuthStrategy<TDto> {

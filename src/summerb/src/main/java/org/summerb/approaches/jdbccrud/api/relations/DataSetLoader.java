@@ -12,7 +12,11 @@ import org.summerb.approaches.security.api.exceptions.NotAuthorizedException;
 
 /**
  * This interface provides convenient methods for loading multiple objects at
- * once. Most important that it allows to follow references.
+ * once. It allows to follow references which make it look like mini ORD
+ * framework that I was hoping to avoid.
+ * 
+ * Impl is supposed to avoid n+1 performance issue and perform as few requests
+ * as possible.
  * 
  * @author sergeyk
  *

@@ -20,9 +20,11 @@ import org.summerb.approaches.validation.FieldValidationException;
  * @author sergeyk
  *
  * @param <T1Id>
+ *            id of referencer
  * @param <T1Dto>
  *            referencer. Dto that suppose to reference dictionary objects
  * @param <T2Id>
+ *            id of referencee
  * @param <T2Dto>
  *            referencee dto. The one is referenced by many referencers
  */

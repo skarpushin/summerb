@@ -12,6 +12,7 @@ public abstract class EasyCrudDtoUtils {
 	}
 
 	public static <T, TDto extends HasId<T>> Set<T> enumerateIds(Iterable<TDto> iterable) {
+		// TODO: Use streams
 		Set<T> ret = new HashSet<>();
 		for (HasId<T> row : iterable) {
 			ret.add(row.getId());
@@ -20,6 +21,7 @@ public abstract class EasyCrudDtoUtils {
 	}
 
 	public static <TId, TDto extends HasId<TId>> Map<TId, TDto> toMapById(Iterable<TDto> iterable) {
+		// TODO: Use streams
 		Map<TId, TDto> ret = new HashMap<>();
 		for (TDto row : iterable) {
 			ret.put(row.getId(), row);

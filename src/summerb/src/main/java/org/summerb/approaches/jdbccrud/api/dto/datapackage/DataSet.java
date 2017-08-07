@@ -11,8 +11,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Preconditions;
 
 /**
- * DataSet represents "data package" several rows from several tables most
- * likely related to each other somehow
+ * DataSet represents "data package" that contains several rows from several
+ * tables.
  * 
  * @author sergeyk
  *
@@ -21,6 +21,13 @@ import com.google.common.base.Preconditions;
 public class DataSet {
 	private Map<String, DataTable> tables;
 
+	/**
+	 * Get tanle by name
+	 * 
+	 * @param name
+	 *            table name
+	 * @return never null instance of {@link DataTable}
+	 */
 	public DataTable get(String name) {
 		Preconditions.checkArgument(StringUtils.hasText(name));
 		DataTable ret = getTables().get(name);

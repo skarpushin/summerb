@@ -4,41 +4,57 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.summerb.approaches.jdbccrud.api.EasyCrudService;
 import org.summerb.approaches.jdbccrud.api.dto.HasId;
 import org.summerb.approaches.jdbccrud.api.dto.relations.Ref;
+import org.summerb.approaches.jdbccrud.api.relations.DataSetLoader;
 
+/**
+ * Data structure that holds rows of certain table
+ * 
+ * @author sergeyk
+ *
+ * @param <TId>
+ *            type of primary key
+ * @param <T>
+ *            DTO type
+ */
 public class DataTable<TId, T extends HasId<TId>> {
 	private String name;
 	private Map<TId, T> rows;
 
-	// We need some data structure to track one2many & many2many
-	// references. It's like list of other objects that are referencing objects
-	// in this table
 	private RowIdToBackReferencesMap backRefs;
 
 	/**
 	 * 
 	 * @param name
-	 *            that could be a entity name returned by Service, not a table
-	 *            name. Main idea is that it must be consistent with references
-	 *            configuration
+	 *            most often this will match value of {@link EasyCrudService}'s
+	 *            getEntityTypeMessageCode() method
 	 */
 	public DataTable(String name) {
 		this.name = name;
 		rows = new HashMap<>();
 	}
 
+	/**
+	 * 
+	 * @return name most often this will match value of
+	 *         {@link EasyCrudService}'s getEntityTypeMessageCode() method
+	 */
 	public String getName() {
 		return name;
 	}
 
 	/**
-	 * Just a shortCut method to put row into table
+	 * Shortcut method to add a row.
 	 */
 	public void put(T row) {
 		rows.put(row.getId(), row);
 	}
 
+	/**
+	 * Shortcut method to add multiple rows at a time
+	 */
 	public void putAll(Iterable<T> rows) {
 		for (T row : rows) {
 			put(row);
@@ -57,6 +73,16 @@ public class DataTable<TId, T extends HasId<TId>> {
 		return rows.get(id);
 	}
 
+	/**
+	 * @return data structure that contains back references. Filled
+	 *         automatically by {@link DataSetLoader} if there are other
+	 *         {@link DataTable} which has rows referencing rows in this table
+	 * 
+	 * @deprecated avoid using this -- in future versions it might be removed.
+	 *             Initially I thought it's a good idea, but after some time it
+	 *             doesn't appear as one
+	 */
+	@Deprecated
 	public RowIdToBackReferencesMap getBackRefs() {
 		if (backRefs == null) {
 			backRefs = new RowIdToBackReferencesMap();
@@ -68,6 +94,14 @@ public class DataTable<TId, T extends HasId<TId>> {
 		this.backRefs = backReferences;
 	}
 
+	/**
+	 * MAPS {@link Ref} TO set of ids of matching objects from other table.
+	 * Presumably fromTable field in {@link Ref} object will always point to
+	 * this table.
+	 * 
+	 * @author sergeyk
+	 *
+	 */
 	public static class RefToReferencedObjectsIdsMap extends HashMap<String, Set<Object>> {
 		private static final long serialVersionUID = 6272759788167550514L;
 
@@ -76,12 +110,19 @@ public class DataTable<TId, T extends HasId<TId>> {
 		}
 	}
 
+	/**
+	 * This data structure is used to contain all back refs from specific row in
+	 * this table to all references loaded by {@link DataSetLoader}
+	 * 
+	 * @author sergeyk
+	 *
+	 */
 	public static class RowIdToBackReferencesMap extends HashMap<Object, RefToReferencedObjectsIdsMap> {
 		private static final long serialVersionUID = -4000441053721948805L;
 
+		@SuppressWarnings("rawtypes")
 		public RefToReferencedObjectsIdsMap getForRow(HasId row) {
 			return get(row.getId());
 		}
 	}
-
 }

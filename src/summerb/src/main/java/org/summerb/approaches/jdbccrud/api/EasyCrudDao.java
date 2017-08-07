@@ -5,9 +5,15 @@ import org.summerb.approaches.jdbccrud.api.dto.PagerParams;
 import org.summerb.approaches.jdbccrud.api.dto.PaginatedList;
 import org.summerb.approaches.jdbccrud.api.query.OrderBy;
 import org.summerb.approaches.jdbccrud.api.query.Query;
+import org.summerb.approaches.jdbccrud.impl.EasyCrudDaoMySqlImpl;
 import org.summerb.approaches.validation.FieldValidationException;
 
 /**
+ * Abstraction for DAO layer. Intended to be used by impl of
+ * {@link EasyCrudService}.
+ * 
+ * In case you're using MySQL as a data source you can easily impl DAO by simply
+ * extending .{@link EasyCrudDaoMySqlImpl}
  * 
  * @author sergey.karpushin
  *

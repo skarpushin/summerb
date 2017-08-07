@@ -5,8 +5,11 @@ import org.summerb.approaches.i18n.HasMessageArgsConverters;
 import org.summerb.approaches.i18n.HasMessageCode;
 import org.summerb.approaches.i18n.MessageArgConverter;
 import org.summerb.approaches.i18n.MessageCodeMessageArgConverter;
+import org.summerb.approaches.jdbccrud.api.dto.HasTimestamps;
 
 /**
+ * Exception is thrown if record was already updated by someone else. Normally
+ * {@link HasTimestamps#getModifiedAt()} is used for optimistic locking logic
  * 
  * @author sergey.karpushin
  *

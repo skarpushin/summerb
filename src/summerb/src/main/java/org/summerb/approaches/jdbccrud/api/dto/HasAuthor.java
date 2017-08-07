@@ -1,6 +1,10 @@
 package org.summerb.approaches.jdbccrud.api.dto;
 
+import org.summerb.approaches.jdbccrud.api.EasyCrudService;
+
 /**
+ * Impl this interface with your DTO to make {@link EasyCrudService} track users
+ * who created and updated this dto.
  * 
  * @author sergey.karpushin
  *

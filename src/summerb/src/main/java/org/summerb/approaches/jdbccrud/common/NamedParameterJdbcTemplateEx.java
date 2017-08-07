@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
 /**
  * This class is introduced to return deprecated and removed methods like
- * queryForInt and queryForLong
+ * queryForInt and queryForLong to {@link NamedParameterJdbcTemplate}
  * 
  * @author sergeyk
  *

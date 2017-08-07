@@ -1,6 +1,7 @@
 package org.summerb.approaches.jdbccrud.api;
 
 /**
+ * Common error codes for {@link EasyCrudService} operations
  * 
  * @author sergey.karpushin
  *

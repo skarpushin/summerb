@@ -4,6 +4,9 @@ import org.springframework.beans.PropertyAccessor;
 
 /**
  * 
+ * Subclass of {@link Restriction} particularly used to describe restriction
+ * applied to a certain field refereed to as {@link #getFieldName()}.
+ * 
  * @author sergey.karpushin
  *
  */
@@ -21,6 +24,12 @@ public class FieldCondition implements Restriction<PropertyAccessor> {
 		this.restriction = restriction;
 	}
 
+	/**
+	 * Method to verify restriction in-memory
+	 * 
+	 * @param formData
+	 *            {@link PropertyAccessor} instance to access DTO fields
+	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean isMeet(PropertyAccessor formData) {

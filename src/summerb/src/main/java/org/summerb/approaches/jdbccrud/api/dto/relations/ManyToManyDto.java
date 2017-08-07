@@ -3,6 +3,18 @@ package org.summerb.approaches.jdbccrud.api.dto.relations;
 import org.summerb.approaches.jdbccrud.api.dto.HasAutoincrementId;
 import org.summerb.approaches.jdbccrud.common.DtoBase;
 
+/**
+ * DTO used to describe m2m table. Suites only very simple cases. In case m2m
+ * table need to contain custom fields it's better to construct your own DTO
+ * instead of trying to subclass this one.
+ * 
+ * @author sergeyk
+ *
+ * @param <T1Id>
+ *            type of referencer id (who references)
+ * @param <T2Id>
+ *            type of referencee id (who is being referenced)
+ */
 public class ManyToManyDto<T1Id, T2Id> implements DtoBase, HasAutoincrementId {
 	private static final long serialVersionUID = 2609297133758985L;
 

@@ -6,6 +6,8 @@ import org.summerb.approaches.i18n.MessageCodeMessageArgConverter;
 import org.summerb.approaches.jdbccrud.api.EasyCrudMessageCodes;
 
 /**
+ * This is a subclass of {@link EntityNotFoundException}. It adds the ability to
+ * conveniently record type of missing object along with it's identity
  * 
  * @author sergey.karpushin
  *
@@ -15,6 +17,12 @@ public class GenericEntityNotFoundException extends EntityNotFoundException impl
 
 	private String subjectTypeMessageCode;
 
+	/**
+	 * @param subjectTypeMessageCode
+	 *            entity type message code
+	 * @param identity
+	 *            primary key value
+	 */
 	public GenericEntityNotFoundException(String subjectTypeMessageCode, Object identity) {
 		this(subjectTypeMessageCode, identity, null);
 	}

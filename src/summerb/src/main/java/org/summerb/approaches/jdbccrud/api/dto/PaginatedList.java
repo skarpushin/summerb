@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.util.CollectionUtils;
 
 /**
+ * Paginated query results
  * 
  * @author sergey.karpushin
  *

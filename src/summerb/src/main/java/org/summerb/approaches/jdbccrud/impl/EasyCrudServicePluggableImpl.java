@@ -33,10 +33,10 @@ import org.summerb.utils.DeepCopy;
 import com.google.common.base.Preconditions;
 
 /**
- * Yet another impl of EasyCrudService, but now this time with improved OCP
- * principle. In case some logic needs to be changed so you can do it via
- * {@link EasyCrudWireTap} interface - you don't need to write another impl
- * {@link EasyCrudService} in order to change behavior.
+ * Default impl of EasyCrudService, with focus OCP:OOD principle. In case some
+ * logic needs to be changed so you can do it via {@link EasyCrudWireTap}
+ * interface - you don't need to write another impl {@link EasyCrudService} in
+ * order to change behavior.
  * 
  * @author sergeyk
  *
@@ -146,9 +146,9 @@ public class EasyCrudServicePluggableImpl<TId, TDto extends HasId<TId>, TDao ext
 			if (currentVersion == null) {
 				throw exceptionStrategy.buildNotFoundException(getEntityTypeMessageCode(), newVersion.getId());
 			}
-			
+
 			TDto ret = copyDto(newVersion);
-			
+
 			boolean wireTapRequired = wireTap.requiresOnUpdate();
 			if (wireTapRequired) {
 				wireTap.beforeUpdate(currentVersion, ret);

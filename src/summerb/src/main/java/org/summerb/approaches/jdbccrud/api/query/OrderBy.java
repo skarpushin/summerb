@@ -12,6 +12,9 @@ public class OrderBy {
 	private String direction;
 	private String fieldName;
 
+	/**
+	 * @param fieldName field name
+	 */
 	public static OrderBy Asc(String fieldName) {
 		OrderBy ret = new OrderBy();
 		ret.fieldName = fieldName;
@@ -19,6 +22,9 @@ public class OrderBy {
 		return ret;
 	}
 
+	/**
+	 * @param fieldName field name
+	 */
 	public static OrderBy Desc(String fieldName) {
 		OrderBy ret = new OrderBy();
 		ret.fieldName = fieldName;

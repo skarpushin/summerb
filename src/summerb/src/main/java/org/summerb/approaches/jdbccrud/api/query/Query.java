@@ -4,6 +4,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.springframework.beans.PropertyAccessor;
+import org.summerb.approaches.jdbccrud.api.EasyCrudDao;
+import org.summerb.approaches.jdbccrud.api.EasyCrudService;
+import org.summerb.approaches.jdbccrud.api.QueryToNativeSqlCompiler;
 import org.summerb.approaches.jdbccrud.api.query.restrictions.BooleanEqRestriction;
 import org.summerb.approaches.jdbccrud.api.query.restrictions.IsNullRestriction;
 import org.summerb.approaches.jdbccrud.api.query.restrictions.NumberBetweenRestriction;
@@ -17,7 +20,18 @@ import org.summerb.approaches.jdbccrud.api.query.restrictions.StringLengthBetwee
 import org.summerb.approaches.jdbccrud.api.query.restrictions.StringOneOfRestriction;
 
 /**
- * Entry point for configuring filter query to the form data
+ * This class is used to build very simple queries to {@link EasyCrudService}
+ * (nothing fancy -- no aggregation, etc).
+ * 
+ * I.e.: <code>
+ * Query.n().eq(HasId.FN_ID, 123)
+ * </code>
+ * 
+ * It's also capable of evaluating if any in-memory DTO matches this query.
+ * 
+ * Each impl of {@link EasyCrudDao} supposed to be supplemented with impl of
+ * {@link QueryToNativeSqlCompiler} that can convert this abstracted Query to
+ * query native to actual data source.
  * 
  * @author sergey.karpushin
  * 

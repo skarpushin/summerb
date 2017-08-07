@@ -1,11 +1,17 @@
 package org.summerb.approaches.jdbccrud.common;
 
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
 import com.google.common.base.Preconditions;
 
 /**
- * This impl merges several sources to a single parameter source
+ * This impl merges several sources to a single parameter source.
+ * 
+ * Comes in handy if needed to for most fields use
+ * {@link BeanPropertySqlParameterSource} but use other parameter source for
+ * just couple fields. Parameter sources invoked in the order they passed to
+ * constructor
  * 
  * @author skarpushin
  * 
