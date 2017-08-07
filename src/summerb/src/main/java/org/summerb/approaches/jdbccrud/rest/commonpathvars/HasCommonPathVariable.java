@@ -19,12 +19,11 @@ import org.summerb.approaches.jdbccrud.rest.EasyCrudRestControllerBase;
  * which is expected to be registered in site servlet, i.e.
  * 
  * <code>
- * 	<mvc:annotation-driven>
- * 		<mvc:argument-resolvers>
- * 			<bean class=
-"org.summerb.approaches.jdbccrud.rest.PathVariablesMapArgumentResolver" />
- * 		</mvc:argument-resolvers>
- * 	</mvc:annotation-driven>
+ * &lt;mvc:annotation-driven&gt;
+	&lt;mvc:argument-resolvers&gt;
+		&lt;bean class=&quot;org.summerb.approaches.jdbccrud.rest.PathVariablesMapArgumentResolver&quot; /&gt;
+	&lt;/mvc:argument-resolvers&gt;
+&lt;/mvc:annotation-driven&gt;
  * </code>
  * 
  * In case Swagger is being used then
