@@ -10,7 +10,7 @@ import org.summerb.approaches.validation.FieldValidationException;
 
 /**
  * Abstraction for DAO layer. Intended to be used by impl of
- * {@link EasyCrudService}.
+ * {@link EasyCrudService}. 
  * 
  * In case you're using MySQL as a data source you can easily impl DAO by simply
  * extending .{@link EasyCrudDaoMySqlImpl}

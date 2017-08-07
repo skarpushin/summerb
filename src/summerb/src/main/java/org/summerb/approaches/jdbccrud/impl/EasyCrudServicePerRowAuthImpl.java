@@ -4,14 +4,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.springframework.beans.factory.InitializingBean;
-import org.summerb.approaches.jdbccrud.api.EasyCrudPerRowAuthStrategy;
 import org.summerb.approaches.jdbccrud.api.EasyCrudDao;
+import org.summerb.approaches.jdbccrud.api.EasyCrudPerRowAuthStrategy;
 import org.summerb.approaches.jdbccrud.api.EasyCrudValidationStrategy;
 import org.summerb.approaches.jdbccrud.api.EasyCrudWireTap;
 import org.summerb.approaches.jdbccrud.api.dto.HasId;
-import org.summerb.approaches.jdbccrud.impl.wireTaps.EasyCrudWireTapPerRowAuthImpl;
 import org.summerb.approaches.jdbccrud.impl.wireTaps.EasyCrudWireTapDelegatingImpl;
 import org.summerb.approaches.jdbccrud.impl.wireTaps.EasyCrudWireTapEventBusImpl;
+import org.summerb.approaches.jdbccrud.impl.wireTaps.EasyCrudWireTapPerRowAuthImpl;
 import org.summerb.approaches.jdbccrud.impl.wireTaps.EasyCrudWireTapValidationImpl;
 
 import com.google.common.eventbus.EventBus;

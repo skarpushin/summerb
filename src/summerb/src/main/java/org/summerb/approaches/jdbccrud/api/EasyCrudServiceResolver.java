@@ -1,6 +1,5 @@
 package org.summerb.approaches.jdbccrud.api;
 
-import org.summerb.approaches.jdbccrud.api.EasyCrudService;
 import org.summerb.approaches.jdbccrud.api.relations.DataSetLoader;
 
 /**
