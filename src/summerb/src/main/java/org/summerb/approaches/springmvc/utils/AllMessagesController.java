@@ -7,7 +7,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
@@ -36,6 +35,8 @@ import com.google.gson.Gson;
  */
 @Controller
 public class AllMessagesController extends ControllerBase implements ApplicationContextAware, InitializingBean {
+	private static final long MILLIS_PER_DAY = 86400000;
+	
 	private AllMessagesProvider allMessagesProvider;
 	private ApplicationContext applicationContext;
 	private LoadingCache<Locale, Properties> messagesCache;
@@ -60,7 +61,7 @@ public class AllMessagesController extends ControllerBase implements Application
 		// set headers
 		HttpHeaders responseHeaders = new HttpHeaders();
 		response.setHeader("Cache-Control", "max-age: 84600");
-		responseHeaders.setExpires(System.currentTimeMillis() + DateUtils.MILLIS_PER_DAY);
+		responseHeaders.setExpires(System.currentTimeMillis() + MILLIS_PER_DAY);
 		responseHeaders.set("Content-Type", "text/javascript; charset=UTF-8");
 		// NOTE: Looks like there is a bug in the spring - it will add
 		// Last-Modified twice to the response

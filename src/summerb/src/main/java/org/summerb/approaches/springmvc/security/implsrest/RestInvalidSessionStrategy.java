@@ -15,7 +15,7 @@ public class RestInvalidSessionStrategy implements InvalidSessionStrategy {
 	private JsonResponseWriter jsonResponseHelper;
 
 	public RestInvalidSessionStrategy() {
-		jsonResponseHelper = new JsonResponseHelperGsonImpl();
+		jsonResponseHelper = new JsonResponseWriterGsonImpl();
 	}
 
 	public RestInvalidSessionStrategy(JsonResponseWriter jsonResponseHelper) {

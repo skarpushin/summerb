@@ -1,47 +1,64 @@
 package org.summerb.approaches.springmvc.security.mvc;
 
 import org.summerb.approaches.springmvc.security.apis.SecurityActionsUrlsProvider;
-import org.summerb.approaches.springmvc.security.apis.SecurityViewNamesProvider;
 import org.summerb.microservices.users.api.dto.User;
 
-import com.google.common.base.Preconditions;
-
 /**
- * The only reason to have this impl separate it from loginController is to
- * decouple servlet and root context.
+ * Default impl.
  * 
- * This impl is anticipated to be tightly related to LoginController thus have
- * to be in sync with latter RequestMappings.
+ * It's defined as a separate class (separate from {@link LoginController} to
+ * have it in root context, rather in servlet context
+ * 
+ * See {@link SecurityActionsUrlsProvider}
  * 
  * @author sergeyk
  *
  */
 public class SecurityActionsUrlsProviderDefaultImpl implements SecurityActionsUrlsProvider {
 	public static final String PARAM_ACTIVATION_UUID = "activationUuid";
-	public static final String URL_LOGIN_FAILED = "/login/failed";
-	public static final String URL_LOGIN_FORM = "/login/form";
 
-	private SecurityViewNamesProvider views;
+	public static final String LOGIN_FORM = "/login/form";
+	public static final String LOGIN_FAILED = "/login/failed";
+	public static final String CHANGE_PASSWORD = "/login/change";
+	public static final String RESET_PASSWORD = "/login/reset/{passwordResetToken}";
+	public static final String REQUEST_RESET = "/login/request-reset";
+	public static final String ACTIVATE = "/login/activate";
+	public static final String REGISTER = "/login/register";
+	public static final String INVALID_SESSION = "/login/invalid-session";
 
 	public SecurityActionsUrlsProviderDefaultImpl() {
-		views = new SecurityViewNamesProviderDefaultImpl();
-	}
-
-	public SecurityActionsUrlsProviderDefaultImpl(SecurityViewNamesProvider views) {
-		Preconditions.checkArgument(views != null, "Views required");
-		this.views = views;
 	}
 
 	@Override
 	public String getLoginFormPath() {
-		return URL_LOGIN_FORM;
+		return LOGIN_FORM;
 	}
 
 	@Override
 	public String getLoginFailedPath() {
-		return URL_LOGIN_FAILED;
+		return LOGIN_FAILED;
 	}
 
+	@Override
+	public String getChangePassword() {
+		return CHANGE_PASSWORD;
+	}
+
+	@Override
+	public String getRequestPasswordReset() {
+		return REQUEST_RESET;
+	}
+
+	@Override
+	public String getRegistration() {
+		return REGISTER;
+	}
+
+	@Override
+	public String getInvalidSession() {
+		return INVALID_SESSION;
+	}
+	
 	@Override
 	public String getDefaultPath() {
 		return "/";
@@ -49,12 +66,12 @@ public class SecurityActionsUrlsProviderDefaultImpl implements SecurityActionsUr
 
 	@Override
 	public String buildRegistrationActivationPath(String activationKey) {
-		return "/" + views.activateRegistration() + "?" + PARAM_ACTIVATION_UUID + "=" + activationKey;
+		return ACTIVATE + "?" + PARAM_ACTIVATION_UUID + "=" + activationKey;
 	}
 
 	@Override
 	public String buildPasswordResetPath(String username, String passwordResetToken) {
-		return "/" + views.resetPassword() + "/" + passwordResetToken + "?" + User.FN_EMAIL + "=" + username;
+		return RESET_PASSWORD.replace("{passwordResetToken}", passwordResetToken) + "?" + User.FN_EMAIL + "="
+				+ username;
 	}
-
 }

@@ -2,6 +2,7 @@ package org.summerb.utils.exceptions.translator;
 
 import java.util.Locale;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 
@@ -13,8 +14,15 @@ import org.springframework.context.NoSuchMessageException;
  *
  */
 public class ExceptionTranslatorClassNameImpl implements ExceptionTranslator {
+	private MessageSource messageSource;
+
+	@Autowired
+	public ExceptionTranslatorClassNameImpl(MessageSource messageSource2) {
+		messageSource = messageSource2;
+	}
+
 	@Override
-	public String buildUserMessage(Throwable t, MessageSource messageSource, Locale locale) {
+	public String buildUserMessage(Throwable t, Locale locale) {
 		try {
 			String className = t.getClass().getName();
 			String messageMappingForClassName = messageSource.getMessage(className, new Object[] { t.getMessage() },

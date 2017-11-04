@@ -162,12 +162,12 @@ public class AuthenticationProviderImpl implements AuthenticationProvider, Initi
 		this.passwordService = passwordService;
 	}
 
-	public LoginEligibilityVerifier getAuthenticationRequestValidator() {
+	public LoginEligibilityVerifier getLoginEligibilityVerifier() {
 		return loginEligibilityVerifier;
 	}
 
 	@Autowired(required = false)
-	public void setAuthenticationRequestValidator(LoginEligibilityVerifier loginEligibilityVerifier) {
+	public void setLoginEligibilityVerifier(LoginEligibilityVerifier loginEligibilityVerifier) {
 		this.loginEligibilityVerifier = loginEligibilityVerifier;
 	}
 

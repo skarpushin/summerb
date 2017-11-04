@@ -6,10 +6,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -21,13 +18,12 @@ import org.summerb.utils.exceptions.dto.ExceptionInfo;
 import org.summerb.utils.exceptions.dto.GenericServerErrorResult;
 import org.summerb.utils.exceptions.translator.ExceptionTranslator;
 
-public class RestAuthenticationFailureHandler implements AuthenticationFailureHandler, ApplicationContextAware {
+public class RestAuthenticationFailureHandler implements AuthenticationFailureHandler {
 	private JsonResponseWriter jsonResponseHelper;
 	private ExceptionTranslator exceptionTranslator;
-	private ApplicationContext applicationContext;
 
 	public RestAuthenticationFailureHandler() {
-		jsonResponseHelper = new JsonResponseHelperGsonImpl();
+		jsonResponseHelper = new JsonResponseWriterGsonImpl();
 	}
 
 	public RestAuthenticationFailureHandler(JsonResponseWriter jsonResponseHelper) {
@@ -47,7 +43,7 @@ public class RestAuthenticationFailureHandler implements AuthenticationFailureHa
 
 		response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		GenericServerErrorResult responseBody = new GenericServerErrorResult(
-				exceptionTranslator.buildUserMessage(exception, applicationContext, LocaleContextHolder.getLocale()),
+				exceptionTranslator.buildUserMessage(exception, LocaleContextHolder.getLocale()),
 				new ExceptionInfo(exception));
 		jsonResponseHelper.writeResponseBody(responseBody, response);
 	}
@@ -59,10 +55,5 @@ public class RestAuthenticationFailureHandler implements AuthenticationFailureHa
 	@Autowired
 	public void setExceptionTranslator(ExceptionTranslator exceptionTranslator) {
 		this.exceptionTranslator = exceptionTranslator;
-	}
-
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		this.applicationContext = applicationContext;
 	}
 }

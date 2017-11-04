@@ -21,18 +21,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.summerb.approaches.springmvc.controllers.ControllerBase;
-import org.summerb.approaches.springmvc.security.SecurityConstants;
 import org.summerb.approaches.springmvc.security.SecurityMessageCodes;
 import org.summerb.approaches.springmvc.security.UserAccountChangeHadlersDefaultImpl;
 import org.summerb.approaches.springmvc.security.apis.SecurityActionsUrlsProvider;
 import org.summerb.approaches.springmvc.security.apis.SecurityViewNamesProvider;
 import org.summerb.approaches.springmvc.security.apis.UsersServiceFacade;
-import org.summerb.approaches.springmvc.security.dto.PasswordChangePm;
-import org.summerb.approaches.springmvc.security.dto.PasswordResetPm;
+import org.summerb.approaches.springmvc.security.dto.PasswordChange;
+import org.summerb.approaches.springmvc.security.dto.PasswordReset;
 import org.summerb.approaches.springmvc.security.dto.Registration;
 import org.summerb.approaches.springmvc.utils.AbsoluteUrlBuilder;
 import org.summerb.approaches.springmvc.utils.CaptchaController;
-import org.summerb.approaches.springmvc.utils.ErrorUtils;
 import org.summerb.approaches.validation.FieldValidationException;
 import org.summerb.approaches.validation.ValidationError;
 import org.summerb.microservices.users.api.PermissionService;
@@ -41,6 +39,7 @@ import org.summerb.microservices.users.api.dto.User;
 import org.summerb.microservices.users.api.exceptions.UserNotFoundException;
 import org.summerb.utils.exceptions.ExceptionUtils;
 import org.summerb.utils.exceptions.GenericException;
+import org.summerb.utils.exceptions.translator.ExceptionTranslatorSimplified;
 
 /**
  * This controller provides request/response-based actions for common
@@ -54,34 +53,32 @@ public class LoginController extends ControllerBase {
 	private Logger log = Logger.getLogger(getClass());
 
 	private static final String ATTR_PASSWORD_RESET_TOKEN = "passwordResetToken";
-	private static final String ATTR_REGISTERED = "registered";
 	private static final String ATTR_ACTIVATED = "activated";
+	private static final String ATTR_REGISTERED = "registered";
 	private static final String ATTR_REGISTRATION = "registration";
 	private static final String ATTR_PASSWORD_RESET_REQUEST = "resetPasswordRequest";
 	private static final String ATTR_PASSWORD_RESET = "passwordReset";
 	private static final String ATTR_RESET_OK = "resetOk";
 	private static final String ATTR_PASSWORD_CHANGE = "passwordChange";
 	private static final String ATTR_PASSWORD_CHANGED = "passwordChanged";
+	private static final String ATTR_FORM_ACCEPTED = "formAccepted";
 
-	@Autowired
 	private UsersServiceFacade usersServiceFacade;
-	@Autowired
 	private UserService userService;
-	@Autowired
 	private PermissionService permissionService;
-	@Autowired
 	private AbsoluteUrlBuilder absoluteUrlBuilder;
 	private RedirectStrategy redirectStrategy;
 	private SecurityViewNamesProvider views;
 	private SecurityActionsUrlsProvider securityActionsUrlsProvider;
+	private ExceptionTranslatorSimplified exceptionTranslatorSimplified;
 
 	@Autowired(required = false)
 	@Value("#{ props.properties['profile.dev'] }")
-	private boolean isDevMode;
+	protected boolean isDevMode;
 
 	@Autowired(required = false)
 	@Value("#{ props.properties['profile.autotest'] }")
-	private boolean isAutoTestMode;
+	protected boolean isAutoTestMode;
 
 	public LoginController() {
 	}
@@ -93,7 +90,7 @@ public class LoginController extends ControllerBase {
 		}
 
 		if (securityActionsUrlsProvider == null) {
-			securityActionsUrlsProvider = new SecurityActionsUrlsProviderDefaultImpl(views);
+			securityActionsUrlsProvider = new SecurityActionsUrlsProviderDefaultImpl();
 		}
 
 		if (redirectStrategy == null) {
@@ -101,47 +98,19 @@ public class LoginController extends ControllerBase {
 		}
 
 		super.afterPropertiesSet();
-
-		registerFirstUserIfNeeded();
 	}
 
-	// TODO: Remove this beore merging to submmerb
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	private void registerFirstUserIfNeeded() throws Exception {
-		if (!isDevMode) {
-			return;
-		}
-
-		String userEmail = "admin@site.ru";
-		try {
-			User user = userService.getUserByEmail(userEmail);
-			if (!permissionService.hasPermission(SecurityConstants.DOMAIN, user.getUuid(), null,
-					SecurityConstants.ROLE_ADMIN)) {
-				permissionService.grantPermission(SecurityConstants.DOMAIN, user.getUuid(), null,
-						SecurityConstants.ROLE_ADMIN);
-			}
-		} catch (UserNotFoundException nfe) {
-			Registration r = new Registration();
-			r.setEmail(userEmail);
-			r.setDisplayName("Admin");
-			r.setPassword("1111");
-			User user = usersServiceFacade.registerUser(r);
-			permissionService.grantPermission(SecurityConstants.DOMAIN, user.getUuid(), null,
-					SecurityConstants.ROLE_ADMIN);
-		}
-	}
-
-	@RequestMapping(method = RequestMethod.GET, value = SecurityActionsUrlsProviderDefaultImpl.URL_LOGIN_FORM)
+	@RequestMapping(method = RequestMethod.GET, value = SecurityActionsUrlsProviderDefaultImpl.LOGIN_FORM)
 	public String getLoginForm(Model model) {
 		return views.loginForm();
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = SecurityActionsUrlsProviderDefaultImpl.URL_LOGIN_FAILED)
+	@RequestMapping(method = RequestMethod.GET, value = SecurityActionsUrlsProviderDefaultImpl.LOGIN_FAILED)
 	public String handleLoginFailed(Model model, HttpServletRequest request) {
 		Exception lastException = (Exception) request.getSession().getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
 		if (lastException != null) {
 			log.info("Login failed due to exception", lastException);
-			model.addAttribute("lastExceptionMessage", ErrorUtils.getAllMessages(lastException));
+			model.addAttribute("lastExceptionMessage", exceptionTranslatorSimplified.buildUserMessage(lastException));
 		}
 
 		model.addAttribute("loginError", true);
@@ -159,21 +128,21 @@ public class LoginController extends ControllerBase {
 		return getLoginForm(model);
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/login/invalid-session")
+	@RequestMapping(method = RequestMethod.GET, value = SecurityActionsUrlsProviderDefaultImpl.INVALID_SESSION)
 	public ModelAndView handleInvalidSession(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam("requestedUrl") String requestedUrl) throws Exception {
 		redirectStrategy.sendRedirect(request, response, requestedUrl);
 		return null;
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/login/register")
+	@RequestMapping(method = RequestMethod.GET, value = SecurityActionsUrlsProviderDefaultImpl.REGISTER)
 	public String getRegisterForm(Model model, HttpServletRequest request) {
 		model.addAttribute(ATTR_REGISTRATION, new Registration());
 		CaptchaController.putToken("register", request);
 		return views.registerForm();
 	}
 
-	@RequestMapping(method = RequestMethod.POST, value = "/login/register")
+	@RequestMapping(method = RequestMethod.POST, value = SecurityActionsUrlsProviderDefaultImpl.REGISTER)
 	public String processRegisterForm(@ModelAttribute(ATTR_REGISTRATION) Registration registration, Model model,
 			HttpServletRequest request) throws FieldValidationException {
 		if (!isAutoTestMode) {
@@ -193,7 +162,7 @@ public class LoginController extends ControllerBase {
 		return views.registerForm();
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/login/activate")
+	@RequestMapping(method = RequestMethod.GET, value = SecurityActionsUrlsProviderDefaultImpl.ACTIVATE)
 	public String getRegistrationActivationForm(Model model, HttpServletRequest request,
 			@RequestParam(value = SecurityActionsUrlsProviderDefaultImpl.PARAM_ACTIVATION_UUID) String activationUuid)
 			throws GenericException {
@@ -204,14 +173,14 @@ public class LoginController extends ControllerBase {
 		return views.activateRegistration();
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/login/request-reset")
+	@RequestMapping(method = RequestMethod.GET, value = SecurityActionsUrlsProviderDefaultImpl.REQUEST_RESET)
 	public String getPasswordResetRequestForm(Model model, HttpServletRequest request) {
 		model.addAttribute(ATTR_PASSWORD_RESET_REQUEST, new Registration());
 		CaptchaController.putToken("request-reset", request);
 		return views.resetPasswordRequest();
 	}
 
-	@RequestMapping(method = RequestMethod.POST, value = "/login/request-reset")
+	@RequestMapping(method = RequestMethod.POST, value = SecurityActionsUrlsProviderDefaultImpl.REQUEST_RESET)
 	public String processPasswordResetRequestForm(
 			@ModelAttribute(ATTR_PASSWORD_RESET_REQUEST) Registration registration, Model model,
 			HttpServletRequest request) throws FieldValidationException {
@@ -224,13 +193,15 @@ public class LoginController extends ControllerBase {
 		// Generate registration link
 		String passwordResetAbsoluteLink = absoluteUrlBuilder.buildExternalUrl(
 				securityActionsUrlsProvider.buildPasswordResetPath(registration.getEmail(), passwordResetToken));
+		
+		model.addAttribute(ATTR_FORM_ACCEPTED, true);
 		if (isDevMode) {
 			model.addAttribute(UserAccountChangeHadlersDefaultImpl.ATTR_PASSWORD_RESET_LINK, passwordResetAbsoluteLink);
 		}
 		return views.resetPasswordRequest();
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/login/reset/{passwordResetToken}")
+	@RequestMapping(method = RequestMethod.GET, value = SecurityActionsUrlsProviderDefaultImpl.RESET_PASSWORD)
 	public String getPasswordResetForm(@PathVariable(ATTR_PASSWORD_RESET_TOKEN) String passwordResetToken,
 			@RequestParam(User.FN_EMAIL) String email, Model model, HttpServletRequest request)
 			throws UserNotFoundException, FieldValidationException, GenericException {
@@ -241,16 +212,16 @@ public class LoginController extends ControllerBase {
 		}
 
 		// Now let's show password reset form
-		model.addAttribute(ATTR_PASSWORD_RESET, new PasswordResetPm());
+		model.addAttribute(ATTR_PASSWORD_RESET, new PasswordReset());
 		model.addAttribute(User.FN_EMAIL, email);
 		model.addAttribute(ATTR_PASSWORD_RESET_TOKEN, passwordResetToken);
 
 		return views.resetPassword();
 	}
 
-	@RequestMapping(method = RequestMethod.POST, value = "/login/reset/{passwordResetToken}")
+	@RequestMapping(method = RequestMethod.POST, value = SecurityActionsUrlsProviderDefaultImpl.RESET_PASSWORD)
 	public String processPasswordResetForm(
-			@ModelAttribute(ATTR_PASSWORD_RESET_REQUEST) PasswordResetPm resetPasswordRequest,
+			@ModelAttribute(ATTR_PASSWORD_RESET_REQUEST) PasswordReset resetPasswordRequest,
 			@PathVariable(ATTR_PASSWORD_RESET_TOKEN) String passwordResetToken,
 			@RequestParam(User.FN_EMAIL) String email, Model model, HttpServletRequest request)
 			throws UserNotFoundException, FieldValidationException {
@@ -265,18 +236,18 @@ public class LoginController extends ControllerBase {
 	}
 
 	@Secured({ "ROLE_USER" })
-	@RequestMapping(method = RequestMethod.GET, value = "/login/change")
+	@RequestMapping(method = RequestMethod.GET, value = SecurityActionsUrlsProviderDefaultImpl.CHANGE_PASSWORD)
 	public String getPasswordChangeForm(Model model, HttpServletRequest request) {
-		model.addAttribute(ATTR_PASSWORD_CHANGE, new PasswordChangePm());
+		model.addAttribute(ATTR_PASSWORD_CHANGE, new PasswordChange());
 		return views.changePassword();
 	}
 
 	@Secured({ "ROLE_USER" })
-	@RequestMapping(method = RequestMethod.POST, value = "/login/change")
-	public String processPasswordChangeForm(@ModelAttribute(ATTR_PASSWORD_CHANGE) PasswordChangePm passwordChangePm,
+	@RequestMapping(method = RequestMethod.POST, value = SecurityActionsUrlsProviderDefaultImpl.CHANGE_PASSWORD)
+	public String processPasswordChangeForm(@ModelAttribute(ATTR_PASSWORD_CHANGE) PasswordChange passwordChange,
 			Model model, HttpServletRequest request) throws UserNotFoundException, FieldValidationException {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		usersServiceFacade.changePassword(auth.getName(), passwordChangePm);
+		usersServiceFacade.changePassword(auth.getName(), passwordChange);
 
 		model.addAttribute(ATTR_PASSWORD_CHANGED, true);
 		return views.changePassword();
@@ -308,4 +279,50 @@ public class LoginController extends ControllerBase {
 	public void setSecurityActionsUrlsProvider(SecurityActionsUrlsProvider securityActionsUrlsProvider) {
 		this.securityActionsUrlsProvider = securityActionsUrlsProvider;
 	}
+
+	public UsersServiceFacade getUsersServiceFacade() {
+		return usersServiceFacade;
+	}
+
+	@Autowired
+	public void setUsersServiceFacade(UsersServiceFacade usersServiceFacade) {
+		this.usersServiceFacade = usersServiceFacade;
+	}
+
+	public UserService getUserService() {
+		return userService;
+	}
+
+	@Autowired
+	public void setUserService(UserService userService) {
+		this.userService = userService;
+	}
+
+	public PermissionService getPermissionService() {
+		return permissionService;
+	}
+
+	@Autowired
+	public void setPermissionService(PermissionService permissionService) {
+		this.permissionService = permissionService;
+	}
+
+	public AbsoluteUrlBuilder getAbsoluteUrlBuilder() {
+		return absoluteUrlBuilder;
+	}
+
+	@Autowired
+	public void setAbsoluteUrlBuilder(AbsoluteUrlBuilder absoluteUrlBuilder) {
+		this.absoluteUrlBuilder = absoluteUrlBuilder;
+	}
+
+	public ExceptionTranslatorSimplified getExceptionTranslatorSimplified() {
+		return exceptionTranslatorSimplified;
+	}
+
+	@Autowired
+	public void setExceptionTranslatorSimplified(ExceptionTranslatorSimplified exceptionTranslatorSimplified) {
+		this.exceptionTranslatorSimplified = exceptionTranslatorSimplified;
+	}
+
 }

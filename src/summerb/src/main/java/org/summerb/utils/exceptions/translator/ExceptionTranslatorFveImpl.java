@@ -2,6 +2,7 @@ package org.summerb.utils.exceptions.translator;
 
 import java.util.Locale;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.summerb.approaches.i18n.I18nUtils;
@@ -9,8 +10,15 @@ import org.summerb.approaches.validation.FieldValidationException;
 import org.summerb.approaches.validation.ValidationError;
 
 public class ExceptionTranslatorFveImpl implements ExceptionTranslator {
+	private MessageSource messageSource;
+
+	@Autowired
+	public ExceptionTranslatorFveImpl(MessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+
 	@Override
-	public String buildUserMessage(Throwable t, MessageSource messageSource, Locale locale) {
+	public String buildUserMessage(Throwable t, Locale locale) {
 		if (!FieldValidationException.class.equals(t.getClass())) {
 			return null;
 		}

@@ -19,6 +19,7 @@ import org.summerb.approaches.springmvc.model.PageMessage;
 import org.summerb.approaches.springmvc.utils.ControllerExceptionHandlerStrategy;
 import org.summerb.approaches.springmvc.utils.ControllerExceptionHandlerStrategyImpl;
 import org.summerb.approaches.springmvc.utils.CurrentRequestUtils;
+import org.summerb.microservices.users.api.dto.User;
 
 /**
  * Base class for controllers, contains simple common operations
@@ -39,7 +40,7 @@ public abstract class ControllerBase implements ApplicationContextAware, Initial
 	public static final String ATTR_PAGE_MESSAGES = "pageMessages";
 
 	protected ApplicationContext applicationContext;
-	private SecurityContextResolver<?> securityContextResolver;
+	private SecurityContextResolver<? extends User> securityContextResolver;
 
 	private ControllerExceptionHandlerStrategy exceptionHandlerStrategy;
 
@@ -105,12 +106,12 @@ public abstract class ControllerBase implements ApplicationContextAware, Initial
 		this.exceptionHandlerStrategy = exceptionHandlerStrategy;
 	}
 
-	public SecurityContextResolver<?> getSecurityContextResolver() {
+	public SecurityContextResolver<? extends User> getSecurityContextResolver() {
 		return securityContextResolver;
 	}
 
 	@Autowired(required = false)
-	public void setSecurityContextResolver(SecurityContextResolver<?> securityContextResolver) {
+	public void setSecurityContextResolver(SecurityContextResolver<? extends User> securityContextResolver) {
 		this.securityContextResolver = securityContextResolver;
 	}
 }

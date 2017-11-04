@@ -10,10 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationTrustResolver;
@@ -33,17 +30,16 @@ import org.summerb.utils.exceptions.dto.ExceptionInfo;
 import org.summerb.utils.exceptions.dto.GenericServerErrorResult;
 import org.summerb.utils.exceptions.translator.ExceptionTranslator;
 
-public class RestExceptionTranslator extends GenericFilterBean implements ApplicationContextAware {
+public class RestExceptionTranslator extends GenericFilterBean {
 	private Logger log = Logger.getLogger(getClass());
 
 	private AuthenticationTrustResolver authenticationTrustResolver;
 	private JsonResponseWriter jsonResponseHelper;
 
-	private ApplicationContext applicationContext;
 	private ExceptionTranslator exceptionTranslator;
 
 	public RestExceptionTranslator() {
-		jsonResponseHelper = new JsonResponseHelperGsonImpl();
+		jsonResponseHelper = new JsonResponseWriterGsonImpl();
 		authenticationTrustResolver = new AuthenticationTrustResolverImpl();
 	}
 
@@ -77,7 +73,7 @@ public class RestExceptionTranslator extends GenericFilterBean implements Applic
 
 	private DtoBase determineFailureResult(Exception ex) {
 		// TODO: Why we do not handle FVE here ?
-		
+
 		NotAuthorizedException naex = ExceptionUtils.findExceptionOfType(ex, NotAuthorizedException.class);
 		if (naex != null) {
 			return naex.getResult();
@@ -98,14 +94,13 @@ public class RestExceptionTranslator extends GenericFilterBean implements Applic
 			}
 			return new NotAuthorizedResult(getCurrentUser(null), SecurityMessageCodes.ACCESS_DENIED);
 		}
-		
+
 		CurrentUserNotFoundException cunfe = ExceptionUtils.findExceptionOfType(ex, CurrentUserNotFoundException.class);
 		if (cunfe != null) {
 			return new NotAuthorizedResult(getCurrentUser(null), SecurityMessageCodes.LOGIN_REQUIRED);
 		}
 
-		return new GenericServerErrorResult(
-				exceptionTranslator.buildUserMessage(ex, applicationContext, LocaleContextHolder.getLocale()),
+		return new GenericServerErrorResult(exceptionTranslator.buildUserMessage(ex, LocaleContextHolder.getLocale()),
 				new ExceptionInfo(ex));
 	}
 
@@ -128,11 +123,6 @@ public class RestExceptionTranslator extends GenericFilterBean implements Applic
 
 	public void setAuthenticationTrustResolver(AuthenticationTrustResolver authenticationTrustResolver) {
 		this.authenticationTrustResolver = authenticationTrustResolver;
-	}
-
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		this.applicationContext = applicationContext;
 	}
 
 	public ExceptionTranslator getExceptionTranslator() {

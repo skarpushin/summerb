@@ -1,20 +1,18 @@
 package org.summerb.utils.exceptions.translator;
 
-import java.util.Locale;
-
 /**
- * Impl of this interface supposed to translate exception into human language
- * and be represented by string.so that we can show it to user
+ * This interface is similar to {@link ExceptionTranslator} with only exception
+ * - impl supposed to know how to resolve locale
  * 
  * @author sergeyk
  *
  */
-public interface ExceptionTranslator {
+public interface ExceptionTranslatorSimplified {
 	/**
 	 * Translate exception into user locale using provided messageSource
 	 * 
 	 * @return message ready for user OR null if this translator doesn't support
 	 *         this type of exception
 	 */
-	String buildUserMessage(Throwable t, Locale locale);
+	String buildUserMessage(Throwable t);
 }

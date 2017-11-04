@@ -62,7 +62,7 @@ public class CurrentRequestUtils {
 	}
 
 	/**
-	 * @deprecated WARNING this method won't work correclty in async environment
+	 * @deprecated WARNING this method won't work correctly in async environment
 	 *             (like i.e. when using DeferredResult)
 	 */
 	@Deprecated

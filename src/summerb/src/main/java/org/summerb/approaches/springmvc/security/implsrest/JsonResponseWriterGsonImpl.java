@@ -8,14 +8,14 @@ import org.summerb.approaches.springmvc.security.apis.JsonResponseWriter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class JsonResponseHelperGsonImpl implements JsonResponseWriter {
+public class JsonResponseWriterGsonImpl implements JsonResponseWriter {
 	private Gson gson;
 
-	public JsonResponseHelperGsonImpl() {
+	public JsonResponseWriterGsonImpl() {
 		gson = new GsonBuilder().create();
 	}
 
-	public JsonResponseHelperGsonImpl(Gson gson) {
+	public JsonResponseWriterGsonImpl(Gson gson) {
 		this.gson = gson;
 	}
 

@@ -10,7 +10,7 @@ import org.summerb.approaches.security.api.CurrentUserNotFoundException;
 import org.summerb.approaches.security.api.SecurityContextResolver;
 import org.summerb.approaches.springmvc.controllers.ControllerBase;
 import org.summerb.approaches.springmvc.security.apis.UsersServiceFacade;
-import org.summerb.approaches.springmvc.security.dto.PasswordChangePm;
+import org.summerb.approaches.springmvc.security.dto.PasswordChange;
 import org.summerb.approaches.springmvc.security.dto.Registration;
 import org.summerb.approaches.validation.FieldValidationException;
 import org.summerb.microservices.users.api.UserService;
@@ -44,10 +44,10 @@ public class LoginRestController extends ControllerBase {
 
 	@Secured({ "ROLE_USER" })
 	@RequestMapping(method = RequestMethod.POST, value = "change")
-	public User processPasswordChangeForm(@RequestBody PasswordChangePm passwordChangePm)
+	public User processPasswordChangeForm(@RequestBody PasswordChange passwordChange)
 			throws UserNotFoundException, FieldValidationException {
 		User user = securityContextResolver.getUser();
-		usersServiceFacade.changePassword(user.getEmail(), passwordChangePm);
+		usersServiceFacade.changePassword(user.getEmail(), passwordChange);
 		return user;
 	}
 

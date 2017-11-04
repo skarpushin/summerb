@@ -1,7 +1,7 @@
 package org.summerb.approaches.springmvc.security.apis;
 
-import org.summerb.approaches.springmvc.security.dto.PasswordChangePm;
-import org.summerb.approaches.springmvc.security.dto.PasswordResetPm;
+import org.summerb.approaches.springmvc.security.dto.PasswordChange;
+import org.summerb.approaches.springmvc.security.dto.PasswordReset;
 import org.summerb.approaches.springmvc.security.dto.Registration;
 import org.summerb.approaches.springmvc.security.dto.UserStatus;
 import org.summerb.approaches.validation.FieldValidationException;
@@ -29,9 +29,9 @@ public interface UsersServiceFacade {
 	boolean isPasswordResetTokenValid(String userEmail, String passwordResetToken)
 			throws UserNotFoundException, FieldValidationException;
 
-	void resetPassword(String email, String passwordResetToken, PasswordResetPm resetPasswordRequest)
+	void resetPassword(String email, String passwordResetToken, PasswordReset resetPasswordRequest)
 			throws UserNotFoundException, FieldValidationException;
 
-	void changePassword(String email, PasswordChangePm passwordChangePm)
+	void changePassword(String email, PasswordChange passwordChange)
 			throws UserNotFoundException, FieldValidationException;
 }

@@ -33,13 +33,14 @@ import org.summerb.approaches.security.api.exceptions.NotAuthorizedException;
 import org.summerb.approaches.springmvc.controllers.ControllerBase;
 import org.summerb.approaches.springmvc.model.MessageSeverity;
 import org.summerb.approaches.springmvc.model.PageMessage;
-import org.summerb.approaches.springmvc.utils.ErrorUtils;
+import org.summerb.approaches.springmvc.utils.CurrentRequestUtils;
 import org.summerb.approaches.springmvc.utils.MimeTypeResolver;
 import org.summerb.microservices.articles.api.ArticleRenderer;
 import org.summerb.microservices.articles.api.ArticleService;
 import org.summerb.microservices.articles.api.AttachmentService;
 import org.summerb.microservices.articles.api.dto.Attachment;
 import org.summerb.microservices.articles.api.dto.consuming.RenderedArticle;
+import org.summerb.utils.exceptions.translator.ExceptionTranslator;
 
 @Controller
 public class ArticleController extends ControllerBase {
@@ -57,6 +58,8 @@ public class ArticleController extends ControllerBase {
 	private ArticleService articleService;
 	@Autowired
 	private AttachmentService attachmentService;
+	@Autowired
+	private ExceptionTranslator exceptionTranslator;
 
 	@Autowired
 	private MimeTypeResolver mimeTypeResolver;
@@ -104,7 +107,8 @@ public class ArticleController extends ControllerBase {
 		} catch (Throwable t) {
 			log.warn("Failed to get article attachment", t);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			response.setHeader("Error", "Failed to get article attachment -> " + ErrorUtils.getAllMessages(t));
+			String msg = exceptionTranslator.buildUserMessage(t, CurrentRequestUtils.getLocale());
+			response.setHeader("Error", "Failed to get article attachment -> " + msg);
 			return null;
 		}
 	}
@@ -125,7 +129,8 @@ public class ArticleController extends ControllerBase {
 			log.debug("Failed to get article attachment", t);
 
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			response.setHeader("Error", "Failed to get article attachment -> " + ErrorUtils.getAllMessages(t));
+			String msg = exceptionTranslator.buildUserMessage(t, CurrentRequestUtils.getLocale());
+			response.setHeader("Error", "Failed to get article attachment -> " + msg);
 			return null;
 		}
 	}
@@ -139,7 +144,8 @@ public class ArticleController extends ControllerBase {
 			model.addAttribute(ATTR_ARTICLE, article);
 		} catch (Throwable t) {
 			log.debug("Failed to get article", t);
-			addPageMessage(model.asMap(), new PageMessage(ErrorUtils.getAllMessages(t), MessageSeverity.Danger));
+			String msg = exceptionTranslator.buildUserMessage(t, CurrentRequestUtils.getLocale());
+			addPageMessage(model.asMap(), new PageMessage(msg, MessageSeverity.Danger));
 		}
 
 		return viewNameArticle;

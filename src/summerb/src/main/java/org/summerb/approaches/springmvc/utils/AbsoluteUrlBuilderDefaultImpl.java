@@ -2,6 +2,8 @@ package org.summerb.approaches.springmvc.utils;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.util.StringUtils;
+
 public class AbsoluteUrlBuilderDefaultImpl implements AbsoluteUrlBuilder {
 	@Override
 	public String buildExternalUrl(String optionalRelativeUrl) {
@@ -12,6 +14,10 @@ public class AbsoluteUrlBuilderDefaultImpl implements AbsoluteUrlBuilder {
 			ret += ":" + req.getServerPort();
 		}
 		ret += req.getContextPath();
+		
+		if (StringUtils.hasText(optionalRelativeUrl)) {
+			ret += optionalRelativeUrl;
+		}
 		return ret;
 	}
 }

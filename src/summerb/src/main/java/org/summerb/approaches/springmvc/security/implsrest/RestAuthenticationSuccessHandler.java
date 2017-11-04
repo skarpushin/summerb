@@ -16,7 +16,7 @@ public class RestAuthenticationSuccessHandler implements AuthenticationSuccessHa
 	private JsonResponseWriter jsonResponseHelper;
 
 	public RestAuthenticationSuccessHandler() {
-		jsonResponseHelper = new JsonResponseHelperGsonImpl();
+		jsonResponseHelper = new JsonResponseWriterGsonImpl();
 	}
 
 	public RestAuthenticationSuccessHandler(JsonResponseWriter jsonResponseHelper) {

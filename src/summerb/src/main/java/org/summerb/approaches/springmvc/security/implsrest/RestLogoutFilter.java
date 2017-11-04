@@ -22,7 +22,7 @@ public class RestLogoutFilter extends GenericFilterBean {
 	private JsonResponseWriter jsonResponseHelper;
 
 	public RestLogoutFilter() {
-		jsonResponseHelper = new JsonResponseHelperGsonImpl();
+		jsonResponseHelper = new JsonResponseWriterGsonImpl();
 	}
 
 	public RestLogoutFilter(JsonResponseWriter jsonResponseHelper) {

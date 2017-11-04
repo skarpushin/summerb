@@ -5,8 +5,8 @@ import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.log4j.Logger;
+import org.owasp.encoder.Encode;
 import org.summerb.approaches.jdbccrud.api.exceptions.GenericEntityNotFoundException;
 import org.summerb.approaches.springmvc.utils.DummyMapImpl;
 import org.summerb.microservices.articles.api.ArticleAbsoluteUrlBuilder;
@@ -65,9 +65,9 @@ public class ArticleRenderingContext {
 						stringBuffer.append("<a href=\"");
 						stringBuffer.append(articleAbsoluteUrlBuilder.buildUrlFroArticle(referencedArticle));
 						stringBuffer.append("\" title=\"");
-						stringBuffer.append(StringEscapeUtils.escapeXml10(referencedArticle.getTitle()));
+						stringBuffer.append(Encode.forHtmlAttribute(referencedArticle.getTitle()));
 						stringBuffer.append("\">");
-						stringBuffer.append(StringEscapeUtils.escapeXml10(referencedArticle.getTitle()));
+						stringBuffer.append(Encode.forHtmlContent(referencedArticle.getTitle()));
 						stringBuffer.append("</a>");
 
 						return stringBuffer.toString();
@@ -162,7 +162,7 @@ public class ArticleRenderingContext {
 					stringBuffer.append("<img class=\"article-image\" src=\"");
 					stringBuffer.append(articleAbsoluteUrlBuilder.buildUrlFroArticleAttachment(att));
 					stringBuffer.append("\" alt=\"");
-					stringBuffer.append(StringEscapeUtils.escapeXml10(att.getName()));
+					stringBuffer.append(Encode.forXmlAttribute(att.getName()));
 					stringBuffer.append("\" />");
 
 					return stringBuffer.toString();

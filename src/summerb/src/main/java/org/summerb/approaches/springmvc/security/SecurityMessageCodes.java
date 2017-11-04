@@ -7,7 +7,6 @@ package org.summerb.approaches.springmvc.security;
  * 
  */
 public class SecurityMessageCodes {
-	public static final String INCORRECT_USER_NAME = "security.incorrectUserName";
 	public static final String FAILED_TO_ACTIVATE_REGISTRATION = "security.failedToActivateRegistration";
 	public static final String ALREADY_ACTIVATED = "security.alreadyActivated";
 	public static final String NEED_ACTIVATION_TOKEN = "security.needActivationToken";

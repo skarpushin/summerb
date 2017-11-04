@@ -1,6 +1,6 @@
 package org.summerb.approaches.springmvc.security.dto;
 
-public class PasswordChangePm {
+public class PasswordChange {
 	public static final String FN_NEW_PASSWORD_AGAIN = "newPasswordAgain";
 	public static final String FN_CURRENT_PASSWORD = "currentPassword";
 

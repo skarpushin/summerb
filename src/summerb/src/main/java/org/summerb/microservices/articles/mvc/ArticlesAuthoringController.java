@@ -33,7 +33,7 @@ import org.summerb.approaches.springmvc.controllers.ControllerBase;
 import org.summerb.approaches.springmvc.model.ListPm;
 import org.summerb.approaches.springmvc.model.MessageSeverity;
 import org.summerb.approaches.springmvc.model.PageMessage;
-import org.summerb.approaches.springmvc.utils.ErrorUtils;
+import org.summerb.approaches.springmvc.utils.CurrentRequestUtils;
 import org.summerb.approaches.validation.FieldValidationException;
 import org.summerb.microservices.articles.api.ArticleService;
 import org.summerb.microservices.articles.api.AttachmentService;
@@ -42,6 +42,7 @@ import org.summerb.microservices.articles.api.dto.Attachment;
 import org.summerb.microservices.articles.mvc.vm.ArticleAttachmentVm;
 import org.summerb.microservices.articles.mvc.vm.ArticleVm;
 import org.summerb.microservices.articles.mvc.vm.ArticlesVm;
+import org.summerb.utils.exceptions.translator.ExceptionTranslator;
 
 import com.google.common.base.Preconditions;
 
@@ -60,7 +61,9 @@ public class ArticlesAuthoringController extends ControllerBase {
 	private ArticleService articleService;
 	@Autowired
 	private AttachmentService attachmentService;
-	
+	@Autowired
+	private ExceptionTranslator exceptionTranslator;
+
 	private String viewNameArticlesAuthoringList = "article-authoring/articles";
 	private String viewNameArticleAuthoring = "article-authoring/article";
 
@@ -91,7 +94,8 @@ public class ArticlesAuthoringController extends ControllerBase {
 		} catch (Exception t) {
 			log.error("Failed to create article", t);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			return Collections.singletonMap(ATTR_ERROR, ErrorUtils.getAllMessages(t));
+			String msg = exceptionTranslator.buildUserMessage(t, CurrentRequestUtils.getLocale());
+			return Collections.singletonMap(ATTR_ERROR, msg);
 		}
 	}
 
@@ -119,7 +123,8 @@ public class ArticlesAuthoringController extends ControllerBase {
 		} catch (Throwable t) {
 			log.error("Failed to delete article", t);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			return Collections.singletonMap(ATTR_ERROR, ErrorUtils.getAllMessages(t));
+			String msg = exceptionTranslator.buildUserMessage(t, CurrentRequestUtils.getLocale());
+			return Collections.singletonMap(ATTR_ERROR, msg);
 		}
 	}
 
@@ -167,7 +172,8 @@ public class ArticlesAuthoringController extends ControllerBase {
 		} catch (Throwable t) {
 			log.error("Failed to update article content", t);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			return Collections.singletonMap(ATTR_ERROR, ErrorUtils.getAllMessages(t));
+			String msg = exceptionTranslator.buildUserMessage(t, CurrentRequestUtils.getLocale());
+			return Collections.singletonMap(ATTR_ERROR, msg);
 		}
 	}
 
@@ -196,7 +202,8 @@ public class ArticlesAuthoringController extends ControllerBase {
 			return Views.redirect(String.format("article-authoring/%s", article.getArticleKey()));
 		} catch (Throwable t) {
 			log.error("Failed to create attachment", t);
-			addPageMessage(model.asMap(), new PageMessage(ErrorUtils.getAllMessages(t), MessageSeverity.Danger));
+			String msg = exceptionTranslator.buildUserMessage(t, CurrentRequestUtils.getLocale());
+			addPageMessage(model.asMap(), new PageMessage(msg, MessageSeverity.Danger));
 			// TODO: Navigate to article authoring instead!
 			return viewNameArticleAuthoring;
 		}
@@ -212,7 +219,8 @@ public class ArticlesAuthoringController extends ControllerBase {
 		} catch (Throwable t) {
 			log.error("Failed to delete attachment", t);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			return Collections.singletonMap(ATTR_ERROR, ErrorUtils.getAllMessages(t));
+			String msg = exceptionTranslator.buildUserMessage(t, CurrentRequestUtils.getLocale());
+			return Collections.singletonMap(ATTR_ERROR, msg);
 		}
 	}
 

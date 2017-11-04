@@ -15,8 +15,8 @@ import org.summerb.approaches.springmvc.security.apis.RegistrationActivatedHandl
 import org.summerb.approaches.springmvc.security.apis.UserRegisteredHandler;
 import org.summerb.approaches.springmvc.security.apis.UsersServiceFacade;
 import org.summerb.approaches.springmvc.security.dto.LoginParams;
-import org.summerb.approaches.springmvc.security.dto.PasswordChangePm;
-import org.summerb.approaches.springmvc.security.dto.PasswordResetPm;
+import org.summerb.approaches.springmvc.security.dto.PasswordChange;
+import org.summerb.approaches.springmvc.security.dto.PasswordReset;
 import org.summerb.approaches.springmvc.security.dto.Registration;
 import org.summerb.approaches.springmvc.security.dto.UserStatus;
 import org.summerb.approaches.springmvc.security.elevation.ElevationRunnerImpl;
@@ -119,7 +119,7 @@ public class UsersServiceFacadeImpl implements UsersServiceFacade, LoginEligibil
 		}
 	}
 
-	private void runUserRegisteredHandler(final User user) {
+	protected void runUserRegisteredHandler(final User user) {
 		if (userRegisteredHandler == null) {
 			return;
 		}
@@ -135,15 +135,13 @@ public class UsersServiceFacadeImpl implements UsersServiceFacade, LoginEligibil
 		});
 	}
 
-	private void validateRegistration(Registration registration) throws FieldValidationException {
+	protected void validateRegistration(Registration registration) throws FieldValidationException {
 		ValidationContext ctx = new ValidationContext();
 		validateDisplayName(registration.getDisplayName(), ctx);
 		validatePassword(registration.getPassword(), ctx);
 		ctx.validateEmailFormat(registration.getEmail(), User.FN_EMAIL);
 
-		if (ctx.getHasErrors()) {
-			throw new FieldValidationException(ctx.getErrors());
-		}
+		ctx.throwIfHasErrors();
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
@@ -165,7 +163,7 @@ public class UsersServiceFacadeImpl implements UsersServiceFacade, LoginEligibil
 		}
 	}
 
-	private void validateUserIsEligableForPasswordReset(String email) throws FieldValidationException {
+	protected void validateUserIsEligableForPasswordReset(String email) throws FieldValidationException {
 		ValidationContext ctx = new ValidationContext();
 		if (!ctx.validateEmailFormat(email, User.FN_EMAIL)) {
 			throw new FieldValidationException(ctx.getErrors());
@@ -184,13 +182,13 @@ public class UsersServiceFacadeImpl implements UsersServiceFacade, LoginEligibil
 		}
 	}
 
-	protected void validatePassword(String password, ValidationContext ctx) throws FieldValidationException {
+	protected void validatePassword(String password, ValidationContext ctx) {
 		if (ctx.validateNotEmpty(password, LoginParams.FN_PASSWORD)) {
 			ctx.validateLengthGreaterOrEqual(password, passwordMinLength, LoginParams.FN_PASSWORD);
 		}
 	}
 
-	private void validateDisplayName(String name, ValidationContext ctx) throws FieldValidationException {
+	protected void validateDisplayName(String name, ValidationContext ctx) {
 		if (!ctx.validateNotEmpty(name, Registration.FN_DISPLAY_NAME)) {
 			return;
 		}
@@ -250,7 +248,7 @@ public class UsersServiceFacadeImpl implements UsersServiceFacade, LoginEligibil
 
 	@Transactional(rollbackFor = Throwable.class)
 	@Override
-	public void resetPassword(String email, String passwordResetToken, PasswordResetPm resetPasswordRequest)
+	public void resetPassword(String email, String passwordResetToken, PasswordReset resetPasswordRequest)
 			throws UserNotFoundException, FieldValidationException {
 
 		try {
@@ -272,43 +270,40 @@ public class UsersServiceFacadeImpl implements UsersServiceFacade, LoginEligibil
 	}
 
 	@Override
-	public void changePassword(String email, PasswordChangePm passwordChangePm)
+	public void changePassword(String email, PasswordChange passwordChange)
 			throws UserNotFoundException, FieldValidationException {
 
 		try {
-			User user = validatePasswordChangeRequestValid(email, passwordChangePm);
-			passwordService.setUserPassword(user.getUuid(), passwordChangePm.getPassword());
+			User user = validatePasswordChangeRequestValid(email, passwordChange);
+			passwordService.setUserPassword(user.getUuid(), passwordChange.getPassword());
 		} catch (Throwable e) {
 			Throwables.propagateIfInstanceOf(e, FieldValidationException.class);
 			throw new UserServiceUnexpectedException("Failed to arrange password reset", e);
 		}
 	}
 
-	private User validatePasswordChangeRequestValid(String email, PasswordChangePm passwordChangePm)
+	protected User validatePasswordChangeRequestValid(String email, PasswordChange passwordChange)
 			throws UserNotFoundException, FieldValidationException {
 		ValidationContext ctx = new ValidationContext();
 
-		ctx.lengthEqOrGreater(passwordChangePm.getPassword(), 4, LoginParams.FN_PASSWORD);
-		ctx.equals(passwordChangePm.getPassword(), SecurityMessageCodes.NEW_PASSWORD,
-				passwordChangePm.getNewPasswordAgain(), SecurityMessageCodes.NEW_PASSWORD_AGAIN,
-				PasswordChangePm.FN_NEW_PASSWORD_AGAIN);
+		ctx.lengthEqOrGreater(passwordChange.getPassword(), 4, LoginParams.FN_PASSWORD);
+		ctx.equals(passwordChange.getPassword(), SecurityMessageCodes.NEW_PASSWORD,
+				passwordChange.getNewPasswordAgain(), SecurityMessageCodes.NEW_PASSWORD_AGAIN,
+				PasswordChange.FN_NEW_PASSWORD_AGAIN);
 
 		User user = null;
-		if (ctx.hasText(passwordChangePm.getCurrentPassword(), PasswordChangePm.FN_CURRENT_PASSWORD)) {
+		if (ctx.hasText(passwordChange.getCurrentPassword(), PasswordChange.FN_CURRENT_PASSWORD)) {
 			user = userService.getUserByEmail(email);
-			ctx.isTrue(passwordService.isUserPasswordValid(user.getUuid(), passwordChangePm.getCurrentPassword()),
-					InvalidPasswordException.ERROR_LOGIN_INVALID_PASSWORD, PasswordChangePm.FN_CURRENT_PASSWORD);
+			ctx.isTrue(passwordService.isUserPasswordValid(user.getUuid(), passwordChange.getCurrentPassword()),
+					InvalidPasswordException.ERROR_LOGIN_INVALID_PASSWORD, PasswordChange.FN_CURRENT_PASSWORD);
 		}
 
-		if (ctx.getHasErrors()) {
-			throw new FieldValidationException(ctx.getErrors());
-		}
-
+		ctx.throwIfHasErrors();
 		return user;
 	}
 
 	protected String assertPasswordResetOperationValid(String email, String passwordResetToken,
-			PasswordResetPm resetPasswordRequest)
+			PasswordReset resetPasswordRequest)
 			throws FieldValidationException, UserNotFoundException, GenericException {
 		validatePasswordReset(resetPasswordRequest);
 		try {
@@ -326,15 +321,13 @@ public class UsersServiceFacadeImpl implements UsersServiceFacade, LoginEligibil
 		return userUuid;
 	}
 
-	protected void validatePasswordReset(PasswordResetPm resetPasswordRequest) throws FieldValidationException {
+	protected void validatePasswordReset(PasswordReset resetPasswordRequest) throws FieldValidationException {
 		ValidationContext ctx = new ValidationContext();
 		validatePassword(resetPasswordRequest.getPassword(), ctx);
 		if (!resetPasswordRequest.getPassword().equals(resetPasswordRequest.getNewPasswordAgain())) {
 			ctx.add(new PasswordsDontMatchValidationError());
 		}
-		if (ctx.getHasErrors()) {
-			throw new FieldValidationException(ctx.getErrors());
-		}
+		ctx.throwIfHasErrors();
 	}
 
 	@Override

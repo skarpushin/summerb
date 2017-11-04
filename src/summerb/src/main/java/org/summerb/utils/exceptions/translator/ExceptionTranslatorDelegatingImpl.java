@@ -4,8 +4,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
-import org.springframework.context.MessageSource;
-
 public class ExceptionTranslatorDelegatingImpl implements ExceptionTranslator {
 	private List<ExceptionTranslator> translators;
 
@@ -14,7 +12,7 @@ public class ExceptionTranslatorDelegatingImpl implements ExceptionTranslator {
 	}
 
 	@Override
-	public String buildUserMessage(Throwable t, MessageSource messageSource, Locale locale) {
+	public String buildUserMessage(Throwable t, Locale locale) {
 		if (t == null) {
 			return "";
 		}
@@ -29,7 +27,7 @@ public class ExceptionTranslatorDelegatingImpl implements ExceptionTranslator {
 
 			boolean matchFound = false;
 			for (ExceptionTranslator translator : translators) {
-				String msg = translator.buildUserMessage(cur, messageSource, locale);
+				String msg = translator.buildUserMessage(cur, locale);
 				if (msg == null) {
 					continue;
 				}

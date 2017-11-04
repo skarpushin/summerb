@@ -66,7 +66,7 @@ public class ControllerExceptionHandlerStrategyImpl
 		}
 		if (exceptionTranslator == null) {
 			// log.info("exceptionTranslator is not set, will use Legacy impl");
-			exceptionTranslator = new ExceptionTranslatorLegacyImpl();
+			exceptionTranslator = new ExceptionTranslatorLegacyImpl(applicationContext);
 		}
 	}
 
@@ -91,7 +91,7 @@ public class ControllerExceptionHandlerStrategyImpl
 		log.error("Exception occured", ex);
 
 		ModelAndView ret = new ModelAndView(Views.ERROR_UNEXPECTED_CLARIFIED);
-		String msg = exceptionTranslator.buildUserMessage(ex, applicationContext, LocaleContextHolder.getLocale());
+		String msg = exceptionTranslator.buildUserMessage(ex, LocaleContextHolder.getLocale());
 		ControllerBase.addPageMessage(ret.getModel(), new PageMessage(msg, MessageSeverity.Danger));
 		ret.getModel().put(ControllerBase.ATTR_EXCEPTION, ex);
 		ret.getModel().put(ControllerBase.ATTR_EXCEPTION_STACKTRACE, ExceptionUtils.getThrowableStackTraceAsString(ex));
@@ -99,7 +99,7 @@ public class ControllerExceptionHandlerStrategyImpl
 	}
 
 	protected ModelAndView buildJsonError(Throwable ex, HttpServletRequest req, HttpServletResponse res) {
-		String msg = exceptionTranslator.buildUserMessage(ex, applicationContext, LocaleContextHolder.getLocale());
+		String msg = exceptionTranslator.buildUserMessage(ex, LocaleContextHolder.getLocale());
 
 		NotAuthorizedException nae;
 		FieldValidationException fve;

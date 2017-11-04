@@ -29,15 +29,17 @@ public class ForceLocaleToCoockieInterceptor extends HandlerInterceptorAdapter {
 		if (localeResolver == null) {
 			throw new IllegalStateException("No LocaleResolver found: not in a DispatcherServlet request?");
 		}
-		if (!(localeResolver instanceof CookieLocaleResolver))
+		if (!(localeResolver instanceof CookieLocaleResolver)) {
 			return true;
+		}
 
 		// Check if locale not in cookie.
 		// If so, then force it to store in cookie
 		CookieLocaleResolver cookieLocaleResolver = (CookieLocaleResolver) localeResolver;
 		Cookie cookie = WebUtils.getCookie(request, cookieLocaleResolver.getCookieName());
-		if (cookie == null)
+		if (cookie == null) {
 			cookieLocaleResolver.setLocale(request, response, localeResolver.resolveLocale(request));
+		}
 
 		return true;
 	}

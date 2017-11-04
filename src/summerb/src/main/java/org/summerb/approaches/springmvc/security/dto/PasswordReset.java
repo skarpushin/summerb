@@ -1,6 +1,6 @@
 package org.summerb.approaches.springmvc.security.dto;
 
-public class PasswordResetPm {
+public class PasswordReset {
 	public static final String FN_NEW_PASSWORD_AGAIN = "newPasswordAgain";
 
 	private String password;
