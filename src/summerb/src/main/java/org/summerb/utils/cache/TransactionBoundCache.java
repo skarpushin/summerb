@@ -46,6 +46,15 @@ public class TransactionBoundCache<K, V> implements LoadingCache<K, V> {
 	// not to singleton
 	private final ThreadLocal<TransactionBoundCacheEntry> transactionBoundCacheEntries = new ThreadLocal<TransactionBoundCacheEntry>();
 
+	/**
+	 * This marker will be used as a value for {@link #transactionBoundCacheEntries}
+	 * to prevent from sub-instantiating local cache. if this marker found in thread
+	 * local then global cache will be returned. This is a fix for defect found
+	 * while testing "MSCAR-9 Article A will be evicted from cache if it depends on
+	 * Article B and Article B was just updated "
+	 */
+	private final TransactionBoundCacheEntry markerUseGlobalCache = new TransactionBoundCacheEntry<>();
+
 	public TransactionBoundCache(String cacheName, CacheBuilder<K, V> cacheBuilder, CacheLoader<K, V> loader) {
 		this.loader = loader;
 		this.cacheName = cacheName;
@@ -62,16 +71,26 @@ public class TransactionBoundCache<K, V> implements LoadingCache<K, V> {
 	 * Get for write purpose
 	 */
 	private LoadingCache<K, V> get() {
+		TransactionBoundCacheEntry transactionBoundCacheEntry = transactionBoundCacheEntries.get();
+		if (transactionBoundCacheEntry == markerUseGlobalCache) {
+			if (log.isTraceEnabled()) {
+				log.trace(cacheName + ": Transaction is committing. Using global cache");
+			}
+			return actual;
+		}
+
 		String curTranName = TransactionSynchronizationManager.getCurrentTransactionName();
-		if (transactionBoundCacheEntries.get() != null) {
+		if (transactionBoundCacheEntry != null) {
 			if (log.isTraceEnabled()) {
 				log.trace(cacheName + ": Using transaction-local (assumming active transaction) cache tran="
 						+ curTranName);
 			}
-			return transactionBoundCacheEntries.get().transactionBound;
+			return transactionBoundCacheEntry.transactionBound;
 		}
 
 		boolean synchronizationActive = TransactionSynchronizationManager.isSynchronizationActive();
+		// NOTE: This will return true even at the end of committing transaction. So
+		// that's why we rely on #markerUseGlobalCache
 		if (!synchronizationActive) {
 			if (log.isTraceEnabled()) {
 				log.trace(cacheName + ": Using global cache");
@@ -87,7 +106,7 @@ public class TransactionBoundCache<K, V> implements LoadingCache<K, V> {
 		TransactionBoundCacheEntry newCache = new TransactionBoundCacheEntry<K, V>();
 		newCache.transactionBound = CacheBuilder.newBuilder().removalListener(localRemovalListener).build(loader);
 		// TODO: Instead of copy-on-write the whole thing, isn't it better to
-		// implement inheritance? Like if we didn't find it in this cache, ten
+		// implement inheritance? Like if we didn't find it in this cache, then
 		// lookup parent?
 		newCache.transactionBound.putAll(actual.asMap());
 		newCache.transactionBoundRemovals = new HashSet<K>();
@@ -98,19 +117,20 @@ public class TransactionBoundCache<K, V> implements LoadingCache<K, V> {
 	private TransactionSynchronization synchronization = new TransactionSynchronizationAdapter() {
 		@Override
 		public void afterCommit() {
-			if (transactionBoundCacheEntries.get() == null) {
+			TransactionBoundCacheEntry transactionBoundCacheEntry = transactionBoundCacheEntries.get();
+			if (transactionBoundCacheEntry == null || transactionBoundCacheEntry == markerUseGlobalCache) {
 				log.warn(cacheName + ": Inconsistent state. If we're here - there must be linked threadLocal");
 				return;
 			}
 
-			Set invalidatedKeys = transactionBoundCacheEntries.get().transactionBoundRemovals;
+			Set invalidatedKeys = transactionBoundCacheEntry.transactionBoundRemovals;
 			if (log.isTraceEnabled()) {
 				log.trace(cacheName
 						+ ": Clean-up after transaction commit. Removing invalidated objects from global cache: "
 						+ Arrays.toString(invalidatedKeys.toArray()));
 			}
 
-			transactionBoundCacheEntries.set(null);
+			transactionBoundCacheEntries.set(markerUseGlobalCache);
 			if (!invalidatedKeys.isEmpty()) {
 				actual.invalidateAll(invalidatedKeys);
 			}
@@ -131,7 +151,11 @@ public class TransactionBoundCache<K, V> implements LoadingCache<K, V> {
 		public void onRemoval(RemovalNotification<K, V> notification) {
 			TransactionBoundCacheEntry transactionBoundCacheEntry = transactionBoundCacheEntries.get();
 			if (transactionBoundCacheEntry == null) {
-				log.warn(cacheName + ": Weird. We receive removal event, but no transaction-bound cache exists");
+				log.error(cacheName + ": Weird. We receive removal event, but no transaction-bound cache exists");
+				return;
+			}
+			if (transactionBoundCacheEntry == markerUseGlobalCache) {
+				log.error(cacheName + ": Weird. We received removal event, while trasaction is completting");
 				return;
 			}
 
