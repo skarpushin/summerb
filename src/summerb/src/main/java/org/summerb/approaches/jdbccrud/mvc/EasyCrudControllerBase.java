@@ -64,6 +64,8 @@ public class EasyCrudControllerBase<TId, TDto extends HasId<TId>, TEasyCrudServi
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		super.afterPropertiesSet();
+		
 		Preconditions.checkState(service != null, "service Expected to be injected by IoC");
 		Preconditions.checkState(StringUtils.hasText(viewNameForList),
 				"viewNameForList Expected to be init by subclass");

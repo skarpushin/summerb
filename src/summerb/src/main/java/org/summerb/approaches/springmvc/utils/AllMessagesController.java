@@ -80,6 +80,8 @@ public class AllMessagesController extends ControllerBase implements Application
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		super.afterPropertiesSet();
+		
 		// TODO: Explain why not just Autowire it ??!?!!?!?!?!?!
 		allMessagesProvider = applicationContext.getBean(AllMessagesProvider.class);
 
