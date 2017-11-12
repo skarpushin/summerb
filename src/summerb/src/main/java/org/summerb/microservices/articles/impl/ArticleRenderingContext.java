@@ -129,7 +129,7 @@ public class ArticleRenderingContext {
 			registerReferencedArticle(ret.getId());
 			return ret;
 		} catch (Throwable e) {
-			Throwables.propagateIfInstanceOf(e, GenericEntityNotFoundException.class);
+			Throwables.throwIfInstanceOf(e, GenericEntityNotFoundException.class);
 			throw new RuntimeException("Failed to find effective referenced article permutation " + articleKey, e);
 		}
 	}

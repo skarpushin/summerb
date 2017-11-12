@@ -181,7 +181,7 @@ public class EasyCrudM2mServiceImpl<T1Id, T1Dto extends HasId<T1Id>, T2Id, T2Dto
 			pair.setDst(referenceeId);
 			return create(pair);
 		} catch (Throwable t) {
-			Throwables.propagateIfInstanceOf(t, NotAuthorizedException.class);
+			Throwables.throwIfInstanceOf(t, NotAuthorizedException.class);
 			throw new RuntimeException("Failed to add reference from " + serviceFrom.getEntityTypeMessageCode()
 					+ " identified by " + referencerId + " to " + serviceTo.getEntityTypeMessageCode()
 					+ " identified by " + referenceeId, t);
@@ -203,7 +203,7 @@ public class EasyCrudM2mServiceImpl<T1Id, T1Dto extends HasId<T1Id>, T2Id, T2Dto
 				// is acceptable
 			}
 		} catch (Throwable t) {
-			Throwables.propagateIfInstanceOf(t, NotAuthorizedException.class);
+			Throwables.throwIfInstanceOf(t, NotAuthorizedException.class);
 			throw new RuntimeException("Failed to remove reference from " + serviceFrom.getEntityTypeMessageCode()
 					+ " identified by " + referencerId + " to " + serviceTo.getEntityTypeMessageCode()
 					+ " identified by " + referenceeId, t);

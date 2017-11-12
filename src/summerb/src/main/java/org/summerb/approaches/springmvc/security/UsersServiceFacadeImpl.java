@@ -114,7 +114,7 @@ public class UsersServiceFacadeImpl implements UsersServiceFacade, LoginEligibil
 		} catch (UserNotFoundException e) {
 			throw new UserServiceUnexpectedException("User was just created, but not found", e);
 		} catch (Throwable t) {
-			Throwables.propagateIfInstanceOf(t, FieldValidationException.class);
+			Throwables.throwIfInstanceOf(t, FieldValidationException.class);
 			throw new RuntimeException("Unexpected error while registering user", t);
 		}
 	}
@@ -158,7 +158,7 @@ public class UsersServiceFacadeImpl implements UsersServiceFacade, LoginEligibil
 
 			return passwordResetToken;
 		} catch (Throwable e) {
-			Throwables.propagateIfInstanceOf(e, FieldValidationException.class);
+			Throwables.throwIfInstanceOf(e, FieldValidationException.class);
 			throw new UserServiceUnexpectedException("Failed to arrange password reset", e);
 		}
 	}
@@ -262,7 +262,7 @@ public class UsersServiceFacadeImpl implements UsersServiceFacade, LoginEligibil
 				activateAccount(userUuid);
 			}
 		} catch (Throwable e) {
-			Throwables.propagateIfInstanceOf(e, FieldValidationException.class);
+			Throwables.throwIfInstanceOf(e, FieldValidationException.class);
 			throw new UserServiceUnexpectedException("Failed to arrange password reset", e);
 		}
 	}
@@ -275,7 +275,7 @@ public class UsersServiceFacadeImpl implements UsersServiceFacade, LoginEligibil
 			User user = validatePasswordChangeRequestValid(email, passwordChange);
 			passwordService.setUserPassword(user.getUuid(), passwordChange.getPassword());
 		} catch (Throwable e) {
-			Throwables.propagateIfInstanceOf(e, FieldValidationException.class);
+			Throwables.throwIfInstanceOf(e, FieldValidationException.class);
 			throw new UserServiceUnexpectedException("Failed to arrange password reset", e);
 		}
 	}

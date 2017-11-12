@@ -92,8 +92,8 @@ public class UserServiceCachedImpl implements UserService, InitializingBean {
 		try {
 			return cacheByUuid.get(userUuid);
 		} catch (ExecutionException e) {
-			Throwables.propagateIfInstanceOf(e.getCause(), UserNotFoundException.class);
-			Throwables.propagateIfInstanceOf(e.getCause(), RuntimeException.class);
+			Throwables.throwIfInstanceOf(e.getCause(), UserNotFoundException.class);
+			Throwables.throwIfInstanceOf(e.getCause(), RuntimeException.class);
 			throw new RuntimeException("Unexpected failure during requesting user by email", e);
 		}
 	}
@@ -103,9 +103,9 @@ public class UserServiceCachedImpl implements UserService, InitializingBean {
 		try {
 			return cacheByEmail.get(userEmail);
 		} catch (ExecutionException e) {
-			Throwables.propagateIfInstanceOf(e.getCause(), UserNotFoundException.class);
-			Throwables.propagateIfInstanceOf(e.getCause(), FieldValidationException.class);
-			Throwables.propagateIfInstanceOf(e.getCause(), RuntimeException.class);
+			Throwables.throwIfInstanceOf(e.getCause(), UserNotFoundException.class);
+			Throwables.throwIfInstanceOf(e.getCause(), FieldValidationException.class);
+			Throwables.throwIfInstanceOf(e.getCause(), RuntimeException.class);
 			throw new RuntimeException("Unexpected failure during requesting user by email", e);
 		}
 	}

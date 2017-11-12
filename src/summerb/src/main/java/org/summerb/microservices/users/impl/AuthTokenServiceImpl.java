@@ -50,9 +50,9 @@ public class AuthTokenServiceImpl implements AuthTokenService {
 			return createAuthToken(user.getEmail(), clientIp, UUID.randomUUID().toString(),
 					UUID.randomUUID().toString());
 		} catch (Throwable t) {
-			Throwables.propagateIfInstanceOf(t, UserNotFoundException.class);
-			Throwables.propagateIfInstanceOf(t, FieldValidationException.class);
-			Throwables.propagateIfInstanceOf(t, InvalidPasswordException.class);
+			Throwables.throwIfInstanceOf(t, UserNotFoundException.class);
+			Throwables.throwIfInstanceOf(t, FieldValidationException.class);
+			Throwables.throwIfInstanceOf(t, InvalidPasswordException.class);
 
 			String msg = String.format("Failed to create auth otken for user '%s'", userEmail);
 			throw new UserServiceUnexpectedException(msg, t);
@@ -71,9 +71,9 @@ public class AuthTokenServiceImpl implements AuthTokenService {
 
 			return user;
 		} catch (Throwable t) {
-			Throwables.propagateIfInstanceOf(t, UserNotFoundException.class);
-			Throwables.propagateIfInstanceOf(t, FieldValidationException.class);
-			Throwables.propagateIfInstanceOf(t, InvalidPasswordException.class);
+			Throwables.throwIfInstanceOf(t, UserNotFoundException.class);
+			Throwables.throwIfInstanceOf(t, FieldValidationException.class);
+			Throwables.throwIfInstanceOf(t, InvalidPasswordException.class);
 
 			String msg = String.format("Failed to validate user '%s' and password '%s'", userEmail, passwordPlain);
 			throw new UserServiceUnexpectedException(msg, t);
@@ -95,8 +95,8 @@ public class AuthTokenServiceImpl implements AuthTokenService {
 			authTokenDao.createAuthToken(authToken);
 			return authToken;
 		} catch (Throwable t) {
-			Throwables.propagateIfInstanceOf(t, UserNotFoundException.class);
-			Throwables.propagateIfInstanceOf(t, FieldValidationException.class);
+			Throwables.throwIfInstanceOf(t, UserNotFoundException.class);
+			Throwables.throwIfInstanceOf(t, FieldValidationException.class);
 
 			String msg = String.format("Failed to create auth otken for user '%s'", userEmail);
 			throw new UserServiceUnexpectedException(msg, t);
@@ -135,7 +135,7 @@ public class AuthTokenServiceImpl implements AuthTokenService {
 			}
 			return ret;
 		} catch (Throwable t) {
-			Throwables.propagateIfInstanceOf(t, AuthTokenNotFoundException.class);
+			Throwables.throwIfInstanceOf(t, AuthTokenNotFoundException.class);
 
 			String msg = String.format("Failed to get auth token by id '%s'", authTokenUuid);
 			throw new UserServiceUnexpectedException(msg, t);
@@ -177,7 +177,7 @@ public class AuthTokenServiceImpl implements AuthTokenService {
 		} catch (AuthTokenNotFoundException nfe) {
 			return null;
 		} catch (Throwable t) {
-			Throwables.propagateIfInstanceOf(t, UserNotFoundException.class);
+			Throwables.throwIfInstanceOf(t, UserNotFoundException.class);
 
 			String msg = String.format("Failed to check auth token '%s' validity for user '%s'", authTokenUuid,
 					userUuid);
@@ -202,8 +202,8 @@ public class AuthTokenServiceImpl implements AuthTokenService {
 			// Now we need to update time when token was checked
 			authTokenDao.updateToken(authTokenUuid, lastVerifiedAt, newTokenValue);
 		} catch (Throwable t) {
-			Throwables.propagateIfInstanceOf(t, FieldValidationException.class);
-			Throwables.propagateIfInstanceOf(t, AuthTokenNotFoundException.class);
+			Throwables.throwIfInstanceOf(t, FieldValidationException.class);
+			Throwables.throwIfInstanceOf(t, AuthTokenNotFoundException.class);
 
 			String msg = String.format("Failed to update token '%s'", authTokenUuid);
 			throw new UserServiceUnexpectedException(msg, t);
@@ -235,7 +235,7 @@ public class AuthTokenServiceImpl implements AuthTokenService {
 			User user = userService.getUserByUuid(userUuid);
 			return authTokenDao.findAuthTokensByUser(user.getUuid());
 		} catch (Throwable t) {
-			Throwables.propagateIfInstanceOf(t, UserNotFoundException.class);
+			Throwables.throwIfInstanceOf(t, UserNotFoundException.class);
 
 			String msg = String.format("Failed to find user '%s' authtokens", userUuid);
 			throw new UserServiceUnexpectedException(msg, t);

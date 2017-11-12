@@ -29,8 +29,8 @@ public class EasyCrudExceptionStrategyDefaultImpl<TId> implements EasyCrudExcept
 	@Override
 	public RuntimeException handleExceptionAtCreate(Throwable t)
 			throws FieldValidationException, NotAuthorizedException {
-		Throwables.propagateIfInstanceOf(t, FieldValidationException.class);
-		Throwables.propagateIfInstanceOf(t, NotAuthorizedException.class);
+		Throwables.throwIfInstanceOf(t, FieldValidationException.class);
+		Throwables.throwIfInstanceOf(t, NotAuthorizedException.class);
 
 		return buildUnexpectedAtCreate(t);
 	}
@@ -47,14 +47,14 @@ public class EasyCrudExceptionStrategyDefaultImpl<TId> implements EasyCrudExcept
 	@Override
 	public RuntimeException handleExceptionAtDelete(Throwable t)
 			throws NotAuthorizedException, EntityNotFoundException {
-		Throwables.propagateIfInstanceOf(t, NotAuthorizedException.class);
-		Throwables.propagateIfInstanceOf(t, EntityNotFoundException.class);
+		Throwables.throwIfInstanceOf(t, NotAuthorizedException.class);
+		Throwables.throwIfInstanceOf(t, EntityNotFoundException.class);
 		return buildUnexpectedAtDelete(t);
 	}
 
 	@Override
 	public RuntimeException handleExceptionAtDeleteByQuery(Throwable t) throws NotAuthorizedException {
-		Throwables.propagateIfInstanceOf(t, NotAuthorizedException.class);
+		Throwables.throwIfInstanceOf(t, NotAuthorizedException.class);
 		return buildUnexpectedAtDelete(t);
 	}
 
@@ -70,9 +70,9 @@ public class EasyCrudExceptionStrategyDefaultImpl<TId> implements EasyCrudExcept
 	@Override
 	public RuntimeException handleExceptionAtUpdate(Throwable t)
 			throws FieldValidationException, NotAuthorizedException, EntityNotFoundException {
-		Throwables.propagateIfInstanceOf(t, FieldValidationException.class);
-		Throwables.propagateIfInstanceOf(t, NotAuthorizedException.class);
-		Throwables.propagateIfInstanceOf(t, EntityNotFoundException.class);
+		Throwables.throwIfInstanceOf(t, FieldValidationException.class);
+		Throwables.throwIfInstanceOf(t, NotAuthorizedException.class);
+		Throwables.throwIfInstanceOf(t, EntityNotFoundException.class);
 		return buildUnexpectedAtUpdate(t);
 	}
 
@@ -82,7 +82,7 @@ public class EasyCrudExceptionStrategyDefaultImpl<TId> implements EasyCrudExcept
 
 	@Override
 	public RuntimeException handleExceptionAtFind(Throwable t) throws NotAuthorizedException {
-		Throwables.propagateIfInstanceOf(t, NotAuthorizedException.class);
+		Throwables.throwIfInstanceOf(t, NotAuthorizedException.class);
 		return buildUnexpectedAtFind(t);
 	}
 
