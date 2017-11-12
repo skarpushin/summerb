@@ -189,9 +189,7 @@ public class UsersServiceFacadeImpl implements UsersServiceFacade, LoginEligibil
 	}
 
 	protected void validateDisplayName(String name, ValidationContext ctx) {
-		if (!ctx.validateNotEmpty(name, Registration.FN_DISPLAY_NAME)) {
-			return;
-		}
+		ctx.validateNotEmpty(name, Registration.FN_DISPLAY_NAME);
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
@@ -332,8 +330,10 @@ public class UsersServiceFacadeImpl implements UsersServiceFacade, LoginEligibil
 
 	@Override
 	public UserStatus getUserStatusByEmail(String email) throws FieldValidationException {
-		Preconditions.checkArgument(StringUtils.hasText(email), "Email must not be null or empty");
-
+		ValidationContext ctx = new ValidationContext();
+		ctx.validateNotEmpty(email, LoginParams.FN_EMAIL);
+		ctx.throwIfHasErrors();
+		
 		// Check if user have record
 		User user = null;
 		try {

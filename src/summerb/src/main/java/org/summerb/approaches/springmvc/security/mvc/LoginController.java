@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.summerb.approaches.springmvc.controllers.ControllerBase;
+import org.summerb.approaches.springmvc.model.ValidationErrorsVm;
 import org.summerb.approaches.springmvc.security.SecurityMessageCodes;
 import org.summerb.approaches.springmvc.security.UserAccountChangeHadlersDefaultImpl;
 import org.summerb.approaches.springmvc.security.apis.SecurityActionsUrlsProvider;
@@ -144,21 +145,24 @@ public class LoginController extends ControllerBase {
 
 	@RequestMapping(method = RequestMethod.POST, value = SecurityActionsUrlsProviderDefaultImpl.REGISTER)
 	public String processRegisterForm(@ModelAttribute(ATTR_REGISTRATION) Registration registration, Model model,
-			HttpServletRequest request) throws FieldValidationException {
+			HttpServletRequest request) {
 		if (!isAutoTestMode) {
 			CaptchaController.assertCaptchaTokenValid("register", registration.getCaptcha(), request);
 		}
 
-		// Create user
-		User user = usersServiceFacade.registerUser(registration);
-		model.addAttribute(ATTR_REGISTERED, true);
+		try {
+			// Create user
+			User user = usersServiceFacade.registerUser(registration);
+			model.addAttribute(ATTR_REGISTERED, true);
 
-		if (isDevMode) {
-			String activationAbsoluteLink = absoluteUrlBuilder
-					.buildExternalUrl(securityActionsUrlsProvider.buildRegistrationActivationPath(user.getUuid()));
-			model.addAttribute(UserAccountChangeHadlersDefaultImpl.ATTR_ACTIVATION_LINK, activationAbsoluteLink);
+			if (isDevMode) {
+				String activationAbsoluteLink = absoluteUrlBuilder
+						.buildExternalUrl(securityActionsUrlsProvider.buildRegistrationActivationPath(user.getUuid()));
+				model.addAttribute(UserAccountChangeHadlersDefaultImpl.ATTR_ACTIVATION_LINK, activationAbsoluteLink);
+			}
+		} catch (FieldValidationException fve) {
+			model.addAttribute(ControllerBase.ATTR_VALIDATION_ERRORS, new ValidationErrorsVm(fve.getErrors()));
 		}
-
 		return views.registerForm();
 	}
 
@@ -183,21 +187,27 @@ public class LoginController extends ControllerBase {
 	@RequestMapping(method = RequestMethod.POST, value = SecurityActionsUrlsProviderDefaultImpl.REQUEST_RESET)
 	public String processPasswordResetRequestForm(
 			@ModelAttribute(ATTR_PASSWORD_RESET_REQUEST) Registration registration, Model model,
-			HttpServletRequest request) throws FieldValidationException {
+			HttpServletRequest request) {
 		if (!isAutoTestMode) {
 			CaptchaController.assertCaptchaTokenValid("request-reset", registration.getCaptcha(), request);
 		}
 
-		String passwordResetToken = usersServiceFacade.getNewPasswordResetToken(registration.getEmail());
+		try {
+			String passwordResetToken = usersServiceFacade.getNewPasswordResetToken(registration.getEmail());
 
-		// Generate registration link
-		String passwordResetAbsoluteLink = absoluteUrlBuilder.buildExternalUrl(
-				securityActionsUrlsProvider.buildPasswordResetPath(registration.getEmail(), passwordResetToken));
-		
-		model.addAttribute(ATTR_FORM_ACCEPTED, true);
-		if (isDevMode) {
-			model.addAttribute(UserAccountChangeHadlersDefaultImpl.ATTR_PASSWORD_RESET_LINK, passwordResetAbsoluteLink);
+			// Generate registration link
+			String passwordResetAbsoluteLink = absoluteUrlBuilder.buildExternalUrl(
+					securityActionsUrlsProvider.buildPasswordResetPath(registration.getEmail(), passwordResetToken));
+
+			model.addAttribute(ATTR_FORM_ACCEPTED, true);
+			if (isDevMode) {
+				model.addAttribute(UserAccountChangeHadlersDefaultImpl.ATTR_PASSWORD_RESET_LINK,
+						passwordResetAbsoluteLink);
+			}
+		} catch (FieldValidationException fve) {
+			model.addAttribute(ControllerBase.ATTR_VALIDATION_ERRORS, new ValidationErrorsVm(fve.getErrors()));
 		}
+
 		return views.resetPasswordRequest();
 	}
 
@@ -224,14 +234,19 @@ public class LoginController extends ControllerBase {
 			@ModelAttribute(ATTR_PASSWORD_RESET_REQUEST) PasswordReset resetPasswordRequest,
 			@PathVariable(ATTR_PASSWORD_RESET_TOKEN) String passwordResetToken,
 			@RequestParam(User.FN_EMAIL) String email, Model model, HttpServletRequest request)
-			throws UserNotFoundException, FieldValidationException {
+			throws UserNotFoundException {
 
 		model.addAttribute(User.FN_EMAIL, email);
 		model.addAttribute(ATTR_PASSWORD_RESET_TOKEN, passwordResetToken);
 		model.addAttribute(ATTR_PASSWORD_RESET, resetPasswordRequest);
 
-		usersServiceFacade.resetPassword(email, passwordResetToken, resetPasswordRequest);
-		model.addAttribute(ATTR_RESET_OK, true);
+		try {
+			usersServiceFacade.resetPassword(email, passwordResetToken, resetPasswordRequest);
+			model.addAttribute(ATTR_RESET_OK, true);
+		} catch (FieldValidationException fve) {
+			model.addAttribute(ControllerBase.ATTR_VALIDATION_ERRORS, new ValidationErrorsVm(fve.getErrors()));
+		}
+
 		return views.resetPassword();
 	}
 
@@ -245,11 +260,15 @@ public class LoginController extends ControllerBase {
 	@Secured({ "ROLE_USER" })
 	@RequestMapping(method = RequestMethod.POST, value = SecurityActionsUrlsProviderDefaultImpl.CHANGE_PASSWORD)
 	public String processPasswordChangeForm(@ModelAttribute(ATTR_PASSWORD_CHANGE) PasswordChange passwordChange,
-			Model model, HttpServletRequest request) throws UserNotFoundException, FieldValidationException {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		usersServiceFacade.changePassword(auth.getName(), passwordChange);
+			Model model, HttpServletRequest request) throws UserNotFoundException {
 
-		model.addAttribute(ATTR_PASSWORD_CHANGED, true);
+		try {
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			usersServiceFacade.changePassword(auth.getName(), passwordChange);
+			model.addAttribute(ATTR_PASSWORD_CHANGED, true);
+		} catch (FieldValidationException fve) {
+			model.addAttribute(ControllerBase.ATTR_VALIDATION_ERRORS, new ValidationErrorsVm(fve.getErrors()));
+		}
 		return views.changePassword();
 	}
 

@@ -23,7 +23,7 @@ import org.summerb.approaches.springmvc.Views;
 import org.summerb.approaches.springmvc.controllers.ControllerBase;
 import org.summerb.approaches.springmvc.model.MessageSeverity;
 import org.summerb.approaches.springmvc.model.PageMessage;
-import org.summerb.approaches.springmvc.model.ValidationErrorsPm;
+import org.summerb.approaches.springmvc.model.ValidationErrorsVm;
 import org.summerb.approaches.validation.FieldValidationException;
 import org.summerb.utils.exceptions.ExceptionUtils;
 import org.summerb.utils.exceptions.translator.ExceptionTranslator;
@@ -114,7 +114,7 @@ public class ControllerExceptionHandlerStrategyImpl
 			}
 		} else if ((fve = ExceptionUtils.findExceptionOfType(ex, FieldValidationException.class)) != null) {
 			res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			ValidationErrorsPm vepm = new ValidationErrorsPm(fve.getErrors());
+			ValidationErrorsVm vepm = new ValidationErrorsVm(fve.getErrors());
 			return new ModelAndView(jsonView, ControllerBase.ATTR_VALIDATION_ERRORS, vepm.getMsg());
 		}
 

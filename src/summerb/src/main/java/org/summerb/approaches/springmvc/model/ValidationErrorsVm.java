@@ -21,7 +21,7 @@ import org.summerb.approaches.validation.ValidationError;
  * @author sergey.karpushin
  * 
  */
-public class ValidationErrorsPm {
+public class ValidationErrorsVm {
 	private Logger log = Logger.getLogger(getClass());
 
 	private final List<ValidationError> validationErrors;
@@ -45,11 +45,11 @@ public class ValidationErrorsPm {
 		}
 	};
 
-	public ValidationErrorsPm(List<ValidationError> validationErrors) {
+	public ValidationErrorsVm(List<ValidationError> validationErrors) {
 		this.validationErrors = validationErrors;
 	}
 
-	public ValidationErrorsPm(ValidationError validationError) {
+	public ValidationErrorsVm(ValidationError validationError) {
 		validationErrors = new LinkedList<ValidationError>();
 		validationErrors.add(validationError);
 	}
