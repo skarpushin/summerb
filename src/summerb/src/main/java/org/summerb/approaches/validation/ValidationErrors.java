@@ -3,7 +3,9 @@ package org.summerb.approaches.validation;
 import java.io.Serializable;
 import java.util.List;
 
-public class ValidationErrors implements Serializable {
+import org.summerb.approaches.jdbccrud.common.DtoBase;
+
+public class ValidationErrors implements Serializable, DtoBase {
 	private static final long serialVersionUID = -8034148535897107069L;
 
 	private List<ValidationError> errors;

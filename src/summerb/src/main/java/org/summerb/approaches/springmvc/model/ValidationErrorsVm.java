@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.summerb.approaches.i18n.I18nUtils;
 import org.summerb.approaches.springmvc.utils.CurrentRequestUtils;
@@ -13,10 +14,9 @@ import org.summerb.approaches.springmvc.utils.DummyMapImpl;
 import org.summerb.approaches.validation.ValidationError;
 
 /**
- * Presentation model for validation errors list.
+ * View model for validation errors list.
  * 
- * TODO: Think on how this class may be made mmore lightweight and not
- * requireing creation of so many objects
+ * It's designed to be added to {@link Model} and used in JSP
  * 
  * @author sergey.karpushin
  * 
@@ -55,8 +55,8 @@ public class ValidationErrorsVm {
 	}
 
 	/**
-	 * @return Map that maps field token to error msg. Message will be null if
-	 *         there is no error for that field.
+	 * @return Map that maps field token to error msg. Message will be null if there
+	 *         is no error for that field.
 	 */
 	public Map<String, String> getMsg() {
 		if (errorsMap == null) {
@@ -91,9 +91,9 @@ public class ValidationErrorsVm {
 	}
 
 	/**
-	 * @return Map that maps field token to error result. Error result is an
-	 *         empty string if there is no error and "error" if there is an
-	 *         error for that field (field is a key for this map)
+	 * @return Map that maps field token to error result. Error result is an empty
+	 *         string if there is no error and "error" if there is an error for that
+	 *         field (field is a key for this map)
 	 */
 	public Map<String, String> getHas() {
 		return hasError;

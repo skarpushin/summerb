@@ -17,7 +17,7 @@ import org.summerb.approaches.security.api.SecurityContextResolver;
 import org.summerb.approaches.springmvc.model.ListPm;
 import org.summerb.approaches.springmvc.model.PageMessage;
 import org.summerb.approaches.springmvc.utils.ControllerExceptionHandlerStrategy;
-import org.summerb.approaches.springmvc.utils.ControllerExceptionHandlerStrategyImpl;
+import org.summerb.approaches.springmvc.utils.ControllerExceptionHandlerStrategyLegacyImpl;
 import org.summerb.approaches.springmvc.utils.CurrentRequestUtils;
 import org.summerb.microservices.users.api.dto.User;
 
@@ -45,9 +45,12 @@ public abstract class ControllerBase implements ApplicationContextAware, Initial
 	private ControllerExceptionHandlerStrategy exceptionHandlerStrategy;
 
 	@Override
+	@SuppressWarnings("deprecation")
 	public void afterPropertiesSet() throws Exception {
 		if (exceptionHandlerStrategy == null) {
-			ControllerExceptionHandlerStrategyImpl handler = new ControllerExceptionHandlerStrategyImpl(
+			// it's here for backwards compatibility, but expected to be injected in newer
+			// projects
+			ControllerExceptionHandlerStrategyLegacyImpl handler = new ControllerExceptionHandlerStrategyLegacyImpl(
 					applicationContext);
 			handler.setSecurityContextResolver(securityContextResolver);
 			handler.afterPropertiesSet();

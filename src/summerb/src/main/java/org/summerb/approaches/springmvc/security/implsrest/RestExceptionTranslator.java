@@ -25,13 +25,39 @@ import org.summerb.approaches.security.api.dto.NotAuthorizedResult;
 import org.summerb.approaches.security.api.exceptions.NotAuthorizedException;
 import org.summerb.approaches.springmvc.security.SecurityMessageCodes;
 import org.summerb.approaches.springmvc.security.apis.JsonResponseWriter;
+import org.summerb.approaches.validation.FieldValidationException;
 import org.summerb.utils.exceptions.ExceptionUtils;
 import org.summerb.utils.exceptions.dto.ExceptionInfo;
 import org.summerb.utils.exceptions.dto.GenericServerErrorResult;
 import org.summerb.utils.exceptions.translator.ExceptionTranslator;
 
+/**
+ * Request filter that helps to format and gracefully communicate server errors
+ * to client.
+ * 
+ * Normally it's added to Spring security filter chain, i.e. like this:
+ * 
+ * <pre>
+ * 	&lt;bean id=&quot;filterChainProxy&quot; class=&quot;org.springframework.security.web.FilterChainProxy&quot;&gt;
+ * 		&lt;sec:filter-chain-map request-matcher=&quot;ant&quot;&gt;
+ * 			&lt;sec:filter-chain pattern=&quot;/static/**&quot; filters=&quot;none&quot; /&gt;
+ * 			&lt;sec:filter-chain pattern=&quot;/login/invalid-session&quot; filters=&quot;none&quot; /&gt;
+ * 			&lt;sec:filter-chain pattern=&quot;/rest/**&quot;
+ * 				filters=&quot;ipToMdcContext, securityContextFilter, restLogoutFilter, restLoginFilter, rememberMeFilter, servletApiFilter, anonFilter,
+ * 				restSessionMgmtFilter, restExceptionTranslator, filterSecurityInterceptor&quot; /&gt;
+ * 			&lt;sec:filter-chain pattern=&quot;/**&quot;
+ * 				filters=&quot;ipToMdcContext, securityContextFilter, logoutFilter, formLoginFilter, rememberMeFilter, requestCacheFilter,
+ * 	             servletApiFilter, anonFilter, sessionMgmtFilter, exceptionTranslator, filterSecurityInterceptor&quot; /&gt;
+ * 		&lt;/sec:filter-chain-map&gt;
+ * 	&lt;/bean&gt;
+ * </pre>
+ * 
+ * @author sergeyk
+ *
+ */
 public class RestExceptionTranslator extends GenericFilterBean {
 	private Logger log = Logger.getLogger(getClass());
+	public static final String X_TRANSLATE_AUTHORIZATION_ERRORS = "X-TranslateAuthorizationErrors";
 
 	private AuthenticationTrustResolver authenticationTrustResolver;
 	private JsonResponseWriter jsonResponseHelper;
@@ -57,49 +83,69 @@ public class RestExceptionTranslator extends GenericFilterBean {
 
 		try {
 			chain.doFilter(request, response);
-			logger.trace("Chain processed normally");
+			log.trace("Chain processed normally");
 		} catch (Exception ex) {
-			log.warn("Unhandled exception while processing REST query", ex);
-			// THINK: Not sure if this is that corect implementation. Because
-			// we're supposed to forward exception here so it will be handled by
-			// Controller... But this is rest path... If exception is
-			// unhandled... there is no page we want to render.
-			DtoBase result = determineFailureResult(ex);
-			response.setStatus(result instanceof NotAuthorizedResult ? HttpServletResponse.SC_UNAUTHORIZED
-					: HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			log.info("Unhandled exception while processing REST query", ex);
+
+			DtoBase result = determineFailureResult(ex, request, response);
 			jsonResponseHelper.writeResponseBody(result, response);
 		}
 	}
 
-	private DtoBase determineFailureResult(Exception ex) {
-		// TODO: Why we do not handle FVE here ?
+	private DtoBase determineFailureResult(Exception ex, HttpServletRequest request, HttpServletResponse response) {
+		// first see if it is FVE
+		FieldValidationException fve = ExceptionUtils.findExceptionOfType(ex, FieldValidationException.class);
+		if (fve != null) {
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return fve.getErrorDescriptionObject();
+		}
+
+		boolean translateAuthErrors = Boolean.TRUE
+				.equals(Boolean.valueOf(request.getHeader(X_TRANSLATE_AUTHORIZATION_ERRORS)));
+		GenericServerErrorResult ret = null;
+		if (translateAuthErrors) {
+			ret = new GenericServerErrorResult(
+					exceptionTranslator.buildUserMessage(ex, LocaleContextHolder.getLocale()), new ExceptionInfo(ex));
+		}
 
 		NotAuthorizedException naex = ExceptionUtils.findExceptionOfType(ex, NotAuthorizedException.class);
 		if (naex != null) {
-			return naex.getResult();
+			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+			return ret != null ? ret : naex.getResult();
 		}
 
 		AuthenticationException ae = ExceptionUtils.findExceptionOfType(ex, AuthenticationException.class);
 		if (ae != null) {
 			// NOTE: See how we did that in AuthenticationFailureHandlerImpl...
-			// Looks liek we need to augment our custom RestLoginFilter so it
+			// Looks like we need to augment our custom RestLoginFilter so it
 			// will put username to request
-			return new NotAuthorizedResult("(username not resolved)", SecurityMessageCodes.AUTH_FATAL);
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			return ret != null ? ret
+					: new NotAuthorizedResult("(username not resolved)", SecurityMessageCodes.AUTH_FATAL);
 		}
 
 		AccessDeniedException ade = ExceptionUtils.findExceptionOfType(ex, AccessDeniedException.class);
 		if (ade != null) {
 			if (authenticationTrustResolver.isAnonymous(SecurityContextHolder.getContext().getAuthentication())) {
-				return new NotAuthorizedResult(getCurrentUser(null), SecurityMessageCodes.LOGIN_REQUIRED);
+				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+				return ret != null ? ret
+						: new NotAuthorizedResult(getCurrentUser(null), SecurityMessageCodes.LOGIN_REQUIRED);
 			}
-			return new NotAuthorizedResult(getCurrentUser(null), SecurityMessageCodes.ACCESS_DENIED);
+			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+			return ret != null ? ret
+					: new NotAuthorizedResult(getCurrentUser(null), SecurityMessageCodes.ACCESS_DENIED);
 		}
 
 		CurrentUserNotFoundException cunfe = ExceptionUtils.findExceptionOfType(ex, CurrentUserNotFoundException.class);
 		if (cunfe != null) {
-			return new NotAuthorizedResult(getCurrentUser(null), SecurityMessageCodes.LOGIN_REQUIRED);
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			return ret != null ? ret
+					: new NotAuthorizedResult(getCurrentUser(null), SecurityMessageCodes.LOGIN_REQUIRED);
 		}
 
+		// TODO: Do we really need to send whole stack trace to client ??? I think we
+		// should do it only during development
+		response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		return new GenericServerErrorResult(exceptionTranslator.buildUserMessage(ex, LocaleContextHolder.getLocale()),
 				new ExceptionInfo(ex));
 	}

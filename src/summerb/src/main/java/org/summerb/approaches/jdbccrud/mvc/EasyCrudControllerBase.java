@@ -26,6 +26,7 @@ import org.summerb.approaches.jdbccrud.api.query.Query;
 import org.summerb.approaches.jdbccrud.mvc.filter.FilteringParamsToQueryConverter;
 import org.summerb.approaches.jdbccrud.mvc.filter.FilteringParamsToQueryConverterImpl;
 import org.summerb.approaches.jdbccrud.mvc.model.EasyCrudQueryParams;
+import org.summerb.approaches.jdbccrud.rest.EasyCrudRestControllerBase;
 import org.summerb.approaches.security.api.exceptions.NotAuthorizedException;
 import org.summerb.approaches.springmvc.controllers.ControllerBase;
 
@@ -39,6 +40,11 @@ import com.google.gson.Gson;
  * @param <TId>
  * @param <TDto>
  * @param <TEasyCrudService>
+ * 
+ * @deprecated use {@link EasyCrudRestControllerBase} instead, it's better than
+ *             this. This controller happened to be very clumsy. Will remove it
+ *             in the near future. Most of it's methods are REST API, but naming
+ *             is discouraged and 3 regular MVC actions brings entropy
  */
 public class EasyCrudControllerBase<TId, TDto extends HasId<TId>, TEasyCrudService extends EasyCrudService<TId, TDto>>
 		extends ControllerBase implements InitializingBean {
@@ -65,7 +71,7 @@ public class EasyCrudControllerBase<TId, TDto extends HasId<TId>, TEasyCrudServi
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		super.afterPropertiesSet();
-		
+
 		Preconditions.checkState(service != null, "service Expected to be injected by IoC");
 		Preconditions.checkState(StringUtils.hasText(viewNameForList),
 				"viewNameForList Expected to be init by subclass");
@@ -89,8 +95,8 @@ public class EasyCrudControllerBase<TId, TDto extends HasId<TId>, TEasyCrudServi
 	protected Map<String, Boolean> getPermissionsMapForCurrentUser() {
 		Map<String, Boolean> ret = new HashMap<String, Boolean>();
 		if (service instanceof HasEasyCrudTableAuthStrategy) {
-			resolveEasyCrudTableAuthStrategyPermissions(
-					((HasEasyCrudTableAuthStrategy) service).getTableAuthStrategy(), ret);
+			resolveEasyCrudTableAuthStrategyPermissions(((HasEasyCrudTableAuthStrategy) service).getTableAuthStrategy(),
+					ret);
 		} else {
 			throw new IllegalStateException("Not supported service type, can't resolve permissions for: " + service);
 		}
@@ -98,8 +104,7 @@ public class EasyCrudControllerBase<TId, TDto extends HasId<TId>, TEasyCrudServi
 		return ret;
 	}
 
-	private void resolveEasyCrudTableAuthStrategyPermissions(EasyCrudTableAuthStrategy auth,
-			Map<String, Boolean> ret) {
+	private void resolveEasyCrudTableAuthStrategyPermissions(EasyCrudTableAuthStrategy auth, Map<String, Boolean> ret) {
 		try {
 			auth.assertAuthorizedToCreate();
 			ret.put(ATTR_PERM_CREATE, true);

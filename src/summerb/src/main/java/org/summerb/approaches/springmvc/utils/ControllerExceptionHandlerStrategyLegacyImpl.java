@@ -12,6 +12,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 import org.springframework.web.util.NestedServletException;
@@ -24,6 +26,8 @@ import org.summerb.approaches.springmvc.controllers.ControllerBase;
 import org.summerb.approaches.springmvc.model.MessageSeverity;
 import org.summerb.approaches.springmvc.model.PageMessage;
 import org.summerb.approaches.springmvc.model.ValidationErrorsVm;
+import org.summerb.approaches.springmvc.security.SecurityMessageCodes;
+import org.summerb.approaches.springmvc.security.implsrest.RestExceptionTranslator;
 import org.summerb.approaches.validation.FieldValidationException;
 import org.summerb.utils.exceptions.ExceptionUtils;
 import org.summerb.utils.exceptions.translator.ExceptionTranslator;
@@ -32,25 +36,31 @@ import org.summerb.utils.exceptions.translator.ExceptionTranslatorLegacyImpl;
 import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 
-public class ControllerExceptionHandlerStrategyImpl
+/**
+ * Legacy impl of {@link ControllerExceptionHandlerStrategy}
+ * 
+ * @deprecated don't use this impl. It's cumbersome and confusing MVC and REST
+ *             API approaches. It handles REST API exceptions as well while it
+ *             should be handled by {@link RestExceptionTranslator}
+ * 
+ * @author sergeyk
+ *
+ */
+@Deprecated
+public class ControllerExceptionHandlerStrategyLegacyImpl
 		implements InitializingBean, ControllerExceptionHandlerStrategy, ApplicationContextAware {
 	protected final Logger log = Logger.getLogger(getClass());
 
-	private static final String X_TRANSLATE_AUTHORIZATION_ERRORS = "X-TranslateAuthorizationErrors";
-
-	// TODO: WTF I was thinking about when using Jackson and Gson
-	// in the same project. Refactor this -OR- at least provide with explanation
-	// what is my excuse
 	private Gson gson;
 	private MappingJackson2JsonView jsonView;
 	private SecurityContextResolver<?> securityContextResolver;
 	private ExceptionTranslator exceptionTranslator;
 	private ApplicationContext applicationContext;
 
-	public ControllerExceptionHandlerStrategyImpl() {
+	public ControllerExceptionHandlerStrategyLegacyImpl() {
 	}
 
-	public ControllerExceptionHandlerStrategyImpl(ApplicationContext applicationContext) {
+	public ControllerExceptionHandlerStrategyLegacyImpl(ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
 	}
 
@@ -98,18 +108,38 @@ public class ControllerExceptionHandlerStrategyImpl
 		return ret;
 	}
 
+	/**
+	 * This peace of crap needs to be removed. Because in case of JSON it's rest
+	 * API, there is no place for {@link ModelAndView}. Response should be pure JSON
+	 * content.
+	 * 
+	 * So instead of implementing it here it's better to just re-throw exception and
+	 * let {@link RestExceptionTranslator} handle it and gracefully convert it into
+	 * json description of error happened
+	 */
 	protected ModelAndView buildJsonError(Throwable ex, HttpServletRequest req, HttpServletResponse res) {
 		String msg = exceptionTranslator.buildUserMessage(ex, LocaleContextHolder.getLocale());
 
 		NotAuthorizedException nae;
 		FieldValidationException fve;
+		AccessDeniedException ade;
+		boolean translateAuthExc = Boolean.TRUE
+				.equals(Boolean.valueOf(req.getHeader(RestExceptionTranslator.X_TRANSLATE_AUTHORIZATION_ERRORS)));
 		if ((nae = ExceptionUtils.findExceptionOfType(ex, NotAuthorizedException.class)) != null) {
 			NotAuthorizedResult naeResult = nae.getResult();
-			res.setStatus(HttpServletResponse.SC_FORBIDDEN);
-			if (Boolean.TRUE.equals(Boolean.valueOf(req.getHeader(X_TRANSLATE_AUTHORIZATION_ERRORS)))) {
+			res.setStatus(isAnonymous() ? HttpServletResponse.SC_UNAUTHORIZED : HttpServletResponse.SC_FORBIDDEN);
+			if (translateAuthExc) {
 				return new ModelAndView(jsonView, ControllerBase.ATTR_EXCEPTION, msg);
 			} else {
 				respondWithJson(naeResult, res);
+				return null;
+			}
+		} else if ((ade = ExceptionUtils.findExceptionOfType(ex, AccessDeniedException.class)) != null) {
+			res.setStatus(isAnonymous() ? HttpServletResponse.SC_UNAUTHORIZED : HttpServletResponse.SC_FORBIDDEN);
+			if (translateAuthExc) {
+				return new ModelAndView(jsonView, ControllerBase.ATTR_EXCEPTION, msg);
+			} else {
+				respondWithJson(new NotAuthorizedResult(getCurrentUser(), SecurityMessageCodes.ACCESS_DENIED), res);
 				return null;
 			}
 		} else if ((fve = ExceptionUtils.findExceptionOfType(ex, FieldValidationException.class)) != null) {
@@ -121,6 +151,28 @@ public class ControllerExceptionHandlerStrategyImpl
 		log.warn("Failed to process request", ex);
 		res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		return new ModelAndView(jsonView, ControllerBase.ATTR_EXCEPTION, msg);
+	}
+
+	private boolean isAnonymous() {
+		if (securityContextResolver == null) {
+			return true;
+		}
+		try {
+			securityContextResolver.getUserUuid();
+			return false;
+		} catch (Throwable t) {
+			// that's right, anonymous user cannot have user id
+			return true;
+		}
+	}
+
+	protected String getCurrentUser() {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth != null) {
+			return auth.getName();
+		}
+
+		return SecurityMessageCodes.ANONYMOUS;
 	}
 
 	protected void respondWithJson(Object dto, HttpServletResponse response) {

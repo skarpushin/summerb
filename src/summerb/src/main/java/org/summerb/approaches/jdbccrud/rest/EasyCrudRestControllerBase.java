@@ -5,7 +5,11 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.http.MediaType;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.filter.GenericFilterBean;
 import org.summerb.approaches.jdbccrud.api.EasyCrudService;
 import org.summerb.approaches.jdbccrud.api.dto.HasId;
 import org.summerb.approaches.jdbccrud.api.dto.PagerParams;
@@ -38,14 +43,33 @@ import org.summerb.approaches.jdbccrud.rest.dto.SingleItemResult;
 import org.summerb.approaches.jdbccrud.rest.permissions.PermissionsResolverStrategy;
 import org.summerb.approaches.jdbccrud.rest.querynarrower.QueryNarrowerStrategy;
 import org.summerb.approaches.security.api.exceptions.NotAuthorizedException;
-import org.summerb.approaches.springmvc.controllers.ControllerBase;
+import org.summerb.approaches.springmvc.security.implsrest.RestExceptionTranslator;
 
 import com.google.common.base.Preconditions;
 
 import springfox.documentation.annotations.ApiIgnore;
 
+/**
+ * Based class for EasyCrud REST API controllers who's main responsibility is to
+ * serve CRUD requests for entities managed by {@link EasyCrudService}.
+ * 
+ * It designed to be sub-classed.
+ * 
+ * NOTE: Exception handling is not implemented here because we rely on
+ * {@link RestExceptionTranslator},which is subclass of
+ * {@link GenericFilterBean} (Spring approach on filtering requests). 
+ * 
+ * @author sergeyk
+ *
+ * @param <TId>
+ *            primary key type
+ * @param <TDto>
+ *            entity type
+ * @param <TEasyCrudService>
+ *            service type
+ */
 public class EasyCrudRestControllerBase<TId, TDto extends HasId<TId>, TEasyCrudService extends EasyCrudService<TId, TDto>>
-		extends ControllerBase {
+		implements ApplicationContextAware, InitializingBean {
 	private static final String PERM_RESOLVER_REQ = "Cannot provide permissions since permissionsResolverStrategy is not set";
 
 	protected TEasyCrudService service;
@@ -57,9 +81,15 @@ public class EasyCrudRestControllerBase<TId, TDto extends HasId<TId>, TEasyCrudS
 	protected PermissionsResolverStrategy<TId, TDto> permissionsResolverStrategy;
 	protected FilteringParamsToQueryConverter filteringParamsToQueryConverter = new FilteringParamsToQueryConverterImpl();
 
+	protected ApplicationContext applicationContext;
+
 	public EasyCrudRestControllerBase(TEasyCrudService service) {
 		Preconditions.checkArgument(service != null, "Service required");
 		this.service = service;
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
 	}
 
 	/**
@@ -215,5 +245,10 @@ public class EasyCrudRestControllerBase<TId, TDto extends HasId<TId>, TEasyCrudS
 	@Autowired(required = false)
 	public void setReferencesRegistry(ReferencesRegistry referencesRegistry) {
 		this.referencesRegistry = referencesRegistry;
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		this.applicationContext = applicationContext;
 	}
 }

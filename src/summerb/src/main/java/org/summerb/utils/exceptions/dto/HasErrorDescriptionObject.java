@@ -2,6 +2,7 @@ package org.summerb.utils.exceptions.dto;
 
 import java.io.Serializable;
 
+import org.summerb.approaches.jdbccrud.common.DtoBase;
 import org.summerb.approaches.security.api.dto.NotAuthorizedResult;
 import org.summerb.approaches.security.api.exceptions.NotAuthorizedException;
 import org.summerb.approaches.validation.FieldValidationException;
@@ -18,6 +19,6 @@ import org.summerb.approaches.validation.ValidationErrors;
  * @author sergeyk
  *
  */
-public interface HasErrorDescriptionObject<T extends Serializable> {
+public interface HasErrorDescriptionObject<T extends DtoBase> {
 	T getErrorDescriptionObject();
 }
