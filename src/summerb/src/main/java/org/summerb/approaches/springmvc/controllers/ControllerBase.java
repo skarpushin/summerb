@@ -53,6 +53,7 @@ public abstract class ControllerBase implements ApplicationContextAware, Initial
 			ControllerExceptionHandlerStrategyLegacyImpl handler = new ControllerExceptionHandlerStrategyLegacyImpl(
 					applicationContext);
 			handler.setSecurityContextResolver(securityContextResolver);
+			handler.setApplicationContext(applicationContext);
 			handler.afterPropertiesSet();
 			exceptionHandlerStrategy = handler;
 		}

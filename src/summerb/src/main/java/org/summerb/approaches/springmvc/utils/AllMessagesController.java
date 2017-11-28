@@ -7,10 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,11 +31,10 @@ import com.google.gson.Gson;
  *
  */
 @Controller
-public class AllMessagesController extends ControllerBase implements ApplicationContextAware, InitializingBean {
+public class AllMessagesController extends ControllerBase implements InitializingBean {
 	private static final long MILLIS_PER_DAY = 86400000;
-	
+
 	private AllMessagesProvider allMessagesProvider;
-	private ApplicationContext applicationContext;
 	private LoadingCache<Locale, Properties> messagesCache;
 	private Gson gson = new Gson();
 
@@ -81,17 +77,12 @@ public class AllMessagesController extends ControllerBase implements Application
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		super.afterPropertiesSet();
-		
+
 		// TODO: Explain why not just Autowire it ??!?!!?!?!?!?!
 		allMessagesProvider = applicationContext.getBean(AllMessagesProvider.class);
 
 		messagesCache = CacheBuilder.newBuilder().maximumSize(1000)
 				.expireAfterAccess(allMessagesProvider.getReloadIntervalSeconds(), TimeUnit.SECONDS).recordStats()
 				.build(messagesLoader);
-	}
-
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		this.applicationContext = applicationContext;
 	}
 }
