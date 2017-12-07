@@ -86,7 +86,7 @@ public class AuthenticationProviderImpl implements AuthenticationProvider, Initi
 			List<String> permissions = permissionService.findUserPermissionsForSubject(SecurityConstants.DOMAIN,
 					user.getUuid(), null);
 
-			UserDetailsImpl userDetails = new UserDetailsImpl(user, presentedPlainPassword, permissions, null);
+			UserDetailsImpl userDetails = new UserDetailsImpl(user, "[PASSWORD REMOVED]", permissions, null);
 
 			UsernamePasswordAuthenticationToken ret = new UsernamePasswordAuthenticationToken(userDetails,
 					authentication.getCredentials(), userDetails.getAuthorities());

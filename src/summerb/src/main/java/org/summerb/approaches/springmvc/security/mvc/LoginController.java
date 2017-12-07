@@ -112,6 +112,8 @@ public class LoginController extends ControllerBase {
 		if (lastException != null) {
 			log.info("Login failed due to exception", lastException);
 			model.addAttribute("lastExceptionMessage", exceptionTranslatorSimplified.buildUserMessage(lastException));
+			// Delete it from session to avoid excessive memory consumption
+			request.getSession().removeAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
 		}
 
 		model.addAttribute("loginError", true);
