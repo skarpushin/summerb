@@ -3,17 +3,13 @@ package org.summerb.utils.tx;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 public class AfterCommitExecutorThreadLocalImpl extends TransactionSynchronizationAdapter implements Executor {
 	private static Logger log = Logger.getLogger(AfterCommitExecutorThreadLocalImpl.class);
-
-	private ExecutorService executorService;
 
 	private static final ThreadLocal<Queue<Runnable>> RUNNABLES = new ThreadLocal<Queue<Runnable>>();
 
@@ -49,9 +45,13 @@ public class AfterCommitExecutorThreadLocalImpl extends TransactionSynchronizati
 			log.debug("Transaction successfully committed, executing runnables #" + threadRunnables.size());
 		}
 
+		// TODO: Explain why we should do it async as it was impl before. WHy we can't
+		// just run it now
+		new RunRunnables(threadRunnables).run();
+
 		// NOTE: We do it in separate thread to ensure they will be execute
 		// outside of current transaction.Guaranteed
-		executorService.submit(new RunRunnables(threadRunnables));
+		// executorService.submit(new RunRunnables(threadRunnables));
 		// No need to wait for it actually since handlers are normally outside
 		// of this process boundary
 		// Future<?> future = executorService.submit(new
@@ -98,14 +98,5 @@ public class AfterCommitExecutorThreadLocalImpl extends TransactionSynchronizati
 			String result = status == STATUS_COMMITTED ? "COMMITTED" : "ROLLED_BACK";
 			log.debug("Transaction completed with status " + result);
 		}
-	}
-
-	public ExecutorService getExecutorService() {
-		return executorService;
-	}
-
-	@Required
-	public void setExecutorService(ExecutorService executorService) {
-		this.executorService = executorService;
 	}
 }
