@@ -116,4 +116,12 @@ public class EasyCrudWireTapDelegatingImpl<TId, TDto extends HasId<TId>> impleme
 		}
 	}
 
+	public List<EasyCrudWireTap<TId, TDto>> getChain() {
+		return chain;
+	}
+
+	public void setChain(List<EasyCrudWireTap<TId, TDto>> chain) {
+		this.chain = chain;
+	}
+
 }
