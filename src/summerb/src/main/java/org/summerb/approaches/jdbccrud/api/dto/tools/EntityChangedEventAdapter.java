@@ -65,8 +65,9 @@ public class EntityChangedEventAdapter
 		Class<T> klass = null;
 		try {
 			klass = (Class<T>) Class.forName(className);
-			if (!EntityChangedEvent.class.isAssignableFrom(klass)) {
-				throw new RuntimeException("Potentially security breach. Attempt to Class.forName: " + className);
+			if (!DtoBase.class.isAssignableFrom(klass)) {
+				throw new IllegalArgumentException(
+						"Potentially security breach. Attempt to Class.forName: " + className);
 			}
 		} catch (ClassNotFoundException e) {
 			// log.error("Failed to resolve class: " + className, e);
