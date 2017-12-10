@@ -1,6 +1,7 @@
 package org.summerb.approaches.jdbccrud.api.dto;
 
 import org.summerb.approaches.jdbccrud.api.EasyCrudService;
+import org.summerb.approaches.jdbccrud.common.DtoBase;
 
 /**
  * Mark your DTO with this interface and clarify primary key type.
@@ -11,7 +12,7 @@ import org.summerb.approaches.jdbccrud.api.EasyCrudService;
  * @param <TId>
  *            type of primary key
  */
-public interface HasId<TId> {
+public interface HasId<TId> extends DtoBase {
 	public static final String FN_ID = "id";
 
 	TId getId();

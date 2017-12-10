@@ -4,6 +4,7 @@ import java.lang.reflect.Type;
 
 import org.summerb.approaches.jdbccrud.api.dto.EntityChangedEvent;
 import org.summerb.approaches.jdbccrud.api.dto.EntityChangedEvent.ChangeType;
+import org.summerb.approaches.jdbccrud.common.DtoBase;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonDeserializationContext;
@@ -43,16 +44,16 @@ public class EntityChangedEventAdapter
 	public EntityChangedEvent deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
 			throws JsonParseException {
 		JsonObject jsonObject = json.getAsJsonObject();
-		Class klass = resolveParametersClass(jsonObject);
+		Class<? extends DtoBase> klass = resolveParametersClass(jsonObject);
 		JsonElement jsonElement = jsonObject.get(INSTANCE);
 
-		Object value = context.deserialize(jsonElement, klass);
+		DtoBase value = context.deserialize(jsonElement, klass);
 		ChangeType changeType = context.deserialize(jsonObject.get("ct"), ChangeType.class);
 
 		return new EntityChangedEvent(value, changeType);
 	}
 
-	protected Class<?> resolveParametersClass(JsonObject jsonObject) {
+	protected <T extends DtoBase> Class<T> resolveParametersClass(JsonObject jsonObject) {
 		JsonPrimitive prim = (JsonPrimitive) jsonObject.get(CLASSNAME);
 		if (prim == null) {
 			throw new IllegalArgumentException(
@@ -61,9 +62,12 @@ public class EntityChangedEventAdapter
 
 		String className = prim.getAsString();
 
-		Class<?> klass = null;
+		Class<T> klass = null;
 		try {
-			klass = Class.forName(className);
+			klass = (Class<T>) Class.forName(className);
+			if (!EntityChangedEvent.class.isAssignableFrom(klass)) {
+				throw new RuntimeException("Potentially security breach. Attempt to Class.forName: " + className);
+			}
 		} catch (ClassNotFoundException e) {
 			// log.error("Failed to resolve class: " + className, e);
 			throw new JsonParseException(e.getMessage());

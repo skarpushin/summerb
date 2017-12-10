@@ -20,8 +20,6 @@ public interface SecurityViewNamesProvider {
 	/**
 	 * View name that is used to actually reset password. Activated only using
 	 * restPassword token (usually from email)
-	 * 
-	 * @return
 	 */
 	String resetPassword();
 

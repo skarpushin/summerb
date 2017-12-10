@@ -7,9 +7,6 @@ import java.util.Set;
 /**
  * 
  * @author sergey.karpushin
- *
- * @param <TKey>
- * @param <TValue>
  */
 public class DummyMapImpl<TKey, TValue> implements Map<TKey, TValue> {
 

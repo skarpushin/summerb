@@ -3,6 +3,7 @@ package org.summerb.microservices.properties.api.dto;
 import java.io.Serializable;
 
 import org.summerb.approaches.jdbccrud.api.dto.EntityChangedEvent;
+import org.summerb.approaches.jdbccrud.common.DtoBase;
 
 /**
  * This DTO used for cache sync purposes for SimplePropertyService. Particularly
@@ -12,7 +13,7 @@ import org.summerb.approaches.jdbccrud.api.dto.EntityChangedEvent;
  * @author sergey.karpushin
  *
  */
-public class SimplePropertiesSubject implements Serializable {
+public class SimplePropertiesSubject implements Serializable, DtoBase {
 	private static final long serialVersionUID = 7630700486193010855L;
 
 	private String appName;

@@ -3,8 +3,9 @@ package org.summerb.microservices.users.api.dto;
 import java.io.Serializable;
 
 import org.springframework.util.StringUtils;
+import org.summerb.approaches.jdbccrud.common.DtoBase;
 
-public class User implements Serializable {
+public class User implements Serializable, DtoBase {
 	private static final long serialVersionUID = 1404571618064571624L;
 
 	public static final String FN_EMAIL = "email";

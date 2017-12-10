@@ -2,6 +2,8 @@ package org.summerb.approaches.jdbccrud.api.dto;
 
 import java.io.Serializable;
 
+import org.summerb.approaches.jdbccrud.common.DtoBase;
+
 import com.google.common.base.Preconditions;
 
 /**
@@ -11,9 +13,10 @@ import com.google.common.base.Preconditions;
  * @author sergeyk
  *
  * @param <T>
- *            type of dto
+ *            type of dto. Note: T type is limited to {@link DtoBase} for
+ *            security reasons
  */
-public class EntityChangedEvent<T> implements Serializable {
+public class EntityChangedEvent<T extends DtoBase> implements Serializable {
 	private static final long serialVersionUID = 8920065013673943648L;
 
 	public enum ChangeType {
@@ -31,8 +34,8 @@ public class EntityChangedEvent<T> implements Serializable {
 	}
 
 	/**
-	 * @deprecated recommended to use {@link #build(Object, ChangeType)} method
-	 *             in order to simplify code
+	 * @deprecated recommended to use {@link #build(DtoBase, ChangeType)} method in
+	 *             order to simplify code
 	 */
 	@Deprecated
 	public EntityChangedEvent(T value, ChangeType changeType) {
@@ -41,24 +44,24 @@ public class EntityChangedEvent<T> implements Serializable {
 		this.changeType = changeType;
 	}
 
-	public static <T> Object build(T value, ChangeType changeType) {
+	public static <T extends DtoBase> Object build(T value, ChangeType changeType) {
 		return new EntityChangedEvent<T>(value, changeType);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static <T> EntityChangedEvent<T> added(T notNullObject) {
+	public static <T extends DtoBase> EntityChangedEvent<T> added(T notNullObject) {
 		Preconditions.checkArgument(notNullObject != null);
 		return new EntityChangedEvent(notNullObject, ChangeType.ADDED);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static <T> EntityChangedEvent<T> updated(T notNullObject) {
+	public static <T extends DtoBase> EntityChangedEvent<T> updated(T notNullObject) {
 		Preconditions.checkArgument(notNullObject != null);
 		return new EntityChangedEvent(notNullObject, ChangeType.UPDATED);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static <T> EntityChangedEvent<T> removedObject(T notNullObject) {
+	public static <T extends DtoBase> EntityChangedEvent<T> removedObject(T notNullObject) {
 		return new EntityChangedEvent(notNullObject, ChangeType.REMOVED);
 	}
 

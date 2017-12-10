@@ -30,9 +30,6 @@ public interface DataSetLoader {
 	 *            of objects to load
 	 * @param entityTypeName
 	 *            type of entity. Same as returned by it's service
-	 * 
-	 * @throws EntityNotFoundException
-	 * @throws NotAuthorizedException
 	 */
 	List<HasId> loadObjectsByIds(Set<Object> ids, String entityTypeName)
 			throws EntityNotFoundException, NotAuthorizedException;
