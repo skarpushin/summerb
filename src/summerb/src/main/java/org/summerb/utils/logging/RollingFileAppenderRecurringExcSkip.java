@@ -114,7 +114,6 @@ public final class RollingFileAppenderRecurringExcSkip extends RollingFileAppend
 		if (exInfo == null) {
 			exInfo = new FeedbackExceptionInfo();
 			exInfo.setId(params.exLocationCode);
-			// exInfo.setMsgs(ExceptionUtils.getAllMessagesRaw(params.throwable));
 			exInfo.setMsgs(ExceptionUtils.getThrowableStackTraceAsString(params.throwable));
 			synchronized (excMapSyncRoot) {
 				excMap.put(params.exLocationCode, exInfo);
@@ -189,7 +188,7 @@ public final class RollingFileAppenderRecurringExcSkip extends RollingFileAppend
 			return;
 		}
 
-		String exLocationCode = enqueuLogginEventForAnalysis(le);
+		String exLocationCode = enqueueLogginEventForAnalysis(le);
 		if (knownExcCodes.contains(exLocationCode)) {
 			return;
 		}
@@ -203,7 +202,7 @@ public final class RollingFileAppenderRecurringExcSkip extends RollingFileAppend
 		MDC.remove(MDC_EXC_CODE);
 	}
 
-	private String enqueuLogginEventForAnalysis(LoggingEvent le) {
+	private String enqueueLogginEventForAnalysis(LoggingEvent le) {
 		if (statisticsProcessingThread == null) {
 			return null;
 		}
@@ -232,6 +231,22 @@ public final class RollingFileAppenderRecurringExcSkip extends RollingFileAppend
 	}
 
 	private String tryIdentifyUser() {
+		String userName = tryGetUserName();
+		if (userName != null) {
+			return userName;
+		}
+
+		// NOTE: That is actually very questionable part. We're assuming ip might be in
+		// MDC under some hardcoded key... 
+		Object ip = MDC.get("x_ip");
+		if (ip != null) {
+			return String.valueOf(ip);
+		}
+
+		return null;
+	}
+
+	private String tryGetUserName() {
 		CurrentUserResolver<User> userResolver = getCurrentUserResolver();
 		if (userResolver == null) {
 			return null;
