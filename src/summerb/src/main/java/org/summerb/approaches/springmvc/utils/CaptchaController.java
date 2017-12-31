@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.summerb.approaches.security.api.AuditLog;
+import org.summerb.approaches.security.api.dto.ScalarValue;
 import org.summerb.approaches.security.impl.AuditLogDefaultImpl;
 
 import com.google.common.base.Preconditions;
@@ -49,7 +50,7 @@ public class CaptchaController implements InitializingBean {
 		Preconditions.checkArgument(StringUtils.hasText(goal));
 		String token = findToken(goal, request);
 		if (token == null) {
-			auditLog.report(AUDIT_CAPTCHA_MISUSE, "");
+			auditLog.report(AUDIT_CAPTCHA_MISUSE, null);
 			throw new IllegalArgumentException("captcha misuse, it was never created");
 		}
 
@@ -78,18 +79,18 @@ public class CaptchaController implements InitializingBean {
 
 	public static void assertCaptchaTokenValid(String goal, String providedToken, HttpServletRequest request) {
 		if (!StringUtils.hasText(providedToken)) {
-			staticAuditLog.report(AUDIT_CAPTCHA_INVALID, AuditLogDefaultImpl.sanitizeForLog(providedToken));
+			staticAuditLog.report(AUDIT_CAPTCHA_INVALID, ScalarValue.forV(providedToken));
 			throw new IllegalArgumentException("Invalid captcha value");
 		}
 
 		String expectedToken = findToken(goal, request);
 		if (expectedToken == null) {
-			staticAuditLog.report(AUDIT_CAPTCHA_MISUSE, "");
+			staticAuditLog.report(AUDIT_CAPTCHA_MISUSE, null);
 			throw new IllegalArgumentException("captcha misuse, it was never created, cant compare");
 		}
 
 		if (!providedToken.equals(expectedToken)) {
-			staticAuditLog.report(AUDIT_CAPTCHA_NOMATCH, "");
+			staticAuditLog.report(AUDIT_CAPTCHA_NOMATCH, ScalarValue.forV(providedToken));
 			throw new IllegalArgumentException("Captcha doens match our records");
 		}
 

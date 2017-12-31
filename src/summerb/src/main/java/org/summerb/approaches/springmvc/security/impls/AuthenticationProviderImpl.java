@@ -18,6 +18,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.Assert;
 import org.summerb.approaches.security.api.AuditLog;
+import org.summerb.approaches.security.api.dto.ScalarValue;
 import org.summerb.approaches.security.impl.AuditLogDefaultImpl;
 import org.summerb.approaches.springmvc.security.SecurityConstants;
 import org.summerb.approaches.springmvc.security.SecurityMessageCodes;
@@ -99,25 +100,21 @@ public class AuthenticationProviderImpl implements AuthenticationProvider, Initi
 			UsernamePasswordAuthenticationToken ret = new UsernamePasswordAuthenticationToken(userDetails,
 					authentication.getCredentials(), userDetails.getAuthorities());
 			ret.setDetails(authentication.getDetails());
-			auditLog.report(AUDIT_LOGIN_OK, toJsString(user.getEmail()));
+			auditLog.report(AUDIT_LOGIN_OK, ScalarValue.forV(user.getEmail()));
 			return ret;
 		} catch (FieldValidationException e) {
-			auditLog.report(AUDIT_INVALID_LOGIN, toJsString(username));
+			auditLog.report(AUDIT_INVALID_LOGIN, ScalarValue.forV(username));
 			throw buildBadCredentialsExc(e);
 		} catch (UserNotFoundException e) {
-			auditLog.report(AUDIT_USER_NOT_FOUND, toJsString(username));
+			auditLog.report(AUDIT_USER_NOT_FOUND, ScalarValue.forV(username));
 			throw buildBadCredentialsExc(new FieldValidationException(new UserNotFoundValidationError()));
 		} catch (InvalidPasswordException e) {
-			auditLog.report(AUDIT_INVALID_PASSWORD, toJsString(username));
+			auditLog.report(AUDIT_INVALID_PASSWORD, ScalarValue.forV(username));
 			throw buildBadCredentialsExc(new FieldValidationException(new PasswordInvalidValidationError()));
 		} catch (Throwable t) {
 			throw new AuthenticationServiceException(
 					getMessage(SecurityMessageCodes.AUTH_FATAL, "Fatal authentication exception"), t);
 		}
-	}
-
-	private String toJsString(String email) {
-		return "\"" + Encode.forJavaScript(email) + "\"";
 	}
 
 	protected BadCredentialsException buildBadCredentialsExc(FieldValidationException e) {

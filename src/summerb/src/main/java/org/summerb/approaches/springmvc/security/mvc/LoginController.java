@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.summerb.approaches.security.api.AuditLog;
+import org.summerb.approaches.security.api.dto.ScalarValue;
 import org.summerb.approaches.security.impl.AuditLogDefaultImpl;
 import org.summerb.approaches.springmvc.controllers.ControllerBase;
 import org.summerb.approaches.springmvc.model.ValidationErrorsVm;
@@ -229,7 +230,7 @@ public class LoginController extends ControllerBase {
 
 		// Check if token valid
 		if (!usersServiceFacade.isPasswordResetTokenValid(email, passwordResetToken)) {
-			auditLog.report(AUDIT_PASSWORD_RESET_TOKEN_INVALID, "");
+			auditLog.report(AUDIT_PASSWORD_RESET_TOKEN_INVALID, ScalarValue.forV(passwordResetToken));
 			throw new GenericException(SecurityMessageCodes.INVALID_PASSWORD_RESET_TOKEN);
 		}
 
