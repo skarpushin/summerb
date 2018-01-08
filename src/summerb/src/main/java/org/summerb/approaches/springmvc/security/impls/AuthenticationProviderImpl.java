@@ -3,7 +3,6 @@ package org.summerb.approaches.springmvc.security.impls;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.owasp.encoder.Encode;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +16,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.Assert;
-import org.summerb.approaches.security.api.AuditLog;
-import org.summerb.approaches.security.api.dto.ScalarValue;
-import org.summerb.approaches.security.impl.AuditLogDefaultImpl;
 import org.summerb.approaches.springmvc.security.SecurityConstants;
 import org.summerb.approaches.springmvc.security.SecurityMessageCodes;
 import org.summerb.approaches.springmvc.security.apis.LoginEligibilityVerifier;
@@ -42,11 +38,6 @@ import org.summerb.microservices.users.api.exceptions.UserNotFoundException;
  *
  */
 public class AuthenticationProviderImpl implements AuthenticationProvider, InitializingBean, ApplicationContextAware {
-	public static final String AUDIT_INVALID_PASSWORD = "INVPWD";
-	public static final String AUDIT_USER_NOT_FOUND = "USRNFE";
-	public static final String AUDIT_INVALID_LOGIN = "INVUN";
-	public static final String AUDIT_LOGIN_OK = "LGNOK";
-
 	protected final Logger logger = Logger.getLogger(getClass());
 
 	private PasswordEncoder passwordEncoder;
@@ -55,7 +46,6 @@ public class AuthenticationProviderImpl implements AuthenticationProvider, Initi
 	private PermissionService permissionService;
 	private UserService userService;
 	private LoginEligibilityVerifier loginEligibilityVerifier;
-	private AuditLog auditLog = new AuditLogDefaultImpl();
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -100,16 +90,12 @@ public class AuthenticationProviderImpl implements AuthenticationProvider, Initi
 			UsernamePasswordAuthenticationToken ret = new UsernamePasswordAuthenticationToken(userDetails,
 					authentication.getCredentials(), userDetails.getAuthorities());
 			ret.setDetails(authentication.getDetails());
-			auditLog.report(AUDIT_LOGIN_OK, ScalarValue.forV(user.getEmail()));
 			return ret;
 		} catch (FieldValidationException e) {
-			auditLog.report(AUDIT_INVALID_LOGIN, ScalarValue.forV(username));
 			throw buildBadCredentialsExc(e);
 		} catch (UserNotFoundException e) {
-			auditLog.report(AUDIT_USER_NOT_FOUND, ScalarValue.forV(username));
 			throw buildBadCredentialsExc(new FieldValidationException(new UserNotFoundValidationError()));
 		} catch (InvalidPasswordException e) {
-			auditLog.report(AUDIT_INVALID_PASSWORD, ScalarValue.forV(username));
 			throw buildBadCredentialsExc(new FieldValidationException(new PasswordInvalidValidationError()));
 		} catch (Throwable t) {
 			throw new AuthenticationServiceException(
@@ -179,14 +165,4 @@ public class AuthenticationProviderImpl implements AuthenticationProvider, Initi
 	public void setLoginEligibilityVerifier(LoginEligibilityVerifier loginEligibilityVerifier) {
 		this.loginEligibilityVerifier = loginEligibilityVerifier;
 	}
-
-	public AuditLog getAuditLog() {
-		return auditLog;
-	}
-
-	@Autowired(required = false)
-	public void setAuditLog(AuditLog auditLog) {
-		this.auditLog = auditLog;
-	}
-
 }

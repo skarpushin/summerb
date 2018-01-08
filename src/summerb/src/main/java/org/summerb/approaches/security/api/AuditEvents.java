@@ -4,7 +4,9 @@ import java.io.Serializable;
 
 import org.summerb.approaches.security.api.dto.ScalarValue;
 
-public interface AuditLog {
+public interface AuditEvents {
+	public static final String AUDIT_INJECTION_ATTEMPT = "INJ";
+
 	/**
 	 * report record to audit log
 	 * 

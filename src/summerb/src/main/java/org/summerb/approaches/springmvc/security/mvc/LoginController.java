@@ -20,9 +20,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-import org.summerb.approaches.security.api.AuditLog;
+import org.summerb.approaches.security.api.AuditEvents;
 import org.summerb.approaches.security.api.dto.ScalarValue;
-import org.summerb.approaches.security.impl.AuditLogDefaultImpl;
+import org.summerb.approaches.security.impl.AuditEventsDefaultImpl;
 import org.summerb.approaches.springmvc.controllers.ControllerBase;
 import org.summerb.approaches.springmvc.model.ValidationErrorsVm;
 import org.summerb.approaches.springmvc.security.SecurityMessageCodes;
@@ -77,7 +77,7 @@ public class LoginController extends ControllerBase {
 	private SecurityViewNamesProvider views;
 	private SecurityActionsUrlsProvider securityActionsUrlsProvider;
 	private ExceptionTranslatorSimplified exceptionTranslatorSimplified;
-	private AuditLog auditLog;
+	private AuditEvents auditEvents;
 
 	@Autowired(required = false)
 	@Value("#{ props.properties['profile.dev'] }")
@@ -104,8 +104,8 @@ public class LoginController extends ControllerBase {
 			redirectStrategy = new DefaultRedirectStrategy();
 		}
 
-		if (auditLog == null) {
-			auditLog = new AuditLogDefaultImpl();
+		if (auditEvents == null) {
+			auditEvents = new AuditEventsDefaultImpl();
 		}
 
 		super.afterPropertiesSet();
@@ -230,7 +230,7 @@ public class LoginController extends ControllerBase {
 
 		// Check if token valid
 		if (!usersServiceFacade.isPasswordResetTokenValid(email, passwordResetToken)) {
-			auditLog.report(AUDIT_PASSWORD_RESET_TOKEN_INVALID, ScalarValue.forV(passwordResetToken));
+			auditEvents.report(AUDIT_PASSWORD_RESET_TOKEN_INVALID, ScalarValue.forV(passwordResetToken));
 			throw new GenericException(SecurityMessageCodes.INVALID_PASSWORD_RESET_TOKEN);
 		}
 
@@ -357,13 +357,13 @@ public class LoginController extends ControllerBase {
 		this.exceptionTranslatorSimplified = exceptionTranslatorSimplified;
 	}
 
-	public AuditLog getAuditLog() {
-		return auditLog;
+	public AuditEvents getAuditLog() {
+		return auditEvents;
 	}
 
 	@Autowired(required = false)
-	public void setAuditLog(AuditLog auditLog) {
-		this.auditLog = auditLog;
+	public void setAuditLog(AuditEvents auditEvents) {
+		this.auditEvents = auditEvents;
 	}
 
 }

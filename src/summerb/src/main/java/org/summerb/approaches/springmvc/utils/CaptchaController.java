@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.summerb.approaches.security.api.AuditLog;
+import org.summerb.approaches.security.api.AuditEvents;
 import org.summerb.approaches.security.api.dto.ScalarValue;
-import org.summerb.approaches.security.impl.AuditLogDefaultImpl;
+import org.summerb.approaches.security.impl.AuditEventsDefaultImpl;
 
 import com.google.common.base.Preconditions;
 
@@ -34,15 +34,15 @@ public class CaptchaController implements InitializingBean {
 	public static final String AUDIT_CAPTCHA_MISUSE = "CPTCHMU";
 	public static final String AUDIT_CAPTCHA_INVALID = "CPTCHNVLD";
 
-	private AuditLog auditLog;
-	private static AuditLog staticAuditLog = new AuditLogDefaultImpl();
+	private AuditEvents auditEvents;
+	private static AuditEvents staticAuditLog = new AuditEventsDefaultImpl();
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		if (auditLog == null) {
-			auditLog = new AuditLogDefaultImpl();
+		if (auditEvents == null) {
+			auditEvents = new AuditEventsDefaultImpl();
 		}
-		staticAuditLog = auditLog;
+		staticAuditLog = auditEvents;
 	}
 
 	@RequestMapping(method = RequestMethod.GET, value = "/rest/captcha-token")
@@ -50,7 +50,7 @@ public class CaptchaController implements InitializingBean {
 		Preconditions.checkArgument(StringUtils.hasText(goal));
 		String token = findToken(goal, request);
 		if (token == null) {
-			auditLog.report(AUDIT_CAPTCHA_MISUSE, null);
+			auditEvents.report(AUDIT_CAPTCHA_MISUSE, null);
 			throw new IllegalArgumentException("captcha misuse, it was never created");
 		}
 
@@ -103,13 +103,13 @@ public class CaptchaController implements InitializingBean {
 		return "captchaToken_" + goal;
 	}
 
-	public AuditLog getAuditLog() {
-		return auditLog;
+	public AuditEvents getAuditLog() {
+		return auditEvents;
 	}
 
 	@Autowired(required = false)
-	public void setAuditLog(AuditLog auditLog) {
-		this.auditLog = auditLog;
+	public void setAuditLog(AuditEvents auditEvents) {
+		this.auditEvents = auditEvents;
 	}
 
 }
