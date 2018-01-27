@@ -89,7 +89,7 @@ public class ControllerExceptionHandlerStrategyLegacyImpl
 
 		boolean isJsonOutputRequired = isAcceptJson || isContentTypeJson;
 
-		Throwable contained = ex instanceof NestedServletException ? ex.getCause() : ex;
+		Throwable contained = ex instanceof NestedServletException && ex.getCause() != null ? ex.getCause() : ex;
 		return isJsonOutputRequired ? buildJsonError(contained, req, res) : buildHtmlError(contained);
 	}
 
