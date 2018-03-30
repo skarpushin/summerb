@@ -1,18 +1,20 @@
 package org.summerb.approaches.validation;
 
+import java.beans.Transient;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.springframework.util.CollectionUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Preconditions;
 
 /**
  * Validation error which acts as a container for collection of objects which
  * were validated
- * 
+ *
  * @author sergey.karpushin
- * 
+ *
  */
 public class AggregatedObjectsValidationErrors extends ValidationError implements HasValidationErrors {
 	private static final long serialVersionUID = -1988047599025239239L;
@@ -27,7 +29,7 @@ public class AggregatedObjectsValidationErrors extends ValidationError implement
 	}
 
 	/**
-	 * 
+	 *
 	 * @param fieldToken
 	 *            name of the field which references custom object (not just
 	 *            simple scalar variable) which was validated and contains
@@ -52,6 +54,8 @@ public class AggregatedObjectsValidationErrors extends ValidationError implement
 		this(fieldToken, new LinkedList<AggregatedObjectValidationErrors>());
 	}
 
+	@Transient
+	@JsonIgnore
 	public List<AggregatedObjectValidationErrors> getAggregatedObjectValidationErrorsList() {
 		return aggregatedObjectValidationErrorsList;
 	}
