@@ -31,7 +31,7 @@ public interface PermissionsResolverPerRow<TId, TDto extends HasId<TId>> {
 	 *            {@link HasCommonPathVariable} and
 	 *            {@link HasCommonPathVariables} annotations.
 	 * 
-	 * @return pairs: permission -> availability. For standard action constants
+	 * @return pairs: permission - availability. For standard action constants
 	 *         see {@link Permissions}
 	 */
 	Map<String, Boolean> resolvePermissions(TDto optionalDto, PathVariablesMap contextVariables);
