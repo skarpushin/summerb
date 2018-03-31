@@ -11,6 +11,14 @@ import org.summerb.microservices.users.api.UsersMessageCodes;
 
 import com.google.common.base.Preconditions;
 
+/**
+ * This DTO is used to store authorization failure information. It's designed to
+ * be serialized and sent to front-end as a message or as a json or in other
+ * serializable form.
+ * 
+ * @author sergeyk
+ *
+ */
 public class NotAuthorizedResult implements DtoBase, HasMessageCode, HasMessageArgs, HasMessageArgsConverters {
 	private static final transient long serialVersionUID = 1122164433294017483L;
 	private static final transient MessageArgConverter[] messageArgsConverters = new MessageArgConverter[] { null,

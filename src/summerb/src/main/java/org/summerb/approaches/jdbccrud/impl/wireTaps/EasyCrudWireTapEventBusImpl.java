@@ -5,10 +5,23 @@ import org.summerb.approaches.jdbccrud.api.dto.EntityChangedEvent;
 import org.summerb.approaches.jdbccrud.api.dto.HasId;
 import org.summerb.approaches.security.api.exceptions.NotAuthorizedException;
 import org.summerb.approaches.validation.FieldValidationException;
+import org.summerb.utils.tx.AfterCommitExecutorThreadLocalImpl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.EventBus;
 
+/**
+ * WireTap which will send {@link EntityChangedEvent} into injected
+ * {@link EventBus} after each modification operation.
+ * 
+ * <p>
+ * 
+ * When using it in a transactional environment it's suggested to use
+ * {@link EventBus} with {@link AfterCommitExecutorThreadLocalImpl} injected so
+ * that events will be send only after transaction is committed.
+ * 
+ * @author sergeyk
+ */
 public class EasyCrudWireTapEventBusImpl<TId, TDto extends HasId<TId>> extends EasyCrudWireTapNoOpImpl<TId, TDto> {
 	private EventBus eventBus;
 

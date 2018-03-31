@@ -18,7 +18,11 @@ import com.google.gson.JsonSerializer;
 
 /**
  * {@link Gson} IO helper that can serialize/deserialize
- * {@link EntityChangedEvent} according to value class
+ * {@link EntityChangedEvent} according to value class.
+ * 
+ * IMPORTANT: In order to significantly decrease potential vulnerability of
+ * using {@link Class#forName(String)} underlying DTOs are required to implement
+ * {@link DtoBase} interface.
  * 
  * @author sergeyk
  *
@@ -53,6 +57,7 @@ public class EntityChangedEventAdapter
 		return new EntityChangedEvent(value, changeType);
 	}
 
+	@SuppressWarnings("unchecked")
 	protected <T extends DtoBase> Class<T> resolveParametersClass(JsonObject jsonObject) {
 		JsonPrimitive prim = (JsonPrimitive) jsonObject.get(CLASSNAME);
 		if (prim == null) {

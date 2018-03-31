@@ -4,6 +4,15 @@ import org.summerb.approaches.jdbccrud.api.EasyCrudValidationStrategy;
 import org.summerb.approaches.validation.FieldValidationException;
 import org.summerb.approaches.validation.ValidationContext;
 
+/**
+ * Subclass this class and implement only
+ * {@link #doValidateForCreate(Object, ValidationContext)}. It wil be used for
+ * both cases Create and update
+ * 
+ * @author sergeyk
+ *
+ * @param <TDto>
+ */
 public abstract class EasyCrudValidationStrategyAbstract<TDto> implements EasyCrudValidationStrategy<TDto> {
 	@Override
 	public void validateForCreate(TDto dto) throws FieldValidationException {

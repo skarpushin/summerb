@@ -12,11 +12,15 @@ import org.summerb.approaches.jdbccrud.rest.EasyCrudRestControllerBase;
  * It's similar to {@link PathVariable}, but to be applied at the whole
  * controller level.
  * 
+ * <p>
+ * 
  * Designed to be used to annotate controllers, like subclasses of
  * {@link EasyCrudRestControllerBase} and then use variable of type
  * {@link PathVariablesMap} for each request method where you need this. This
  * variable will be resolved by the {@link PathVariablesMapArgumentResolver},
  * which is expected to be registered in site servlet, i.e.
+ * 
+ * <p>
  * 
  * <code>
  * &lt;mvc:annotation-driven&gt;
@@ -28,8 +32,8 @@ import org.summerb.approaches.jdbccrud.rest.EasyCrudRestControllerBase;
  * 
  * In case Swagger is being used then
  * {@link org.summerb.approaches.jdbccrud.rest.commonpathvars.CommonPathVariableOperationBuilderPlugin}
- * needs to be registered in the context (Swagger will locate it automatically
- * as a bean)
+ * needs to be registered as a Spring bean in the context (Swagger will locate
+ * it automatically)
  * 
  * @author sergeyk
  *

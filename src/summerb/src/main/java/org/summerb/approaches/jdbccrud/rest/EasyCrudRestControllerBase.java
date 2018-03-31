@@ -50,14 +50,20 @@ import com.google.common.base.Preconditions;
 import springfox.documentation.annotations.ApiIgnore;
 
 /**
- * Based class for EasyCrud REST API controllers who's main responsibility is to
+ * Base class for EasyCrud REST API controllers which main responsibility is to
  * serve CRUD requests for entities managed by {@link EasyCrudService}.
  * 
- * It designed to be sub-classed.
+ * <p>
+ * 
+ * It designed to be sub-classed. See
+ * https://github.com/skarpushin/summerb/wiki/Easy-CRUD#rest-api-controller for
+ * details.
+ * 
+ * <p>
  * 
  * NOTE: Exception handling is not implemented here because we rely on
- * {@link RestExceptionTranslator},which is subclass of
- * {@link GenericFilterBean} (Spring approach on filtering requests). 
+ * {@link RestExceptionTranslator}, which is subclass of
+ * {@link GenericFilterBean} (Spring approach on filtering requests).
  * 
  * @author sergeyk
  *

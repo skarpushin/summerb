@@ -9,6 +9,11 @@ import org.summerb.approaches.validation.FieldValidationException;
 
 import com.google.common.base.Preconditions;
 
+/**
+ * WireTap which will call all injected {@link EasyCrudWireTap} implementations
+ * 
+ * @author sergeyk
+ */
 public class EasyCrudWireTapDelegatingImpl<TId, TDto extends HasId<TId>> implements EasyCrudWireTap<TId, TDto> {
 	private List<EasyCrudWireTap<TId, TDto>> chain;
 

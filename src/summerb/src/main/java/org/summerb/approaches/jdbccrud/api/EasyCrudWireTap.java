@@ -1,16 +1,61 @@
 package org.summerb.approaches.jdbccrud.api;
 
 import org.summerb.approaches.jdbccrud.api.dto.HasId;
+import org.summerb.approaches.jdbccrud.impl.EasyCrudServicePluggableImpl;
+import org.summerb.approaches.jdbccrud.impl.wireTaps.EasyCrudWireTapDelegatingImpl;
+import org.summerb.approaches.jdbccrud.impl.wireTaps.EasyCrudWireTapEventBusImpl;
 import org.summerb.approaches.jdbccrud.impl.wireTaps.EasyCrudWireTapNoOpImpl;
+import org.summerb.approaches.jdbccrud.impl.wireTaps.EasyCrudWireTapPerRowAuthImpl;
+import org.summerb.approaches.jdbccrud.impl.wireTaps.EasyCrudWireTapTableAuthImpl;
+import org.summerb.approaches.jdbccrud.impl.wireTaps.EasyCrudWireTapValidationImpl;
 import org.summerb.approaches.security.api.exceptions.NotAuthorizedException;
 import org.summerb.approaches.validation.FieldValidationException;
 
+import com.google.common.eventbus.EventBus;
+
 /**
- * This interface defines "wire tap" for all common CRUD service methods. It
- * helps to follow OCP:OOD principle.
+ * This interface defines "wire tap" for all common CRUD service methods
+ * implemented by {@link EasyCrudServicePluggableImpl}.
  * 
- * It's inconvenient to impl interface, consider extending
- * {@link EasyCrudWireTapNoOpImpl} class
+ * <p>
+ * 
+ * You can easily tap into the workflow by implementing methods of this
+ * interface and injecting it into {@link EasyCrudServicePluggableImpl}.
+ * 
+ * <p>
+ * 
+ * Consider extending {@link EasyCrudWireTapNoOpImpl} class if you don't need to
+ * implement all methods.
+ * 
+ * <p>
+ * 
+ * In most cases you'd want to inject multiple wireTaps, in such case use
+ * {@link EasyCrudWireTapDelegatingImpl} which will delegate to list of wireTaps
+ * each time operation invoked.
+ * 
+ * <p>
+ * 
+ * Also note that EasyCrud contains default implementations for common tasks:
+ * 
+ * <p>
+ * 
+ * Validation impl of {@link EasyCrudValidationStrategy} can be injected using
+ * {@link EasyCrudWireTapValidationImpl}.
+ * 
+ * <p>
+ * 
+ * Per-Table authorization {@link EasyCrudTableAuthStrategy} can be injected
+ * using {@link EasyCrudWireTapTableAuthImpl}.
+ * 
+ * <p>
+ * 
+ * Per-Row authorization {@link EasyCrudPerRowAuthStrategy} can be injected
+ * using {@link EasyCrudWireTapPerRowAuthImpl}.
+ * 
+ * <p>
+ * 
+ * {@link EventBus}-based events can be injected using
+ * {@link EasyCrudWireTapEventBusImpl}.
  * 
  * @author sergeyk
  */

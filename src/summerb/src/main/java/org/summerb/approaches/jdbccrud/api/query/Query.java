@@ -29,8 +29,8 @@ import org.summerb.approaches.jdbccrud.api.query.restrictions.StringOneOfRestric
  * 
  * It's also capable of evaluating if any in-memory DTO matches this query.
  * 
- * Each impl of {@link EasyCrudDao} supposed to be supplemented with impl of
- * {@link QueryToNativeSqlCompiler} that can convert this abstracted Query to
+ * Each impl of {@link EasyCrudDao} supposed to be injected with it's own impl
+ * of {@link QueryToNativeSqlCompiler} that can convert this abstracted Query to
  * query native to actual data source.
  * 
  * @author sergey.karpushin

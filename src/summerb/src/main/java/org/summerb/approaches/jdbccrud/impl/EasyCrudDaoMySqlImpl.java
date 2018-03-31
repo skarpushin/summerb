@@ -46,6 +46,11 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
 
 /**
+ * Although this is a MySQL-specific impl of {@link EasyCrudDao} it has common
+ * things for all SQL-like databases.
+ * 
+ * TODO: Change sql statements fields visibility to simplify
+ * customization-by-inheritance
  * 
  * @author sergey.karpushin
  *

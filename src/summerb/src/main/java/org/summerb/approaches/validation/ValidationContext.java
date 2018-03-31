@@ -18,6 +18,19 @@ import org.summerb.approaches.validation.errors.StringTooShortValidationError;
 import org.summerb.approaches.validation.errors.TooShortStringValidationError;
 
 /**
+ * This class contains a list of accumulated validation errors.
+ * 
+ * <p>
+ * 
+ * You can either add them manually by using {@link #add(ValidationError)}, or
+ * you can use provided methods like
+ * {@link #validateEmailFormat(String, String)} or
+ * {@link #validateNotEmpty(String, String)} or others.
+ * 
+ * <p>
+ * 
+ * And then you supposed to call {@link #throwIfHasErrors()} which will throw
+ * {@link FieldValidationException} with all those validation errors.
  * 
  * @author sergey.karpushin
  *

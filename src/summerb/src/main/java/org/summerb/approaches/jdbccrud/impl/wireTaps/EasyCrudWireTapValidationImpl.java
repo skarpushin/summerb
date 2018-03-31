@@ -7,6 +7,12 @@ import org.summerb.approaches.validation.FieldValidationException;
 
 import com.google.common.base.Preconditions;
 
+/**
+ * WireTap which will invoke injected {@link EasyCrudValidationStrategy} before
+ * row create and update operations.
+ * 
+ * @author sergeyk
+ */
 public class EasyCrudWireTapValidationImpl<TId, TDto extends HasId<TId>> extends EasyCrudWireTapNoOpImpl<TId, TDto> {
 	private EasyCrudValidationStrategy<TDto> strategy;
 

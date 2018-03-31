@@ -33,10 +33,13 @@ import org.summerb.utils.DeepCopy;
 import com.google.common.base.Preconditions;
 
 /**
- * Default impl of EasyCrudService, with focus OCP:OOD principle. In case some
- * logic needs to be changed so you can do it via {@link EasyCrudWireTap}
- * interface - you don't need to write another impl {@link EasyCrudService} in
- * order to change behavior.
+ * Default impl of EasyCrudService, with focus on OOD:OCP principle. In case
+ * some logic needs to be changed you can do it via {@link EasyCrudWireTap}
+ * interface - you don't need to write another impl of {@link EasyCrudService}
+ * each time you need to change it's behavior.
+ * 
+ * If your DTO implements {@link HasAuthor} interface then this impl requires
+ * compatible {@link CurrentUserResolver} to be injected.
  * 
  * @author sergeyk
  *

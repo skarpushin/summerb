@@ -4,7 +4,7 @@ import org.summerb.approaches.jdbccrud.api.EasyCrudService;
 
 /**
  * Impl this interface with your DTO to make {@link EasyCrudService} track users
- * who created and updated this dto.
+ * who created and updated these rows.
  * 
  * @author sergey.karpushin
  *

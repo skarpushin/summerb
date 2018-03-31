@@ -7,6 +7,12 @@ import org.summerb.approaches.validation.FieldValidationException;
 
 import com.google.common.base.Preconditions;
 
+/**
+ * WireTap which will invoke injected {@link EasyCrudPerRowAuthStrategy} whn
+ * accessing or modifying data.
+ * 
+ * @author sergeyk
+ */
 public class EasyCrudWireTapPerRowAuthImpl<TId, TDto extends HasId<TId>> extends EasyCrudWireTapNoOpImpl<TId, TDto> {
 	private EasyCrudPerRowAuthStrategy<TDto> strategy;
 

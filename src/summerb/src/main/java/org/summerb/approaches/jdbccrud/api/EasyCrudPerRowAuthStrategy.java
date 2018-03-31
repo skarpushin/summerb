@@ -1,12 +1,19 @@
 package org.summerb.approaches.jdbccrud.api;
 
+import org.summerb.approaches.jdbccrud.impl.wireTaps.EasyCrudWireTapPerRowAuthImpl;
 import org.summerb.approaches.security.api.exceptions.NotAuthorizedException;
 
 /**
- * Strategy for authorizing operations on per-row basis.
+ * Strategy for authorizing operations on per-row basis. Which means that users
+ * will have different access based on row data (or relevant data). Thus each
+ * row that user is attempting to access needs to be checked.
  * 
- * Normally injected into {@link EasyCrudService} via {@link EasyCrudWireTap},
- * but also can be used separately.
+ * <p>
+ * 
+ * Normally injected into {@link EasyCrudService} via
+ * {@link EasyCrudWireTapPerRowAuthImpl}, but also can be used separately.
+ * 
+ * <p>
  * 
  * In case you do not need that detailed authorization rows you can use
  * {@link EasyCrudTableAuthStrategy}
