@@ -203,6 +203,7 @@ public class DataSetLoaderImpl implements DataSetLoader {
 	private void populateBackReferencesMany2Many(ManyToManyRefToReferenceesMap manyToManyRefs, DataSet dataSet) {
 		for (Entry<Ref, Map<Object, List<HasId>>> refToReferenceeListPair : manyToManyRefs.entrySet()) {
 			DataTable sourceTable = dataSet.get(refToReferenceeListPair.getKey().getFromEntity());
+			@SuppressWarnings("deprecation")
 			RowIdToBackReferencesMap backRefs = sourceTable.getBackRefs();
 
 			for (Entry<Object, List<HasId>> referencerToReferencesListPair : refToReferenceeListPair.getValue()
@@ -276,6 +277,7 @@ public class DataSetLoaderImpl implements DataSetLoader {
 						continue;
 					}
 
+					@SuppressWarnings("deprecation")
 					RowIdToBackReferencesMap backRefs = dataSet.get(ref.getFromEntity()).getBackRefs();
 					if (backRefs.get(referencedId) == null) {
 						backRefs.put(referencedId, new RefToReferencedObjectsIdsMap());

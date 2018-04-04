@@ -1,4 +1,4 @@
-package org.summerb.approaches.jdbccrud.impl;
+package org.summerb.approaches.jdbccrud.impl.relations;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -28,7 +28,6 @@ import org.summerb.approaches.jdbccrud.api.dto.datapackage.DataSet;
 import org.summerb.approaches.jdbccrud.api.exceptions.GenericEntityNotFoundException;
 import org.summerb.approaches.jdbccrud.api.query.Query;
 import org.summerb.approaches.jdbccrud.api.relations.ReferencesRegistry;
-import org.summerb.approaches.jdbccrud.impl.relations.DataSetLoaderImpl;
 
 import integr.org.summerb.jdbccrud.TestDto1;
 import integr.org.summerb.jdbccrud.TestDto2;
