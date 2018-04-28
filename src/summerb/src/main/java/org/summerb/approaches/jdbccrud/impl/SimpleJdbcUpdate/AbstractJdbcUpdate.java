@@ -14,7 +14,6 @@ import org.apache.log4j.Logger;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.jdbc.support.nativejdbc.NativeJdbcExtractor;
 import org.springframework.util.Assert;
 
 /**
@@ -43,9 +42,9 @@ public abstract class AbstractJdbcUpdate {
 	private final Map<String, Operator> restrictingColumns = new HashMap<String, Operator>();
 
 	/**
-	 * Has this operation been compiled? Compilation means at least checking
-	 * that a DataSource or JdbcTemplate has been provided, but subclasses may
-	 * also implement their own custom validation.
+	 * Has this operation been compiled? Compilation means at least checking that a
+	 * DataSource or JdbcTemplate has been provided, but subclasses may also
+	 * implement their own custom validation.
 	 */
 	private boolean compiled = false;
 
@@ -70,7 +69,6 @@ public abstract class AbstractJdbcUpdate {
 	protected AbstractJdbcUpdate(JdbcTemplate jdbcTemplate) {
 		Assert.notNull(jdbcTemplate, "JdbcTemplate must not be null");
 		this.jdbcTemplate = jdbcTemplate;
-		setNativeJdbcExtractor(jdbcTemplate.getNativeJdbcExtractor());
 	}
 
 	// -------------------------------------------------------------------------
@@ -182,14 +180,6 @@ public abstract class AbstractJdbcUpdate {
 	}
 
 	/**
-	 * Set the {@link NativeJdbcExtractor} to use to retrieve the native
-	 * connection if necessary
-	 */
-	public void setNativeJdbcExtractor(NativeJdbcExtractor nativeJdbcExtractor) {
-		this.tableMetaDataContext.setNativeJdbcExtractor(nativeJdbcExtractor);
-	}
-
-	/**
 	 * Get the update string to be used
 	 */
 	protected String getUpdateString() {
@@ -215,14 +205,14 @@ public abstract class AbstractJdbcUpdate {
 	// -------------------------------------------------------------------------
 
 	/**
-	 * Compile this JdbcUpdate using provided parameters and meta data plus
-	 * other settings. This finalizes the configuration for this object and
-	 * subsequent attempts to compile are ignored. This will be implicitly
-	 * called the first time an un-compiled update is executed.
+	 * Compile this JdbcUpdate using provided parameters and meta data plus other
+	 * settings. This finalizes the configuration for this object and subsequent
+	 * attempts to compile are ignored. This will be implicitly called the first
+	 * time an un-compiled update is executed.
 	 * 
 	 * @throws org.springframework.dao.InvalidDataAccessApiUsageException
-	 *             if the object hasn't been correctly initialized, for example
-	 *             if no DataSource has been provided
+	 *             if the object hasn't been correctly initialized, for example if
+	 *             no DataSource has been provided
 	 */
 	public synchronized final void compile() throws InvalidDataAccessApiUsageException {
 		if (!isCompiled()) {
@@ -286,8 +276,8 @@ public abstract class AbstractJdbcUpdate {
 	}
 
 	/**
-	 * Check whether this operation has been compiled already; lazily compile it
-	 * if not already compiled.
+	 * Check whether this operation has been compiled already; lazily compile it if
+	 * not already compiled.
 	 * <p>
 	 * Automatically called by <code>validateParameters</code>.
 	 */
@@ -299,9 +289,9 @@ public abstract class AbstractJdbcUpdate {
 	}
 
 	/**
-	 * Method to check whether we are allowd to make any configuration changes
-	 * at this time. If the class has been compiled, then no further changes to
-	 * the configuration are allowed.
+	 * Method to check whether we are allowd to make any configuration changes at
+	 * this time. If the class has been compiled, then no further changes to the
+	 * configuration are allowed.
 	 */
 	protected void checkIfConfigurationModificationIsAllowed() {
 		if (isCompiled()) {

@@ -7,7 +7,6 @@ import javax.sql.DataSource;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.jdbc.support.nativejdbc.NativeJdbcExtractor;
 
 /**
  * A SimpleJdbcUpdate is a multi-threaded, reusable object providing easy update
@@ -46,8 +45,8 @@ public class SimpleJdbcUpdate extends AbstractJdbcUpdate implements SimpleJdbcUp
 	}
 
 	/**
-	 * Alternative Constructor that takes one parameter with the JdbcTemplate to
-	 * be used.
+	 * Alternative Constructor that takes one parameter with the JdbcTemplate to be
+	 * used.
 	 * 
 	 * @param jdbcTemplate
 	 *            the <code>JdbcTemplate</code> to use
@@ -106,8 +105,8 @@ public class SimpleJdbcUpdate extends AbstractJdbcUpdate implements SimpleJdbcUp
 	}
 
 	@Override
-	public SimpleJdbcUpdateOperations useNativeJdbcExtractorForMetaData(NativeJdbcExtractor nativeJdbcExtractor) {
-		setNativeJdbcExtractor(nativeJdbcExtractor);
+	public SimpleJdbcUpdateOperations useNativeJdbcExtractorForMetaData(boolean nativeJdbcExtractor) {
+		setAccessTableColumnMetaData(nativeJdbcExtractor);
 		return this;
 	}
 

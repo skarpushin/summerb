@@ -3,7 +3,6 @@ package org.summerb.approaches.jdbccrud.impl.SimpleJdbcUpdate;
 import java.util.Map;
 
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.jdbc.support.nativejdbc.NativeJdbcExtractor;
 
 /**
  * Interface specifying the API for a Simple JDBC Update implemented by
@@ -94,7 +93,7 @@ public interface SimpleJdbcUpdateOperations {
 	 * 
 	 * @return the instance of this SimpleJdbcUpdate
 	 */
-	SimpleJdbcUpdateOperations useNativeJdbcExtractorForMetaData(NativeJdbcExtractor nativeJdbcExtractor);
+	SimpleJdbcUpdateOperations useNativeJdbcExtractorForMetaData(boolean flag);
 
 	/**
 	 * Execute the update using the values passed in.

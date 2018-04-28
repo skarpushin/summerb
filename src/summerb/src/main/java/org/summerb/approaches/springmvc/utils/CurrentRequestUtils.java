@@ -67,7 +67,7 @@ public class CurrentRequestUtils {
 	 */
 	@Deprecated
 	public static WebApplicationContext getWac() {
-		return RequestContextUtils.getWebApplicationContext(get());
+		return RequestContextUtils.findWebApplicationContext(get());
 	}
 
 	public static String getBaseUrl() {

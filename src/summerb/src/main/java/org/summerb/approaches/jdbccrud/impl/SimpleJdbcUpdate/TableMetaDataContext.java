@@ -17,7 +17,6 @@ import org.springframework.jdbc.core.metadata.TableParameterMetaData;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
 import org.springframework.jdbc.support.JdbcUtils;
-import org.springframework.jdbc.support.nativejdbc.NativeJdbcExtractor;
 
 public class TableMetaDataContext {
 
@@ -43,9 +42,6 @@ public class TableMetaDataContext {
 
 	/** the provider of table meta data */
 	private TableMetaDataProvider metaDataProvider;
-
-	/** NativeJdbcExtractor to be used to retrieve the native connection */
-	private NativeJdbcExtractor nativeJdbcExtractor;
 
 	/**
 	 * Set the name of the table for this context.
@@ -118,16 +114,16 @@ public class TableMetaDataContext {
 	}
 
 	/**
-	 * Does this database support the JDBC 3.0 feature of retrieving generated
-	 * keys {@link java.sql.DatabaseMetaData#supportsGetGeneratedKeys()}?
+	 * Does this database support the JDBC 3.0 feature of retrieving generated keys
+	 * {@link java.sql.DatabaseMetaData#supportsGetGeneratedKeys()}?
 	 */
 	public boolean isGetGeneratedKeysSupported() {
 		return this.metaDataProvider.isGetGeneratedKeysSupported();
 	}
 
 	/**
-	 * Does this database support simple query to retrieve generated keys when
-	 * the JDBC 3.0 feature is not supported.
+	 * Does this database support simple query to retrieve generated keys when the
+	 * JDBC 3.0 feature is not supported.
 	 * {@link java.sql.DatabaseMetaData#supportsGetGeneratedKeys()}?
 	 */
 	public boolean isGetGeneratedKeysSimulated() {
@@ -135,8 +131,8 @@ public class TableMetaDataContext {
 	}
 
 	/**
-	 * Does this database support simple query to retrieve generated keys when
-	 * the JDBC 3.0 feature is not supported.
+	 * Does this database support simple query to retrieve generated keys when the
+	 * JDBC 3.0 feature is not supported.
 	 * {@link java.sql.DatabaseMetaData#supportsGetGeneratedKeys()}?
 	 */
 	public String getSimulationQueryForGetGeneratedKey(String tableName, String keyColumnName) {
@@ -152,14 +148,6 @@ public class TableMetaDataContext {
 	}
 
 	/**
-	 * Set {@link NativeJdbcExtractor} to be used to retrieve the native
-	 * connection.
-	 */
-	public void setNativeJdbcExtractor(NativeJdbcExtractor nativeJdbcExtractor) {
-		this.nativeJdbcExtractor = nativeJdbcExtractor;
-	}
-
-	/**
 	 * Process the current meta data with the provided configuration options.
 	 */
 	public void processMetaData(DataSource dataSource) {
@@ -167,13 +155,13 @@ public class TableMetaDataContext {
 		org.springframework.jdbc.core.metadata.TableMetaDataContext underlyingTableMetaDataContext = new org.springframework.jdbc.core.metadata.TableMetaDataContext();
 		underlyingTableMetaDataContext.setAccessTableColumnMetaData(accessTableColumnMetaData);
 		underlyingTableMetaDataContext.setCatalogName(catalogName);
-		underlyingTableMetaDataContext.setNativeJdbcExtractor(nativeJdbcExtractor);
+		underlyingTableMetaDataContext.setAccessTableColumnMetaData(accessTableColumnMetaData);
 		underlyingTableMetaDataContext.setOverrideIncludeSynonymsDefault(overrideIncludeSynonymsDefault);
 		underlyingTableMetaDataContext.setSchemaName(schemaName);
 		underlyingTableMetaDataContext.setTableName(tableName);
 
 		this.metaDataProvider = TableMetaDataProviderFactory.createMetaDataProvider(dataSource,
-				underlyingTableMetaDataContext, nativeJdbcExtractor);
+				underlyingTableMetaDataContext);
 	}
 
 	/**
@@ -272,8 +260,8 @@ public class TableMetaDataContext {
 	}
 
 	/**
-	 * Build the array of {@link java.sql.Types} based on configuration and
-	 * metadata information
+	 * Build the array of {@link java.sql.Types} based on configuration and metadata
+	 * information
 	 * 
 	 * @return the array of types to be used
 	 */
