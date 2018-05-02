@@ -11,6 +11,7 @@ import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.summerb.approaches.jdbccrud.api.EasyCrudDao;
+import org.summerb.approaches.jdbccrud.api.EasyCrudExceptionStrategy;
 import org.summerb.approaches.jdbccrud.api.EasyCrudPerRowAuthStrategy;
 import org.summerb.approaches.jdbccrud.api.EasyCrudService;
 import org.summerb.approaches.jdbccrud.api.EasyCrudTableAuthStrategy;
@@ -69,6 +70,7 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold {
 		return service;
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected <TId, TDto extends HasId<TId>> void initService(
 			EasyCrudServicePluggableImpl<TId, TDto, EasyCrudDao<TId, TDto>> service, Class<TDto> dtoClass,
 			String messageCode, String tableName, EasyCrudDao<TId, TDto> dao, Object... injections) throws Exception {
@@ -82,10 +84,20 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold {
 			return;
 		}
 
+		// NOTE: Ok. This thing around EasyCrudExceptionStrategy tells me this code is
+		// begging to be refactored. Screamign about OCP... I'll do it later.
 		List<EasyCrudWireTap<TId, TDto>> wireTaps = Arrays.stream(injections)
+				.filter(x -> !(x instanceof EasyCrudExceptionStrategy))
 				.map(injectionToWireTapMapper(dtoClass, messageCode, tableName)).collect(Collectors.toList());
 		if (wireTaps.size() > 0) {
 			service.setWireTap(new EasyCrudWireTapDelegatingImpl<>(wireTaps));
+		}
+
+		EasyCrudExceptionStrategy exceptionStrategy = Arrays.stream(injections)
+				.filter(x -> x instanceof EasyCrudExceptionStrategy).map(x -> (EasyCrudExceptionStrategy) x).findFirst()
+				.orElse(null);
+		if (exceptionStrategy != null) {
+			service.setGenericExceptionStrategy(exceptionStrategy);
 		}
 
 		// x.

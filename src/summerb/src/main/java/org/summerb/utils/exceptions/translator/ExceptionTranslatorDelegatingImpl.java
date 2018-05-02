@@ -6,6 +6,7 @@ import java.util.Locale;
 
 public class ExceptionTranslatorDelegatingImpl implements ExceptionTranslator {
 	private List<ExceptionTranslator> translators;
+	private ExceptionUnwindingStrategy exceptionUnwindingStrategy = new ExceptionUnwindingStrategyImpl();
 
 	public ExceptionTranslatorDelegatingImpl(List<ExceptionTranslator> translators) {
 		this.translators = new LinkedList<>(translators);
@@ -16,10 +17,10 @@ public class ExceptionTranslatorDelegatingImpl implements ExceptionTranslator {
 		if (t == null) {
 			return "";
 		}
-		
+
 		StringBuilder ret = new StringBuilder();
 
-		Throwable cur = t;
+		Throwable cur = exceptionUnwindingStrategy.getNextMeaningfulExc(t);
 		while (cur != null) {
 			if (ret.length() > 0) {
 				ret.append(" -> ");
@@ -31,7 +32,7 @@ public class ExceptionTranslatorDelegatingImpl implements ExceptionTranslator {
 				if (msg == null) {
 					continue;
 				}
-				
+
 				ret.append(msg);
 				matchFound = true;
 				break;
@@ -43,8 +44,16 @@ public class ExceptionTranslatorDelegatingImpl implements ExceptionTranslator {
 			if (cur == cur.getCause()) {
 				break;
 			}
-			cur = cur.getCause();
+			cur = exceptionUnwindingStrategy.getNextMeaningfulExc(cur.getCause());
 		}
 		return ret.toString();
+	}
+
+	public ExceptionUnwindingStrategy getExceptionUnwindingStrategy() {
+		return exceptionUnwindingStrategy;
+	}
+
+	public void setExceptionUnwindingStrategy(ExceptionUnwindingStrategy exceptionUnwindingStrategy) {
+		this.exceptionUnwindingStrategy = exceptionUnwindingStrategy;
 	}
 }

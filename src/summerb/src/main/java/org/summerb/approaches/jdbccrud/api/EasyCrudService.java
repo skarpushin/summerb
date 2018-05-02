@@ -1,5 +1,6 @@
 package org.summerb.approaches.jdbccrud.api;
 
+import org.springframework.transaction.annotation.Transactional;
 import org.summerb.approaches.jdbccrud.api.dto.PagerParams;
 import org.summerb.approaches.jdbccrud.api.dto.PaginatedList;
 import org.summerb.approaches.jdbccrud.api.exceptions.EntityNotFoundException;
@@ -30,8 +31,11 @@ import org.summerb.approaches.validation.FieldValidationException;
  *            type of dto
  */
 public interface EasyCrudService<TId, TDto> {
+
+	@Transactional(rollbackFor = Throwable.class)
 	TDto create(TDto dto) throws FieldValidationException, NotAuthorizedException;
 
+	@Transactional(rollbackFor = Throwable.class)
 	TDto update(TDto dto) throws FieldValidationException, NotAuthorizedException, EntityNotFoundException;
 
 	TDto findById(TId id) throws NotAuthorizedException;
@@ -41,13 +45,17 @@ public interface EasyCrudService<TId, TDto> {
 	PaginatedList<TDto> query(PagerParams pagerParams, Query optionalQuery, OrderBy... orderBy)
 			throws NotAuthorizedException;
 
+	@Transactional(rollbackFor = Throwable.class)
 	void deleteById(TId id) throws NotAuthorizedException, EntityNotFoundException;
 
+	@Transactional(rollbackFor = Throwable.class)
 	void deleteByIdOptimistic(TId id, long modifiedAt) throws NotAuthorizedException, EntityNotFoundException;
 
+	@Transactional(rollbackFor = Throwable.class)
 	int deleteByQuery(Query query) throws NotAuthorizedException;
 
 	Class<TDto> getDtoClass();
 
 	String getEntityTypeMessageCode();
+
 }

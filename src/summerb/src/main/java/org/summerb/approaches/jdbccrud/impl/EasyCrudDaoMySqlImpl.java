@@ -196,7 +196,7 @@ public class EasyCrudDaoMySqlImpl<TId, TDto extends HasId<TId>> extends DaoBase
 		String constraint = DaoExceptionUtils.findViolatedConstraintName(dke);
 		// Handle case when uuid is duplicated
 		if (DaoExceptionUtils.MYSQL_CONSTRAINT_PRIMARY.equals(constraint)) {
-			throw new IllegalArgumentException("Row with same primary key already exists", dke);
+			throw new FieldValidationException(new DuplicateRecordValidationError(HasId.FN_ID));
 		}
 
 		if (!constraint.contains(DaoExceptionUtils.MYSQL_CONSTRAINT_UNIQUE)) {

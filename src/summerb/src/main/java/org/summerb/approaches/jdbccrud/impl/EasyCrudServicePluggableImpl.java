@@ -7,7 +7,6 @@ import java.util.List;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.transaction.annotation.Transactional;
 import org.summerb.approaches.jdbccrud.api.EasyCrudDao;
 import org.summerb.approaches.jdbccrud.api.EasyCrudExceptionStrategy;
 import org.summerb.approaches.jdbccrud.api.EasyCrudService;
@@ -83,7 +82,6 @@ public class EasyCrudServicePluggableImpl<TId, TDto extends HasId<TId>, TDao ext
 	}
 
 	@Override
-	@Transactional(rollbackFor = Throwable.class)
 	public TDto create(TDto dto) throws FieldValidationException, NotAuthorizedException {
 		try {
 			Preconditions.checkArgument(dto != null);
@@ -139,7 +137,6 @@ public class EasyCrudServicePluggableImpl<TId, TDto extends HasId<TId>, TDao ext
 	}
 
 	@Override
-	@Transactional(rollbackFor = Throwable.class)
 	public TDto update(TDto newVersion)
 			throws FieldValidationException, NotAuthorizedException, EntityNotFoundException {
 		try {
@@ -184,7 +181,6 @@ public class EasyCrudServicePluggableImpl<TId, TDto extends HasId<TId>, TDao ext
 	}
 
 	@Override
-	@Transactional(rollbackFor = Throwable.class)
 	public void deleteById(TId id) throws NotAuthorizedException, EntityNotFoundException {
 		try {
 			Preconditions.checkArgument(id != null);
@@ -212,7 +208,6 @@ public class EasyCrudServicePluggableImpl<TId, TDto extends HasId<TId>, TDao ext
 	}
 
 	@Override
-	@Transactional(rollbackFor = Throwable.class)
 	public void deleteByIdOptimistic(TId id, long modifiedAt) throws NotAuthorizedException, EntityNotFoundException {
 		try {
 			Preconditions.checkArgument(id != null);
@@ -242,7 +237,6 @@ public class EasyCrudServicePluggableImpl<TId, TDto extends HasId<TId>, TDao ext
 	}
 
 	@Override
-	@Transactional(rollbackFor = Throwable.class)
 	public int deleteByQuery(Query query) throws NotAuthorizedException {
 		try {
 			Preconditions.checkArgument(query != null);
