@@ -1,4 +1,9 @@
-In order to deploy to maven at github
+In order to deploy to maven central
+	1. Execute `maven deploy`, this will deploy it to JFrog bintray
+	2. Browse to `https://bintray.com/skarpushin/maven/summerb`
+	3. Open new version page and publish it to Maven Central (last tab)
+
+In order to deploy to maven at github (OUTDATED)
 	`deploy`
 
         MAKE SURE ~/.m2/settings.xml has server configuration like this:
