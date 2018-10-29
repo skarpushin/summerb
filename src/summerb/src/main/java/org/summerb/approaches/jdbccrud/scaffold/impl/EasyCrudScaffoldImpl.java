@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.ConversionService;
 import org.summerb.approaches.jdbccrud.api.EasyCrudDao;
 import org.summerb.approaches.jdbccrud.api.EasyCrudExceptionStrategy;
 import org.summerb.approaches.jdbccrud.api.EasyCrudPerRowAuthStrategy;
@@ -42,6 +43,7 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold {
 
 	@SuppressWarnings("rawtypes")
 	private CurrentUserResolver currentUserResolver;
+	private ConversionService conversionService;
 
 	@Override
 	public <TId, TDto extends HasId<TId>> EasyCrudService<TId, TDto> fromDto(Class<TDto> dtoClass) {
@@ -130,6 +132,7 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold {
 		dao.setDataSource(dataSource);
 		dao.setDtoClass(dtoClass);
 		dao.setTableName(tableName);
+		dao.setConversionService(conversionService);
 		dao.afterPropertiesSet();
 		return dao;
 	}
@@ -203,4 +206,14 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold {
 	public void setCurrentUserResolver(CurrentUserResolver currentUserResolver) {
 		this.currentUserResolver = currentUserResolver;
 	}
+
+	public ConversionService getConversionService() {
+		return conversionService;
+	}
+
+	@Autowired(required = false)
+	public void setConversionService(ConversionService conversionService) {
+		this.conversionService = conversionService;
+	}
+
 }

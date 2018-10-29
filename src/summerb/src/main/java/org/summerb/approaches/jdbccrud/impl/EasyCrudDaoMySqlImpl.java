@@ -9,7 +9,9 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -64,6 +66,7 @@ public class EasyCrudDaoMySqlImpl<TId, TDto extends HasId<TId>> extends DaoBase
 	private RowMapper<TDto> rowMapper;
 	private ParameterSourceBuilder<TDto> parameterSourceBuilder;
 	private QueryToNativeSqlCompiler queryToNativeSqlCompiler;
+	private ConversionService conversionService;
 
 	private SimpleJdbcInsert jdbcInsert;
 	private SimpleJdbcUpdate jdbcUpdate;
@@ -83,6 +86,9 @@ public class EasyCrudDaoMySqlImpl<TId, TDto extends HasId<TId>> extends DaoBase
 
 		if (rowMapper == null) {
 			rowMapper = new BeanPropertyRowMapper<TDto>(dtoClass);
+			if (conversionService != null) {
+				((BeanPropertyRowMapper<TDto>) rowMapper).setConversionService(conversionService);
+			}
 		}
 
 		jdbcInsert = buildJdbcInsert();
@@ -365,6 +371,15 @@ public class EasyCrudDaoMySqlImpl<TId, TDto extends HasId<TId>> extends DaoBase
 
 	public void setQueryToNativeSqlCompiler(QueryToNativeSqlCompiler queryToNativeSqlCompiler) {
 		this.queryToNativeSqlCompiler = queryToNativeSqlCompiler;
+	}
+
+	public ConversionService getConversionService() {
+		return conversionService;
+	}
+
+	@Autowired(required = false)
+	public void setConversionService(ConversionService conversionService) {
+		this.conversionService = conversionService;
 	}
 
 }
