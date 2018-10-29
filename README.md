@@ -7,7 +7,7 @@ I tired of writing boiler plate code each time I start new project so I gathered
 * Cache helpers (TX-bound caches, JMX beans)
 * Authentication & Authorization tools
 * Simple email sender
-* Typical implementation for C.R.U.D. operations
+* Typical implementation for C.R.U.D. operations [instructions](https://github.com/skarpushin/summerb/wiki/Easy-CRUD)
   * Data Access Layer (based on Spring JDBC)
   * Service Layer
   * Validation
