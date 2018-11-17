@@ -1,5 +1,6 @@
 package org.summerb.approaches.jdbccrud.scaffold.impl;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
@@ -21,7 +22,11 @@ public class EasyCrudServiceScaffoldedImpl
 
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-		return method.invoke(this, args);
+		try {
+			return method.invoke(this, args);
+		} catch (InvocationTargetException t) {
+			throw t.getCause();
+		}
 	}
 
 }
