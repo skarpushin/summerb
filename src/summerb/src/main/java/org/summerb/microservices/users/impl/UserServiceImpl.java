@@ -2,20 +2,21 @@ package org.summerb.microservices.users.impl;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+import org.summerb.approaches.jdbccrud.api.StringIdGenerator;
 import org.summerb.approaches.jdbccrud.api.dto.EntityChangedEvent;
 import org.summerb.approaches.jdbccrud.api.dto.PagerParams;
 import org.summerb.approaches.jdbccrud.api.dto.PaginatedList;
+import org.summerb.approaches.jdbccrud.impl.StringIdGeneratorUuidImpl;
 import org.summerb.approaches.validation.FieldValidationException;
 import org.summerb.approaches.validation.ValidationContext;
-import org.summerb.approaches.validation.ValidationUtils;
 import org.summerb.microservices.users.api.UserService;
 import org.summerb.microservices.users.api.dto.User;
 import org.summerb.microservices.users.api.exceptions.UserNotFoundException;
@@ -29,11 +30,12 @@ import com.google.common.eventbus.EventBus;
 public class UserServiceImpl implements UserService {
 	private UserDao userDao;
 	private EventBus eventBus;
+	private StringIdGenerator stringIdGenerator = new StringIdGeneratorUuidImpl();
 
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public User createUser(User userTemplate) throws FieldValidationException {
-		Assert.notNull(userTemplate);
+		Preconditions.checkArgument(userTemplate != null, "userTemplate is required");
 
 		validateUser(userTemplate);
 
@@ -48,10 +50,10 @@ public class UserServiceImpl implements UserService {
 
 		// Patch data
 		if (userTemplate.getUuid() != null) {
-			ValidationUtils.isValidNotNullableUuid(userTemplate.getUuid());
+			Preconditions.checkArgument(stringIdGenerator.isValidId(userTemplate.getUuid()), "User id is invalid");
 			userToCreate.setUuid(userTemplate.getUuid());
 		} else {
-			userToCreate.setUuid(UUID.randomUUID().toString());
+			userToCreate.setUuid(stringIdGenerator.generateNewId(userTemplate));
 		}
 		if (userToCreate.getRegisteredAt() == 0) {
 			userToCreate.setRegisteredAt(new Date().getTime());
@@ -83,9 +85,7 @@ public class UserServiceImpl implements UserService {
 		validateEmail(user.getEmail(), ctx);
 		ctx.validateDataLengthLessOrEqual(user.getDisplayName(), User.FN_DISPLAY_NAME_SIZE, User.FN_DISPLAY_NAME);
 
-		if (ctx.getHasErrors()) {
-			throw new FieldValidationException(ctx.getErrors());
-		}
+		ctx.throwIfHasErrors();
 	}
 
 	@Override
@@ -132,9 +132,7 @@ public class UserServiceImpl implements UserService {
 
 		validateEmail(email, ctx);
 
-		if (ctx.getHasErrors()) {
-			throw new FieldValidationException(ctx.getErrors());
-		}
+		ctx.throwIfHasErrors();
 	}
 
 	protected void validateEmail(String email, ValidationContext ctx) {
@@ -224,4 +222,12 @@ public class UserServiceImpl implements UserService {
 		this.eventBus = eventBus;
 	}
 
+	public StringIdGenerator getStringIdGenerator() {
+		return stringIdGenerator;
+	}
+
+	@Autowired(required = false)
+	public void setStringIdGenerator(StringIdGenerator stringIdGenerator) {
+		this.stringIdGenerator = stringIdGenerator;
+	}
 }

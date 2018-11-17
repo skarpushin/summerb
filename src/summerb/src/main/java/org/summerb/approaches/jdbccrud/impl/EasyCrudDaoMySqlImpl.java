@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +23,7 @@ import org.springframework.util.StringUtils;
 import org.summerb.approaches.jdbccrud.api.EasyCrudDao;
 import org.summerb.approaches.jdbccrud.api.ParameterSourceBuilder;
 import org.summerb.approaches.jdbccrud.api.QueryToNativeSqlCompiler;
+import org.summerb.approaches.jdbccrud.api.StringIdGenerator;
 import org.summerb.approaches.jdbccrud.api.dto.HasAuthor;
 import org.summerb.approaches.jdbccrud.api.dto.HasAutoincrementId;
 import org.summerb.approaches.jdbccrud.api.dto.HasId;
@@ -40,7 +40,6 @@ import org.summerb.approaches.jdbccrud.impl.SimpleJdbcUpdate.SimpleJdbcUpdate;
 import org.summerb.approaches.jdbccrud.impl.SimpleJdbcUpdate.TableMetaDataContext;
 import org.summerb.approaches.jdbccrud.impl.SimpleJdbcUpdate.UpdateColumnsEnlisterStrategy;
 import org.summerb.approaches.validation.FieldValidationException;
-import org.summerb.approaches.validation.ValidationUtils;
 import org.summerb.approaches.validation.errors.DuplicateRecordValidationError;
 import org.summerb.utils.exceptions.ExceptionUtils;
 
@@ -67,6 +66,7 @@ public class EasyCrudDaoMySqlImpl<TId, TDto extends HasId<TId>> extends DaoBase
 	private ParameterSourceBuilder<TDto> parameterSourceBuilder;
 	private QueryToNativeSqlCompiler queryToNativeSqlCompiler;
 	private ConversionService conversionService;
+	private StringIdGenerator stringIdGenerator = new StringIdGeneratorUuidImpl();
 
 	private SimpleJdbcInsert jdbcInsert;
 	private SimpleJdbcUpdate jdbcUpdate;
@@ -167,8 +167,8 @@ public class EasyCrudDaoMySqlImpl<TId, TDto extends HasId<TId>> extends DaoBase
 	public void create(TDto dto) throws FieldValidationException {
 		if (dto instanceof HasUuid) {
 			HasUuid hasUuid = (HasUuid) dto;
-			if (!ValidationUtils.isValidNotNullableUuid(hasUuid.getId())) {
-				hasUuid.setId(UUID.randomUUID().toString());
+			if (!stringIdGenerator.isValidId(hasUuid.getId())) {
+				hasUuid.setId(stringIdGenerator.generateNewId(dto));
 			}
 		}
 
@@ -382,4 +382,17 @@ public class EasyCrudDaoMySqlImpl<TId, TDto extends HasId<TId>> extends DaoBase
 		this.conversionService = conversionService;
 	}
 
+	public StringIdGenerator getStringIdGenerator() {
+		return stringIdGenerator;
+	}
+
+	/**
+	 * Set it only if you want to customize default behavior when DTO's has
+	 * {@link HasUuid} interface. Default is {@link StringIdGeneratorUuidImpl} and
+	 * if. This is NOT applicable for other cases.
+	 */
+	@Autowired(required = false)
+	public void setStringIdGenerator(StringIdGenerator stringIdGenerator) {
+		this.stringIdGenerator = stringIdGenerator;
+	}
 }
