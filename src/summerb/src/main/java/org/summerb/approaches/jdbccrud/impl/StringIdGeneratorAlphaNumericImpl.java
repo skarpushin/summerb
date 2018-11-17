@@ -13,7 +13,11 @@ import org.summerb.approaches.jdbccrud.api.StringIdGenerator;
  */
 public class StringIdGeneratorAlphaNumericImpl implements StringIdGenerator {
 	private int length = 8;
-	private String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789abcdefghijkmnopqrstuvwxyz";
+
+	/**
+	 * NOTE: "O" and "l" are removed to make it more human-readable
+	 */
+	private String alphabet = "ABCDEFGHIJKLMNPQRSTUVWXYZ0123456789abcdefghijkmnopqrstuvwxyz";
 
 	private static final Random random = new Random();
 

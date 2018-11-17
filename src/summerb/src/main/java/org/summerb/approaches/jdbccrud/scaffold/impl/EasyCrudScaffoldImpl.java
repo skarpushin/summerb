@@ -18,6 +18,7 @@ import org.summerb.approaches.jdbccrud.api.EasyCrudService;
 import org.summerb.approaches.jdbccrud.api.EasyCrudTableAuthStrategy;
 import org.summerb.approaches.jdbccrud.api.EasyCrudValidationStrategy;
 import org.summerb.approaches.jdbccrud.api.EasyCrudWireTap;
+import org.summerb.approaches.jdbccrud.api.StringIdGenerator;
 import org.summerb.approaches.jdbccrud.api.dto.HasId;
 import org.summerb.approaches.jdbccrud.common.DtoBase;
 import org.summerb.approaches.jdbccrud.impl.EasyCrudDaoMySqlImpl;
@@ -44,6 +45,7 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold {
 	@SuppressWarnings("rawtypes")
 	private CurrentUserResolver currentUserResolver;
 	private ConversionService conversionService;
+	private StringIdGenerator stringIdGenerator;
 
 	@Override
 	public <TId, TDto extends HasId<TId>> EasyCrudService<TId, TDto> fromDto(Class<TDto> dtoClass) {
@@ -133,6 +135,9 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold {
 		dao.setDtoClass(dtoClass);
 		dao.setTableName(tableName);
 		dao.setConversionService(conversionService);
+		if (stringIdGenerator != null) {
+			dao.setStringIdGenerator(stringIdGenerator);
+		}
 		dao.afterPropertiesSet();
 		return dao;
 	}
@@ -216,4 +221,12 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold {
 		this.conversionService = conversionService;
 	}
 
+	public StringIdGenerator getStringIdGenerator() {
+		return stringIdGenerator;
+	}
+
+	@Autowired(required = false)
+	public void setStringIdGenerator(StringIdGenerator stringIdGenerator) {
+		this.stringIdGenerator = stringIdGenerator;
+	}
 }
