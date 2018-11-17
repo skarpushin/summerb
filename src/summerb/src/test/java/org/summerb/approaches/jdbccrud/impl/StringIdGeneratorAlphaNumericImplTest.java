@@ -22,7 +22,7 @@ public class StringIdGeneratorAlphaNumericImplTest {
 
 		for (int i = 0; i < 1000; i++) {
 			String result = f.generateNewId(null);
-			System.out.println("ID generated: " + result);
+			// System.out.println("ID generated: " + result);
 
 			assertNotNull(result);
 			assertEquals(8, result.length());
