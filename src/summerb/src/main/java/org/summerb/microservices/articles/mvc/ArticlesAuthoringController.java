@@ -204,7 +204,7 @@ public class ArticlesAuthoringController extends ControllerBase {
 			log.error("Failed to create attachment", t);
 			String msg = exceptionTranslator.buildUserMessage(t, CurrentRequestUtils.getLocale());
 			addPageMessage(model.asMap(), new PageMessage(msg, MessageSeverity.Danger));
-			// TODO: Navigate to article authoring instead!
+			// TBD: Navigate to article authoring instead!
 			return viewNameArticleAuthoring;
 		}
 	}

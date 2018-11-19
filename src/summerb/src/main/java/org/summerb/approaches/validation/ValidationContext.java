@@ -36,7 +36,7 @@ import org.summerb.approaches.validation.errors.TooShortStringValidationError;
  *
  */
 public class ValidationContext {
-	// TODO: Fix patter. It will fail if we'll pass here regular UUID
+	// TBD: Fix patter. It will fail if we'll pass here regular UUID
 	public static final String regexpEmail = "^([0-9a-zA-Z]([-.\\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\\w]*[0-9a-zA-Z]\\.)+[a-zA-Z]{2,9})$";
 
 	private List<ValidationError> errors = new LinkedList<ValidationError>();

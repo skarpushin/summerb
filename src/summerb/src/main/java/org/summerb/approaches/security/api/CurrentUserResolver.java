@@ -5,7 +5,7 @@ import org.summerb.microservices.users.api.dto.User;
 /**
  * Interface for resolving the user from current context.
  * 
- * TODO: Why TUser doesn't extend {@link User}?? Either fix or clarify.
+ * TBD: Why TUser doesn't extend {@link User}?? Either fix or clarify.
  * 
  * @author sergeyk
  *

@@ -38,7 +38,7 @@ public class AllMessagesController extends ControllerBase implements Initializin
 	private LoadingCache<Locale, Properties> messagesCache;
 	private Gson gson = new Gson();
 
-	// TODO: Do not hardcode this, check when messages were actually reloaded
+	// TBD: Do not hardcode this, check when messages were actually reloaded
 	private long lastModified = System.currentTimeMillis();
 
 	@RequestMapping(method = RequestMethod.GET, value = "/rest/msgs")
@@ -78,7 +78,7 @@ public class AllMessagesController extends ControllerBase implements Initializin
 	public void afterPropertiesSet() throws Exception {
 		super.afterPropertiesSet();
 
-		// TODO: Explain why not just Autowire it ??!?!!?!?!?!?!
+		// TBD: Explain why not just Autowire it ??!?!!?!?!?!?!
 		allMessagesProvider = applicationContext.getBean(AllMessagesProvider.class);
 
 		messagesCache = CacheBuilder.newBuilder().maximumSize(1000)

@@ -43,7 +43,7 @@ import com.google.common.base.Throwables;
  * m2m is considered as referencer read, add changes to m2m collection is
  * considered as update operation to referencer object.
  * 
- * TODO: Consider providing default impl for cached wrapper for these m2m
+ * TBD: Consider providing default impl for cached wrapper for these m2m
  * relationships
  * 
  * @author sergeyk

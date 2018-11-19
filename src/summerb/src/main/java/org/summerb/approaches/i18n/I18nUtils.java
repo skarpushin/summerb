@@ -6,7 +6,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.i18n.LocaleContextHolder;
 
-// TODO: Consider implementing customizable (based on strategies) regular bean instead of this singleton impl with fixed behavior
+// TBD: Consider implementing customizable (based on strategies) regular bean instead of this singleton impl with fixed behavior
 
 public abstract class I18nUtils {
 	public static String buildMessage(HasMessageCode hasMessageCode, MessageSource messageSource, Locale locale) {

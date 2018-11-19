@@ -68,7 +68,7 @@ public class Ref implements Serializable {
 		ret.setToField(getFromField());
 
 		// NOT sure how to set relation type
-		// TODO: Impl
+		// TBD: Impl
 
 		// quantity
 		if (quantity == RefQuantity.Many2Many || quantity == RefQuantity.One2One) {

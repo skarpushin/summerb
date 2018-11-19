@@ -22,7 +22,7 @@ public class ElevationStrategyRunAsUserImpl<TUser extends User> implements Eleva
 
 	@Override
 	public boolean isElevationRequired() {
-		// TODO: Check if current user matches requested user then elevation not
+		// TBD: Check if current user matches requested user then elevation not
 		// requried
 		return true;
 	}

@@ -143,7 +143,7 @@ public class RestExceptionTranslator extends GenericFilterBean {
 					: new NotAuthorizedResult(getCurrentUser(null), SecurityMessageCodes.LOGIN_REQUIRED);
 		}
 
-		// TODO: Do we really need to send whole stack trace to client ??? I think we
+		// TBD: Do we really need to send whole stack trace to client ??? I think we
 		// should do it only during development
 		response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		return new GenericServerErrorResult(exceptionTranslator.buildUserMessage(ex, LocaleContextHolder.getLocale()),

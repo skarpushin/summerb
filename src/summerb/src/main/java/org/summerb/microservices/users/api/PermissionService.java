@@ -36,11 +36,11 @@ public interface PermissionService {
 	 */
 	void grantPermission(String optionalDomainName, String userUuid, String optionalSubjectId, String permissionKey);
 
-	// TODO: WHISHLIST: grantPermissions(String optionalDomainName, String
+	// TBD: WHISHLIST: grantPermissions(String optionalDomainName, String
 	// userUuid,
 	// String optionalSubjectId, List<String> permissionsKeys);
 
-	// TODO: WHISHLIST: revokeUserPermissionsForSubject
+	// TBD: WHISHLIST: revokeUserPermissionsForSubject
 
 	void revokePermission(String optionalDomainName, String userUuid, String optionalSubjectId, String permissionKey);
 

@@ -135,7 +135,7 @@ public class DomLoaderImpl implements DomLoader {
 					return dom;
 				}
 
-				// TODO: Skip that kind of mapping if there are no refs
+				// TBD: Skip that kind of mapping if there are no refs
 				// from this entity, this way we'll save on spinning our wheels
 				// with reflection
 
@@ -160,7 +160,7 @@ public class DomLoaderImpl implements DomLoader {
 				} else if (domField.getKey().isManyToOne() || domField.getKey().isOneToOne()) {
 					resolveSingleRef(dom, domField, refs, ds, cache);
 				} else {
-					// TODO: Impl for many to many
+					// TBD: Impl for many to many
 					throw new IllegalStateException("this case is not impl yet: " + domField.getKey());
 				}
 			} catch (Throwable t) {
@@ -219,7 +219,7 @@ public class DomLoaderImpl implements DomLoader {
 		Preconditions.checkArgument(List.class.isAssignableFrom(propertyDomType),
 				"When it's a oneToMany field is expected to be of type List<TDomType>");
 
-		// TODO: Support Set<> and Map<>
+		// TBD: Support Set<> and Map<>
 
 		Type returnType = pd.getReadMethod().getGenericReturnType();
 		Preconditions.checkArgument(returnType instanceof ParameterizedType,
@@ -277,7 +277,7 @@ public class DomLoaderImpl implements DomLoader {
 	}
 
 	protected String tryResolveTargetRefName(PropertyDescriptor pd, Class<?> clazz) {
-		// TODO: Add ability to customize it using annotation and
+		// TBD: Add ability to customize it using annotation and
 		// configure exact ref name instead of using convention. Maybe
 		// make it as simple as using Spring's @Qualifier
 
@@ -290,7 +290,7 @@ public class DomLoaderImpl implements DomLoader {
 		try {
 			Class<? super TDomClass> dtoClass = domClass.getSuperclass();
 
-			// TODO: Support case when Dom class contains list of Dto class (no
+			// TBD: Support case when Dom class contains list of Dto class (no
 			// need to create Dom class for leafs, for example). I.e. If Device
 			// class will have field List<AssetRow> ==>> then we don't nee dto
 			// use superclass. MAYBE we can just go up one level until

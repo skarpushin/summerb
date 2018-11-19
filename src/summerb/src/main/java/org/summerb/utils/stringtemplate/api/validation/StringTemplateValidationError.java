@@ -21,7 +21,7 @@ public class StringTemplateValidationError extends ValidationError {
 		super(VALIDATION_MESSAGE_CODE_COMPILATION_ERROR, fieldToken);
 		this.cause = cause;
 
-		// TODO: Probably add more sophisticated analysis of error, to be able
+		// TBD: Probably add more sophisticated analysis of error, to be able
 		// to provide user with more details
 	}
 

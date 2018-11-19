@@ -151,7 +151,7 @@ public class TableMetaDataContext {
 	 * Process the current meta data with the provided configuration options.
 	 */
 	public void processMetaData(DataSource dataSource) {
-		// TODO: comment to explain this HORRIBLE thing!
+		// TBD: comment to explain this HORRIBLE thing!
 		org.springframework.jdbc.core.metadata.TableMetaDataContext underlyingTableMetaDataContext = new org.springframework.jdbc.core.metadata.TableMetaDataContext();
 		underlyingTableMetaDataContext.setAccessTableColumnMetaData(accessTableColumnMetaData);
 		underlyingTableMetaDataContext.setCatalogName(catalogName);

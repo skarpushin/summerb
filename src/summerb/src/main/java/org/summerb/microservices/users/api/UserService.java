@@ -14,7 +14,7 @@ import org.summerb.microservices.users.api.exceptions.UserNotFoundException;
  * 
  * @author skarpushin
  * 
- *         TODO: Unify tables naming to have common prefix, like "users_"
+ *         TBD: Unify tables naming to have common prefix, like "users_"
  */
 public interface UserService {
 	User createUser(User user) throws FieldValidationException;

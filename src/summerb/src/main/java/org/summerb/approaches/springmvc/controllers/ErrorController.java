@@ -12,7 +12,7 @@ import org.summerb.approaches.springmvc.Views;
 public class ErrorController extends ControllerBase {
 	@RequestMapping(method = RequestMethod.GET, value = "/error/unexpected")
 	public String handleUnexpected(Model model, HttpServletRequest request) {
-		// TODO: Output user-friendly (usefull) error message
+		// TBD: Output user-friendly (usefull) error message
 		return Views.ERROR_UNEXPECTED;// ClassUtils.getShortName(ex.getClass());
 	}
 

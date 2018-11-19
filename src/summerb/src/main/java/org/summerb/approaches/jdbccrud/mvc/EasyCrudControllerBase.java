@@ -86,7 +86,7 @@ public class EasyCrudControllerBase<TId, TDto extends HasId<TId>, TEasyCrudServi
 			ret.addObject(ATTR_LIST, service.query(new PagerParams(0, initialPageSize), null));
 		}
 
-		// TODO: Shouldn't we cache such things?
+		// TBD: Shouldn't we cache such things?
 		Map<String, Boolean> perms = getPermissionsMapForCurrentUser();
 		ret.addObject(ATTR_PERMISSIONS, gson.toJson(perms));
 		return ret;

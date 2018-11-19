@@ -15,7 +15,7 @@ import org.summerb.approaches.i18n.HasMessageCode;
  * 
  * @author sergey.karpushin
  * 
- *         TODO: Make this class abstract
+ *         TBD: Make this class abstract
  */
 public class ValidationError implements Serializable, HasMessageCode, HasMessageArgs {
 	private static final long serialVersionUID = 2414529436328740490L;

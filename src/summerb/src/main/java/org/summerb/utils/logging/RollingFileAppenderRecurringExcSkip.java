@@ -221,7 +221,7 @@ public final class RollingFileAppenderRecurringExcSkip extends RollingFileAppend
 			t.printStackTrace();
 		}
 		if (exLocationCode != null) {
-			// TODO: Also record query string if possible (if it's a request
+			// TBD: Also record query string if possible (if it's a request
 			// processing stage and not some kind of background process). If
 			// query string is not available then use thread name and
 			// class::method where exception originated from

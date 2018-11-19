@@ -45,7 +45,7 @@ public class AfterCommitExecutorThreadLocalImpl extends TransactionSynchronizati
 			log.debug("Transaction successfully committed, executing runnables #" + threadRunnables.size());
 		}
 
-		// TODO: Explain why we should do it async as it was impl before. WHy we can't
+		// TBD: Explain why we should do it async as it was impl before. WHy we can't
 		// just run it now
 		new RunRunnables(threadRunnables).run();
 
