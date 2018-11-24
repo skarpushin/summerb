@@ -12,11 +12,12 @@ import org.springframework.beans.PropertyAccessor;
  */
 @SuppressWarnings("rawtypes")
 public class FieldCondition implements Restriction<PropertyAccessor> {
+	private static final long serialVersionUID = 8133148253107715041L;
+
 	private Restriction restriction;
 	private String fieldName;
 
 	public FieldCondition() {
-
 	}
 
 	public FieldCondition(String fieldName, Restriction restriction) {
@@ -27,8 +28,7 @@ public class FieldCondition implements Restriction<PropertyAccessor> {
 	/**
 	 * Method to verify restriction in-memory
 	 * 
-	 * @param formData
-	 *            {@link PropertyAccessor} instance to access DTO fields
+	 * @param formData {@link PropertyAccessor} instance to access DTO fields
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
