@@ -1,77 +1,35 @@
 package org.summerb.microservices.articles.impl;
 
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import org.summerb.approaches.jdbccrud.api.EasyCrudValidationStrategy;
 import org.summerb.approaches.jdbccrud.api.dto.PagerParams;
 import org.summerb.approaches.jdbccrud.api.dto.PaginatedList;
-import org.summerb.approaches.jdbccrud.api.exceptions.EntityNotFoundException;
-import org.summerb.approaches.jdbccrud.api.query.OrderBy;
 import org.summerb.approaches.jdbccrud.api.query.Query;
-import org.summerb.approaches.jdbccrud.impl.EasyCrudServiceTableAuthImpl;
+import org.summerb.approaches.jdbccrud.impl.EasyCrudServicePluggableImpl;
+import org.summerb.approaches.jdbccrud.impl.wireTaps.EasyCrudWireTapValidationImpl;
 import org.summerb.approaches.security.api.exceptions.NotAuthorizedException;
-import org.summerb.approaches.validation.FieldValidationException;
-import org.summerb.approaches.validation.ValidationContext;
+import org.summerb.microservices.articles.api.ArticleDao;
 import org.summerb.microservices.articles.api.ArticleService;
-import org.summerb.microservices.articles.api.AttachmentService;
 import org.summerb.microservices.articles.api.dto.Article;
-import org.summerb.microservices.articles.api.dto.Attachment;
 
 import com.google.common.base.Preconditions;
 
-public class ArticleServiceImpl extends EasyCrudServiceTableAuthImpl<Long, Article> implements ArticleService {
-	private AttachmentService attachmentService;
-	private static Attachment[] attachmentArrayType = new Attachment[0];
+public class ArticleServiceImpl extends EasyCrudServicePluggableImpl<Long, Article, ArticleDao>
+		implements ArticleService {
+
 	private Locale fallbackToLocale = new Locale("en");
 
 	public ArticleServiceImpl() {
 		setDtoClass(Article.class);
 		setEntityTypeMessageCode("term.articles.article");
-		setValidationStrategy(validationStrategy);
+
+		// Legacy compatibility:
+		setWireTap(new EasyCrudWireTapValidationImpl<>(new ArticleValidationStrategyImpl()));
 	}
-
-	private EasyCrudValidationStrategy<Article> validationStrategy = new EasyCrudValidationStrategy<Article>() {
-		@Override
-		public void validateForCreate(Article dto) throws FieldValidationException {
-			ValidationContext ctx = new ValidationContext();
-
-			if (ctx.validateNotEmpty(dto.getArticleKey(), Article.FN_KEY)) {
-				ctx.validateDataLengthLessOrEqual(dto.getArticleKey(), Article.FN_KEY_SIZE, Article.FN_KEY);
-			}
-			if (StringUtils.hasText(dto.getLang())) {
-				ctx.validateDataLengthLessOrEqual(dto.getLang(), Article.FN_LANG_SIZE, Article.FN_LANG);
-			}
-			if (ctx.validateNotEmpty(dto.getTitle(), Article.FN_TITLE)) {
-				ctx.validateDataLengthLessOrEqual(dto.getTitle(), Article.FN_TITLE_SIZE, Article.FN_TITLE);
-			}
-			if (StringUtils.hasText(dto.getAnnotation())) {
-				ctx.validateDataLengthLessOrEqual(dto.getAnnotation(), Article.FN_ANNOTATION_SIZE,
-						Article.FN_ANNOTATION);
-			}
-			if (ctx.validateNotEmpty(dto.getContent(), Article.FN_CONTENT)) {
-				ctx.validateDataLengthLessOrEqual(dto.getContent(), Article.FN_CONTENT_SIZE, Article.FN_CONTENT);
-			}
-			if (StringUtils.hasText(dto.getArticleGroup())) {
-				ctx.validateDataLengthLessOrEqual(dto.getArticleGroup(), Article.FN_GROUP_SIZE, Article.FN_GROUP);
-			}
-
-			if (ctx.getHasErrors()) {
-				throw new FieldValidationException(ctx.getErrors());
-			}
-		}
-
-		@Override
-		public void validateForUpdate(Article existingVersion, Article newVersion) throws FieldValidationException {
-			validateForCreate(newVersion);
-		}
-	};
 
 	@Override
 	public Article findArticleByKeyAndLocale(String key, Locale locale) throws NotAuthorizedException {
@@ -108,39 +66,6 @@ public class ArticleServiceImpl extends EasyCrudServiceTableAuthImpl<Long, Artic
 	@Override
 	public PaginatedList<Article> findArticles(PagerParams pagerParams, Locale locale) throws NotAuthorizedException {
 		return query(pagerParams, Query.n().eq(Article.FN_LANG, locale.getLanguage()));
-	}
-
-	@Override
-	@Transactional(rollbackFor = Throwable.class)
-	public void addArticleAttachment(Attachment attachment) throws FieldValidationException, NotAuthorizedException {
-		attachmentService.create(attachment);
-	}
-
-	@Override
-	@Transactional(rollbackFor = Throwable.class)
-	public void removeArticleAttachment(long attachmentId) throws NotAuthorizedException, EntityNotFoundException {
-		attachmentService.deleteById(attachmentId);
-	}
-
-	@Override
-	public Attachment[] findArticleAttachments(long articleId) throws NotAuthorizedException {
-		PaginatedList<Attachment> results = attachmentService.query(PagerParams.ALL,
-				Query.n().eq(Attachment.FN_ARTICLE_ID, articleId), OrderBy.Asc(Attachment.FN_NAME));
-		return results.getItems().toArray(attachmentArrayType);
-	}
-
-	@Override
-	public InputStream getAttachmnetContent(long attachmentId) throws NotAuthorizedException {
-		return attachmentService.getContentInputStream(attachmentId);
-	}
-
-	public AttachmentService getAttachmentService() {
-		return attachmentService;
-	}
-
-	@Autowired
-	public void setAttachmentService(AttachmentService attachmentService) {
-		this.attachmentService = attachmentService;
 	}
 
 	public Locale getFallbackToLocale() {

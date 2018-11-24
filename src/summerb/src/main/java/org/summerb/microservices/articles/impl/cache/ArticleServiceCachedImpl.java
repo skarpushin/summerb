@@ -1,6 +1,5 @@
 package org.summerb.microservices.articles.impl.cache;
 
-import java.io.InputStream;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -12,11 +11,12 @@ import org.summerb.approaches.jdbccrud.api.dto.EntityChangedEvent;
 import org.summerb.approaches.jdbccrud.api.dto.PagerParams;
 import org.summerb.approaches.jdbccrud.api.dto.PaginatedList;
 import org.summerb.approaches.jdbccrud.api.exceptions.EntityNotFoundException;
+import org.summerb.approaches.jdbccrud.api.query.OrderBy;
+import org.summerb.approaches.jdbccrud.api.query.Query;
 import org.summerb.approaches.security.api.exceptions.NotAuthorizedException;
 import org.summerb.approaches.validation.FieldValidationException;
 import org.summerb.microservices.articles.api.ArticleService;
 import org.summerb.microservices.articles.api.dto.Article;
-import org.summerb.microservices.articles.api.dto.Attachment;
 import org.summerb.utils.cache.CachesInvalidationNeeded;
 import org.summerb.utils.cache.TransactionBoundCache;
 
@@ -115,26 +115,6 @@ public class ArticleServiceCachedImpl implements ArticleService, InitializingBea
 		articleService.deleteByIdOptimistic(id, modifiedAt);
 	}
 
-	@Override
-	public void addArticleAttachment(Attachment attachment) throws FieldValidationException, NotAuthorizedException {
-		articleService.addArticleAttachment(attachment);
-	}
-
-	@Override
-	public void removeArticleAttachment(long attachmentId) throws NotAuthorizedException, EntityNotFoundException {
-		articleService.removeArticleAttachment(attachmentId);
-	}
-
-	@Override
-	public Attachment[] findArticleAttachments(long articleId) throws NotAuthorizedException {
-		return articleService.findArticleAttachments(articleId);
-	}
-
-	@Override
-	public InputStream getAttachmnetContent(long attachmentId) throws NotAuthorizedException {
-		return articleService.getAttachmnetContent(attachmentId);
-	}
-
 	public ArticleService getArticleService() {
 		return articleService;
 	}
@@ -151,6 +131,37 @@ public class ArticleServiceCachedImpl implements ArticleService, InitializingBea
 	@Autowired
 	public void setEventBus(EventBus eventBus) {
 		this.eventBus = eventBus;
+	}
+
+	@Override
+	public Article findOneByQuery(Query query) throws NotAuthorizedException {
+		return articleService.findOneByQuery(query);
+	}
+
+	@Override
+	public PaginatedList<Article> query(PagerParams pagerParams, Query optionalQuery, OrderBy... orderBy)
+			throws NotAuthorizedException {
+		return articleService.query(pagerParams, optionalQuery, orderBy);
+	}
+
+	@Override
+	public void deleteById(Long id) throws NotAuthorizedException, EntityNotFoundException {
+		articleService.deleteById(id);
+	}
+
+	@Override
+	public int deleteByQuery(Query query) throws NotAuthorizedException {
+		return articleService.deleteByQuery(query);
+	}
+
+	@Override
+	public Class<Article> getDtoClass() {
+		return articleService.getDtoClass();
+	}
+
+	@Override
+	public String getEntityTypeMessageCode() {
+		return articleService.getEntityTypeMessageCode();
 	}
 
 }

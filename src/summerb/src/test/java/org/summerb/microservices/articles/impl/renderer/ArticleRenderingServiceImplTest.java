@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.summerb.microservices.articles.api.ArticleAbsoluteUrlBuilder;
 import org.summerb.microservices.articles.api.ArticleService;
+import org.summerb.microservices.articles.api.AttachmentService;
 import org.summerb.microservices.articles.api.dto.Article;
 import org.summerb.microservices.articles.api.dto.Attachment;
 import org.summerb.microservices.articles.api.dto.consuming.RenderedArticle;
@@ -27,6 +28,7 @@ public class ArticleRenderingServiceImplTest {
 	public void testRenderArticle_smokeTest() throws Exception {
 		ArticleAbsoluteUrlBuilder articleAbsoluteUrlBuilder = new UrlBuilderTestImpl();
 		ArticleService articleService = Mockito.mock(ArticleService.class);
+		AttachmentService attachmentService = Mockito.mock(AttachmentService.class);
 
 		Article a1 = new Article();
 		a1.setId(1L);
@@ -40,7 +42,7 @@ public class ArticleRenderingServiceImplTest {
 		att1.setId(1L);
 		att1.setArticleId(1L);
 		att1.setName("screenshot1.jpg");
-		when(articleService.findArticleAttachments(1L)).thenReturn(new Attachment[] { att1 });
+		when(attachmentService.findArticleAttachments(1L)).thenReturn(new Attachment[] { att1 });
 
 		Article a2 = new Article();
 		a2.setId(1L);
@@ -54,15 +56,15 @@ public class ArticleRenderingServiceImplTest {
 		ArticleRendererImpl fixture = new ArticleRendererImpl();
 		fixture.setArticleAbsoluteUrlBuilder(articleAbsoluteUrlBuilder);
 		fixture.setArticleService(articleService);
+		fixture.setAttachmentService(attachmentService);
 		fixture.setStringTemplateCompiler(new StringTemplateCompilerlImpl());
 
 		RenderedArticle result = fixture.renderArticle("a1", Locale.ENGLISH);
 		assertNotNull(result);
 		String a2href = "<a href=\"url-article:a2\" title=\"Title of article 2\">Title of article 2</a>";
 		assertEquals("Article annotation. Read other article first: " + a2href, result.getAnnotation());
-		assertEquals(
-				"Article text. See: " + a2href
-						+ ". And now - here is the screenshot: <img class=\"article-image\" src=\"url-att:screenshot1.jpg\" alt=\"screenshot1.jpg\" />",
+		assertEquals("Article text. See: " + a2href
+				+ ". And now - here is the screenshot: <img class=\"article-image\" src=\"url-att:screenshot1.jpg\" alt=\"screenshot1.jpg\" />",
 				result.getContent());
 	}
 
@@ -73,5 +75,4 @@ public class ArticleRenderingServiceImplTest {
 	@After
 	public void tearDown() throws Exception {
 	}
-
 }

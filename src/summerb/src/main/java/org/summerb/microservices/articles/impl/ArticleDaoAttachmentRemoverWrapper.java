@@ -8,6 +8,7 @@ import org.summerb.approaches.jdbccrud.api.dto.PaginatedList;
 import org.summerb.approaches.jdbccrud.api.query.OrderBy;
 import org.summerb.approaches.jdbccrud.api.query.Query;
 import org.summerb.approaches.validation.FieldValidationException;
+import org.summerb.microservices.articles.api.ArticleDao;
 import org.summerb.microservices.articles.api.AttachmentDao;
 import org.summerb.microservices.articles.api.dto.Article;
 import org.summerb.microservices.articles.api.dto.Attachment;
@@ -22,7 +23,7 @@ import org.summerb.microservices.articles.api.dto.Attachment;
  * @author sergeyk
  *
  */
-public class ArticleDaoAttachmentRemoverWrapper implements EasyCrudDao<Long, Article> {
+public class ArticleDaoAttachmentRemoverWrapper implements ArticleDao {
 	private EasyCrudDao<Long, Article> articleDao;
 	private AttachmentDao attachmentDao;
 

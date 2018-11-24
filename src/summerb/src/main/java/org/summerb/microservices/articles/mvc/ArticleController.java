@@ -36,7 +36,6 @@ import org.summerb.approaches.springmvc.model.PageMessage;
 import org.summerb.approaches.springmvc.utils.CurrentRequestUtils;
 import org.summerb.approaches.springmvc.utils.MimeTypeResolver;
 import org.summerb.microservices.articles.api.ArticleRenderer;
-import org.summerb.microservices.articles.api.ArticleService;
 import org.summerb.microservices.articles.api.AttachmentService;
 import org.summerb.microservices.articles.api.dto.Attachment;
 import org.summerb.microservices.articles.api.dto.consuming.RenderedArticle;
@@ -54,8 +53,6 @@ public class ArticleController extends ControllerBase {
 	@Autowired
 	private ArticleRenderer articleRenderer;
 
-	@Autowired
-	private ArticleService articleService;
 	@Autowired
 	private AttachmentService attachmentService;
 	@Autowired
@@ -98,7 +95,7 @@ public class ArticleController extends ControllerBase {
 			// responseHeaders.setLastModified(maxLastModified);
 			response.setDateHeader("Last-Modified", now);
 
-			InputStreamResource ret = new InputStreamResource(articleService.getAttachmnetContent(id));
+			InputStreamResource ret = new InputStreamResource(attachmentService.getContentInputStream(id));
 			return new ResponseEntity<InputStreamResource>(ret, headers, HttpStatus.OK);
 		} catch (AttachmentNotFoundException t) {
 			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -122,7 +119,7 @@ public class ArticleController extends ControllerBase {
 			response.setContentLength((int) attachment.getSize());
 			response.setHeader("Content-Disposition", "attachment; filename=\"" + attachment.getName() + "\"");
 
-			FileCopyUtils.copy(articleService.getAttachmnetContent(id), response.getOutputStream());
+			FileCopyUtils.copy(attachmentService.getContentInputStream(id), response.getOutputStream());
 
 			return null;
 		} catch (Throwable t) {

@@ -11,6 +11,7 @@ import org.summerb.approaches.jdbccrud.api.exceptions.GenericEntityNotFoundExcep
 import org.summerb.approaches.springmvc.utils.DummyMapImpl;
 import org.summerb.microservices.articles.api.ArticleAbsoluteUrlBuilder;
 import org.summerb.microservices.articles.api.ArticleService;
+import org.summerb.microservices.articles.api.AttachmentService;
 import org.summerb.microservices.articles.api.dto.Article;
 import org.summerb.microservices.articles.api.dto.Attachment;
 import org.summerb.microservices.articles.api.dto.consuming.RenderedArticle;
@@ -22,6 +23,7 @@ public class ArticleRenderingContext {
 	protected Logger log = Logger.getLogger(getClass());
 
 	private final ArticleService articleService;
+	private final AttachmentService attachmentService;
 	private final ArticleAbsoluteUrlBuilder articleAbsoluteUrlBuilder;
 	private final RenderedArticle renderedArticle;
 	private final Locale locale;
@@ -36,12 +38,14 @@ public class ArticleRenderingContext {
 	private Map<String, Attachment> attachmentsCache;
 
 	public ArticleRenderingContext(Locale locale, RenderedArticle renderedArticle, ArticleService articleService,
-			ArticleAbsoluteUrlBuilder articleAbsoluteUrlBuilder) {
+			AttachmentService attachmentService, ArticleAbsoluteUrlBuilder articleAbsoluteUrlBuilder) {
 		Preconditions.checkArgument(articleService != null);
+		Preconditions.checkArgument(attachmentService != null);
 		Preconditions.checkArgument(locale != null);
 		Preconditions.checkArgument(renderedArticle != null);
 
 		this.renderedArticle = renderedArticle;
+		this.attachmentService = attachmentService;
 		this.articleService = articleService;
 		this.articleAbsoluteUrlBuilder = articleAbsoluteUrlBuilder;
 		this.locale = locale;
@@ -197,7 +201,7 @@ public class ArticleRenderingContext {
 		if (attachmentsCache == null) {
 			try {
 				Map<String, Attachment> ret = new HashMap<String, Attachment>();
-				Attachment[] arr = articleService.findArticleAttachments(renderedArticle.getId());
+				Attachment[] arr = attachmentService.findArticleAttachments(renderedArticle.getId());
 				for (int i = 0; i < arr.length; i++) {
 					ret.put(arr[i].getName(), arr[i]);
 				}

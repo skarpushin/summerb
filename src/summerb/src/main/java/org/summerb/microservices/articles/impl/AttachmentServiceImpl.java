@@ -4,21 +4,28 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.springframework.transaction.annotation.Transactional;
-import org.summerb.approaches.jdbccrud.api.EasyCrudValidationStrategy;
-import org.summerb.approaches.jdbccrud.impl.EasyCrudServiceTableAuthImpl;
+import org.summerb.approaches.jdbccrud.api.dto.PagerParams;
+import org.summerb.approaches.jdbccrud.api.dto.PaginatedList;
+import org.summerb.approaches.jdbccrud.api.query.OrderBy;
+import org.summerb.approaches.jdbccrud.api.query.Query;
+import org.summerb.approaches.jdbccrud.impl.EasyCrudServicePluggableImpl;
+import org.summerb.approaches.jdbccrud.impl.wireTaps.EasyCrudWireTapValidationImpl;
 import org.summerb.approaches.security.api.exceptions.NotAuthorizedException;
 import org.summerb.approaches.validation.FieldValidationException;
-import org.summerb.approaches.validation.ValidationContext;
 import org.summerb.microservices.articles.api.AttachmentDao;
 import org.summerb.microservices.articles.api.AttachmentService;
 import org.summerb.microservices.articles.api.dto.Attachment;
 
-public class AttachmentServiceImpl extends EasyCrudServiceTableAuthImpl<Long, Attachment>implements AttachmentService {
+public class AttachmentServiceImpl extends EasyCrudServicePluggableImpl<Long, Attachment, AttachmentDao>
+		implements AttachmentService {
+	private static Attachment[] attachmentArrayType = new Attachment[0];
 
 	public AttachmentServiceImpl() {
 		setDtoClass(Attachment.class);
 		setEntityTypeMessageCode("term.articles.attachment");
-		setValidationStrategy(validationStrategy);
+
+		// Legacy:
+		setWireTap(new EasyCrudWireTapValidationImpl<>(new AttachmentValidationStrategyImpl()));
 	}
 
 	@Override
@@ -37,38 +44,20 @@ public class AttachmentServiceImpl extends EasyCrudServiceTableAuthImpl<Long, At
 		}
 	}
 
-	private EasyCrudValidationStrategy<Attachment> validationStrategy = new EasyCrudValidationStrategy<Attachment>() {
-		@Override
-		public void validateForUpdate(Attachment existingVersion, Attachment newVersion)
-				throws FieldValidationException {
-			throw new RuntimeException("Update operation is not supposed for attachments");
-		}
-
-		@Override
-		public void validateForCreate(Attachment dto) throws FieldValidationException {
-			ValidationContext ctx = new ValidationContext();
-
-			if (ctx.validateNotEmpty(dto.getName(), Attachment.FN_NAME)) {
-				ctx.validateDataLengthLessOrEqual(dto.getName(), Attachment.FN_NAME_MAXSIZE, Attachment.FN_NAME);
-			}
-			ctx.validateNotEmpty(dto.getArticleId(), Attachment.FN_ARTICLE_ID);
-			ctx.validateNotEmpty(dto.getSize(), Attachment.FN_SIZE);
-			ctx.validateNotNull(dto.getContents(), Attachment.FN_CONTENTS);
-
-			if (ctx.getHasErrors()) {
-				throw new FieldValidationException(ctx.getErrors());
-			}
-		}
-	};
-
 	@Override
 	public InputStream getContentInputStream(long id) throws NotAuthorizedException {
 		try {
-			AttachmentDao ourDao = (AttachmentDao) dao;
-			return ourDao.getContentInputStream(id);
+			return dao.getContentInputStream(id);
 		} catch (Throwable t) {
 			throw exceptionStrategy.handleExceptionAtFind(t);
 		}
+	}
+
+	@Override
+	public Attachment[] findArticleAttachments(long articleId) throws NotAuthorizedException {
+		PaginatedList<Attachment> results = query(PagerParams.ALL, Query.n().eq(Attachment.FN_ARTICLE_ID, articleId),
+				OrderBy.Asc(Attachment.FN_NAME));
+		return results.getItems().toArray(attachmentArrayType);
 	}
 
 }

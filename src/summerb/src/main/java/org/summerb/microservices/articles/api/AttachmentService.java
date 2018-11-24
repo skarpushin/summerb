@@ -8,4 +8,6 @@ import org.summerb.microservices.articles.api.dto.Attachment;
 
 public interface AttachmentService extends EasyCrudService<Long, Attachment> {
 	InputStream getContentInputStream(long id) throws NotAuthorizedException;
+
+	Attachment[] findArticleAttachments(long articleId) throws NotAuthorizedException;
 }

@@ -7,6 +7,7 @@ import org.springframework.util.StringUtils;
 import org.summerb.microservices.articles.api.ArticleAbsoluteUrlBuilder;
 import org.summerb.microservices.articles.api.ArticleRenderer;
 import org.summerb.microservices.articles.api.ArticleService;
+import org.summerb.microservices.articles.api.AttachmentService;
 import org.summerb.microservices.articles.api.dto.Article;
 import org.summerb.microservices.articles.api.dto.consuming.RenderedArticle;
 import org.summerb.utils.stringtemplate.api.StringTemplate;
@@ -16,6 +17,7 @@ import com.google.common.base.Preconditions;
 
 public class ArticleRendererImpl implements ArticleRenderer {
 	private ArticleService articleService;
+	private AttachmentService attachmentService;
 	private ArticleAbsoluteUrlBuilder articleAbsoluteUrlBuilder;
 	private StringTemplateCompiler stringTemplateCompiler;
 
@@ -32,7 +34,7 @@ public class ArticleRendererImpl implements ArticleRenderer {
 
 			RenderedArticle renderedArticle = buildRenderedArticleTemplate(article);
 			ArticleRenderingContext articleRenderingContext = new ArticleRenderingContext(locale, renderedArticle,
-					articleService, articleAbsoluteUrlBuilder);
+					articleService, attachmentService, articleAbsoluteUrlBuilder);
 
 			StringTemplate annotationTemplate = stringTemplateCompiler.compile(article.getAnnotation());
 			renderedArticle.setAnnotation(annotationTemplate.applyTo(articleRenderingContext));
@@ -84,6 +86,15 @@ public class ArticleRendererImpl implements ArticleRenderer {
 	@Autowired
 	public void setStringTemplateCompiler(StringTemplateCompiler stringTemplateCompiler) {
 		this.stringTemplateCompiler = stringTemplateCompiler;
+	}
+
+	public AttachmentService getAttachmentService() {
+		return attachmentService;
+	}
+
+	@Autowired
+	public void setAttachmentService(AttachmentService attachmentService) {
+		this.attachmentService = attachmentService;
 	}
 
 }

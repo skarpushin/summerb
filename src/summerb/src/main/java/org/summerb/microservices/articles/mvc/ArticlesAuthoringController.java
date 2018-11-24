@@ -144,7 +144,7 @@ public class ArticlesAuthoringController extends ControllerBase {
 			ArticleVm contentPm = new ArticleVm();
 			contentPm.setDto(entry.getValue());
 			contentPm.setAttachments(new ListPm<Attachment>(
-					Arrays.asList(articleService.findArticleAttachments(entry.getValue().getId()))));
+					Arrays.asList(attachmentService.findArticleAttachments(entry.getValue().getId()))));
 			contents.add(contentPm);
 		}
 
@@ -198,7 +198,7 @@ public class ArticlesAuthoringController extends ControllerBase {
 			String fileName = fileItem.getName();
 			att.setName(fileName);
 			att.setContents(articleAttachmentVm.getFile().getInputStream());
-			articleService.addArticleAttachment(att);
+			attachmentService.create(att);
 			return Views.redirect(String.format("article-authoring/%s", article.getArticleKey()));
 		} catch (Throwable t) {
 			log.error("Failed to create attachment", t);
