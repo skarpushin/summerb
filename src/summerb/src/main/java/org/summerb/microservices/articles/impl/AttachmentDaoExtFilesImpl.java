@@ -10,6 +10,10 @@ import java.sql.SQLException;
 import java.util.Date;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -33,15 +37,24 @@ import org.summerb.microservices.articles.api.dto.Attachment;
  * @author sergeyk
  *
  */
-public class AttachmentDaoExtFilesImpl extends EasyCrudDaoMySqlImpl<Long, Attachment>implements AttachmentDao {
+public class AttachmentDaoExtFilesImpl extends EasyCrudDaoMySqlImpl<Long, Attachment>
+		implements AttachmentDao, ApplicationContextAware {
 	private Logger log = Logger.getLogger(getClass());
 
 	private String targetFolder = "article-attachments";
+	private ApplicationContext applicationContext;
+
+	private Boolean removerRegistered;
 
 	public AttachmentDaoExtFilesImpl() {
 		setRowMapper(rowMapper);
 		setParameterSourceBuilder(parameterSourceBuilder);
 		setDtoClass(Attachment.class);
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		this.applicationContext = applicationContext;
 	}
 
 	@Override
@@ -136,8 +149,7 @@ public class AttachmentDaoExtFilesImpl extends EasyCrudDaoMySqlImpl<Long, Attach
 	public int delete(Long id) {
 		int ret = super.delete(id);
 		if (ret > 0) {
-			File fl = new File(buildAttachmentFsName(id));
-			ret = !fl.exists() || fl.delete() ? 1 : 0;
+			ret = deleteFile(id);
 		}
 		return ret;
 	}
@@ -146,10 +158,37 @@ public class AttachmentDaoExtFilesImpl extends EasyCrudDaoMySqlImpl<Long, Attach
 	public int delete(Long id, long modifiedAt) {
 		int ret = super.delete(id, modifiedAt);
 		if (ret > 0) {
-			File fl = new File(buildAttachmentFsName(id));
-			ret = !fl.exists() || fl.delete() ? 1 : 0;
+			ret = deleteFile(id);
 		}
 		return ret;
+	}
+
+	private int deleteFile(Long id) {
+		// NOTE: If we have AttachmentFilesRemover registered in the context it means
+		// that we'll delete files upon transaction commit, thus we wont do it now
+		if (isRemoverRegistered()) {
+			return 1;
+		}
+
+		File fl = new File(buildAttachmentFsName(id));
+		return !fl.exists() || fl.delete() ? 1 : 0;
+	}
+
+	private boolean isRemoverRegistered() {
+		if (removerRegistered == null) {
+			try {
+				AttachmentFilesRemover remover = applicationContext.getBean(AttachmentFilesRemover.class);
+				removerRegistered = remover != null;
+				log.info("Since AttachmentFilesRemover bean is registered, AttachmentDaoExtFilesImpl will not "
+						+ "remove phisical files when rows are deleted. AttachmentFilesRemover is expected "
+						+ "to handle this instead when transaction commits");
+			} catch (BeansException e) {
+				removerRegistered = false;
+				log.info("Since AttachmentFilesRemover bean is NOT registered, AttachmentDaoExtFilesImpl will "
+						+ "delete phisical files, which might lead to inconsistent state if transaction rollback");
+			}
+		}
+		return removerRegistered;
 	}
 
 	@Override
@@ -166,8 +205,9 @@ public class AttachmentDaoExtFilesImpl extends EasyCrudDaoMySqlImpl<Long, Attach
 		return targetFolder;
 	}
 
-	public void setTargetFolder(String filesStorageFolderPathName) {
-		this.targetFolder = filesStorageFolderPathName;
+	@Required
+	public void setTargetFolder(String targetFolder) {
+		this.targetFolder = targetFolder;
 	}
 
 }

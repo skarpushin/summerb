@@ -14,15 +14,18 @@ import org.summerb.microservices.articles.api.dto.Article;
 import org.summerb.microservices.articles.api.dto.Attachment;
 
 /**
- * This simple impl is used to enforce attachments delition before article will
- * be deleted. Unfortunately ther eis not transaction management. If later logic
- * failes it might happen that attachment files are deleted, but rows in bot
+ * This simple impl is used to enforce attachments deletion before article will
+ * be deleted. Unfortunately there is not transaction management. If later logic
+ * fails it might happen that attachment files are deleted, but rows in both
  * articles and attachments tables remain. (that will happen if use @see
  * AttachmentDaoExtFilesImpl)
  * 
  * @author sergeyk
  *
+ * @deprecated use {@link ArticleAttachmentRemoverWireTap} instead
+ *
  */
+@Deprecated
 public class ArticleDaoAttachmentRemoverWrapper implements ArticleDao {
 	private EasyCrudDao<Long, Article> articleDao;
 	private AttachmentDao attachmentDao;

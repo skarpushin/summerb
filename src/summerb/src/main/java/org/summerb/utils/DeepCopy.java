@@ -43,7 +43,8 @@ public class DeepCopy {
 	}
 
 	/**
-	 * Returns a copy of the object, or null if the object cannot be serialized.
+	 * Returns a copy of the object, or throws exception if the object cannot be
+	 * serialized.
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T copyOrPopagateExcIfAny(T orig) throws NotSerializableException {
