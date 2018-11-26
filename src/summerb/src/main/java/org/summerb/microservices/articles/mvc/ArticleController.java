@@ -72,7 +72,8 @@ public class ArticleController extends ControllerBase {
 		}
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/articles-attachments/{id}/{proposedName}")
+	@RequestMapping(method = RequestMethod.GET, value = ArticleAbsoluteUrlBuilderImpl.DEFAULT_PATH_ARTICLES_ATTACHMENTS
+			+ "/{id}/{proposedName}")
 	public ResponseEntity<InputStreamResource> getAttachment(Model model, @PathVariable("id") long id,
 			HttpServletResponse response) throws AttachmentNotFoundException {
 		try {
@@ -110,7 +111,8 @@ public class ArticleController extends ControllerBase {
 		}
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/articles-attachments/{id}")
+	@RequestMapping(method = RequestMethod.GET, value = ArticleAbsoluteUrlBuilderImpl.DEFAULT_PATH_ARTICLES_ATTACHMENTS
+			+ "/{id}")
 	public ModelAndView getAttachment2(Model model, @PathVariable("id") long id, HttpServletResponse response) {
 		try {
 			Attachment attachment = attachmentService.findById(id);
@@ -132,7 +134,8 @@ public class ArticleController extends ControllerBase {
 		}
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/articles/{articleKey}")
+	@RequestMapping(method = RequestMethod.GET, value = ArticleAbsoluteUrlBuilderImpl.DEFAULT_PATH_ARTICLES
+			+ "/{articleKey}")
 	public String get(Model model, @PathVariable("articleKey") String articleKey, HttpServletResponse respons,
 			Locale locale) {
 
