@@ -205,9 +205,7 @@ public class AttachmentDaoExtFilesImpl extends EasyCrudDaoMySqlImpl<Long, Attach
 		return targetFolder;
 	}
 
-	@Required
 	public void setTargetFolder(String targetFolder) {
 		this.targetFolder = targetFolder;
 	}
-
 }
