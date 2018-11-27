@@ -18,7 +18,6 @@ import org.summerb.microservices.articles.api.dto.Attachment;
  * 
  * @see com.google.common.eventbus.AsyncEventBus
  * @see org.summerb.utils.tx.AfterCommitExecutorThreadLocalImpl
- * @see org.summerb.utils.tx.EntityChangedEventForwarder
  * 
  * @author sergeyk
  *
