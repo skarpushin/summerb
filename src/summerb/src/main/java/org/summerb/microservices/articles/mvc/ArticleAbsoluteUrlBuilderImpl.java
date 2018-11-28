@@ -14,18 +14,24 @@ public class ArticleAbsoluteUrlBuilderImpl implements ArticleAbsoluteUrlBuilder 
 
 	@Override
 	public String buildUrlFroArticle(Article article) {
-		return CurrentRequestUtils.get().getContextPath() + articlesBasePath + "/" + article.getArticleKey();
+		return getBasePath() + articlesBasePath + "/" + article.getArticleKey();
 	}
 
 	@Override
 	public String buildUrlFroArticleAttachment(Attachment attachment) {
-		return CurrentRequestUtils.get().getContextPath() + attachmentsBasePath + "/" + attachment.getId() + "/"
-				+ attachment.getName();
+		return getBasePath() + attachmentsBasePath + "/" + attachment.getId() + "/" + attachment.getName();
 	}
 
 	@Override
 	public String buildUrlFroAppWebPage(String relativeUrl) {
-		return CurrentRequestUtils.get().getContextPath() + relativeUrl;
+		return getBasePath() + relativeUrl;
+	}
+
+	/**
+	 * @return base url and context path (if any)
+	 */
+	protected String getBasePath() {
+		return CurrentRequestUtils.get().getContextPath();
 	}
 
 	public String getArticlesBasePath() {
