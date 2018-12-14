@@ -75,7 +75,7 @@ public class ArticlesAuthoringController extends ControllerBase {
 		return viewNameArticlesAuthoringList;
 	}
 
-	@Transactional
+	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(method = RequestMethod.POST, value = "/")
 	public @ResponseBody Map<String, ? extends Object> createArticle(@RequestBody Article dto,
 			HttpServletResponse response) {
@@ -108,7 +108,7 @@ public class ArticlesAuthoringController extends ControllerBase {
 		dto.setContent("TBD: Content, " + locale.toString());
 	}
 
-	@Transactional
+	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(method = RequestMethod.DELETE, value = "/{articleKey}")
 	public @ResponseBody Map<String, ? extends Object> deleteArticle(Model model,
 			@PathVariable("articleKey") String articleKey, HttpServletResponse response) {

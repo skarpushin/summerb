@@ -52,7 +52,7 @@
 	<bean id="articleServiceDao" class="org.summerb.microservices.articles.impl.ArticleDaoAttachmentRemoverWrapper"
 		p:articleDao-ref="articleServiceDaoActual" p:attachmentDao-ref="articlesAttachmentsDao">
 	</bean>
-	<bean id="articlesService" class="org.summerb.microservices.articles.impl.ArticleServiceImpl" p:dao-ref="articleServiceDao"
+	<bean id="articleService" class="org.summerb.microservices.articles.impl.ArticleServiceImpl" p:dao-ref="articleServiceDao"
 		p:currentUserResolver-ref="currentUserResolver" />
 
 	<bean id="currentUserResolver" class="integr.ru.skarpushin.services.articles.impl.CurrentUserResolverTestImpl" />

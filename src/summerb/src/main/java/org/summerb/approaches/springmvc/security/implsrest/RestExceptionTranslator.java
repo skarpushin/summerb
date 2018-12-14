@@ -11,14 +11,15 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationTrustResolver;
 import org.springframework.security.authentication.AuthenticationTrustResolverImpl;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
+import org.springframework.web.servlet.LocaleContextResolver;
 import org.summerb.approaches.jdbccrud.common.DtoBase;
 import org.summerb.approaches.security.api.CurrentUserNotFoundException;
 import org.summerb.approaches.security.api.dto.NotAuthorizedResult;
@@ -63,6 +64,7 @@ public class RestExceptionTranslator extends GenericFilterBean {
 	private JsonResponseWriter jsonResponseHelper;
 
 	private ExceptionTranslator exceptionTranslator;
+	private LocaleContextResolver localeContextResolver;
 
 	public RestExceptionTranslator() {
 		jsonResponseHelper = new JsonResponseWriterGsonImpl();
@@ -104,8 +106,7 @@ public class RestExceptionTranslator extends GenericFilterBean {
 				.equals(Boolean.valueOf(request.getHeader(X_TRANSLATE_AUTHORIZATION_ERRORS)));
 		GenericServerErrorResult ret = null;
 		if (translateAuthErrors) {
-			ret = new GenericServerErrorResult(
-					exceptionTranslator.buildUserMessage(ex, LocaleContextHolder.getLocale()), new ExceptionInfo(ex));
+			ret = new GenericServerErrorResult(buildUserMessage(ex, request), new ExceptionInfo(ex));
 		}
 
 		NotAuthorizedException naex = ExceptionUtils.findExceptionOfType(ex, NotAuthorizedException.class);
@@ -146,8 +147,15 @@ public class RestExceptionTranslator extends GenericFilterBean {
 		// TBD: Do we really need to send whole stack trace to client ??? I think we
 		// should do it only during development
 		response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-		return new GenericServerErrorResult(exceptionTranslator.buildUserMessage(ex, LocaleContextHolder.getLocale()),
-				new ExceptionInfo(ex));
+		return new GenericServerErrorResult(buildUserMessage(ex, request), new ExceptionInfo(ex));
+	}
+
+	protected String buildUserMessage(Exception ex, HttpServletRequest request) {
+		String userMessage = exceptionTranslator.buildUserMessage(ex, localeContextResolver.resolveLocale(request));
+		if (!StringUtils.hasText(userMessage)) {
+			userMessage = ExceptionUtils.getAllMessagesRaw(ex);
+		}
+		return userMessage;
 	}
 
 	protected String getCurrentUser(Authentication optionalAuthentication) {
@@ -178,5 +186,14 @@ public class RestExceptionTranslator extends GenericFilterBean {
 	@Autowired
 	public void setExceptionTranslator(ExceptionTranslator exceptionTranslator) {
 		this.exceptionTranslator = exceptionTranslator;
+	}
+
+	public LocaleContextResolver getLocaleContextResolver() {
+		return localeContextResolver;
+	}
+
+	@Autowired
+	public void setLocaleContextResolver(LocaleContextResolver localeContextResolver) {
+		this.localeContextResolver = localeContextResolver;
 	}
 }

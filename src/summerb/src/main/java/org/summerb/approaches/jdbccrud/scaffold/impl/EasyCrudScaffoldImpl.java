@@ -29,6 +29,7 @@ import org.summerb.approaches.jdbccrud.impl.wireTaps.EasyCrudWireTapPerRowAuthIm
 import org.summerb.approaches.jdbccrud.impl.wireTaps.EasyCrudWireTapTableAuthImpl;
 import org.summerb.approaches.jdbccrud.impl.wireTaps.EasyCrudWireTapValidationImpl;
 import org.summerb.approaches.jdbccrud.scaffold.api.EasyCrudScaffold;
+import org.summerb.approaches.jdbccrud.scaffold.api.EasyCrudServiceProxyFactory;
 import org.summerb.approaches.security.api.CurrentUserResolver;
 
 import com.google.common.base.Preconditions;
@@ -46,6 +47,7 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold {
 	private CurrentUserResolver currentUserResolver;
 	private ConversionService conversionService;
 	private StringIdGenerator stringIdGenerator;
+	private EasyCrudServiceProxyFactory easyCrudServiceProxyFactory = new EasyCrudServiceProxyFactoryImpl();
 
 	@Override
 	public <TId, TDto extends HasId<TId>> EasyCrudService<TId, TDto> fromDto(Class<TDto> dtoClass) {
@@ -159,7 +161,7 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold {
 			Class<TDto> dtoClass = discoverDtoClassFromServiceInterface(serviceInterface);
 			EasyCrudDao<TId, TDto> dao = buildDao(dtoClass, tableName);
 
-			TService proxy = EasyCrudServiceScaffoldedImpl.createImpl(serviceInterface);
+			TService proxy = easyCrudServiceProxyFactory.createImpl(serviceInterface);
 			EasyCrudServicePluggableImpl service = (EasyCrudServicePluggableImpl) java.lang.reflect.Proxy
 					.getInvocationHandler(proxy);
 			initService(service, dtoClass, messageCode, tableName, dao, injections);
@@ -228,5 +230,14 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold {
 	@Autowired(required = false)
 	public void setStringIdGenerator(StringIdGenerator stringIdGenerator) {
 		this.stringIdGenerator = stringIdGenerator;
+	}
+
+	public EasyCrudServiceProxyFactory getEasyCrudServiceProxyFactory() {
+		return easyCrudServiceProxyFactory;
+	}
+
+	@Autowired(required = false)
+	public void setEasyCrudServiceProxyFactory(EasyCrudServiceProxyFactory easyCrudServiceProxyFactory) {
+		this.easyCrudServiceProxyFactory = easyCrudServiceProxyFactory;
 	}
 }

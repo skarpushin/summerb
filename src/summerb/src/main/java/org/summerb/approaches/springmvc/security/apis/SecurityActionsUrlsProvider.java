@@ -1,6 +1,7 @@
 package org.summerb.approaches.springmvc.security.apis;
 
 import org.summerb.approaches.springmvc.security.mvc.LoginController;
+import org.summerb.microservices.users.api.dto.User;
 
 /**
  * This interface provides url paths (excluding base path) for certain
@@ -21,7 +22,7 @@ public interface SecurityActionsUrlsProvider {
 
 	String getDefaultPath();
 
-	String buildRegistrationActivationPath(String activationKey);
+	String buildRegistrationActivationPath(User user, String activationToken);
 
 	String buildPasswordResetPath(String username, String passwordResetToken);
 

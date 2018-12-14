@@ -2,7 +2,6 @@ package org.summerb.approaches.jdbccrud.rest.querynarrower;
 
 import org.summerb.approaches.jdbccrud.api.query.Query;
 import org.summerb.approaches.jdbccrud.rest.commonpathvars.PathVariablesMap;
-import org.summerb.approaches.jdbccrud.rest.querynarrower.QueryNarrowerStrategyFieldBased;
 
 public class QueryNarrowerByCommonPathVariable extends QueryNarrowerStrategyFieldBased {
 	private String commonParamName;

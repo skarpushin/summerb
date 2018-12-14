@@ -58,15 +58,15 @@ public class SecurityActionsUrlsProviderDefaultImpl implements SecurityActionsUr
 	public String getInvalidSession() {
 		return INVALID_SESSION;
 	}
-	
+
 	@Override
 	public String getDefaultPath() {
 		return "/";
 	}
 
 	@Override
-	public String buildRegistrationActivationPath(String activationKey) {
-		return ACTIVATE + "?" + PARAM_ACTIVATION_UUID + "=" + activationKey;
+	public String buildRegistrationActivationPath(User user, String activationToken) {
+		return ACTIVATE + "?" + PARAM_ACTIVATION_UUID + "=" + user.getUuid();
 	}
 
 	@Override

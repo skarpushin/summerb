@@ -18,15 +18,16 @@ public class ElevationRunnerImpl implements ElevationRunner {
 	@Override
 	public void runElevated(Runnable runnable) {
 		boolean elevationRequired = elevationStrategy.isElevationRequired();
+		Object cookie = null;
 		if (elevationRequired) {
-			elevationStrategy.elevate();
+			cookie = elevationStrategy.elevate();
 		}
 
 		try {
 			runnable.run();
 		} finally {
 			if (elevationRequired) {
-				elevationStrategy.deElevate(null);
+				elevationStrategy.deElevate(cookie);
 			}
 		}
 	}
@@ -34,15 +35,16 @@ public class ElevationRunnerImpl implements ElevationRunner {
 	@Override
 	public <T> T callElevated(Callable<T> callable) throws Exception {
 		boolean elevationRequired = elevationStrategy.isElevationRequired();
+		Object cookie = null;
 		if (elevationRequired) {
-			elevationStrategy.elevate();
+			cookie = elevationStrategy.elevate();
 		}
 
 		try {
 			return callable.call();
 		} finally {
 			if (elevationRequired) {
-				elevationStrategy.deElevate(null);
+				elevationStrategy.deElevate(cookie);
 			}
 		}
 	}

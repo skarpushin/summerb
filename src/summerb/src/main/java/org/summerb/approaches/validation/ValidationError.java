@@ -42,12 +42,6 @@ public class ValidationError implements Serializable, HasMessageCode, HasMessage
 	public ValidationError() {
 	}
 
-	/**
-	 * @deprecated Avoid using this class directly - create a subclass for it.
-	 *             Otherwise you might hit issue when deserializing from
-	 *             json/xml
-	 */
-	@Deprecated
 	public ValidationError(String userMessageCode, String fieldToken) {
 		if (userMessageCode == null || fieldToken == null) {
 			throw new IllegalArgumentException("Message and field name token cannot be null.");
@@ -56,10 +50,6 @@ public class ValidationError implements Serializable, HasMessageCode, HasMessage
 		this.fieldToken = fieldToken;
 	}
 
-	/**
-	 * @deprecated Do not use this calss directly - create a subcluss for it
-	 */
-	@Deprecated
 	public ValidationError(String userMessageCode, String fieldToken, Object... args) {
 		this(userMessageCode, fieldToken);
 		this.messageArgs = args;

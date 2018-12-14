@@ -38,10 +38,11 @@ public class UserAccountChangeHadlersDefaultImpl implements UserRegisteredHandle
 				return;
 			}
 
+			String activationAbsoluteLink = absoluteUrlBuilder.buildExternalUrl(
+					securityActionsUrlsProvider.buildRegistrationActivationPath(user, buildActivationToken(user)));
+
 			String senderEmail = securityMailsMessageBuilderFactory.getAccountOperationsSender().getEmail();
 			EmailTemplateParams emailTemplateParams = new EmailTemplateParams(senderEmail, user, new Object());
-			String activationAbsoluteLink = absoluteUrlBuilder
-					.buildExternalUrl(securityActionsUrlsProvider.buildRegistrationActivationPath(user.getUuid()));
 			emailTemplateParams.getExtension().put(ATTR_ACTIVATION_LINK, activationAbsoluteLink);
 			EmailMessage emailMessage = securityMailsMessageBuilderFactory.getRegistrationEmailBuilder()
 					.buildEmail(senderEmail, user.getEmail(), emailTemplateParams);
@@ -49,6 +50,11 @@ public class UserAccountChangeHadlersDefaultImpl implements UserRegisteredHandle
 		} catch (Throwable t) {
 			throw new GenericRuntimeException(SecurityMessageCodes.FAILED_TO_SEND_REGISTRATION_EMAIL, t);
 		}
+	}
+
+	protected String buildActivationToken(User user) {
+		// meant to be sub-classed
+		return "";
 	}
 
 	@Override

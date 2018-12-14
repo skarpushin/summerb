@@ -14,6 +14,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 import org.springframework.web.util.NestedServletException;
@@ -102,8 +103,12 @@ public class ControllerExceptionHandlerStrategyLegacyImpl
 
 		ModelAndView ret = new ModelAndView(Views.ERROR_UNEXPECTED_CLARIFIED);
 		String msg = exceptionTranslator.buildUserMessage(ex, LocaleContextHolder.getLocale());
+		if (!StringUtils.hasText(msg)) {
+			msg = ExceptionUtils.getAllMessagesRaw(ex);
+		}
+
 		ControllerBase.addPageMessage(ret.getModel(), new PageMessage(msg, MessageSeverity.Danger));
-		ret.getModel().put(ControllerBase.ATTR_EXCEPTION, ex);
+		ret.getModel().put(ControllerBase.ATTR_EXCEPTION, msg);
 		ret.getModel().put(ControllerBase.ATTR_EXCEPTION_STACKTRACE, ExceptionUtils.getThrowableStackTraceAsString(ex));
 		return ret;
 	}

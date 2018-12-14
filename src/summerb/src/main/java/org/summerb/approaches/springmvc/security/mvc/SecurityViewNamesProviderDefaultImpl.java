@@ -4,6 +4,9 @@ import org.summerb.approaches.springmvc.security.apis.SecurityViewNamesProvider;
 
 public class SecurityViewNamesProviderDefaultImpl extends org.summerb.approaches.springmvc.Views
 		implements SecurityViewNamesProvider {
+
+	protected String viewsBasePath = "login";
+
 	@Override
 	public String homePage() {
 		return "site/index";
@@ -11,31 +14,31 @@ public class SecurityViewNamesProviderDefaultImpl extends org.summerb.approaches
 
 	@Override
 	public String loginForm() {
-		return "login/login";
+		return viewsBasePath + "/login";
 	}
 
 	@Override
 	public String registerForm() {
-		return "login/register";
+		return viewsBasePath + "/register";
 	}
 
 	@Override
 	public String activateRegistration() {
-		return "login/activate";
+		return viewsBasePath + "/activate";
 	}
 
 	@Override
 	public String resetPasswordRequest() {
-		return "login/request-reset";
+		return viewsBasePath + "/request-reset";
 	}
 
 	@Override
 	public String resetPassword() {
-		return "login/reset";
+		return viewsBasePath + "/reset";
 	}
 
 	@Override
 	public String changePassword() {
-		return "login/change";
+		return viewsBasePath + "/change";
 	}
 }

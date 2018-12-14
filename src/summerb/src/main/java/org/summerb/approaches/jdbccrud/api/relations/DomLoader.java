@@ -6,7 +6,6 @@ import java.util.Set;
 import org.summerb.approaches.jdbccrud.api.dto.HasId;
 import org.summerb.approaches.jdbccrud.api.dto.datapackage.DataSet;
 import org.summerb.approaches.jdbccrud.api.dto.relations.Ref;
-import org.summerb.approaches.jdbccrud.api.relations.DataSetLoader;
 
 /**
  * Interface used to load Dom object trees. This might be more convenient than

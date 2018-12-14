@@ -1,6 +1,7 @@
 package org.summerb.microservices.articles.mvc;
 
-import org.summerb.approaches.springmvc.utils.CurrentRequestUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.summerb.approaches.springmvc.utils.AbsoluteUrlBuilder;
 import org.summerb.microservices.articles.api.ArticleAbsoluteUrlBuilder;
 import org.summerb.microservices.articles.api.dto.Article;
 import org.summerb.microservices.articles.api.dto.Attachment;
@@ -11,6 +12,12 @@ public class ArticleAbsoluteUrlBuilderImpl implements ArticleAbsoluteUrlBuilder 
 
 	private String articlesBasePath = DEFAULT_PATH_ARTICLES;
 	private String attachmentsBasePath = DEFAULT_PATH_ARTICLES_ATTACHMENTS;
+
+	@Autowired
+	protected AbsoluteUrlBuilder absoluteUrlBuilder;
+
+	public ArticleAbsoluteUrlBuilderImpl() {
+	}
 
 	@Override
 	public String buildUrlFroArticle(Article article) {
@@ -31,7 +38,7 @@ public class ArticleAbsoluteUrlBuilderImpl implements ArticleAbsoluteUrlBuilder 
 	 * @return base url and context path (if any)
 	 */
 	protected String getBasePath() {
-		return CurrentRequestUtils.get().getContextPath();
+		return absoluteUrlBuilder.buildExternalUrl(null);
 	}
 
 	public String getArticlesBasePath() {

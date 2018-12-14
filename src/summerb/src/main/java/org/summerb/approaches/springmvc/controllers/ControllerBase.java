@@ -1,6 +1,7 @@
 package org.summerb.approaches.springmvc.controllers;
 
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -11,8 +12,11 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
+import org.summerb.approaches.i18n.HasMessageCode;
 import org.summerb.approaches.security.api.SecurityContextResolver;
 import org.summerb.approaches.springmvc.model.ListPm;
 import org.summerb.approaches.springmvc.model.PageMessage;
@@ -20,6 +24,9 @@ import org.summerb.approaches.springmvc.utils.ControllerExceptionHandlerStrategy
 import org.summerb.approaches.springmvc.utils.ControllerExceptionHandlerStrategyLegacyImpl;
 import org.summerb.approaches.springmvc.utils.CurrentRequestUtils;
 import org.summerb.microservices.users.api.dto.User;
+import org.summerb.utils.exceptions.ExceptionUtils;
+import org.summerb.utils.exceptions.translator.ExceptionTranslator;
+import org.summerb.utils.exceptions.translator.ExceptionTranslatorLegacyImpl;
 
 /**
  * Base class for controllers, contains simple common operations
@@ -43,10 +50,14 @@ public abstract class ControllerBase implements ApplicationContextAware, Initial
 	private SecurityContextResolver<? extends User> securityContextResolver;
 
 	private ControllerExceptionHandlerStrategy exceptionHandlerStrategy;
+	private ExceptionTranslator exceptionTranslator;
 
 	@Override
 	@SuppressWarnings("deprecation")
 	public void afterPropertiesSet() throws Exception {
+		if (exceptionTranslator == null) {
+			exceptionTranslator = new ExceptionTranslatorLegacyImpl(applicationContext);
+		}
 		if (exceptionHandlerStrategy == null) {
 			// it's here for backwards compatibility, but expected to be injected in newer
 			// projects
@@ -54,6 +65,7 @@ public abstract class ControllerBase implements ApplicationContextAware, Initial
 					applicationContext);
 			handler.setSecurityContextResolver(securityContextResolver);
 			handler.setApplicationContext(applicationContext);
+			handler.setExceptionTranslator(exceptionTranslator);
 			handler.afterPropertiesSet();
 			exceptionHandlerStrategy = handler;
 		}
@@ -96,6 +108,24 @@ public abstract class ControllerBase implements ApplicationContextAware, Initial
 		return exceptionHandlerStrategy.handleUnexpectedControllerException(ex, req, res);
 	}
 
+	/**
+	 * Alternative way to handle exceptions when handling requests. Instead of using
+	 * generic error handler we might want to show the same page, but with error
+	 * content; which is being set as model attribute {@link #ATTR_EXCEPTION}
+	 */
+	protected void mapExceptionsToModelAttr(Model model, Callable<?> callable) throws Exception {
+		try {
+			callable.call();
+		} catch (Throwable t) {
+			if (ExceptionUtils.findExceptionOfType(t, HasMessageCode.class) != null) {
+				String userMessage = exceptionTranslator.buildUserMessage(t, LocaleContextHolder.getLocale());
+				model.addAttribute(ATTR_EXCEPTION, userMessage);
+			} else {
+				throw t;
+			}
+		}
+	}
+
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
@@ -117,5 +147,14 @@ public abstract class ControllerBase implements ApplicationContextAware, Initial
 	@Autowired(required = false)
 	public void setSecurityContextResolver(SecurityContextResolver<? extends User> securityContextResolver) {
 		this.securityContextResolver = securityContextResolver;
+	}
+
+	public ExceptionTranslator getExceptionTranslator() {
+		return exceptionTranslator;
+	}
+
+	@Autowired(required = false)
+	public void setExceptionTranslator(ExceptionTranslator exceptionTranslator) {
+		this.exceptionTranslator = exceptionTranslator;
 	}
 }

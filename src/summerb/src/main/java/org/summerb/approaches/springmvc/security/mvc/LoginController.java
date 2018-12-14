@@ -168,8 +168,8 @@ public class LoginController extends ControllerBase {
 			model.addAttribute(ATTR_REGISTERED, true);
 
 			if (isDevMode) {
-				String activationAbsoluteLink = absoluteUrlBuilder
-						.buildExternalUrl(securityActionsUrlsProvider.buildRegistrationActivationPath(user.getUuid()));
+				String activationAbsoluteLink = absoluteUrlBuilder.buildExternalUrl(
+						securityActionsUrlsProvider.buildRegistrationActivationPath(user, null));
 				model.addAttribute(UserAccountChangeHadlersDefaultImpl.ATTR_ACTIVATION_LINK, activationAbsoluteLink);
 			}
 		} catch (FieldValidationException fve) {

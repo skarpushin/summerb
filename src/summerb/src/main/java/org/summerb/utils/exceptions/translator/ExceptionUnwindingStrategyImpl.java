@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ExceptionUnwindingStrategyImpl implements ExceptionUnwindingStrategy {
-
 	// NOTE: I'm using String here because in some cases not all classes will be
 	// available, i.e. excluded from classpath. Don
 	public static final List<String> CLASS_NAMES_TO_SKIP = Arrays.asList(
@@ -17,7 +16,7 @@ public class ExceptionUnwindingStrategyImpl implements ExceptionUnwindingStrateg
 			return null;
 		}
 		Throwable cur = current;
-		while (isShouldSkipException(cur)) {
+		while (cur != null && isShouldSkipException(cur)) {
 			if (cur == cur.getCause()) {
 				break;
 			}
@@ -29,5 +28,4 @@ public class ExceptionUnwindingStrategyImpl implements ExceptionUnwindingStrateg
 	protected boolean isShouldSkipException(Throwable cur) {
 		return CLASS_NAMES_TO_SKIP.contains(cur.getClass().getName());
 	}
-
 }
