@@ -13,8 +13,14 @@ public class QueryNarrowerByCommonPathVariable extends QueryNarrowerStrategyFiel
 
 	@Override
 	protected Query doNarrow(Query ret, PathVariablesMap allRequestParams) {
-		long envId = (long) allRequestParams.get(commonParamName);
-		ret.eq(commonParamName, envId);
+		Object val = allRequestParams.get(commonParamName);
+		if (val instanceof String) {
+			ret.eq(commonParamName, (String) val);
+		} else if (val instanceof Long) {
+			ret.eq(commonParamName, (Long) val);
+		} else {
+			throw new IllegalStateException("Current impl doesn't support args of type: " + val.getClass());
+		}
 		return ret;
 	}
 }

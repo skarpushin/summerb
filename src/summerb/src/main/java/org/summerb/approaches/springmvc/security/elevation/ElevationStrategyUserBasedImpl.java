@@ -35,10 +35,16 @@ public class ElevationStrategyUserBasedImpl implements ElevationStrategy, Initia
 
 	private String userEmail;
 	private Authentication authentication;
+	private boolean force;
 
 	public ElevationStrategyUserBasedImpl(String userEmail) {
+		this(userEmail, false);
+	}
+
+	public ElevationStrategyUserBasedImpl(String userEmail, boolean force) {
 		Preconditions.checkArgument(StringUtils.hasText(userEmail));
 		this.userEmail = userEmail;
+		this.force = force;
 	}
 
 	@Override
@@ -48,9 +54,9 @@ public class ElevationStrategyUserBasedImpl implements ElevationStrategy, Initia
 
 	@Override
 	public boolean isElevationRequired() {
-		return SecurityContextHolder.getContext() == null
+		return force || (SecurityContextHolder.getContext() == null
 				|| SecurityContextHolder.getContext().getAuthentication() == null
-				|| SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken;
+				|| SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken);
 	}
 
 	@Override

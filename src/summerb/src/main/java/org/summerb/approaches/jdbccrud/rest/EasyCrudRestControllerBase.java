@@ -14,7 +14,6 @@ import org.springframework.http.MediaType;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -67,12 +66,9 @@ import springfox.documentation.annotations.ApiIgnore;
  * 
  * @author sergeyk
  *
- * @param <TId>
- *            primary key type
- * @param <TDto>
- *            entity type
- * @param <TEasyCrudService>
- *            service type
+ * @param <TId> primary key type
+ * @param <TDto> entity type
+ * @param <TEasyCrudService> service type
  */
 public class EasyCrudRestControllerBase<TId, TDto extends HasId<TId>, TEasyCrudService extends EasyCrudService<TId, TDto>>
 		implements ApplicationContextAware, InitializingBean {
@@ -86,6 +82,8 @@ public class EasyCrudRestControllerBase<TId, TDto extends HasId<TId>, TEasyCrudS
 	protected QueryNarrowerStrategy queryNarrowerStrategy = new QueryNarrowerStrategy();
 	protected PermissionsResolverStrategy<TId, TDto> permissionsResolverStrategy;
 	protected FilteringParamsToQueryConverter filteringParamsToQueryConverter = new FilteringParamsToQueryConverterImpl();
+	protected OrderBy defaultOrderBy;
+	protected PagerParams defaultPagerParams = new PagerParams();
 
 	protected ApplicationContext applicationContext;
 
@@ -100,22 +98,27 @@ public class EasyCrudRestControllerBase<TId, TDto extends HasId<TId>, TEasyCrudS
 
 	/**
 	 * Default action to get list of items in this collection with either non or
-	 * simple query parameters
+	 * simple query parameters.
+	 * 
+	 * In order for this method to work properly (including orderBy and pagerParams)
+	 * make sure to register PojoFieldsArgumentResolver within spring mvc.
 	 * 
 	 * @param pagerParams
 	 * @param orderBy
-	 * @param needPerms
-	 *            provide true if needed to know permissions
+	 * @param needPerms   provide true if needed to know permissions
 	 * @return list of items
 	 */
-	@GetMapping(produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public MultipleItemsResult<TId, TDto> getList(@ModelAttribute("pagerParams") PagerParams pagerParams,
-			@ModelAttribute("orderBy") OrderBy orderBy, @ApiIgnore PathVariablesMap pathVariables,
+	@GetMapping
+	public MultipleItemsResult<TId, TDto> getList(PagerParams pagerParams, OrderBy orderBy,
+			@ApiIgnore PathVariablesMap pathVariables,
 			@RequestParam(value = "needPerms", required = false) boolean needPerms,
 			@RequestParam(value = "referencesToResolve", required = false) List<String> referencesToResolve)
 			throws Exception {
-		if (orderBy.getDirection() == null || orderBy.getFieldName() == null) {
-			orderBy = null;
+		if (orderBy != null && (orderBy.getDirection() == null || orderBy.getFieldName() == null)) {
+			orderBy = defaultOrderBy;
+		}
+		if (pagerParams == null) {
+			pagerParams = defaultPagerParams;
 		}
 
 		PaginatedList<TDto> rows;
@@ -166,6 +169,14 @@ public class EasyCrudRestControllerBase<TId, TDto extends HasId<TId>, TEasyCrudS
 			@RequestParam(value = "needPerms", required = false) boolean needPerms,
 			@RequestParam(value = "referencesToResolve", required = false) List<String> referencesToResolve,
 			@ApiIgnore PathVariablesMap pathVariables) throws Exception {
+
+		if ((filteringParams.getOrderBy() == null || filteringParams.getOrderBy().length == 0)
+				&& defaultOrderBy != null) {
+			filteringParams.setOrderBy(new OrderBy[] { defaultOrderBy });
+		}
+		if (filteringParams.getPagerParams() == null) {
+			filteringParams.setPagerParams(defaultPagerParams);
+		}
 
 		Query query = filteringParamsToQueryConverter.convert(filteringParams.getFilterParams(), service.getDtoClass());
 		query = queryNarrowerStrategy.narrow(query, pathVariables);
