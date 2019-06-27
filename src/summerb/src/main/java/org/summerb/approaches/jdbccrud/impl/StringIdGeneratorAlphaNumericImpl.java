@@ -1,12 +1,11 @@
 package org.summerb.approaches.jdbccrud.impl;
 
 import java.util.Random;
-import java.util.UUID;
 
 import org.summerb.approaches.jdbccrud.api.StringIdGenerator;
 
 /**
- * Simple impl based on {@link UUID} class.
+ * Simple impl, that generates random alphanumeric IDs
  * 
  * @author sergeyk
  *

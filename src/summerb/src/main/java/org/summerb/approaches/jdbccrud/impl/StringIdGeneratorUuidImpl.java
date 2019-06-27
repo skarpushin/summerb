@@ -5,7 +5,7 @@ import java.util.UUID;
 import org.summerb.approaches.jdbccrud.api.StringIdGenerator;
 
 /**
- * Simple impl, that generates random alphanumeric IDs
+ * Simple impl based on {@link UUID} class.
  * 
  * @author sergeyk
  *

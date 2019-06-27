@@ -11,15 +11,14 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.util.StringUtils;
+import org.summerb.approaches.jdbccrud.api.DaoExceptionToFveTranslator;
 import org.summerb.approaches.jdbccrud.api.EasyCrudDao;
 import org.summerb.approaches.jdbccrud.api.ParameterSourceBuilder;
 import org.summerb.approaches.jdbccrud.api.QueryToNativeSqlCompiler;
@@ -35,16 +34,12 @@ import org.summerb.approaches.jdbccrud.api.dto.Top;
 import org.summerb.approaches.jdbccrud.api.query.OrderBy;
 import org.summerb.approaches.jdbccrud.api.query.Query;
 import org.summerb.approaches.jdbccrud.common.DaoBase;
-import org.summerb.approaches.jdbccrud.common.DaoExceptionUtils;
 import org.summerb.approaches.jdbccrud.impl.SimpleJdbcUpdate.SimpleJdbcUpdate;
 import org.summerb.approaches.jdbccrud.impl.SimpleJdbcUpdate.TableMetaDataContext;
 import org.summerb.approaches.jdbccrud.impl.SimpleJdbcUpdate.UpdateColumnsEnlisterStrategy;
 import org.summerb.approaches.validation.FieldValidationException;
-import org.summerb.approaches.validation.errors.DuplicateRecordValidationError;
-import org.summerb.utils.exceptions.ExceptionUtils;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Throwables;
 
 /**
  * Although this is a MySQL-specific impl of {@link EasyCrudDao} it has common
@@ -58,7 +53,7 @@ import com.google.common.base.Throwables;
  */
 public class EasyCrudDaoMySqlImpl<TId, TDto extends HasId<TId>> extends DaoBase
 		implements EasyCrudDao<TId, TDto>, InitializingBean {
-	private static final List<String> allowedSortDirections = Arrays.asList("asc", "desc");
+	protected static final List<String> allowedSortDirections = Arrays.asList("asc", "desc");
 
 	private String tableName;
 	private Class<TDto> dtoClass;
@@ -67,17 +62,18 @@ public class EasyCrudDaoMySqlImpl<TId, TDto extends HasId<TId>> extends DaoBase
 	private QueryToNativeSqlCompiler queryToNativeSqlCompiler;
 	private ConversionService conversionService;
 	private StringIdGenerator stringIdGenerator = new StringIdGeneratorUuidImpl();
+	private DaoExceptionToFveTranslator daoExceptionToFveTranslator = new DaoExceptionToFveTranslatorMySqlImpl();
 
-	private SimpleJdbcInsert jdbcInsert;
-	private SimpleJdbcUpdate jdbcUpdate;
+	protected SimpleJdbcInsert jdbcInsert;
+	protected SimpleJdbcUpdate jdbcUpdate;
 
-	private String sqlFindById;
-	private String sqlDeleteById;
-	private String sqlDeleteOptimisticById;
-	private String sqlFindByCustomQuery;
-	private String sqlDeleteByCustomQuery;
-	private String sqlFindByCustomQueryForCount;
-	private String sqlPartPaginator;
+	protected String sqlFindById;
+	protected String sqlDeleteById;
+	protected String sqlDeleteOptimisticById;
+	protected String sqlFindByCustomQuery;
+	protected String sqlDeleteByCustomQuery;
+	protected String sqlFindByCustomQueryForCount;
+	protected String sqlPartPaginator;
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -124,7 +120,7 @@ public class EasyCrudDaoMySqlImpl<TId, TDto extends HasId<TId>> extends DaoBase
 		return ret;
 	}
 
-	private SimpleJdbcUpdate initJdbcUpdate() {
+	protected SimpleJdbcUpdate initJdbcUpdate() {
 		SimpleJdbcUpdate ret = new SimpleJdbcUpdate(getDataSource()).withTableName(tableName);
 
 		// Configure identification columns - how do we find right record for
@@ -140,7 +136,7 @@ public class EasyCrudDaoMySqlImpl<TId, TDto extends HasId<TId>> extends DaoBase
 		return ret;
 	}
 
-	private UpdateColumnsEnlisterStrategy updateColumnsEnlisterStrategy = new UpdateColumnsEnlisterStrategy() {
+	protected UpdateColumnsEnlisterStrategy updateColumnsEnlisterStrategy = new UpdateColumnsEnlisterStrategy() {
 		@Override
 		public Collection<? extends String> getColumnsForUpdate(TableMetaDataContext tableMetaDataContext) {
 			List<String> updatingColumns = new ArrayList<String>(tableMetaDataContext.createColumns());
@@ -188,33 +184,9 @@ public class EasyCrudDaoMySqlImpl<TId, TDto extends HasId<TId>> extends DaoBase
 				jdbcInsert.execute(params);
 			}
 		} catch (Throwable t) {
-			processDuplicateEntryException(t);
-			Throwables.propagate(t);
+			daoExceptionToFveTranslator.translateAndThtowIfApplicable(t);
+			throw t;
 		}
-	}
-
-	private void processDuplicateEntryException(Throwable t) throws FieldValidationException {
-		DuplicateKeyException dke = ExceptionUtils.findExceptionOfType(t, DuplicateKeyException.class);
-		if (dke == null) {
-			return;
-		}
-
-		String constraint = DaoExceptionUtils.findViolatedConstraintName(dke);
-		// Handle case when uuid is duplicated
-		if (DaoExceptionUtils.MYSQL_CONSTRAINT_PRIMARY.equals(constraint)) {
-			throw new FieldValidationException(new DuplicateRecordValidationError(HasId.FN_ID));
-		}
-
-		if (!constraint.contains(DaoExceptionUtils.MYSQL_CONSTRAINT_UNIQUE)) {
-			throw new IllegalArgumentException("Constraint violation " + constraint, dke);
-		}
-
-		String fieldName = constraint.substring(0, constraint.indexOf(DaoExceptionUtils.MYSQL_CONSTRAINT_UNIQUE));
-		if (fieldName.contains("_")) {
-			fieldName = JdbcUtils.convertUnderscoreNameToPropertyName(fieldName);
-		}
-
-		throw new FieldValidationException(new DuplicateRecordValidationError(fieldName));
 	}
 
 	@Override
@@ -233,9 +205,8 @@ public class EasyCrudDaoMySqlImpl<TId, TDto extends HasId<TId>> extends DaoBase
 		try {
 			return jdbcUpdate.execute(dtoParams, restrictionParams);
 		} catch (Throwable t) {
-			processDuplicateEntryException(t);
-			Throwables.propagate(t);
-			return Integer.MIN_VALUE; // never happens actually
+			daoExceptionToFveTranslator.translateAndThtowIfApplicable(t);
+			throw t;
 		}
 	}
 
@@ -310,7 +281,7 @@ public class EasyCrudDaoMySqlImpl<TId, TDto extends HasId<TId>> extends DaoBase
 		return new PaginatedList<TDto>(pagerParams, list, totalResultsCount);
 	}
 
-	private String buildOrderBySubclause(OrderBy[] orderBy) {
+	protected String buildOrderBySubclause(OrderBy[] orderBy) {
 		if (orderBy == null || orderBy.length == 0) {
 			return "";
 		}
@@ -394,5 +365,14 @@ public class EasyCrudDaoMySqlImpl<TId, TDto extends HasId<TId>> extends DaoBase
 	@Autowired(required = false)
 	public void setStringIdGenerator(StringIdGenerator stringIdGenerator) {
 		this.stringIdGenerator = stringIdGenerator;
+	}
+
+	public DaoExceptionToFveTranslator getDuplicateEntryExceptionHandler() {
+		return daoExceptionToFveTranslator;
+	}
+
+	@Autowired(required = false)
+	public void setDuplicateEntryExceptionHandler(DaoExceptionToFveTranslator daoExceptionToFveTranslator) {
+		this.daoExceptionToFveTranslator = daoExceptionToFveTranslator;
 	}
 }
