@@ -22,7 +22,7 @@ import org.summerb.approaches.jdbccrud.api.ParameterSourceBuilder;
 import org.summerb.approaches.jdbccrud.api.dto.PagerParams;
 import org.summerb.approaches.jdbccrud.api.dto.PaginatedList;
 import org.summerb.approaches.jdbccrud.api.query.Query;
-import org.summerb.approaches.jdbccrud.impl.EasyCrudDaoMySqlImpl;
+import org.summerb.approaches.jdbccrud.impl.mysql.EasyCrudDaoMySqlImpl;
 import org.summerb.approaches.validation.FieldValidationException;
 import org.summerb.microservices.articles.api.AttachmentDao;
 import org.summerb.microservices.articles.api.dto.Attachment;

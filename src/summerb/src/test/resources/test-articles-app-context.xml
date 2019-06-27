@@ -35,8 +35,7 @@
 		<property name="dataSource" ref="dataSource" />
 	</bean>
 
-	<bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource" p:driverClass="${jdbc.driverClassName}"
-		p:username="${jdbc.username}" p:password="${jdbc.password}" p:url="${jdbc.databaseurl}" />
+	<import resource="test-datasource.xml"/>
 
 	<bean id="articlesAttachmentsDao" class="org.summerb.microservices.articles.impl.AttachmentDaoExtFilesImpl">
 		<property name="dataSource" ref="dataSource" />

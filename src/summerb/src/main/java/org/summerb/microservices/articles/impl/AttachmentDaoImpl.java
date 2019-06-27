@@ -13,7 +13,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.util.CollectionUtils;
 import org.summerb.approaches.jdbccrud.api.ParameterSourceBuilder;
-import org.summerb.approaches.jdbccrud.impl.EasyCrudDaoMySqlImpl;
+import org.summerb.approaches.jdbccrud.impl.mysql.EasyCrudDaoMySqlImpl;
 import org.summerb.approaches.validation.FieldValidationException;
 import org.summerb.microservices.articles.api.AttachmentDao;
 import org.summerb.microservices.articles.api.dto.Attachment;

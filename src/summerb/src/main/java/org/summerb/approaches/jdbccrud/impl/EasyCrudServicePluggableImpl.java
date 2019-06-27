@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
 import org.summerb.approaches.jdbccrud.api.EasyCrudDao;
 import org.summerb.approaches.jdbccrud.api.EasyCrudExceptionStrategy;
 import org.summerb.approaches.jdbccrud.api.EasyCrudService;
@@ -67,6 +66,7 @@ public class EasyCrudServicePluggableImpl<TId, TDto extends HasId<TId>, TDao ext
 		Preconditions.checkState(dtoClass != null, "DtoClass is required");
 		Preconditions.checkState(!HasAuthor.class.isAssignableFrom(dtoClass) || currentUserResolver != null,
 				"CurrentUserResolver required");
+		Preconditions.checkState(dtoClass != null, "dao is required");
 
 		if (entityTypeMessageCode == null) {
 			entityTypeMessageCode = dtoClass.getCanonicalName();
@@ -323,7 +323,6 @@ public class EasyCrudServicePluggableImpl<TId, TDto extends HasId<TId>, TDao ext
 		return dao;
 	}
 
-	@Required
 	public void setDao(TDao dao) {
 		this.dao = dao;
 	}

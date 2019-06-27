@@ -13,3 +13,13 @@ services:
         command: mysqld --character-set-server=utf8 --collation-server=utf8_general_ci
         restart: always
 
+    postgres:
+        image: postgres:9.6.14
+        ports:
+         - 5432:5432
+        volumes:
+         - ./postgre_init_scripts:/docker-entrypoint-initdb.d
+        restart: always
+        environment:
+          - POSTGRES_DB=summerb_tests
+          

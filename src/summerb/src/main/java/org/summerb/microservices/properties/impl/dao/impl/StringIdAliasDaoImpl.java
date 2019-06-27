@@ -34,13 +34,13 @@ public class StringIdAliasDaoImpl extends DaoBase implements StringIdAliasDao, I
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		Assert.hasText(tableName, "Table name must be provided");
-		jdbcInsert = new SimpleJdbcInsert(getDataSource()).withTableName(getTableName()).usingGeneratedKeyColumns("id");
+		jdbcInsert = new SimpleJdbcInsert(getDataSource()).withTableName(getTableName()).usingGeneratedKeyColumns("alias");
 
 		sqlFindAliasByName = String.format("SELECT alias FROM %s WHERE alias_name = :alias_name", tableName);
 		sqlFindNameByAlias = String.format("SELECT alias_name FROM %s WHERE alias = :alias", tableName);
 
 		sqlFindAllAliases = String.format(
-				"SELECT SQL_CALC_FOUND_ROWS alias_name, alias FROM %s ORDER BY alias ASC LIMIT :offset,:max",
+				"SELECT SQL_CALC_FOUND_ROWS alias_name, alias FROM %s ORDER BY alias ASC LIMIT :offset OFFSET :max",
 				tableName);
 		sqlLastStatementCount = "SELECT FOUND_ROWS()";
 	}

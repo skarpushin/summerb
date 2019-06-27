@@ -5,7 +5,7 @@ import org.summerb.approaches.jdbccrud.api.dto.PagerParams;
 import org.summerb.approaches.jdbccrud.api.dto.PaginatedList;
 import org.summerb.approaches.jdbccrud.api.query.OrderBy;
 import org.summerb.approaches.jdbccrud.api.query.Query;
-import org.summerb.approaches.jdbccrud.impl.EasyCrudDaoMySqlImpl;
+import org.summerb.approaches.jdbccrud.impl.mysql.EasyCrudDaoMySqlImpl;
 import org.summerb.approaches.validation.FieldValidationException;
 
 /**

@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.convert.ConversionService;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.summerb.approaches.jdbccrud.api.EasyCrudDao;
 import org.summerb.approaches.jdbccrud.api.EasyCrudExceptionStrategy;
 import org.summerb.approaches.jdbccrud.api.EasyCrudPerRowAuthStrategy;
@@ -18,18 +18,16 @@ import org.summerb.approaches.jdbccrud.api.EasyCrudService;
 import org.summerb.approaches.jdbccrud.api.EasyCrudTableAuthStrategy;
 import org.summerb.approaches.jdbccrud.api.EasyCrudValidationStrategy;
 import org.summerb.approaches.jdbccrud.api.EasyCrudWireTap;
-import org.summerb.approaches.jdbccrud.api.StringIdGenerator;
 import org.summerb.approaches.jdbccrud.api.dto.HasId;
-import org.summerb.approaches.jdbccrud.impl.EasyCrudDaoMySqlImpl;
 import org.summerb.approaches.jdbccrud.impl.EasyCrudServicePluggableImpl;
-import org.summerb.approaches.jdbccrud.impl.QueryToNativeSqlCompilerMySqlImpl;
+import org.summerb.approaches.jdbccrud.impl.mysql.EasyCrudDaoMySqlImpl;
+import org.summerb.approaches.jdbccrud.impl.mysql.QueryToNativeSqlCompilerMySqlImpl;
 import org.summerb.approaches.jdbccrud.impl.wireTaps.EasyCrudWireTapDelegatingImpl;
 import org.summerb.approaches.jdbccrud.impl.wireTaps.EasyCrudWireTapPerRowAuthImpl;
 import org.summerb.approaches.jdbccrud.impl.wireTaps.EasyCrudWireTapTableAuthImpl;
 import org.summerb.approaches.jdbccrud.impl.wireTaps.EasyCrudWireTapValidationImpl;
 import org.summerb.approaches.jdbccrud.scaffold.api.EasyCrudScaffold;
 import org.summerb.approaches.jdbccrud.scaffold.api.EasyCrudServiceProxyFactory;
-import org.summerb.approaches.security.api.CurrentUserResolver;
 import org.summerb.utils.DtoBase;
 
 import com.google.common.base.Preconditions;
@@ -43,11 +41,8 @@ import com.google.common.base.Preconditions;
 public class EasyCrudScaffoldImpl implements EasyCrudScaffold {
 	private DataSource dataSource;
 
-	@SuppressWarnings("rawtypes")
-	private CurrentUserResolver currentUserResolver;
-	private ConversionService conversionService;
-	private StringIdGenerator stringIdGenerator;
 	private EasyCrudServiceProxyFactory easyCrudServiceProxyFactory = new EasyCrudServiceProxyFactoryImpl();
+	private AutowireCapableBeanFactory beanFactory;
 
 	@Override
 	public <TId, TDto extends HasId<TId>> EasyCrudService<TId, TDto> fromDto(Class<TDto> dtoClass) {
@@ -83,7 +78,7 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold {
 		service.setDtoClass(dtoClass);
 		service.setDao(dao);
 		service.setEntityTypeMessageCode(messageCode);
-		service.setCurrentUserResolver(currentUserResolver);
+		beanFactory.autowireBean(service);
 
 		if (injections == null || injections.length == 0) {
 			service.afterPropertiesSet();
@@ -136,10 +131,7 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold {
 		dao.setDataSource(dataSource);
 		dao.setDtoClass(dtoClass);
 		dao.setTableName(tableName);
-		dao.setConversionService(conversionService);
-		if (stringIdGenerator != null) {
-			dao.setStringIdGenerator(stringIdGenerator);
-		}
+		beanFactory.autowireBean(dao);
 		dao.afterPropertiesSet();
 		return dao;
 	}
@@ -203,35 +195,6 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold {
 		return (Class<TDto>) ret;
 	}
 
-	@SuppressWarnings("rawtypes")
-	public CurrentUserResolver getCurrentUserResolver() {
-		return currentUserResolver;
-	}
-
-	@Autowired(required = false)
-	@SuppressWarnings("rawtypes")
-	public void setCurrentUserResolver(CurrentUserResolver currentUserResolver) {
-		this.currentUserResolver = currentUserResolver;
-	}
-
-	public ConversionService getConversionService() {
-		return conversionService;
-	}
-
-	@Autowired(required = false)
-	public void setConversionService(ConversionService conversionService) {
-		this.conversionService = conversionService;
-	}
-
-	public StringIdGenerator getStringIdGenerator() {
-		return stringIdGenerator;
-	}
-
-	@Autowired(required = false)
-	public void setStringIdGenerator(StringIdGenerator stringIdGenerator) {
-		this.stringIdGenerator = stringIdGenerator;
-	}
-
 	public EasyCrudServiceProxyFactory getEasyCrudServiceProxyFactory() {
 		return easyCrudServiceProxyFactory;
 	}
@@ -239,5 +202,14 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold {
 	@Autowired(required = false)
 	public void setEasyCrudServiceProxyFactory(EasyCrudServiceProxyFactory easyCrudServiceProxyFactory) {
 		this.easyCrudServiceProxyFactory = easyCrudServiceProxyFactory;
+	}
+
+	public AutowireCapableBeanFactory getBeanFactory() {
+		return beanFactory;
+	}
+
+	@Autowired
+	public void setBeanFactory(AutowireCapableBeanFactory beanFactory) {
+		this.beanFactory = beanFactory;
 	}
 }

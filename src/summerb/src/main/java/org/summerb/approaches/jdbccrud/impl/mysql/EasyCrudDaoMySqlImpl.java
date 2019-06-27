@@ -1,4 +1,4 @@
-package org.summerb.approaches.jdbccrud.impl;
+package org.summerb.approaches.jdbccrud.impl.mysql;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,6 +34,8 @@ import org.summerb.approaches.jdbccrud.api.dto.Top;
 import org.summerb.approaches.jdbccrud.api.query.OrderBy;
 import org.summerb.approaches.jdbccrud.api.query.Query;
 import org.summerb.approaches.jdbccrud.common.DaoBase;
+import org.summerb.approaches.jdbccrud.impl.ParameterSourceBuilderBeanPropImpl;
+import org.summerb.approaches.jdbccrud.impl.StringIdGeneratorUuidImpl;
 import org.summerb.approaches.jdbccrud.impl.SimpleJdbcUpdate.SimpleJdbcUpdate;
 import org.summerb.approaches.jdbccrud.impl.SimpleJdbcUpdate.TableMetaDataContext;
 import org.summerb.approaches.jdbccrud.impl.SimpleJdbcUpdate.UpdateColumnsEnlisterStrategy;
@@ -59,8 +61,8 @@ public class EasyCrudDaoMySqlImpl<TId, TDto extends HasId<TId>> extends DaoBase
 	private Class<TDto> dtoClass;
 	private RowMapper<TDto> rowMapper;
 	private ParameterSourceBuilder<TDto> parameterSourceBuilder;
-	private QueryToNativeSqlCompiler queryToNativeSqlCompiler;
 	private ConversionService conversionService;
+	private QueryToNativeSqlCompiler queryToNativeSqlCompiler = new QueryToNativeSqlCompilerMySqlImpl();
 	private StringIdGenerator stringIdGenerator = new StringIdGeneratorUuidImpl();
 	private DaoExceptionToFveTranslator daoExceptionToFveTranslator = new DaoExceptionToFveTranslatorMySqlImpl();
 
@@ -94,10 +96,10 @@ public class EasyCrudDaoMySqlImpl<TId, TDto extends HasId<TId>> extends DaoBase
 			parameterSourceBuilder = new ParameterSourceBuilderBeanPropImpl<TDto>();
 		}
 
-		if (queryToNativeSqlCompiler == null) {
-			queryToNativeSqlCompiler = new QueryToNativeSqlCompilerMySqlImpl();
-		}
+		buildSqlQueries();
+	}
 
+	protected void buildSqlQueries() {
 		sqlFindById = String.format("SELECT %s FROM %s WHERE id = :id", buildFieldsForSelect(), tableName);
 		sqlDeleteById = String.format("DELETE FROM %s WHERE id = :id", tableName);
 		sqlDeleteByCustomQuery = String.format("DELETE FROM %s WHERE ", tableName);
@@ -275,6 +277,9 @@ public class EasyCrudDaoMySqlImpl<TId, TDto extends HasId<TId>> extends DaoBase
 				|| (pagerParams.getOffset() == 0 && list.size() < pagerParams.getMax()))) {
 			totalResultsCount = list.size();
 		} else {
+			// TODO: For MySQL we can use combination of SQL_CALC_FOUND_ROWS and
+			// FOUND_ROWS() to improve performance -- ubt this is MySQL specific
+			// functionality
 			totalResultsCount = jdbc.queryForInt(sqlFindByCustomQueryForCount + whereClause, params);
 		}
 
@@ -307,7 +312,6 @@ public class EasyCrudDaoMySqlImpl<TId, TDto extends HasId<TId>> extends DaoBase
 		return tableName;
 	}
 
-	@Required
 	public void setTableName(String tableName) {
 		this.tableName = tableName;
 	}
@@ -340,6 +344,7 @@ public class EasyCrudDaoMySqlImpl<TId, TDto extends HasId<TId>> extends DaoBase
 		return queryToNativeSqlCompiler;
 	}
 
+	@Autowired(required = false)
 	public void setQueryToNativeSqlCompiler(QueryToNativeSqlCompiler queryToNativeSqlCompiler) {
 		this.queryToNativeSqlCompiler = queryToNativeSqlCompiler;
 	}

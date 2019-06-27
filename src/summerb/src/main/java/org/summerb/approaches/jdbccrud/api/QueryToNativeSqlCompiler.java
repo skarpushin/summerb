@@ -3,7 +3,7 @@ package org.summerb.approaches.jdbccrud.api;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.summerb.approaches.jdbccrud.api.query.Query;
-import org.summerb.approaches.jdbccrud.impl.QueryToNativeSqlCompilerMySqlImpl;
+import org.summerb.approaches.jdbccrud.impl.mysql.QueryToNativeSqlCompilerMySqlImpl;
 
 /**
  * DAO-specific impl that can convert abstracted {@link Query} instance to

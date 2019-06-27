@@ -282,7 +282,7 @@ public abstract class GenericCrudServiceTestTemplate {
 		createTestData();
 
 		PaginatedList<TestDto1> result = getTestDto1Service().query(new PagerParams(0, 100),
-				Query.n().notContains("env", "env-p"));
+				Query.n().notContains("env", "env-P"));
 		assertEquals(1, result.getTotalResults());
 	}
 
@@ -291,7 +291,7 @@ public abstract class GenericCrudServiceTestTemplate {
 		createTestData();
 
 		PaginatedList<TestDto1> result = getTestDto1Service().query(new PagerParams(0, 100),
-				Query.n().in("env", "env-uat", "env-pilot"));
+				Query.n().in("env", "env-UAT", "env-pilot"));
 		assertEquals(2, result.getTotalResults());
 	}
 
@@ -300,7 +300,7 @@ public abstract class GenericCrudServiceTestTemplate {
 		createTestData();
 
 		PaginatedList<TestDto1> result = getTestDto1Service().query(new PagerParams(0, 100),
-				Query.n().notIn("env", "env-uat", "env-pilot"));
+				Query.n().notIn("env", "env-UAT", "env-pilot"));
 		assertEquals(1, result.getTotalResults());
 	}
 

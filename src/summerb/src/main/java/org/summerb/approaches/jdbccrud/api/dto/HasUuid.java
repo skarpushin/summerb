@@ -1,7 +1,7 @@
 package org.summerb.approaches.jdbccrud.api.dto;
 
 import org.summerb.approaches.jdbccrud.api.StringIdGenerator;
-import org.summerb.approaches.jdbccrud.impl.EasyCrudDaoMySqlImpl;
+import org.summerb.approaches.jdbccrud.impl.mysql.EasyCrudDaoMySqlImpl;
 
 /**
  * Impl this interface if your DTO's primary key is automatically generated

@@ -1,4 +1,4 @@
-package org.summerb.approaches.jdbccrud.impl;
+package org.summerb.approaches.jdbccrud.impl.mysql;
 
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.support.JdbcUtils;

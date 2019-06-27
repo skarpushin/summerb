@@ -16,36 +16,22 @@
 	    http://www.springframework.org/schema/util 
 	    http://www.springframework.org/schema/util/spring-util.xsd
         http://www.springframework.org/schema/jdbc 
-        http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
-
-	<bean id="props" class="org.summerb.utils.spring.ExposePropertyPlaceholderConfigurer" p:ignoreResourceNotFound="true"
-		p:ignoreUnresolvablePlaceholders="true">
-		<property name="locations">
-			<list>
-				<!-- Default configuration values -->
-				<value>classpath:summerb-integr-test.properties</value>
-				<value>classpath:test-dbconnection.properties</value>
-			</list>
-		</property>
-	</bean>
+        http://www.springframework.org/schema/jdbc/spring-mysql.xsd">
 
 	<context:annotation-config />
 
-	<tx:annotation-driven transaction-manager="transactionManager" />
-	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-		<property name="dataSource" ref="dataSource" />
-	</bean>
-	<import resource="test-datasource.xml"/>
+	<beans profile="default">
+		<bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource" p:driverClass="${mysql.driverClassName}"
+			p:username="${mysql.username}" p:password="${mysql.password}" p:url="${mysql.databaseurl}" />
+	</beans>
 
-	<bean id="eventBus" class="com.google.common.eventbus.EventBus" />
-	<bean id="easyCrudWireTapEventBus" class="org.summerb.approaches.jdbccrud.impl.wireTaps.EasyCrudWireTapEventBusImpl">
-		<constructor-arg ref="eventBus" />
-	</bean>
+	<!-- NOTE: In order to activate this profile add this to command line: -Dspring.profiles.active=postgres -->
+	<beans profile="postgres">
+		<bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource" p:driverClass="${postgres.driverClassName}"
+			p:username="${postgres.username}" p:password="${postgres.password}" p:url="${postgres.databaseurl}" />
 
-	<bean id="currentUserResolver" class="integr.org.summerb.jdbccrud.CurrentUserResolverTestImpl" />
-
-	<bean class="org.summerb.approaches.jdbccrud.scaffold.impl.EasyCrudScaffoldImpl" />
-	<bean class="integr.org.summerb.jdbccrud.ScaffoldBeans" />
-	<bean class="org.summerb.approaches.jdbccrud.impl.EasyCrudServiceResolverSpringImpl" />
+		<bean class="org.summerb.approaches.jdbccrud.impl.postgres.QueryToNativeSqlCompilerPostgresImpl" />
+		<bean class="org.summerb.approaches.jdbccrud.impl.postgres.DaoExceptionToFveTranslatorPostgresImpl" />
+	</beans>
 
 </beans>

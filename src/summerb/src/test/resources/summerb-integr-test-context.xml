@@ -25,6 +25,7 @@
 			<list>
 				<!-- Default configuration values -->
 				<value>classpath:summerb-integr-test.properties</value>
+				<value>classpath:test-dbconnection.properties</value>
 			</list>
 		</property>
 	</bean>
@@ -35,9 +36,8 @@
 	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource" ref="dataSource" />
 	</bean>
-	<jdbc:embedded-database id="dataSource" type="HSQL">
-		<jdbc:script location="classpath:summerb-test-schema.sql" />
-	</jdbc:embedded-database>
+	
+	<import resource="test-datasource.xml"/>
 
 	<bean id="eventBus" class="com.google.common.eventbus.EventBus" />
 	<bean id="easyCrudWireTapEventBus" class="org.summerb.approaches.jdbccrud.impl.wireTaps.EasyCrudWireTapEventBusImpl">
@@ -48,7 +48,7 @@
 
 	<bean id="noOpBasicAuth" class="org.summerb.approaches.jdbccrud.impl.EasyCrudPerRowAuthStrategyNoOpImpl" />
 
-	<bean id="testDto1Dao" class="org.summerb.approaches.jdbccrud.impl.EasyCrudDaoMySqlImpl">
+	<bean id="testDto1Dao" class="org.summerb.approaches.jdbccrud.impl.mysql.EasyCrudDaoMySqlImpl">
 		<property name="dataSource" ref="dataSource" />
 		<property name="tableName" value="forms_test_1" />
 		<property name="dtoClass">
@@ -75,7 +75,7 @@
 		<property name="eventBus" ref="eventBus" />
 	</bean>
 
-	<bean id="testDto2Dao" class="org.summerb.approaches.jdbccrud.impl.EasyCrudDaoMySqlImpl">
+	<bean id="testDto2Dao" class="org.summerb.approaches.jdbccrud.impl.mysql.EasyCrudDaoMySqlImpl">
 		<property name="dataSource" ref="dataSource" />
 		<property name="tableName" value="forms_test_2" />
 		<property name="dtoClass">
@@ -126,7 +126,7 @@
 
 	<bean id="testDto3Service" class="org.summerb.approaches.jdbccrud.impl.EasyCrudServicePluggableImpl">
 		<property name="dao">
-			<bean class="org.summerb.approaches.jdbccrud.impl.EasyCrudDaoMySqlImpl">
+			<bean class="org.summerb.approaches.jdbccrud.impl.mysql.EasyCrudDaoMySqlImpl">
 				<property name="dataSource" ref="dataSource" />
 				<property name="tableName" value="forms_test_3" />
 				<property name="dtoClass">
