@@ -1,6 +1,6 @@
 package org.summerb.utils.exceptions.dto;
 
-import org.summerb.approaches.jdbccrud.common.DtoBase;
+import org.summerb.utils.DtoBase;
 
 public class GenericServerErrorResult implements DtoBase {
 	private static final long serialVersionUID = -3478702057346663837L;

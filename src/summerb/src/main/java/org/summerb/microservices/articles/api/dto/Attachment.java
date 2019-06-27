@@ -3,8 +3,8 @@ package org.summerb.microservices.articles.api.dto;
 import java.io.InputStream;
 
 import org.summerb.approaches.jdbccrud.api.dto.HasAutoincrementId;
-import org.summerb.approaches.jdbccrud.common.DtoBase;
 import org.summerb.utils.Clonnable;
+import org.summerb.utils.DtoBase;
 
 public class Attachment implements DtoBase, HasAutoincrementId, Clonnable<Attachment> {
 	private static final long serialVersionUID = 6611992873465286245L;

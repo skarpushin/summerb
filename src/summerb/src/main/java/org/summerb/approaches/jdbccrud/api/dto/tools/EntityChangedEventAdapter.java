@@ -4,7 +4,7 @@ import java.lang.reflect.Type;
 
 import org.summerb.approaches.jdbccrud.api.dto.EntityChangedEvent;
 import org.summerb.approaches.jdbccrud.api.dto.EntityChangedEvent.ChangeType;
-import org.summerb.approaches.jdbccrud.common.DtoBase;
+import org.summerb.utils.DtoBase;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonDeserializationContext;

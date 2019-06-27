@@ -42,7 +42,7 @@ import org.summerb.approaches.jdbccrud.rest.dto.SingleItemResult;
 import org.summerb.approaches.jdbccrud.rest.permissions.PermissionsResolverStrategy;
 import org.summerb.approaches.jdbccrud.rest.querynarrower.QueryNarrowerStrategy;
 import org.summerb.approaches.security.api.exceptions.NotAuthorizedException;
-import org.summerb.approaches.springmvc.security.implsrest.RestExceptionTranslator;
+import org.summerb.webappboilerplate.security.rest.RestExceptionTranslator;
 
 import com.google.common.base.Preconditions;
 
@@ -141,7 +141,7 @@ public class EasyCrudRestControllerBase<TId, TDto extends HasId<TId>, TEasyCrudS
 		return convertBeforeReturnStrategy.convert(ret);
 	}
 
-	private void resolveReferences(List<String> referencesToResolve, CrudQueryResult<TId, TDto> ret, List<TDto> items)
+	protected void resolveReferences(List<String> referencesToResolve, CrudQueryResult<TId, TDto> ret, List<TDto> items)
 			throws EntityNotFoundException, NotAuthorizedException {
 		Preconditions.checkState(dataSetLoader != null, "DataSetLoader is required to resolve references");
 		Preconditions.checkState(referencesRegistry != null, "referencesRegistry is required to resolve references");

@@ -2,7 +2,7 @@ package org.summerb.approaches.jdbccrud.api.dto;
 
 import java.io.Serializable;
 
-import org.summerb.approaches.jdbccrud.common.DtoBase;
+import org.summerb.utils.DtoBase;
 
 import com.google.common.base.Preconditions;
 

@@ -14,10 +14,10 @@ import org.apache.log4j.RollingFileAppender;
 import org.apache.log4j.spi.LoggingEvent;
 import org.springframework.web.context.WebApplicationContext;
 import org.summerb.approaches.security.api.CurrentUserResolver;
-import org.summerb.approaches.security.api.SecurityContextResolver;
-import org.summerb.approaches.springmvc.utils.CurrentRequestUtils;
+import org.summerb.approaches.spring.security.api.SecurityContextResolver;
 import org.summerb.microservices.users.api.dto.User;
 import org.summerb.utils.exceptions.ExceptionUtils;
+import org.summerb.webappboilerplate.utils.CurrentRequestUtils;
 
 /**
  * This appender is smart enough to avoid duplicate logging of same exceptions.

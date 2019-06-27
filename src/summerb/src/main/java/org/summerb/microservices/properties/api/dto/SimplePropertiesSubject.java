@@ -3,7 +3,7 @@ package org.summerb.microservices.properties.api.dto;
 import java.io.Serializable;
 
 import org.summerb.approaches.jdbccrud.api.dto.EntityChangedEvent;
-import org.summerb.approaches.jdbccrud.common.DtoBase;
+import org.summerb.utils.DtoBase;
 
 /**
  * This DTO used for cache sync purposes for SimplePropertyService. Particularly

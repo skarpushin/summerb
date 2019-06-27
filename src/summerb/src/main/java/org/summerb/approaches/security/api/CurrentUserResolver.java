@@ -1,11 +1,7 @@
 package org.summerb.approaches.security.api;
 
-import org.summerb.microservices.users.api.dto.User;
-
 /**
  * Interface for resolving the user from current context.
- * 
- * TBD: Why TUser doesn't extend {@link User}?? Either fix or clarify.
  * 
  * @author sergeyk
  *

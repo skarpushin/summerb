@@ -8,13 +8,13 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.owasp.encoder.Encode;
 import org.summerb.approaches.jdbccrud.api.exceptions.GenericEntityNotFoundException;
-import org.summerb.approaches.springmvc.utils.DummyMapImpl;
 import org.summerb.microservices.articles.api.ArticleAbsoluteUrlBuilder;
 import org.summerb.microservices.articles.api.ArticleService;
 import org.summerb.microservices.articles.api.AttachmentService;
 import org.summerb.microservices.articles.api.dto.Article;
 import org.summerb.microservices.articles.api.dto.Attachment;
 import org.summerb.microservices.articles.api.dto.consuming.RenderedArticle;
+import org.summerb.utils.collection.DummyMapImpl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;

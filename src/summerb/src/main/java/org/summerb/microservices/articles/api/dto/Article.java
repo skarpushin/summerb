@@ -3,7 +3,7 @@ package org.summerb.microservices.articles.api.dto;
 import org.summerb.approaches.jdbccrud.api.dto.HasAuthor;
 import org.summerb.approaches.jdbccrud.api.dto.HasAutoincrementId;
 import org.summerb.approaches.jdbccrud.api.dto.HasTimestamps;
-import org.summerb.approaches.jdbccrud.common.DtoBase;
+import org.summerb.utils.DtoBase;
 
 public class Article implements DtoBase, HasAutoincrementId, HasAuthor, HasTimestamps {
 	private static final long serialVersionUID = -3559789221976911911L;

@@ -3,7 +3,7 @@ package org.summerb.approaches.jdbccrud.impl.relations.example;
 import org.summerb.approaches.jdbccrud.api.dto.HasAuthor;
 import org.summerb.approaches.jdbccrud.api.dto.HasAutoincrementId;
 import org.summerb.approaches.jdbccrud.api.dto.HasTimestamps;
-import org.summerb.approaches.jdbccrud.common.DtoBase;
+import org.summerb.utils.DtoBase;
 
 public abstract class RowBase implements DtoBase, HasAutoincrementId, HasTimestamps, HasAuthor {
 	private static final long serialVersionUID = 801702724424959230L;

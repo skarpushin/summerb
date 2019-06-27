@@ -25,7 +25,7 @@ import org.summerb.approaches.jdbccrud.api.dto.datapackage.DataSet;
 import org.summerb.approaches.jdbccrud.api.dto.relations.Ref;
 import org.summerb.approaches.jdbccrud.api.relations.DataSetLoader;
 import org.summerb.approaches.jdbccrud.api.relations.DomLoader;
-import org.summerb.approaches.jdbccrud.common.DtoBase;
+import org.summerb.utils.DtoBase;
 import org.summerb.utils.ObjCopyUtils;
 
 import com.google.common.base.Preconditions;

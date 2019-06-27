@@ -6,8 +6,7 @@ import org.summerb.approaches.i18n.HasMessageArgsConverters;
 import org.summerb.approaches.i18n.HasMessageCode;
 import org.summerb.approaches.i18n.MessageArgConverter;
 import org.summerb.approaches.i18n.MessageCodeMessageArgConverter;
-import org.summerb.approaches.jdbccrud.common.DtoBase;
-import org.summerb.microservices.users.api.UsersMessageCodes;
+import org.summerb.utils.DtoBase;
 
 import com.google.common.base.Preconditions;
 
@@ -21,6 +20,10 @@ import com.google.common.base.Preconditions;
  */
 public class NotAuthorizedResult implements DtoBase, HasMessageCode, HasMessageArgs, HasMessageArgsConverters {
 	private static final transient long serialVersionUID = 1122164433294017483L;
+	
+	public static final String SECURITY_AUTHORIZATION_MISSING_ON_SUBJECT = "security.authorization.missingOnSubject";
+	public static final String SECURITY_AUTHORIZATION_MISSING = "security.authorization.missing";
+
 	private static final transient MessageArgConverter[] messageArgsConverters = new MessageArgConverter[] { null,
 			MessageCodeMessageArgConverter.INSTANCE, null };
 
@@ -40,7 +43,7 @@ public class NotAuthorizedResult implements DtoBase, HasMessageCode, HasMessageA
 		this.userName = userName;
 		this.operationMessageCode = operationMessageCode;
 
-		messageCode = UsersMessageCodes.SECURITY_AUTHORIZATION_MISSING;
+		messageCode = NotAuthorizedResult.SECURITY_AUTHORIZATION_MISSING;
 	}
 
 	public NotAuthorizedResult(String userName, String operationMessageCode, String subjectTitle) {
@@ -49,7 +52,7 @@ public class NotAuthorizedResult implements DtoBase, HasMessageCode, HasMessageA
 		this.operationMessageCode = operationMessageCode;
 		this.subjectTitle = subjectTitle;
 
-		messageCode = UsersMessageCodes.SECURITY_AUTHORIZATION_MISSING_ON_SUBJECT;
+		messageCode = NotAuthorizedResult.SECURITY_AUTHORIZATION_MISSING_ON_SUBJECT;
 	}
 
 	@Override

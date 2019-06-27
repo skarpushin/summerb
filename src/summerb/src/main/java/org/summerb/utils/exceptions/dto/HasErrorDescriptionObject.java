@@ -2,11 +2,11 @@ package org.summerb.utils.exceptions.dto;
 
 import java.io.Serializable;
 
-import org.summerb.approaches.jdbccrud.common.DtoBase;
 import org.summerb.approaches.security.api.dto.NotAuthorizedResult;
 import org.summerb.approaches.security.api.exceptions.NotAuthorizedException;
 import org.summerb.approaches.validation.FieldValidationException;
 import org.summerb.approaches.validation.ValidationErrors;
+import org.summerb.utils.DtoBase;
 
 /**
  * Exception might want to implement this interface if there is an object that

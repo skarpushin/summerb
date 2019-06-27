@@ -1,6 +1,6 @@
 package org.summerb.approaches.jdbccrud.api.dto;
 
-import org.summerb.approaches.jdbccrud.common.DtoBase;
+import org.summerb.utils.DtoBase;
 
 /**
  * This wrapper is used to indicate that this event is originating from other

@@ -1,7 +1,7 @@
 package org.summerb.approaches.jdbccrud.api.dto.relations;
 
 import org.summerb.approaches.jdbccrud.api.dto.HasAutoincrementId;
-import org.summerb.approaches.jdbccrud.common.DtoBase;
+import org.summerb.utils.DtoBase;
 
 /**
  * DTO used to describe m2m table. Suites only very simple cases. In case m2m

@@ -2,8 +2,8 @@ package org.summerb.approaches.jdbccrud.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.summerb.approaches.jdbccrud.api.EasyCrudPerRowAuthStrategy;
-import org.summerb.approaches.security.api.SecurityContextResolver;
 import org.summerb.approaches.security.api.exceptions.NotAuthorizedException;
+import org.summerb.approaches.spring.security.api.SecurityContextResolver;
 
 public abstract class EasyCrudPerRowAuthStrategyAbstract<TDto, TUserType> implements EasyCrudPerRowAuthStrategy<TDto> {
 	@Autowired

@@ -29,6 +29,8 @@ import com.google.gson.GsonBuilder;
  * If at some point this approach will be deemed wrong then we'll need to impl
  * something more sophisticated, similar to {@link BeanPropertyRowMapper}
  * 
+ * TBD: Add usage example
+ * 
  * @author sergeyk
  *
  */

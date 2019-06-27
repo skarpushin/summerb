@@ -20,7 +20,6 @@ import org.summerb.approaches.jdbccrud.api.EasyCrudValidationStrategy;
 import org.summerb.approaches.jdbccrud.api.EasyCrudWireTap;
 import org.summerb.approaches.jdbccrud.api.StringIdGenerator;
 import org.summerb.approaches.jdbccrud.api.dto.HasId;
-import org.summerb.approaches.jdbccrud.common.DtoBase;
 import org.summerb.approaches.jdbccrud.impl.EasyCrudDaoMySqlImpl;
 import org.summerb.approaches.jdbccrud.impl.EasyCrudServicePluggableImpl;
 import org.summerb.approaches.jdbccrud.impl.QueryToNativeSqlCompilerMySqlImpl;
@@ -31,6 +30,7 @@ import org.summerb.approaches.jdbccrud.impl.wireTaps.EasyCrudWireTapValidationIm
 import org.summerb.approaches.jdbccrud.scaffold.api.EasyCrudScaffold;
 import org.summerb.approaches.jdbccrud.scaffold.api.EasyCrudServiceProxyFactory;
 import org.summerb.approaches.security.api.CurrentUserResolver;
+import org.summerb.utils.DtoBase;
 
 import com.google.common.base.Preconditions;
 
