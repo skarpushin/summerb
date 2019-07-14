@@ -4,7 +4,6 @@ import java.util.Locale;
 
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
-import org.springframework.context.i18n.LocaleContextHolder;
 
 // TBD: Consider implementing customizable (based on strategies) regular bean instead of this singleton impl with fixed behavior
 
@@ -22,7 +21,7 @@ public abstract class I18nUtils {
 			}
 
 			if (args != null && argsConverters != null) {
-				applyArgsConversion(hasMessageCode, args, argsConverters, messageSource);
+				applyArgsConversion(hasMessageCode, args, argsConverters, messageSource, locale);
 			}
 
 			return getMessage(hasMessageCode.getMessageCode(), args, messageSource, locale);
@@ -31,52 +30,8 @@ public abstract class I18nUtils {
 		}
 	}
 
-	/**
-	 * @deprecated use
-	 *             {@link #buildMessage(HasMessageCode, MessageSource, Locale)}
-	 *             instead
-	 */
-	@Deprecated
-	public static String buildMessage(HasMessageCode hasMessageCode, MessageSource messageSource) {
-		return buildMessage(hasMessageCode, messageSource, LocaleContextHolder.getLocale());
-	}
-
-	/**
-	 * @deprecated Do not use this class for exceptions translation. Use
-	 *             ExceptionTranslator infrastructure instead
-	 */
-	@Deprecated
-	public static String buildMessagesChain(Throwable t, MessageSource messageSource) {
-		if (t == null) {
-			return "";
-		}
-
-		StringBuilder sb = new StringBuilder();
-		Locale locale = LocaleContextHolder.getLocale();
-
-		Throwable cur = t;
-		while (cur != null) {
-			if (sb.length() > 0) {
-				sb.append(" -> ");
-			}
-
-			if (cur instanceof HasMessageCode) {
-				sb.append(buildMessage((HasMessageCode) cur, messageSource));
-			} else {
-				sb.append(tryBuildMessageBasedOnExcClassName(cur, messageSource, locale));
-			}
-
-			if (cur == cur.getCause()) {
-				break;
-			}
-			cur = cur.getCause();
-		}
-
-		return sb.toString();
-	}
-
-	private static void applyArgsConversion(HasMessageCode hasMessageCode, Object[] args,
-			MessageArgConverter[] argsConverters, MessageSource messageSource) {
+	protected static void applyArgsConversion(HasMessageCode hasMessageCode, Object[] args,
+			MessageArgConverter[] argsConverters, MessageSource messageSource, Locale locale) {
 		for (int i = 0; i < args.length; i++) {
 			if (argsConverters.length < i + 1) {
 				// there is no more converters, nothing to convert
@@ -86,7 +41,8 @@ public abstract class I18nUtils {
 				continue;
 			}
 
-			args[i] = args[i] == null ? "(null)" : argsConverters[i].convert(args[i], hasMessageCode, messageSource);
+			args[i] = args[i] == null ? "(null)"
+					: argsConverters[i].convert(args[i], hasMessageCode, messageSource, locale);
 		}
 	}
 
@@ -96,33 +52,6 @@ public abstract class I18nUtils {
 		} catch (NoSuchMessageException nsme) {
 			// as a backup plan just return message code
 			return messageCode;
-		}
-	}
-
-	/**
-	 * @deprecated use
-	 *             {@link #getMessage(String, Object[], MessageSource, Locale)}
-	 *             instead
-	 */
-	@Deprecated
-	protected static String getMessage(String messageCode, Object[] args, MessageSource messageSource) {
-		return getMessage(messageCode, args, messageSource, LocaleContextHolder.getLocale());
-	}
-
-	/**
-	 * @deprecated Do not use this class for exceptions translation. Use
-	 *             ExceptionTranslator infrastructure instead
-	 */
-	@Deprecated
-	protected static String tryBuildMessageBasedOnExcClassName(Throwable cur, MessageSource messageSource,
-			Locale locale) {
-		try {
-			String className = cur.getClass().getName();
-			String messageMappingForClassName = messageSource.getMessage(className, new Object[] { cur.getMessage() },
-					locale);
-			return messageMappingForClassName;
-		} catch (NoSuchMessageException nfe) {
-			return cur.getLocalizedMessage();
 		}
 	}
 

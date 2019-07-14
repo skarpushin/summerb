@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.summerb.approaches.i18n.I18nUtils;
@@ -63,7 +64,8 @@ public class ValidationErrorsVm {
 			errorsMap = new HashMap<String, String>();
 			for (ValidationError validationError : validationErrors) {
 				try {
-					String message = I18nUtils.buildMessage(validationError, CurrentRequestUtils.getWac());
+					String message = I18nUtils.buildMessage(validationError, CurrentRequestUtils.getWac(),
+							LocaleContextHolder.getLocale());
 
 					// CHeck if there is already at least one message for that
 					// field. Concatenate errors.

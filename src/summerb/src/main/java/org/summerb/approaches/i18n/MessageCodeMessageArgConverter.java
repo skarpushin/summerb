@@ -1,5 +1,7 @@
 package org.summerb.approaches.i18n;
 
+import java.util.Locale;
+
 import org.springframework.context.MessageSource;
 
 import com.google.common.base.Preconditions;
@@ -22,10 +24,10 @@ public class MessageCodeMessageArgConverter extends MessageArgConverter {
 	}
 
 	@Override
-	public String convert(Object arg, HasMessageCode hasMessageCode, MessageSource messageSource) {
+	public String convert(Object arg, HasMessageCode hasMessageCode, MessageSource messageSource, Locale locale) {
 		Preconditions.checkArgument(arg != null);
 		Preconditions.checkArgument(arg instanceof String);
-		return I18nUtils.getMessage(arg.toString(), null, messageSource);
+		return I18nUtils.getMessage(arg.toString(), null, messageSource, locale);
 	}
 
 }

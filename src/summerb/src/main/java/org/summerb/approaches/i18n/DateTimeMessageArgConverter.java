@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.Locale;
 
 import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 
 import com.google.common.base.Preconditions;
 
@@ -27,14 +26,10 @@ public class DateTimeMessageArgConverter extends MessageArgConverter {
 	}
 
 	@Override
-	public String convert(Object arg, HasMessageCode hasMessageCode, MessageSource messageSource) {
+	public String convert(Object arg, HasMessageCode hasMessageCode, MessageSource messageSource, Locale locale) {
 		Preconditions.checkArgument(arg != null);
 		Preconditions.checkArgument(arg instanceof Long);
-
-		Locale locale = LocaleContextHolder.getLocale();
 		DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, locale);
-
 		return dateFormat.format(new Date((Long) arg));
 	}
-
 }
