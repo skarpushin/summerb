@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright 2015-2019 Sergey Karpushin
+  
+  Licensed under the Apache License, Version 2.0 (the "License"); you may not
+  use this file except in compliance with the License.  You may obtain a copy
+  of the License at
+  
+    http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+  License for the specific language governing permissions and limitations under
+  the License.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:cache="http://www.springframework.org/schema/cache" xmlns:p="http://www.springframework.org/schema/p" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/cache 
+		http://www.springframework.org/schema/cache/spring-cache.xsd
+		http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" p:ignoreResourceNotFound="true"
+		p:ignoreUnresolvablePlaceholders="true">
+		<property name="locations">
+			<list>
+				<!-- Default configuration values -->
+				<value>classpath:test-dbconnection.properties</value>
+			</list>
+		</property>
+	</bean>
+
+	<context:annotation-config />
+
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+	<bean id="executorService" class="java.util.concurrent.Executors" factory-method="newCachedThreadPool" destroy-method="shutdownNow" />
+
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<import resource="test-datasource.xml" />
+
+	<bean id="articlesAttachmentsDao" class="org.summerb.minicms.impl.AttachmentDaoExtFilesImpl">
+		<property name="dataSource" ref="dataSource" />
+		<property name="tableName" value="articles_attachments" />
+	</bean>
+	<bean id="articlesAttachmentsService" class="org.summerb.minicms.impl.AttachmentServiceImpl" p:dao-ref="articlesAttachmentsDao" />
+
+	<bean id="articleServiceDaoActual" class="org.summerb.minicms.impl.ArticleDaoImpl" autowire-candidate="false">
+		<property name="dataSource" ref="dataSource" />
+		<property name="tableName" value="articles" />
+	</bean>
+	<bean id="articleServiceDao" class="org.summerb.minicms.impl.ArticleDaoAttachmentRemoverWrapper" p:articleDao-ref="articleServiceDaoActual"
+		p:attachmentDao-ref="articlesAttachmentsDao">
+	</bean>
+	<bean id="articleService" class="org.summerb.minicms.impl.ArticleServiceImpl" p:dao-ref="articleServiceDao" p:currentUserResolver-ref="currentUserResolver" />
+
+	<bean id="currentUserResolver" class="integr.org.summerb.minicms.impl.CurrentUserResolverTestImpl" />
+
+</beans>
+
+

@@ -10,5 +10,11 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
-/src/summerb/article-attachments
-/src/summerb/persisted-tokens.csv
+
+# etc
+**/article-attachments
+**/persisted-tokens.csv
+*.project
+*.classpath
+**/target
+**/.settings

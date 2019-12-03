@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.github.skarpushin</groupId>
+	<artifactId>summerb</artifactId>
+	<version>4.0.0</version>
+	<packaging>pom</packaging>
+
+	<name>summerb</name>
+
+	<modules>
+		<module>summerb-parent</module>
+		<module>summerb-utils</module>
+		<module>summerb-i18n</module>
+		<module>summerb-validation</module>
+		<module>summerb-stringtemplate</module>
+		<module>summerb-security</module>
+		<module>summerb-email</module>
+		<module>summerb-easycrud</module>
+		<module>summerb-properties</module>
+		<module>summerb-users</module>
+		<module>summerb-minicms</module>
+		<module>summerb-webboilerplate</module>
+	</modules>
+
+	<properties>
+		<maven.deploy.skip>true</maven.deploy.skip>
+	</properties>
+
+</project>
