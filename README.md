@@ -1,23 +1,19 @@
 # summerb
-Summerb is a library, it contains a set of simple but yet important building blocks needed by every enterprise web application. 
+`Summerb` is a library, which was created to significantly reduce boilerplate code in new Java and Spring-based web application projects.
 
-I tired of writing boiler plate code each time I start new project so I gathered standard solutions for basic tasks and created this library. As of now set building blocks contains:
-* Internationalization
-* Validation
-* Cache helpers (TX-bound caches, JMX beans)
-* Authentication & Authorization tools
-* Simple email sender
-* Typical implementation for C.R.U.D. operations [instructions](https://github.com/skarpushin/summerb/wiki/Easy-CRUD)
-  * Data Access Layer (based on Spring JDBC)
-  * Service Layer
-  * Validation
-  * Authorization
-  * Spring MVC controller
- 
-Initial codebase is donated by me (Sergey Karpushin) from my hobby project (www.eftracker.ru). I see this as very common to any other enterprise project I'm going to build in future. So why not share it, maybe someone else will make use of it.
+Summerb provides building blocks designed with 2 things in mind: 
 
-This project *DOES NOT* claim to be the one and the only right way to implement mentioned pieces for enterprise applications. Still I tried to design it in a way so it will be easy to substitute any part of it with your own implementation to make whole thing work.
+1. Enable bootstrap of regular CRUD-based application development very fast
 
-CAUTION: This project is slowly, but constantly evolving, and as a result backward incompatibility is not maintained too much, API might change a little. 
+2. Allow to grow application in long-term perspective as requirements evolve (in contrast to frameworks like Groovy-on-Grails, which gives you lighting-fast head start, but then become a bottleneck in a long run)
 
-Detailed documentation will be provided later if project happens to be in demand.
+Software Development is an art and vast area for (re)interpretation, because same functionality can be implemented gizzilion different ways. This library is an opinionated application of [DRY, SLAP and SOLID](https://www.slideshare.net/skarpushin/solid-ood-dry) design principles. 
+
+But since this is a library (not a framework), it was quite easy to make it plug-and-play, almost any part of this library can be replaced and augmented by your custom implementation. 
+
+Since 2015, this library was used in a number of commercial and personal projects, proven to serve its purpose. Since then it was improved number of times. 
+
+This library covers following topics: i18n, Validation, Authorization, CRUD and couple services like Users, Properties and Articles (for micro-CMS). 
+
+Please refer to the [javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/4.0.2/index.html) for information on usage. Since CRUD is the biggest part of this library, there is a separate [article](https://github.com/skarpushin/summerb/wiki/Easy-CRUD) written to describe its usage in detail. 
+
