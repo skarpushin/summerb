@@ -15,5 +15,5 @@ Since 2015, this library was used in a number of commercial and personal project
 
 This library covers following topics: i18n, Validation, Authorization, CRUD and couple services like Users, Properties and Articles (for micro-CMS). 
 
-Please refer to the [javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/4.0.2/index.html) for information on usage. Since CRUD is the biggest part of this library, there is a separate [article](https://github.com/skarpushin/summerb/wiki/Easy-CRUD) written to describe its usage in detail. 
+Please refer to [Wiki](https://github.com/skarpushin/summerb/wiki) for the reference to documentation. Also, since CRUD is the biggest part of this library, there is a separate [article](https://github.com/skarpushin/summerb/wiki/Easy-CRUD) written to describe its usage in detail. 
 
