@@ -82,7 +82,7 @@ public class EasyCrudServicePluggableImpl<TId, TDto extends HasId<TId>, TDao ext
 		Preconditions.checkState(dtoClass != null, "DtoClass is required");
 		Preconditions.checkState(!HasAuthor.class.isAssignableFrom(dtoClass) || currentUserResolver != null,
 				"CurrentUserResolver required");
-		Preconditions.checkState(dtoClass != null, "dao is required");
+		Preconditions.checkState(dao != null, "dao is required");
 
 		if (entityTypeMessageCode == null) {
 			entityTypeMessageCode = dtoClass.getCanonicalName();
@@ -396,6 +396,7 @@ public class EasyCrudServicePluggableImpl<TId, TDto extends HasId<TId>, TDao ext
 		return stringIdGenerator;
 	}
 
+	@Autowired(required = false)
 	public void setStringIdGenerator(StringIdGenerator stringIdGenerator) {
 		this.stringIdGenerator = stringIdGenerator;
 	}

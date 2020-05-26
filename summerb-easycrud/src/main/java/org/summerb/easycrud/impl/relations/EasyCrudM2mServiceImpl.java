@@ -33,6 +33,7 @@ import org.summerb.easycrud.api.dto.relations.ManyToManyDto;
 import org.summerb.easycrud.api.dto.relations.Ref;
 import org.summerb.easycrud.api.dto.tools.EasyCrudDtoUtils;
 import org.summerb.easycrud.api.exceptions.EntityNotFoundException;
+import org.summerb.easycrud.api.exceptions.GenericEntityNotFoundException;
 import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.api.relations.EasyCrudM2mService;
 import org.summerb.easycrud.impl.EasyCrudServicePluggableImpl;
@@ -211,6 +212,10 @@ public class EasyCrudM2mServiceImpl<T1Id, T1Dto extends HasId<T1Id>, T2Id, T2Dto
 			addEqQuery(ManyToManyDto.FN_DST, referenceeId, q);
 			ManyToManyDto<T1Id, T2Id> pair = findOneByQuery(q);
 			try {
+				if (pair == null) {
+					throw new GenericEntityNotFoundException(getEntityTypeMessageCode(),
+							"" + referencerId + "<->" + referenceeId);
+				}
 				deleteById(pair.getId());
 			} catch (EntityNotFoundException e) {
 				// that's ok, we wanted it to not exist, it's not there. This

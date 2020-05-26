@@ -36,7 +36,6 @@ import org.summerb.easycrud.api.dto.PaginatedList;
 import org.summerb.easycrud.api.dto.relations.Ref;
 import org.summerb.easycrud.api.relations.DataSetLoader;
 import org.summerb.easycrud.api.relations.ReferencesRegistry;
-import org.summerb.easycrud.impl.relations.DomLoaderImpl.Pair;
 import org.summerb.easycrud.impl.relations.example.Device;
 import org.summerb.easycrud.impl.relations.example.DeviceRow;
 import org.summerb.easycrud.impl.relations.example.DeviceService;
@@ -44,6 +43,7 @@ import org.summerb.easycrud.impl.relations.example.Env;
 import org.summerb.easycrud.impl.relations.example.EnvService;
 import org.summerb.easycrud.impl.relations.example.EnvironmentRow;
 import org.summerb.easycrud.impl.relations.example.Refs;
+import org.summerb.utils.Pair;
 
 public class DomLoaderDeviceGatewayTest {
 

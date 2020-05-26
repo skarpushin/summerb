@@ -41,6 +41,7 @@ import org.summerb.easycrud.api.dto.relations.Ref;
 import org.summerb.easycrud.api.relations.DataSetLoader;
 import org.summerb.easycrud.api.relations.DomLoader;
 import org.summerb.utils.DtoBase;
+import org.summerb.utils.Pair;
 import org.summerb.utils.objectcopy.ObjCopyUtils;
 
 import com.google.common.base.Preconditions;
@@ -190,9 +191,9 @@ public class DomLoaderImpl implements DomLoader {
 				domField.getValue().getPropertyType());
 
 		PropertyDescriptor referenceeIdProp = BeanUtils.getPropertyDescriptor(dom.getClass(),
-				domField.key.getFromField());
+				domField.getKey().getFromField());
 		Preconditions.checkState(referenceeIdProp != null, "can't resolve referencer fk id field %s",
-				domField.key.getFromField());
+				domField.getKey().getFromField());
 
 		Object referenceeId = referenceeIdProp.getReadMethod().invoke(dom);
 		if (referenceeId == null) {
@@ -363,38 +364,6 @@ public class DomLoaderImpl implements DomLoader {
 			} else if (!id.equals(other.id))
 				return false;
 			return true;
-		}
-	}
-
-	public static class Pair<K, V> implements Map.Entry<K, V> {
-		private K key;
-		private V value;
-
-		public Pair(K key, V value) {
-			super();
-			this.key = key;
-			this.value = value;
-		}
-
-		public static <K, V> Pair<K, V> of(K key, V value) {
-			return new Pair<>(key, value);
-		}
-
-		@Override
-		public K getKey() {
-			return key;
-		}
-
-		@Override
-		public V getValue() {
-			return value;
-		}
-
-		@Override
-		public V setValue(V value) {
-			V oldValue = this.value;
-			this.value = value;
-			return oldValue;
 		}
 	}
 
