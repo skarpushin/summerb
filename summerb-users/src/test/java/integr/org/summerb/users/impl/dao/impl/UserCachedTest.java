@@ -39,12 +39,13 @@ import org.summerb.users.api.exceptions.UserNotFoundException;
 @ProfileValueSourceConfiguration(SystemProfileValueSource.class)
 @Transactional
 public class UserCachedTest {
-
 	@Autowired
+	@Qualifier("userService")
 	private UserService userService;
 
+	@Autowired
 	@Qualifier("userServiceNoncached")
-	private UserService userServiceNonCached;
+	private UserService userServiceNoncached;
 
 	@Test
 	public void testGetUserByUuid_expectReferencesEqualityForReturnedDtos() throws Exception {
@@ -114,7 +115,7 @@ public class UserCachedTest {
 
 		long beforeNonCached = new Date().getTime();
 		for (int i = 0; i < cycles; i++) {
-			userServiceNonCached.getUserByUuid(userToCreate.getUuid());
+			userServiceNoncached.getUserByUuid(userToCreate.getUuid());
 		}
 		long afterNonCached = new Date().getTime() - beforeNonCached;
 

@@ -68,8 +68,7 @@
 		<property name="dataSource" ref="dataSource" />
 	</bean>
 
-	<bean id="userServiceNoncached" class="org.summerb.users.impl.UserServiceImpl"
-		autowire-candidate="false">
+	<bean id="userServiceNoncached" class="org.summerb.users.impl.UserServiceImpl">
 		<property name="userDao" ref="userDao" />
 		<property name="eventBus" ref="entityChangesEventBus" />
 	</bean>

@@ -78,6 +78,11 @@ public class StringTokenizer {
 				i++;
 			}
 		}
+		
+		if (delimLength > 0) {
+			lastSelectedDelimeterIndex = indexOfNearestDelimeter(delimPos);
+		}
+		
 		return true;
 	}
 
@@ -102,11 +107,7 @@ public class StringTokenizer {
 	 * @return index of the delimeter in the delim list, or -1 if none applicable
 	 */
 	private int updateDelimPositions() {
-		if (lastSelectedDelimeterIndex >= 0) {
-			if (pos == delimPos[lastSelectedDelimeterIndex]) {
-				return lastSelectedDelimeterIndex;
-			}
-
+		while (lastSelectedDelimeterIndex >= 0 && delimPos[lastSelectedDelimeterIndex] < pos) {
 			if (pos + delim[lastSelectedDelimeterIndex].length() >= subject.length()) {
 				// if this delimeter could not fit anymore in the string
 				delimNoLongerPresent(lastSelectedDelimeterIndex);
@@ -116,15 +117,16 @@ public class StringTokenizer {
 					delimNoLongerPresent(lastSelectedDelimeterIndex);
 				}
 			}
-		}
 
-		// Ok, now we assume that all delims are now updated and present, need to find
-		// nearest
-		if (delimLength == 0) {
-			return -1;
-		}
+			// Ok, now we assume that all delims are now updated and present, need to find
+			// nearest
+			if (delimLength == 0) {
+				return -1;
+			}
 
-		return lastSelectedDelimeterIndex = indexOfNearestDelimeter(delimPos);
+			lastSelectedDelimeterIndex = indexOfNearestDelimeter(delimPos);
+		}
+		return lastSelectedDelimeterIndex;
 	}
 
 	public int indexOfNearestDelimeter(int... array) {
