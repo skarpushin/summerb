@@ -26,11 +26,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.Resource;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.annotation.ProfileValueSourceConfiguration;
 import org.springframework.test.annotation.SystemProfileValueSource;
 import org.springframework.test.context.ContextConfiguration;
@@ -62,19 +61,19 @@ public class DataSetLoaderTest {
 	protected EasyCrudServiceResolver easyCrudServiceResolver;
 
 	@Autowired
-	@Resource(name = "testDto1Service")
+	@Qualifier("testDto1Service")
 	private EasyCrudService<String, TestDto1> testDto1Service;
 
 	@Autowired
-	@Resource(name = "testDto2Service")
+	@Qualifier("testDto2Service")
 	private EasyCrudService<Long, TestDto2> testDto2Service;
 
 	@Autowired
-	@Resource(name = "testDto3Service")
+	@Qualifier("testDto3Service")
 	private EasyCrudService<Long, TestDto3> testDto3Service;
 
 	@Autowired
-	@Resource(name = "m2mService")
+	@Qualifier("m2mService")
 	private EasyCrudM2mService<Long, TestDto2, String, TestDto3> m2mService;
 
 	@Test

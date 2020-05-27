@@ -20,11 +20,10 @@ import static org.junit.Assert.fail;
 
 import java.util.Date;
 
-import javax.annotation.Resource;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.annotation.ProfileValueSourceConfiguration;
 import org.springframework.test.annotation.SystemProfileValueSource;
 import org.springframework.test.context.ContextConfiguration;
@@ -44,7 +43,7 @@ public class UserCachedTest {
 	@Autowired
 	private UserService userService;
 
-	@Resource(name = "userServiceNoncached")
+	@Qualifier("userServiceNoncached")
 	private UserService userServiceNonCached;
 
 	@Test

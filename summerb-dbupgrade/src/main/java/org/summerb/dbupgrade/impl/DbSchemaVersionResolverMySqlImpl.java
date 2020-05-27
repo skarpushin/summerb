@@ -13,7 +13,6 @@ import org.summerb.dbupgrade.api.DbSchemaVersionResolver;
 import org.summerb.utils.exceptions.ExceptionUtils;
 
 import com.google.common.base.Preconditions;
-import com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException;
 
 public class DbSchemaVersionResolverMySqlImpl implements DbSchemaVersionResolver {
 	protected Logger log = Logger.getLogger(getClass());
@@ -72,23 +71,14 @@ public class DbSchemaVersionResolverMySqlImpl implements DbSchemaVersionResolver
 					Integer.class);
 			return ret == null ? -1 : ret;
 		} catch (Exception e) {
-			if (isMissingTableException(e)) {
-				return -1;
-			}
 			throw new RuntimeException("Failed to query current db version", e);
 		}
-	}
-
-	protected boolean isMissingTableException(Exception e) {
-		MySQLSyntaxErrorException me = ExceptionUtils.findExceptionOfType(e, MySQLSyntaxErrorException.class);
-		return me != null && "42S02".equals(me.getSQLState());
 	}
 
 	@Override
 	public void increaseVersionTo(int version) {
 		try {
 			ensureVersionTrackingTablePresent();
-
 			Preconditions.checkArgument(getCurrentDbVersion() < version,
 					"New version %s must be higher than current %s", version, getCurrentDbVersion());
 

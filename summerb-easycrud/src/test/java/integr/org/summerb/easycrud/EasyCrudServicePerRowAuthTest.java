@@ -15,11 +15,10 @@
  ******************************************************************************/
 package integr.org.summerb.easycrud;
 
-import javax.annotation.Resource;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.annotation.ProfileValueSourceConfiguration;
 import org.springframework.test.annotation.SystemProfileValueSource;
 import org.springframework.test.context.ContextConfiguration;
@@ -34,15 +33,15 @@ import org.summerb.security.api.exceptions.NotAuthorizedException;
 @Transactional
 public class EasyCrudServicePerRowAuthTest extends GenericCrudServiceTestTemplate {
 	@Autowired
-	@Resource(name = "testDto1ServiceBasicAuth")
+	@Qualifier("testDto1ServiceBasicAuth")
 	private EasyCrudService<String, TestDto1> testDto1Service;
 
 	@Autowired
-	@Resource(name = "testDto2ServiceBasicAuth")
+	@Qualifier("testDto2ServiceBasicAuth")
 	private EasyCrudService<Long, TestDto2> testDto2ServiceBasicAuth;
 
 	@Autowired
-	@Resource(name = "testDto1ServiceBasicAuthEb")
+	@Qualifier("testDto1ServiceBasicAuthEb")
 	private EasyCrudService<String, TestDto1> testDto1ServiceEb;
 
 	@Override

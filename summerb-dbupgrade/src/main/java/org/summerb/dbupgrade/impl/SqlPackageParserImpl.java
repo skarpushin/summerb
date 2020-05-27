@@ -11,26 +11,33 @@ import org.apache.commons.io.IOUtils;
 import org.summerb.dbupgrade.api.SqlPackageParser;
 import org.summerb.dbupgrade.api.UpgradeStatement;
 import org.summerb.dbupgrade.utils.StringTokenizer;
+import org.summerb.dbupgrade.utils.StringTokenizer.SubString;
 
-/**
- * This is rather crude impl of parser which is mindful of comments though but
- * is not guaranteed to support all possible lexuical constructs
- *
- */
 public class SqlPackageParserImpl implements SqlPackageParser {
+	private static final SubString STRING_MARKER = new SubString("'");
+	private static final SubString SINGLE_LINE_COMMENT = new SubString("--");
+	private static final SubString MULTI_LINE_COMMENT_OPEN = new SubString("/*");
+	private static final SubString MULTI_LINE_COMMENT_CLOSE = new SubString("*/");
+	private static final SubString NEW_LINE = new SubString("\n");
+	// we're not really processing, but we still have it here so that tokenizer will
+	// recognize this and we don't count it as a string region modifier
+	private static final SubString ESCAPED_STRING_MARKER = new SubString("\\'");
+	private static final SubString STATEMENT_END = new SubString(";");
+
 	@Override
 	public Stream<UpgradeStatement> getUpgradeScriptsStream(InputStream is) throws Exception {
 		List<UpgradeStatement> ret = new ArrayList<>();
-		StringTokenizer tokenizer = new StringTokenizer(read(is), "'", "--", "/*", "*/", "\n", "\\'", ";");
+
+		StringTokenizer tokenizer = buildTokenizer(is);
 
 		StringBuilder sb = new StringBuilder();
-		String t;
+		SubString t;
 		boolean isWithinString = false;
 		boolean isWithinSingleLineComment = false;
 		boolean isWithinMultilineComment = false;
 		while ((t = tokenizer.next()) != null) {
 			// Tokens ignoring mode
-			if ("\n".equals(t)) {
+			if (NEW_LINE == t) {
 				if (isWithinSingleLineComment) {
 					isWithinSingleLineComment = false;
 				}
@@ -42,7 +49,7 @@ public class SqlPackageParserImpl implements SqlPackageParser {
 			}
 
 			if (isWithinMultilineComment) {
-				if ("*/".equals(t)) {
+				if (MULTI_LINE_COMMENT_CLOSE == t) {
 					isWithinMultilineComment = false;
 				}
 				continue;
@@ -50,7 +57,7 @@ public class SqlPackageParserImpl implements SqlPackageParser {
 
 			// String capturing mode
 			if (isWithinString) {
-				if ("'".equals(t)) {
+				if (STRING_MARKER == t) {
 					isWithinString = false;
 				}
 				sb.append(t);
@@ -58,24 +65,24 @@ public class SqlPackageParserImpl implements SqlPackageParser {
 			}
 
 			// Entering ignoring mode
-			if ("--".equals(t)) {
+			if (SINGLE_LINE_COMMENT == t) {
 				isWithinSingleLineComment = true;
 				continue;
 			}
 
-			if ("/*".equals(t)) {
+			if (MULTI_LINE_COMMENT_OPEN == t) {
 				isWithinMultilineComment = true;
 				continue;
 			}
 
-			if ("'".equals(t)) {
+			if (STRING_MARKER == t) {
 				isWithinString = true;
 				sb.append(t);
 				continue;
 			}
 
 			// Statement termination
-			if (";".equals(t)) {
+			if (STATEMENT_END == t) {
 				sb.append(t);
 				ret.add(new UpgradeStatement(sb.toString()));
 				sb = new StringBuilder();
@@ -88,11 +95,16 @@ public class SqlPackageParserImpl implements SqlPackageParser {
 		return ret.stream();
 	}
 
-	private String read(InputStream is) throws Exception {
+	protected StringTokenizer buildTokenizer(InputStream is) throws Exception {
+		StringTokenizer tokenizer = new StringTokenizer(read(is), STRING_MARKER, SINGLE_LINE_COMMENT,
+				MULTI_LINE_COMMENT_OPEN, MULTI_LINE_COMMENT_CLOSE, NEW_LINE, ESCAPED_STRING_MARKER, STATEMENT_END);
+		return tokenizer;
+	}
+
+	protected String read(InputStream is) throws Exception {
 		StringWriter writer = new StringWriter();
 		String encoding = StandardCharsets.UTF_8.name();
 		IOUtils.copy(is, writer, encoding);
 		return writer.toString();
 	}
-
 }

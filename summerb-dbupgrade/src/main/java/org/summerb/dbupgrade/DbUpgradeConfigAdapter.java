@@ -21,7 +21,7 @@ import org.summerb.dbupgrade.impl.UpgradePackageFactorySqlImpl;
 
 public abstract class DbUpgradeConfigAdapter {
 	@Bean
-	DbUpgrade dbUpgrade(UpgradePackageMetaResolver upgradePackageMetaResolver,
+	protected DbUpgrade dbUpgrade(UpgradePackageMetaResolver upgradePackageMetaResolver,
 			DbSchemaVersionResolver dbSchemaVersionResolver, UpgradePackageFactory upgradePackageFactory) {
 		return new DbUpgradeImpl(upgradePackageMetaResolver, dbSchemaVersionResolver, upgradePackageFactory);
 	}
@@ -30,34 +30,33 @@ public abstract class DbUpgradeConfigAdapter {
 	protected abstract UpgradePackageMetaResolver upgradePackageMetaResolver() throws Exception;
 
 	@Bean
-	DbSchemaVersionResolver dbSchemaVersionResolver(DataSource dataSource) {
+	protected DbSchemaVersionResolver dbSchemaVersionResolver(DataSource dataSource) {
 		return new DbSchemaVersionResolverMySqlImpl(dataSource);
 	}
 
 	@Bean
-	UpgradePackageFactoryResolver upgradePackageFactoryResolver() {
+	protected UpgradePackageFactoryResolver upgradePackageFactoryResolver() {
 		return new UpgradePackageFactoryResolverSpringAutodiscoverImpl();
 	}
 
 	@Bean
 	@Primary
-	UpgradePackageFactory upgradePackageFactory(UpgradePackageFactoryResolver upgradePackageFactoryResolver) {
+	protected UpgradePackageFactory upgradePackageFactory(UpgradePackageFactoryResolver upgradePackageFactoryResolver) {
 		return new UpgradePackageFactoryDelegatingImpl(upgradePackageFactoryResolver);
 	}
 
 	@Bean
-	UpgradePackageFactory upgradePackageFactoryBean(ApplicationContext applicationContext) {
+	protected UpgradePackageFactory upgradePackageFactoryBean(ApplicationContext applicationContext) {
 		return new UpgradePackageFactoryBeanImpl(applicationContext);
 	}
 
 	@Bean
-	UpgradePackageFactory upgradePackageFactorySql(DataSource dataSource, SqlPackageParser sqlPackageParser) {
+	protected UpgradePackageFactory upgradePackageFactorySql(DataSource dataSource, SqlPackageParser sqlPackageParser) {
 		return new UpgradePackageFactorySqlImpl(new JdbcTemplate(dataSource), sqlPackageParser);
 	}
 
 	@Bean
-	SqlPackageParser sqlPackageParser() {
+	protected SqlPackageParser sqlPackageParser() {
 		return new SqlPackageParserImpl();
 	}
-
 }

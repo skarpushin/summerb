@@ -15,10 +15,9 @@
  ******************************************************************************/
 package integr.org.summerb.easycrud;
 
-import javax.annotation.Resource;
-
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.annotation.ProfileValueSourceConfiguration;
 import org.springframework.test.annotation.SystemProfileValueSource;
 import org.springframework.test.context.ContextConfiguration;
@@ -32,15 +31,15 @@ import org.summerb.easycrud.api.EasyCrudService;
 @Transactional
 public class EasyCrudServiceTableAuthTest extends GenericCrudServiceTestTemplate {
 	@Autowired
-	@Resource(name = "testDto1Service")
+	@Qualifier("testDto1Service")
 	private EasyCrudService<String, TestDto1> testDto1Service;
 
 	@Autowired
-	@Resource(name = "testDto2Service")
+	@Qualifier("testDto2Service")
 	private EasyCrudService<Long, TestDto2> testDto2Service;
 
 	@Autowired
-	@Resource(name = "testDto1ServiceEb")
+	@Qualifier("testDto1ServiceEb")
 	private EasyCrudService<String, TestDto1> testDto1ServiceEb;
 
 	@Override
