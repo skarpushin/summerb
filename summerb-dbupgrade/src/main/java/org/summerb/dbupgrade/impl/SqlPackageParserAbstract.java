@@ -15,21 +15,20 @@ import org.summerb.dbupgrade.api.UpgradeStatement;
 import org.summerb.dbupgrade.utils.StringTokenizer;
 import org.summerb.dbupgrade.utils.StringTokenizer.SubString;
 
-public class SqlPackageParserImpl implements SqlPackageParser {
-	private static final SubString STRING_MARKER = new SubString("'");
-	private static final SubString SINGLE_LINE_COMMENT = new SubString("--");
-	private static final SubString MULTI_LINE_COMMENT_OPEN = new SubString("/*");
-	private static final SubString MULTI_LINE_COMMENT_CLOSE = new SubString("*/");
-	private static final SubString NEW_LINE = new SubString("\n");
-	// we're not really processing, but we still have it here so that tokenizer will
-	// recognize this and we don't count it as a string region modifier
-	private static final SubString ESCAPED_STRING_MARKER = new SubString("\\'");
-	private static final SubString STATEMENT_END = new SubString(";");
+public abstract class SqlPackageParserAbstract implements SqlPackageParser {
+	public static final SubString STRING_MARKER = new SubString("'");
+	public static final SubString SINGLE_LINE_COMMENT = new SubString("--");
+	public static final SubString MULTI_LINE_COMMENT_OPEN = new SubString("/*");
+	public static final SubString MULTI_LINE_COMMENT_CLOSE = new SubString("*/");
+	public static final SubString NEW_LINE = new SubString("\n");
+	public static final SubString STATEMENT_END = new SubString(";");
 
 	@Override
 	public Stream<UpgradeStatement> getUpgradeScriptsStream(InputStream is) throws Exception {
 		return StreamSupport.stream(new UpgradeStatementSpliterator(is), false);
 	}
+
+	protected abstract StringTokenizer buildTokenizer(InputStream is) throws Exception;
 
 	protected class UpgradeStatementSpliterator implements Spliterator<UpgradeStatement> {
 		StringTokenizer tokenizer;
@@ -138,12 +137,6 @@ public class SqlPackageParserImpl implements SqlPackageParser {
 			return null;
 		}
 	};
-
-	protected StringTokenizer buildTokenizer(InputStream is) throws Exception {
-		StringTokenizer tokenizer = new StringTokenizer(read(is), STRING_MARKER, SINGLE_LINE_COMMENT,
-				MULTI_LINE_COMMENT_OPEN, MULTI_LINE_COMMENT_CLOSE, NEW_LINE, ESCAPED_STRING_MARKER, STATEMENT_END);
-		return tokenizer;
-	}
 
 	protected String read(InputStream is) throws Exception {
 		StringWriter writer = new StringWriter();

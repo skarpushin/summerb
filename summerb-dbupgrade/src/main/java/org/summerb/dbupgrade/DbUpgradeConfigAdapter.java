@@ -11,13 +11,15 @@ import org.summerb.dbupgrade.api.SqlPackageParser;
 import org.summerb.dbupgrade.api.UpgradePackageFactory;
 import org.summerb.dbupgrade.api.UpgradePackageFactoryResolver;
 import org.summerb.dbupgrade.api.UpgradePackageMetaResolver;
-import org.summerb.dbupgrade.impl.DbSchemaVersionResolverMySqlImpl;
+import org.summerb.dbupgrade.impl.DbSchemaVersionResolverImpl;
 import org.summerb.dbupgrade.impl.DbUpgradeImpl;
-import org.summerb.dbupgrade.impl.SqlPackageParserImpl;
 import org.summerb.dbupgrade.impl.UpgradePackageFactoryBeanImpl;
 import org.summerb.dbupgrade.impl.UpgradePackageFactoryDelegatingImpl;
 import org.summerb.dbupgrade.impl.UpgradePackageFactoryResolverSpringAutodiscoverImpl;
 import org.summerb.dbupgrade.impl.UpgradePackageFactorySqlImpl;
+import org.summerb.dbupgrade.impl.VersionTableDbDialect;
+import org.summerb.dbupgrade.impl.mysql.SqlPackageParserMySqlImpl;
+import org.summerb.dbupgrade.impl.mysql.VersionTableDbDialectMySqlImpl;
 
 public abstract class DbUpgradeConfigAdapter {
 	@Bean
@@ -30,8 +32,14 @@ public abstract class DbUpgradeConfigAdapter {
 	protected abstract UpgradePackageMetaResolver upgradePackageMetaResolver() throws Exception;
 
 	@Bean
-	protected DbSchemaVersionResolver dbSchemaVersionResolver(DataSource dataSource) {
-		return new DbSchemaVersionResolverMySqlImpl(dataSource);
+	protected VersionTableDbDialect versionTableDbDialect() {
+		return new VersionTableDbDialectMySqlImpl();
+	}
+
+	@Bean
+	protected DbSchemaVersionResolver dbSchemaVersionResolver(DataSource dataSource,
+			VersionTableDbDialect versionTableDbDialect) {
+		return new DbSchemaVersionResolverImpl(dataSource, versionTableDbDialect);
 	}
 
 	@Bean
@@ -57,6 +65,6 @@ public abstract class DbUpgradeConfigAdapter {
 
 	@Bean
 	protected SqlPackageParser sqlPackageParser() {
-		return new SqlPackageParserImpl();
+		return new SqlPackageParserMySqlImpl();
 	}
 }

@@ -1,38 +1,34 @@
 package org.summerb.dbupgrade.impl;
 
-import java.sql.SQLSyntaxErrorException;
-
 import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.util.StringUtils;
 import org.summerb.dbupgrade.api.DbSchemaVersionResolver;
-import org.summerb.utils.exceptions.ExceptionUtils;
 
 import com.google.common.base.Preconditions;
 
-public class DbSchemaVersionResolverMySqlImpl implements DbSchemaVersionResolver {
+public class DbSchemaVersionResolverImpl implements DbSchemaVersionResolver {
 	protected Logger log = Logger.getLogger(getClass());
 
-	protected JdbcTemplate jdbcTemplate;
-	protected final String tableName;
-	protected SimpleJdbcInsert jdbcInsert;
 	private DataSource dataSource;
+	private VersionTableDbDialect versionTableDbDialect;
+
+	protected JdbcTemplate jdbcTemplate;
+	protected SimpleJdbcInsert jdbcInsert;
 	private boolean versioningTableEnsured;
 
-	public DbSchemaVersionResolverMySqlImpl(DataSource dataSource) {
-		this(dataSource, "db_version");
-	}
-
-	public DbSchemaVersionResolverMySqlImpl(DataSource dataSource, String tableName) {
-		this.dataSource = dataSource;
+	public DbSchemaVersionResolverImpl(DataSource dataSource,
+			VersionTableDbDialect versionTableDbDialect) {
 		Preconditions.checkArgument(dataSource != null, "dataSource required");
-		Preconditions.checkArgument(StringUtils.hasText(tableName), "tableName required");
+		Preconditions.checkArgument(versionTableDbDialect != null,
+				"versionTableDbDialect required");
+
+		this.dataSource = dataSource;
+		this.versionTableDbDialect = versionTableDbDialect;
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
-		this.tableName = tableName;
 	}
 
 	private void ensureVersionTrackingTablePresent() {
@@ -40,23 +36,22 @@ public class DbSchemaVersionResolverMySqlImpl implements DbSchemaVersionResolver
 			return;
 		}
 		try {
-			jdbcTemplate.execute(String.format("SELECT count(*) FROM %s", tableName));
+			jdbcTemplate.execute(versionTableDbDialect.getVersionTableExistanceCheck());
 		} catch (Exception exc) {
-			SQLSyntaxErrorException grammarException = ExceptionUtils.findExceptionOfType(exc,
-					SQLSyntaxErrorException.class);
-			if (grammarException != null && "42S02".equals(grammarException.getSQLState())) {
+			if (versionTableDbDialect.isTableMissingException(exc)) {
 				createTable();
 			} else {
 				throw new RuntimeException("Failed to verify if database contains table for tracking db versions", exc);
 			}
 		}
-		this.jdbcInsert = new SimpleJdbcInsert(dataSource).withTableName(tableName);
+		this.jdbcInsert = new SimpleJdbcInsert(dataSource)
+				.withTableName(versionTableDbDialect.getTableName());
 		versioningTableEnsured = true;
 	}
 
 	private void createTable() {
 		try {
-			jdbcTemplate.execute(String.format("CREATE TABLE `%s` ( `version` INT NOT NULL )", tableName));
+			jdbcTemplate.execute(versionTableDbDialect.getVersionTableCreationStatement());
 			log.info("Create table for tracking DB version");
 		} catch (Exception e2) {
 			throw new RuntimeException("Failed to create table used for tracking DB version", e2);
@@ -67,7 +62,7 @@ public class DbSchemaVersionResolverMySqlImpl implements DbSchemaVersionResolver
 	public int getCurrentDbVersion() {
 		try {
 			ensureVersionTrackingTablePresent();
-			Integer ret = jdbcTemplate.queryForObject(String.format("SELECT MAX(version) FROM `%s`", tableName),
+			Integer ret = jdbcTemplate.queryForObject(versionTableDbDialect.getCurrentDbVersionQuery(),
 					Integer.class);
 			return ret == null ? -1 : ret;
 		} catch (Exception e) {
