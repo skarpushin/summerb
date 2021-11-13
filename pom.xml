@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
@@ -9,8 +10,6 @@
 	<packaging>pom</packaging>
 
 	<name>summerb</name>
-	<url>https://github.com/skarpushin/summerb</url>
-	<description>summerb - is a set of building blocks for real-world java-based web apps</description>
 
 	<modules>
 		<module>summerb-parent</module>
@@ -29,43 +28,8 @@
 	</modules>
 
 	<properties>
-		<!-- <maven.deploy.skip>true</maven.deploy.skip> -->
+		<maven.deploy.skip>true</maven.deploy.skip>
+		<skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
 	</properties>
-
-	<licenses>
-		<license>
-			<name>The Apache Software License, Version 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
-
-	<scm>
-		<url>https://github.com/skarpushin/summerb</url>
-		<connection>scm:git:git://github.com/skarpushin/summerb</connection>
-		<developerConnection>scm:git:ssh://github.com:skarpushin/summerb.git</developerConnection>
-	</scm>
-
-	<developers>
-		<developer>
-			<id>skarpushin</id>
-			<name>Sergey Karpushin</name>
-			<email>sergey.v.karpushin@gmail.com</email>
-			<url>https://github.com/skarpushin</url>
-
-			<organization>Auriga</organization>
-			<organizationUrl>https://www.auriga.com/</organizationUrl>
-			<roles>
-				<role>Senior Project Manager</role>
-			</roles>
-		</developer>
-	</developers>
-
-	<distributionManagement>
-		<repository>
-			<id>bintray-skarpushin-summerb</id>
-			<url>https://api.bintray.com/maven/skarpushin/maven/summerb/</url>
-		</repository>
-	</distributionManagement>
 
 </project>
