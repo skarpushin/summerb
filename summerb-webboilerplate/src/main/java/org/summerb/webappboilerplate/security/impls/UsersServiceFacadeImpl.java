@@ -18,7 +18,8 @@ package org.summerb.webappboilerplate.security.impls;
 import java.util.List;
 import java.util.TimeZone;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
@@ -72,7 +73,7 @@ import com.google.common.base.Throwables;
  *
  */
 public class UsersServiceFacadeImpl implements UsersServiceFacade, LoginEligibilityVerifier {
-	private Logger log = Logger.getLogger(getClass());
+	private Logger log = LogManager.getLogger(getClass());
 
 	private int passwordMinLength = 4;
 	private AuthTokenService authTokenService;

@@ -24,7 +24,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -53,7 +54,7 @@ import org.summerb.validation.FieldValidationException;
  */
 public class AttachmentDaoExtFilesImpl extends EasyCrudDaoMySqlImpl<Long, Attachment>
 		implements AttachmentDao, ApplicationContextAware {
-	private Logger log = Logger.getLogger(getClass());
+	private Logger log = LogManager.getLogger(getClass());
 
 	private String targetFolder = "article-attachments";
 	private ApplicationContext applicationContext;

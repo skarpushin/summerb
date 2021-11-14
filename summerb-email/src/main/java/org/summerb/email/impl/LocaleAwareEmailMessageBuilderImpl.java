@@ -19,7 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.util.CollectionUtils;
 import org.summerb.email.api.EmailMessageBuilder;
@@ -38,7 +39,7 @@ import com.google.common.base.Preconditions;
  * 
  */
 public class LocaleAwareEmailMessageBuilderImpl implements EmailMessageBuilder {
-	private Logger log = Logger.getLogger(getClass());
+	private Logger log = LogManager.getLogger(getClass());
 
 	private List<EmailMessageBuilder> localeSpecificBuilders;
 

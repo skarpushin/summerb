@@ -20,10 +20,11 @@ import java.lang.management.ManagementFactory;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class EmailSenderSimpleQueueMXBeanImpl implements EmailSenderSimpleQueueMXBean {
-	private static Logger log = Logger.getLogger(EmailSenderSimpleQueueMXBeanImpl.class);
+	private static Logger log = LogManager.getLogger(EmailSenderSimpleQueueMXBeanImpl.class);
 	private EmailSenderSimpleQueueImpl queue;
 
 	public EmailSenderSimpleQueueMXBeanImpl(EmailSenderSimpleQueueImpl queue) {

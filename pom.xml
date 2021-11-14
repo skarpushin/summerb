@@ -6,7 +6,7 @@
 
 	<groupId>com.github.skarpushin</groupId>
 	<artifactId>summerb</artifactId>
-	<version>4.1.2</version>
+	<version>5.0.0</version>
 	<packaging>pom</packaging>
 
 	<name>summerb</name>

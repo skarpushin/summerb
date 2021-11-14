@@ -17,7 +17,8 @@ package org.summerb.webappboilerplate.security.impls;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +53,7 @@ import org.summerb.webappboilerplate.utils.CurrentRequestUtils;
  *
  */
 public class AuthenticationProviderImpl implements AuthenticationProvider, InitializingBean, ApplicationContextAware {
-	protected final Logger logger = Logger.getLogger(getClass());
+	protected final Logger logger = LogManager.getLogger(getClass());
 
 	private PasswordEncoder passwordEncoder;
 	private PasswordService passwordService;

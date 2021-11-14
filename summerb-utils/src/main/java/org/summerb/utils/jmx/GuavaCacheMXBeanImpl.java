@@ -24,14 +24,15 @@ import java.util.concurrent.ExecutionException;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.google.common.cache.CacheStats;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableMap;
 
 public class GuavaCacheMXBeanImpl<K, V> implements GuavaCacheMXBean, LoadingCache<K, V> {
-	private static Logger log = Logger.getLogger(GuavaCacheMXBeanImpl.class);
+	private static Logger log = LogManager.getLogger(GuavaCacheMXBeanImpl.class);
 
 	private final LoadingCache<K, V> cache;
 

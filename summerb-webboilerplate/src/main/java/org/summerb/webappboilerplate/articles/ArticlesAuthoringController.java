@@ -27,7 +27,8 @@ import java.util.Map.Entry;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileItem;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
@@ -70,7 +71,7 @@ public class ArticlesAuthoringController extends ControllerBase {
 	private static final String ATTR_ARTICLES = "articles";
 	private static final String ATTR_ARTICLE_ATTACHMENT = "articleAttachment";
 
-	private Logger log = Logger.getLogger(getClass());
+	private Logger log = LogManager.getLogger(getClass());
 
 	@Autowired
 	private ArticleService articleService;

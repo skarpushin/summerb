@@ -36,7 +36,7 @@ import org.summerb.utils.exceptions.ExceptionUtils;
 import com.google.common.base.Preconditions;
 
 public class PropertyServiceImpl implements PropertyService {
-	// private Logger log = Logger.getLogger(PropertyServiceImpl.class);
+	// private Logger log = LogManager.getLogger(PropertyServiceImpl.class);
 
 	private StringIdAliasService appNameAlias;
 	private StringIdAliasService domainNameAlias;

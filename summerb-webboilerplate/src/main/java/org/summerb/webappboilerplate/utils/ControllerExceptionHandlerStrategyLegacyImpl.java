@@ -19,7 +19,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +66,7 @@ import com.google.gson.Gson;
 @Deprecated
 public class ControllerExceptionHandlerStrategyLegacyImpl
 		implements InitializingBean, ControllerExceptionHandlerStrategy, ApplicationContextAware {
-	protected final Logger log = Logger.getLogger(getClass());
+	protected final Logger log = LogManager.getLogger(getClass());
 
 	private Gson gson;
 	private MappingJackson2JsonView jsonView;

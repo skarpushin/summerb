@@ -20,7 +20,8 @@ import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.owasp.encoder.Encode;
 import org.summerb.easycrud.api.exceptions.GenericEntityNotFoundException;
 import org.summerb.minicms.api.ArticleAbsoluteUrlBuilder;
@@ -35,7 +36,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
 
 public class ArticleRenderingContext {
-	protected Logger log = Logger.getLogger(getClass());
+	protected Logger log = LogManager.getLogger(getClass());
 
 	private final ArticleService articleService;
 	private final AttachmentService attachmentService;

@@ -21,7 +21,8 @@ import java.util.concurrent.Callable;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +51,7 @@ import org.summerb.webappboilerplate.utils.CurrentRequestUtils;
  * 
  */
 public abstract class ControllerBase implements ApplicationContextAware, InitializingBean {
-	protected final Logger log = Logger.getLogger(getClass());
+	protected final Logger log = LogManager.getLogger(getClass());
 
 	public static final String ATTR_CURRENT_USER = "currentUser";
 	public static final String ATTR_VALIDATION_ERRORS = "ve";

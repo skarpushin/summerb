@@ -20,7 +20,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -38,7 +39,7 @@ import org.summerb.webappboilerplate.utils.CurrentRequestUtils;
  * 
  */
 public class ValidationErrorsVm {
-	private Logger log = Logger.getLogger(getClass());
+	private Logger log = LogManager.getLogger(getClass());
 
 	private final List<ValidationError> validationErrors;
 	private Map<String, String> errorsMap;

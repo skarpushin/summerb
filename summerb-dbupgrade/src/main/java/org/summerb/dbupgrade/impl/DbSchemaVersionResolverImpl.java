@@ -17,7 +17,8 @@ package org.summerb.dbupgrade.impl;
 
 import javax.sql.DataSource;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -26,7 +27,7 @@ import org.summerb.dbupgrade.api.DbSchemaVersionResolver;
 import com.google.common.base.Preconditions;
 
 public class DbSchemaVersionResolverImpl implements DbSchemaVersionResolver {
-	protected Logger log = Logger.getLogger(getClass());
+	protected Logger log = LogManager.getLogger(getClass());
 
 	private DataSource dataSource;
 	private VersionTableDbDialect versionTableDbDialect;

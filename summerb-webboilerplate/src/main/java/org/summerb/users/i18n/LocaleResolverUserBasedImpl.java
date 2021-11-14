@@ -20,7 +20,8 @@ import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
@@ -32,7 +33,7 @@ import org.summerb.users.api.exceptions.UserNotFoundException;
 import org.summerb.validation.FieldValidationException;
 
 public class LocaleResolverUserBasedImpl extends CookieLocaleResolver {
-	private Logger log = Logger.getLogger(getClass());
+	private Logger log = LogManager.getLogger(getClass());
 
 	@Autowired
 	private SecurityContextResolver<User> securityContextResolver;

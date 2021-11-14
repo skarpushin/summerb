@@ -22,7 +22,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
@@ -61,7 +62,7 @@ public class ArticleController extends ControllerBase {
 	public static final long HOUR = 1000L * 60L * 60L;
 	public static final long DAY = HOUR * 24L;
 
-	private Logger log = Logger.getLogger(getClass());
+	private Logger log = LogManager.getLogger(getClass());
 
 	private static final String ATTR_ARTICLE = "article";
 

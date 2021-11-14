@@ -18,7 +18,8 @@ package org.summerb.easycrud.rest.commonpathvars;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 
@@ -42,7 +43,7 @@ import springfox.documentation.swagger.common.SwaggerPluginSupport;
  */
 @Order(SwaggerPluginSupport.SWAGGER_PLUGIN_ORDER + 1000)
 public class CommonPathVariableOperationBuilderPlugin implements OperationBuilderPlugin {
-	protected Logger log = Logger.getLogger(getClass());
+	protected Logger log = LogManager.getLogger(getClass());
 
 	@Autowired
 	private TypeResolver typeResolver;

@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.springframework.util.CollectionUtils;
 import org.summerb.i18n.HasMessageCode;
+import org.summerb.utils.exceptions.HasErrorDescriptionObject;
 
 /**
  * 

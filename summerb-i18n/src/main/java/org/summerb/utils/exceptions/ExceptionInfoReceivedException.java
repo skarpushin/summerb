@@ -16,7 +16,6 @@
 package org.summerb.utils.exceptions;
 
 import org.summerb.utils.exceptions.dto.ExceptionInfo;
-import org.summerb.validation.HasErrorDescriptionObject;
 
 /**
  * This exception is supposed to be created when we receive ExceptionInfo from

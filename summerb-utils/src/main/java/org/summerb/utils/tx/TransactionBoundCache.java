@@ -23,7 +23,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -50,7 +51,7 @@ import com.google.common.collect.ImmutableMap;
  */
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class TransactionBoundCache<K, V> implements LoadingCache<K, V> {
-	private static Logger log = Logger.getLogger(TransactionBoundCache.class);
+	private static Logger log = LogManager.getLogger(TransactionBoundCache.class);
 
 	private String cacheName;
 	private CacheLoader<K, V> loader;

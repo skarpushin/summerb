@@ -21,7 +21,7 @@
 	<parent>
 		<groupId>com.github.skarpushin</groupId>
 		<artifactId>summerb-parent</artifactId>
-		<version>4.1.2</version>
+		<version>5.0.0</version>
 		<relativePath>../summerb-parent</relativePath>
 	</parent>
 	<artifactId>summerb-properties</artifactId>
@@ -64,7 +64,7 @@
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-			<version>5.1.19</version>
+			<version>8.0.16</version>
 		</dependency>
 
 		<dependency>

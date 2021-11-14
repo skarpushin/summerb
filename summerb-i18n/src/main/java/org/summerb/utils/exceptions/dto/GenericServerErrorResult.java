@@ -20,26 +20,26 @@ import org.summerb.utils.DtoBase;
 public class GenericServerErrorResult implements DtoBase {
 	private static final long serialVersionUID = -3478702057346663837L;
 
-	private String exc;
+	private String allErrorsMessage;
 	private ExceptionInfo exceptionInfo;
 
 	public GenericServerErrorResult() {
 	}
 
 	public GenericServerErrorResult(String allErrorsMessage, ExceptionInfo exceptionInfo) {
-		this.exc = allErrorsMessage;
+		this.allErrorsMessage = allErrorsMessage;
 		this.exceptionInfo = exceptionInfo;
 	}
 
 	/**
 	 * @return Exception message from whole chain
 	 */
-	public String getExc() {
-		return exc;
+	public String getAllErrorsMessage() {
+		return allErrorsMessage;
 	}
 
-	public void setExc(String allErrorsMessage) {
-		this.exc = allErrorsMessage;
+	public void setAllErrorsMessage(String allErrorsMessage) {
+		this.allErrorsMessage = allErrorsMessage;
 	}
 
 	public ExceptionInfo getExceptionInfo() {

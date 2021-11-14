@@ -17,7 +17,8 @@ package org.summerb.users.impl;
 
 import java.util.concurrent.ExecutionException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.summerb.easycrud.api.dto.EntityChangedEvent;
@@ -38,7 +39,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 public class UserServiceCachedImpl implements UserService, InitializingBean {
-	private Logger log = Logger.getLogger(getClass());
+	private Logger log = LogManager.getLogger(getClass());
 
 	private UserService userService;
 	private EventBus eventBus;

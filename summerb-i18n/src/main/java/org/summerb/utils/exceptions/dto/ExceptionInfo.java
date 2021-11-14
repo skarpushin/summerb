@@ -20,7 +20,7 @@ import java.io.Serializable;
 import org.summerb.i18n.HasMessageArgs;
 import org.summerb.i18n.HasMessageCode;
 import org.summerb.utils.DtoBase;
-import org.summerb.validation.HasErrorDescriptionObject;
+import org.summerb.utils.exceptions.HasErrorDescriptionObject;
 
 public class ExceptionInfo implements DtoBase {
 	private static final long serialVersionUID = 1857628060664652023L;

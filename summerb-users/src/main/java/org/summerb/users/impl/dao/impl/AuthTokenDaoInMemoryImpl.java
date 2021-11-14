@@ -26,7 +26,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.StringUtils;
@@ -40,7 +41,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
 public class AuthTokenDaoInMemoryImpl implements AuthTokenDao, InitializingBean, DisposableBean {
-	protected Logger log = Logger.getLogger(getClass());
+	protected Logger log = LogManager.getLogger(getClass());
 
 	private String pathNameToPersistedTokens;
 

@@ -21,7 +21,8 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 import org.summerb.email.api.EmailChannelProperties;
 import org.summerb.email.api.EmailSender;
@@ -36,7 +37,7 @@ import com.google.common.base.Preconditions;
  * http://ru.wikipedia.org/wiki/JavaMail
  */
 public class EmailSenderImpl implements EmailSender {
-	private Logger log = Logger.getLogger(getClass());
+	private Logger log = LogManager.getLogger(getClass());
 
 	private EmailChannelProperties emailChannelProperties;
 

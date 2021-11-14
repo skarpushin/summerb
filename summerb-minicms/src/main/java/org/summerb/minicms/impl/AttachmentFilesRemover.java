@@ -17,7 +17,8 @@ package org.summerb.minicms.impl;
 
 import java.io.File;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.summerb.easycrud.api.dto.EntityChangedEvent;
@@ -36,7 +37,7 @@ import com.google.common.eventbus.Subscribe;
  *
  */
 public class AttachmentFilesRemover implements InitializingBean {
-	private Logger log = Logger.getLogger(AttachmentFilesRemover.class);
+	private Logger log = LogManager.getLogger(AttachmentFilesRemover.class);
 
 	private EventBus eventBus;
 

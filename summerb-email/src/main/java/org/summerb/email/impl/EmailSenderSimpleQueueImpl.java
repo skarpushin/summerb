@@ -18,14 +18,15 @@ package org.summerb.email.impl;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.summerb.email.api.EmailSender;
 import org.summerb.email.api.dto.EmailMessage;
 
 import com.google.common.base.Preconditions;
 
 public class EmailSenderSimpleQueueImpl implements EmailSender {
-	private static Logger log = Logger.getLogger(EmailSenderSimpleQueueImpl.class);
+	private static Logger log = LogManager.getLogger(EmailSenderSimpleQueueImpl.class);
 
 	private EmailSender actualSender;
 	private ExecutorService executorService;

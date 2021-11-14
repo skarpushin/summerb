@@ -22,7 +22,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DuplicateKeyException;
 import org.summerb.easycrud.api.dto.PagerParams;
@@ -49,7 +50,7 @@ import com.google.common.collect.HashBiMap;
  */
 public class StringIdAliasServiceEagerImpl implements StringIdAliasService, InitializingBean {
 	private static final int EAGER_LOAD_BATCH_SIZE = 100;
-	private static Logger log = Logger.getLogger(StringIdAliasServiceEagerImpl.class);
+	private static Logger log = LogManager.getLogger(StringIdAliasServiceEagerImpl.class);
 
 	private StringIdAliasDao stringIdAliasDao;
 	private ExecutorService executorService;

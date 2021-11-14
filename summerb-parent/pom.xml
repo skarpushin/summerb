@@ -13,7 +13,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.github.skarpushin</groupId>
-	<version>4.1.2</version>
+	<version>5.0.0</version>
 	<artifactId>summerb-parent</artifactId>
 	<packaging>pom</packaging>
 	<name>summerb-parent</name>
@@ -67,12 +67,6 @@
 			<name>Sergey Karpushin</name>
 			<email>sergey.v.karpushin@gmail.com</email>
 			<url>https://github.com/skarpushin</url>
-
-			<organization>Auriga</organization>
-			<organizationUrl>https://www.auriga.com/</organizationUrl>
-			<roles>
-				<role>Engineering Division Manager</role>
-			</roles>
 		</developer>
 	</developers>
 
@@ -81,7 +75,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.12</version>
+			<version>4.13.1</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
