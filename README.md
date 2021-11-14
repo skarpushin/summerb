@@ -1,4 +1,7 @@
 # summerb
+
+[![Join the chat at https://gitter.im/summerb-community/community](https://badges.gitter.im/summerb-community/community.svg)](https://gitter.im/summerb-community/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 `Summerb` is a library, which was created to significantly reduce boilerplate code in new Java and Spring-based web application projects.
 
 Summerb provides building blocks designed with 2 things in mind: 
