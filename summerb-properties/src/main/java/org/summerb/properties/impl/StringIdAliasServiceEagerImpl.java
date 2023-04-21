@@ -174,7 +174,7 @@ public class StringIdAliasServiceEagerImpl implements StringIdAliasService, Init
 			return future.get();
 		} catch (ExecutionException exc) {
 			Throwables.throwIfInstanceOf(exc.getCause(), DuplicateKeyException.class);
-			Throwables.propagateIfPossible(exc.getCause());
+			Throwables.throwIfUnchecked(exc.getCause());
 
 			throw new RuntimeException("Unexpectedly failed to create alias in separate thread", exc);
 		} catch (Throwable t) {

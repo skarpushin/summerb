@@ -28,19 +28,22 @@ import org.summerb.validation.FieldValidationException;
  * @author sergeyk
  *
  */
-public interface DaoExceptionToFveTranslator {
+public interface DaoExceptionTranslator {
 
 	/**
 	 * This method meant to be called from catch clause. If exception cannot be
 	 * handled by this impl it should just do nothing. Otherwise it should throw
-	 * {@link FieldValidationException}
+	 * {@link FieldValidationException} (will be wrapped in unchecked) or any other
+	 * exception that is applicable
 	 * 
-	 * @param t
-	 *            exception
-	 * 
-	 * @throws FieldValidationException
-	 *             translated exception, based on information in parameter t
+	 * @param t exception
 	 */
-	void translateAndThtowIfApplicable(Throwable t) throws FieldValidationException;
+	void translateAndThrowIfApplicable(Throwable t) throws FieldValidationException;
+
+	/**
+	 * same as {@link #translateAndThrowIfApplicable(Throwable)} but will wrap
+	 * exception in unchecked {@link RuntimeException}
+	 */
+	void translateAndThrowIfApplicableUnchecked(Exception e);
 
 }

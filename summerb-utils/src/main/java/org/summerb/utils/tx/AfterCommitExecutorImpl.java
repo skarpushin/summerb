@@ -23,7 +23,7 @@ import java.util.concurrent.ExecutorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
@@ -33,7 +33,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  * @author sergeyk
  *
  */
-public class AfterCommitExecutorImpl extends TransactionSynchronizationAdapter implements Executor {
+public class AfterCommitExecutorImpl implements TransactionSynchronization, Executor {
 	private static Logger log = LoggerFactory.getLogger(AfterCommitExecutorImpl.class);
 
 	private ExecutorService executorService;

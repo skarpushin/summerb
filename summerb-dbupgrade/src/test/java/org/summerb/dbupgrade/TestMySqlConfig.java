@@ -36,7 +36,6 @@ public class TestMySqlConfig extends TestConfigBase {
 	}
 
 	@Bean
-	@SuppressWarnings("deprecation")
 	DataSource dataSource(@Value("${mysql.driverClassName}") String driver, @Value("${mysql.databaseurl}") String url,
 			@Value("${mysql.username}") String username, @Value("${mysql.password}") String password) throws Exception {
 		return new SimpleDriverDataSource((Driver) Class.forName(driver).newInstance(), url, username, password);

@@ -20,8 +20,8 @@ import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.web.servlet.AsyncHandlerInterceptor;
 import org.springframework.web.servlet.LocaleResolver;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import org.springframework.web.servlet.support.RequestContextUtils;
 import org.summerb.users.i18n.LocaleResolverUserBasedImpl;
 
@@ -36,7 +36,7 @@ import org.summerb.users.i18n.LocaleResolverUserBasedImpl;
  * @author sergey.k
  * 
  */
-public class ForceLocaleToCoockieUserAwareInterceptor extends HandlerInterceptorAdapter {
+public class ForceLocaleToCoockieUserAwareInterceptor implements AsyncHandlerInterceptor {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {

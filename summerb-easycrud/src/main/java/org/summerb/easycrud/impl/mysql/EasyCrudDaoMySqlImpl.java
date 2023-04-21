@@ -32,7 +32,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.util.StringUtils;
-import org.summerb.easycrud.api.DaoExceptionToFveTranslator;
+import org.summerb.easycrud.api.DaoExceptionTranslator;
 import org.summerb.easycrud.api.EasyCrudDao;
 import org.summerb.easycrud.api.ParameterSourceBuilder;
 import org.summerb.easycrud.api.QueryToNativeSqlCompiler;
@@ -78,7 +78,7 @@ public class EasyCrudDaoMySqlImpl<TId, TDto extends HasId<TId>> extends DaoBase
 	private ConversionService conversionService;
 	private QueryToNativeSqlCompiler queryToNativeSqlCompiler = new QueryToNativeSqlCompilerMySqlImpl();
 	private StringIdGenerator stringIdGenerator = new StringIdGeneratorUuidImpl();
-	private DaoExceptionToFveTranslator daoExceptionToFveTranslator = new DaoExceptionToFveTranslatorMySqlImpl();
+	private DaoExceptionTranslator daoExceptionTranslator = new DaoExceptionToFveTranslatorMySqlImpl();
 
 	protected SimpleJdbcInsert jdbcInsert;
 	protected SimpleJdbcUpdate jdbcUpdate;
@@ -200,7 +200,7 @@ public class EasyCrudDaoMySqlImpl<TId, TDto extends HasId<TId>> extends DaoBase
 				jdbcInsert.execute(params);
 			}
 		} catch (Throwable t) {
-			daoExceptionToFveTranslator.translateAndThtowIfApplicable(t);
+			daoExceptionTranslator.translateAndThrowIfApplicable(t);
 			throw t;
 		}
 	}
@@ -221,7 +221,7 @@ public class EasyCrudDaoMySqlImpl<TId, TDto extends HasId<TId>> extends DaoBase
 		try {
 			return jdbcUpdate.execute(dtoParams, restrictionParams);
 		} catch (Throwable t) {
-			daoExceptionToFveTranslator.translateAndThtowIfApplicable(t);
+			daoExceptionTranslator.translateAndThrowIfApplicable(t);
 			throw t;
 		}
 	}
@@ -386,12 +386,12 @@ public class EasyCrudDaoMySqlImpl<TId, TDto extends HasId<TId>> extends DaoBase
 		this.stringIdGenerator = stringIdGenerator;
 	}
 
-	public DaoExceptionToFveTranslator getDuplicateEntryExceptionHandler() {
-		return daoExceptionToFveTranslator;
+	public DaoExceptionTranslator getDuplicateEntryExceptionHandler() {
+		return daoExceptionTranslator;
 	}
 
 	@Autowired(required = false)
-	public void setDuplicateEntryExceptionHandler(DaoExceptionToFveTranslator daoExceptionToFveTranslator) {
-		this.daoExceptionToFveTranslator = daoExceptionToFveTranslator;
+	public void setDuplicateEntryExceptionHandler(DaoExceptionTranslator daoExceptionTranslator) {
+		this.daoExceptionTranslator = daoExceptionTranslator;
 	}
 }

@@ -15,10 +15,13 @@
  ******************************************************************************/
 package org.summerb.easycrud.impl.mysql;
 
+import java.sql.DataTruncation;
+
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.support.JdbcUtils;
-import org.summerb.easycrud.api.DaoExceptionToFveTranslator;
+import org.summerb.easycrud.api.DaoExceptionTranslatorAbstract;
 import org.summerb.easycrud.api.dto.HasId;
+import org.summerb.easycrud.common.ServiceDataTruncationException;
 import org.summerb.utils.exceptions.ExceptionUtils;
 import org.summerb.validation.FieldValidationException;
 import org.summerb.validation.errors.DuplicateRecordValidationError;
@@ -29,21 +32,17 @@ import org.summerb.validation.errors.DuplicateRecordValidationError;
  * @author sergeyk
  *
  */
-public class DaoExceptionToFveTranslatorMySqlImpl implements DaoExceptionToFveTranslator {
+public class DaoExceptionToFveTranslatorMySqlImpl extends DaoExceptionTranslatorAbstract {
 	public static final String MYSQL_CONSTRAINT_PRIMARY = "PRIMARY";
 	public static final String MYSQL_CONSTRAINT_UNIQUE = "_UNIQUE";
 
 	@Override
-	public void translateAndThtowIfApplicable(Throwable t) throws FieldValidationException {
+	public void translateAndThrowIfApplicable(Throwable t) throws FieldValidationException {
 		throwIfDuplicate(t);
-
-		/**
-		 * TODO: We should also be able to translate "data too long" exception. See
-		 * DaoExceptionUtils#findTruncatedFieldNameIfAny
-		 */
+		throwIfTruncationError(t);
 	}
 
-	private void throwIfDuplicate(Throwable t) throws FieldValidationException {
+	protected void throwIfDuplicate(Throwable t) throws FieldValidationException {
 		DuplicateKeyException dke = ExceptionUtils.findExceptionOfType(t, DuplicateKeyException.class);
 		if (dke == null) {
 			return;
@@ -80,8 +79,7 @@ public class DaoExceptionToFveTranslatorMySqlImpl implements DaoExceptionToFveTr
 	 * Current impl will parse text string which format is expected to be like:
 	 * "Duplicate entry 'sameUuid' for key 'PRIMARY'"
 	 * 
-	 * @param duplicateKeyException
-	 *            exception received from DAO
+	 * @param duplicateKeyException exception received from DAO
 	 * @return null if failed to parse, constraint name otherwise
 	 */
 	public static String findViolatedConstraintName(DuplicateKeyException duplicateKeyException) {
@@ -106,6 +104,63 @@ public class DaoExceptionToFveTranslatorMySqlImpl implements DaoExceptionToFveTr
 		}
 
 		return parts[1];
+	}
+
+	/**
+	 * Will detect truncation error and substitute value field name with property
+	 * name
+	 * 
+	 * @param t
+	 * @param propertyName
+	 */
+	private void throwIfTruncationError(Throwable t) {
+		String fieldName = findTruncatedFieldNameIfAny(t);
+
+		DataTruncation exc = ExceptionUtils.findExceptionOfType(t, DataTruncation.class);
+		if (exc == null) {
+			return;
+		}
+
+		// throw new FieldValidationException(new
+		// DataTooLongValidationError(currentSize?, allowedSize?, fieldName));
+
+		// NOTE: We're throwing ServiceDataTruncationException instead of
+		// FieldValidationException because it feels right (there is commonly known
+		// exception DataTruncation) and because we do not know currentSize and
+		// allowedSize here
+		throw ServiceDataTruncationException.envelopeFor(JdbcUtils.convertUnderscoreNameToPropertyName(fieldName), t);
+	}
+
+	/**
+	 * Find a name of the field which was truncated
+	 * 
+	 * @param t exception received from Spring JDBC
+	 * @return field name if any, otherwize null
+	 */
+	private String findTruncatedFieldNameIfAny(Throwable t) {
+		DataTruncation exc = ExceptionUtils.findExceptionOfType(t, DataTruncation.class);
+		if (exc == null) {
+			return null;
+		}
+
+		String msg = exc.getMessage();
+		if (!msg.contains("too long")) {
+			return null;
+		}
+
+		String[] params = msg.split("\'");
+		if (params.length < 2) {
+			return null;
+		}
+
+		String fieldName = params[1];
+
+		// Ok now convert it to camel case if needed
+		if (fieldName.contains("_")) {
+			fieldName = JdbcUtils.convertUnderscoreNameToPropertyName(fieldName);
+		}
+
+		return fieldName;
 	}
 
 }

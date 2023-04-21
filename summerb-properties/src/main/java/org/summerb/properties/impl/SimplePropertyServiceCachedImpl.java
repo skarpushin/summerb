@@ -42,6 +42,7 @@ public class SimplePropertyServiceCachedImpl implements SimplePropertyService, I
 
 	private LoadingCache<String, Map<String, String>> cache;
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		String jmxName = "SimplePropertyServiceCachedImpl_" + simplePropertyService.getAppName() + "_"

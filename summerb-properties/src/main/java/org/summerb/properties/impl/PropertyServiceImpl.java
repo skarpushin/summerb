@@ -15,7 +15,6 @@
  ******************************************************************************/
 package org.summerb.properties.impl;
 
-import java.sql.DataTruncation;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +22,6 @@ import java.util.Map;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
-import org.summerb.easycrud.common.DaoExceptionUtils;
 import org.summerb.easycrud.common.ServiceDataTruncationException;
 import org.summerb.properties.api.PropertyService;
 import org.summerb.properties.api.dto.NamedProperty;
@@ -56,31 +54,18 @@ public class PropertyServiceImpl implements PropertyService {
 
 			propertyDao.putProperty(appId, domainId, subjectId, propertyNameId, value);
 		} catch (Throwable t) {
-			propagatePropertyNameIfTruncationError(t, name);
-
+			translateServiceDataTruncationExceptionIfAny(name, t);
 			throw new PropertyServiceUnexpectedException("Failed to put property", t);
 		}
 	}
 
-	/**
-	 * Will detect truncation error and substitute value field name with property
-	 * name
-	 * 
-	 * @param t
-	 * @param propertyName
-	 */
-	private void propagatePropertyNameIfTruncationError(Throwable t, String propertyName) {
-		String fieldName = DaoExceptionUtils.findTruncatedFieldNameIfAny(t);
-		if (!PropertyDao.VALUE_FIELD_NAME.equals(fieldName)) {
-			return;
+	private void translateServiceDataTruncationExceptionIfAny(String name, Throwable t) {
+		ServiceDataTruncationException exc = ExceptionUtils.findExceptionOfType(t,
+				ServiceDataTruncationException.class);
+		if (exc != null && "value".equals(exc.getFieldTokenBeingTruncated())) {
+			throw new PropertyServiceUnexpectedException("data truncation",
+					new ServiceDataTruncationException(name, exc));
 		}
-
-		DataTruncation exc = ExceptionUtils.findExceptionOfType(t, DataTruncation.class);
-		if (exc == null) {
-			return;
-		}
-
-		throw ServiceDataTruncationException.envelopeFor(propertyName, t);
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
@@ -98,14 +83,17 @@ public class PropertyServiceImpl implements PropertyService {
 			long domainId = domainNameAlias.getAliasFor(domainName);
 
 			for (NamedProperty namedProperty : namedProperties) {
-				currentPropertyName = namedProperty.getName();
-				long propertyNameId = propertyNameAlias.getAliasFor(currentPropertyName);
-				String value = namedProperty.getPropertyValue();
-				propertyDao.putProperty(appId, domainId, subjectId, propertyNameId, value);
+				try {
+					currentPropertyName = namedProperty.getName();
+					long propertyNameId = propertyNameAlias.getAliasFor(currentPropertyName);
+					String value = namedProperty.getPropertyValue();
+					propertyDao.putProperty(appId, domainId, subjectId, propertyNameId, value);
+				} catch (Exception e) {
+					translateServiceDataTruncationExceptionIfAny(namedProperty.getName(), e);
+					throw e;
+				}
 			}
 		} catch (Throwable t) {
-			propagatePropertyNameIfTruncationError(t, currentPropertyName);
-
 			throw new PropertyServiceUnexpectedException("Failed to put subject properties", t);
 		}
 	}
@@ -128,8 +116,7 @@ public class PropertyServiceImpl implements PropertyService {
 				propertyDao.putProperty(appId, domainId, subjectId, propertyNameId, value);
 			}
 		} catch (Throwable t) {
-			propagatePropertyNameIfTruncationError(t, name);
-
+			translateServiceDataTruncationExceptionIfAny(name, t);
 			throw new PropertyServiceUnexpectedException("Failed to put subjects property", t);
 		}
 	}

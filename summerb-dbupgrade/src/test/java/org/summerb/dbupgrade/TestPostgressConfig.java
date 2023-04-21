@@ -40,7 +40,6 @@ public class TestPostgressConfig extends TestConfigBase {
 	}
 
 	@Bean
-	@SuppressWarnings("deprecation")
 	DataSource dataSource(@Value("${postgres.driverClassName}") String driver,
 			@Value("${postgres.databaseurl}") String url, @Value("${postgres.username}") String username,
 			@Value("${postgres.password}") String password) throws Exception {

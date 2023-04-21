@@ -22,7 +22,6 @@ import org.summerb.validation.ValidationError;
 public class RegistrationRequiredValidationError extends ValidationError {
 	private static final long serialVersionUID = 4448690696428396195L;
 
-	@SuppressWarnings("deprecation")
 	public RegistrationRequiredValidationError() {
 		super(SecurityMessageCodes.ACCOUNT_IS_NOT_CREATED_PLEASE_REGISTER, User.FN_EMAIL);
 	}

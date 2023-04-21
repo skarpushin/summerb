@@ -28,6 +28,7 @@ import org.springframework.beans.PropertyAccessor;
  *
  */
 public class DisjunctionCondition implements Restriction<PropertyAccessor> {
+	private static final long serialVersionUID = -8190060986073922292L;
 	private Query[] queries;
 
 	public DisjunctionCondition() {

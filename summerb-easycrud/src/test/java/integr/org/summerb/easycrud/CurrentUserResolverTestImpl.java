@@ -22,7 +22,7 @@ import org.springframework.security.core.userdetails.User;
 import org.summerb.security.api.CurrentUserResolver;
 import org.summerb.security.api.Roles;
 
-public class CurrentUserResolverTestImpl implements CurrentUserResolver {
+public class CurrentUserResolverTestImpl implements CurrentUserResolver<User> {
 	public User user;
 	public User user1;
 	public User user2;

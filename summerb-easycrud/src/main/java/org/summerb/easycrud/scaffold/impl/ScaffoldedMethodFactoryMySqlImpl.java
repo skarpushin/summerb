@@ -90,7 +90,7 @@ public class ScaffoldedMethodFactoryMySqlImpl extends DaoBase implements Scaffol
 			JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSource());
 			Class<?> returnType = method.getReturnType();
 			if (isCollectionType(returnType)) {
-				return jdbcTemplate.query(annotation.value(), args, rowMapper);
+				return jdbcTemplate.query(annotation.value(), rowMapper, args);
 			} else if (!isPrimitive(returnType)) {
 				return jdbcTemplate.queryForObject(annotation.value(), rowMapper, args);
 			} else {

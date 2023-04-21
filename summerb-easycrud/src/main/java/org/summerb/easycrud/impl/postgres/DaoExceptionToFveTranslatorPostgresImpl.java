@@ -19,7 +19,7 @@ import org.postgresql.util.PSQLException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.util.StringUtils;
-import org.summerb.easycrud.api.DaoExceptionToFveTranslator;
+import org.summerb.easycrud.api.DaoExceptionTranslatorAbstract;
 import org.summerb.utils.exceptions.ExceptionUtils;
 import org.summerb.validation.FieldValidationException;
 import org.summerb.validation.ValidationContext;
@@ -31,10 +31,11 @@ import org.summerb.validation.errors.DuplicateRecordValidationError;
  * @author sergeyk
  *
  */
-public class DaoExceptionToFveTranslatorPostgresImpl implements DaoExceptionToFveTranslator {
+public class DaoExceptionToFveTranslatorPostgresImpl extends DaoExceptionTranslatorAbstract {
 	@Override
-	public void translateAndThtowIfApplicable(Throwable t) throws FieldValidationException {
+	public void translateAndThrowIfApplicable(Throwable t) throws FieldValidationException {
 		throwIfDuplicate(t);
+
 		/**
 		 * TODO: We should also be able to translate "data too long" exception. See
 		 * DaoExceptionUtils#findTruncatedFieldNameIfAny

@@ -16,6 +16,7 @@
 package integr.org.summerb.properties.impl.dao.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -34,9 +35,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
-import org.summerb.easycrud.common.DaoExceptionUtils;
+import org.summerb.easycrud.common.ServiceDataTruncationException;
 import org.summerb.properties.api.PropertyService;
 import org.summerb.properties.api.dto.NamedProperty;
+import org.summerb.utils.exceptions.ExceptionUtils;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:test-properties-app-context.xml")
@@ -188,8 +190,11 @@ public class PropertyServiceImplTest {
 			propertyService.putSubjectProperty("test", "test.domain", "AAA", propertyName, value);
 			fail("Should throw exception");
 		} catch (Throwable t) {
-			String foundName = DaoExceptionUtils.findTruncatedFieldNameIfAny(t);
-			assertEquals(propertyName, foundName);
+			ServiceDataTruncationException exc = ExceptionUtils.findExceptionOfType(t,
+					ServiceDataTruncationException.class);
+
+			assertNotNull(exc);
+			assertEquals(propertyName, exc.getFieldTokenBeingTruncated());
 		}
 	}
 
@@ -205,8 +210,11 @@ public class PropertyServiceImplTest {
 		try {
 			propertyService.putSubjectProperties("test", "test.domain", "AAA", props);
 		} catch (Throwable t) {
-			String foundName = DaoExceptionUtils.findTruncatedFieldNameIfAny(t);
-			assertEquals(propertyName, foundName);
+			ServiceDataTruncationException exc = ExceptionUtils.findExceptionOfType(t,
+					ServiceDataTruncationException.class);
+
+			assertNotNull(exc);
+			assertEquals(propertyName, exc.getFieldTokenBeingTruncated());
 		}
 	}
 

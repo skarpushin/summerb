@@ -26,7 +26,6 @@ import java.util.concurrent.ExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.summerb.utils.jmx.GuavaCacheMXBeanImpl;
 
@@ -130,7 +129,7 @@ public class TransactionBoundCache<K, V> implements LoadingCache<K, V> {
 		return newCache.transactionBound;
 	}
 
-	private TransactionSynchronization synchronization = new TransactionSynchronizationAdapter() {
+	private TransactionSynchronization synchronization = new TransactionSynchronization() {
 		@Override
 		public void afterCommit() {
 			TransactionBoundCacheEntry transactionBoundCacheEntry = transactionBoundCacheEntries.get();

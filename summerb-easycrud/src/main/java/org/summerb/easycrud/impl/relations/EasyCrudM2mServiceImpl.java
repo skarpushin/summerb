@@ -76,6 +76,7 @@ public class EasyCrudM2mServiceImpl<T1Id, T1Dto extends HasId<T1Id>, T2Id, T2Dto
 	private EasyCrudService<T1Id, T1Dto> serviceFrom;
 	private EasyCrudService<T2Id, T2Dto> serviceTo;
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (getEntityTypeMessageCode() == null) {

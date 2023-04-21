@@ -22,7 +22,6 @@ import java.util.List;
 
 import org.mockito.Mockito;
 import org.summerb.easycrud.api.dto.PagerParams;
-import org.summerb.easycrud.api.dto.PaginatedList;
 import org.summerb.users.api.dto.AuthToken;
 import org.summerb.users.api.dto.AuthTokenFactory;
 import org.summerb.users.impl.dao.AuthTokenDao;
@@ -51,7 +50,9 @@ public class AuthTokenServiceDbImplFactory {
 
 		List<AuthToken> expiredTokens = new LinkedList<AuthToken>();
 		expiredTokens.add(AuthTokenFactory.createExpiredAuthToken());
-		PaginatedList<AuthToken> expiredAuthTokens = new PaginatedList<AuthToken>(new PagerParams(), expiredTokens, 1);
+
+		// PaginatedList<AuthToken> expiredAuthTokens = new PaginatedList<AuthToken>(new
+		// PagerParams(), expiredTokens, 1);
 
 		return ret;
 	}

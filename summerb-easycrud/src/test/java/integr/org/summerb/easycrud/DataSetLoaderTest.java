@@ -55,7 +55,7 @@ import org.summerb.validation.FieldValidationException;
 @ContextConfiguration("classpath:summerb-integr-test-context.xml")
 @ProfileValueSourceConfiguration(SystemProfileValueSource.class)
 @Transactional
-@SuppressWarnings("unchecked")
+@SuppressWarnings({ "unchecked", "deprecation", "rawtypes" })
 public class DataSetLoaderTest {
 	@Autowired
 	protected EasyCrudServiceResolver easyCrudServiceResolver;

@@ -174,7 +174,7 @@ public class EasyCrudRestControllerBase<TId, TDto extends HasId<TId>, TEasyCrudS
 		ret.setRefs(ds);
 	}
 
-	@PostMapping(path = "/query", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@PostMapping(path = "/query", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public MultipleItemsResult<TId, TDto> getListWithQuery(@RequestBody EasyCrudQueryParams filteringParams,
 			@RequestParam(value = "needPerms", required = false) boolean needPerms,
 			@RequestParam(value = "referencesToResolve", required = false) List<String> referencesToResolve,
@@ -206,7 +206,7 @@ public class EasyCrudRestControllerBase<TId, TDto extends HasId<TId>, TEasyCrudS
 		return convertBeforeReturnStrategy.convert(ret);
 	}
 
-	@GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public SingleItemResult<TId, TDto> getItem(@PathVariable("id") TId id,
 			@RequestParam(value = "needPerms", required = false) boolean needPerms,
 			@RequestParam(value = "referencesToResolve", required = false) List<String> referencesToResolve)
@@ -227,7 +227,7 @@ public class EasyCrudRestControllerBase<TId, TDto extends HasId<TId>, TEasyCrudS
 		return convertBeforeReturnStrategy.convert(ret);
 	}
 
-	@PostMapping(produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public SingleItemResult<TId, TDto> createNewItem(@RequestBody TDto dto,
 			@RequestParam(value = "needPerms", required = false) boolean needPerms) throws Exception {
 		TDto row = service.create(dto);
@@ -239,7 +239,7 @@ public class EasyCrudRestControllerBase<TId, TDto extends HasId<TId>, TEasyCrudS
 		return convertBeforeReturnStrategy.convert(ret);
 	}
 
-	@PutMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@PutMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public SingleItemResult<TId, TDto> updateItem(@PathVariable("id") TId id, @RequestBody TDto rowToUpdate,
 			@RequestParam(value = "needPerms", required = false) boolean needPerms) throws Exception {
 		TDto row = service.update(rowToUpdate);
@@ -251,7 +251,7 @@ public class EasyCrudRestControllerBase<TId, TDto extends HasId<TId>, TEasyCrudS
 		return convertBeforeReturnStrategy.convert(ret);
 	}
 
-	@DeleteMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@DeleteMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public void deleteItem(@PathVariable("id") TId id) throws Exception {
 		service.deleteById(id);
 	}

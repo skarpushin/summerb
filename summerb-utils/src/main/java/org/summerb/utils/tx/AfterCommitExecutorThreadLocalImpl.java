@@ -21,7 +21,7 @@ import java.util.concurrent.Executor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
@@ -32,7 +32,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  * @author sergeyk
  *
  */
-public class AfterCommitExecutorThreadLocalImpl extends TransactionSynchronizationAdapter implements Executor {
+public class AfterCommitExecutorThreadLocalImpl implements TransactionSynchronization, Executor {
 	private static Logger log = LoggerFactory.getLogger(AfterCommitExecutorThreadLocalImpl.class);
 
 	private static final ThreadLocal<Queue<Runnable>> RUNNABLES = new ThreadLocal<Queue<Runnable>>();

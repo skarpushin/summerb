@@ -46,6 +46,7 @@ public interface DataSetLoader {
 	 * @param entityTypeName
 	 *            type of entity. Same as returned by it's service
 	 */
+	@SuppressWarnings("rawtypes")
 	List<HasId> loadObjectsByIds(Set<Object> ids, String entityTypeName)
 			throws EntityNotFoundException, NotAuthorizedException;
 

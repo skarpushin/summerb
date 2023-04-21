@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015-2021 Sergey Karpushin
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -16,6 +16,7 @@
 package org.summerb.webappboilerplate.security.rest;
 
 import java.io.IOException;
+import java.util.Base64;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -36,7 +37,6 @@ import org.springframework.security.authentication.event.InteractiveAuthenticati
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.codec.Base64;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.NullRememberMeServices;
@@ -144,16 +144,16 @@ public class RestLoginFilter extends GenericFilterBean implements ApplicationEve
 
 	/**
 	 * Decodes the header into a username and password.
-	 * 
-	 * @throws BadCredentialsException
-	 *             if the Basic header is not present or is not valid Base64
+	 *
+	 * @throws BadCredentialsException if the Basic header is not present or is not
+	 *                                 valid Base64
 	 */
 	private String[] extractAndDecodeHeader(String header, HttpServletRequest request) {
 		try {
 			byte[] base64Token = header.substring(AUTHORIZATION_PREFIX.length()).getBytes("UTF-8");
 			byte[] decoded;
 			try {
-				decoded = Base64.decode(base64Token);
+				decoded = Base64.getDecoder().decode(base64Token);
 			} catch (IllegalArgumentException e) {
 				throw new BadCredentialsException("Failed to decode basic authentication token");
 			}
@@ -249,5 +249,4 @@ public class RestLoginFilter extends GenericFilterBean implements ApplicationEve
 	public void setAuthorizationHeaderName(String authorizationHeaderName) {
 		this.authorizationHeaderName = authorizationHeaderName;
 	}
-
 }

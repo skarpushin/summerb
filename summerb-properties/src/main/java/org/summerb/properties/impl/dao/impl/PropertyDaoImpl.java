@@ -24,7 +24,9 @@ import java.util.Map;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
+import org.summerb.easycrud.api.DaoExceptionTranslator;
 import org.summerb.easycrud.common.DaoBase;
+import org.summerb.easycrud.impl.mysql.DaoExceptionToFveTranslatorMySqlImpl;
 import org.summerb.properties.impl.dao.PropertyDao;
 import org.summerb.properties.impl.dto.NamedIdProperty;
 
@@ -35,11 +37,13 @@ public class PropertyDaoImpl extends DaoBase implements PropertyDao, Initializin
 	private String sqlFindAllSubjectProperty;
 	private String sqlDeleAllSubjectProperties;
 
+	private DaoExceptionTranslator daoExceptionTranslator = new DaoExceptionToFveTranslatorMySqlImpl();
+
 	private RowMapper<String> propertyValueRowMapper = new RowMapper<String>() {
 		@Override
 		public String mapRow(ResultSet rs, int rowNum) throws SQLException {
 			String value = rs.getString(VALUE_FIELD_NAME);
-			// TOOD: Can somebody explain why we would copu this string?
+			// TOOD: Can somebody explain why we would copy this string?
 			return value == null ? null : new String(value);
 		}
 	};
@@ -48,7 +52,7 @@ public class PropertyDaoImpl extends DaoBase implements PropertyDao, Initializin
 		@Override
 		public NamedIdProperty mapRow(ResultSet rs, int rowNum) throws SQLException {
 			String value = rs.getString(VALUE_FIELD_NAME);
-			// TOOD: Can somebody explain why we would copu this string?
+			// TOOD: Can somebody explain why we would copy this string?
 			return new NamedIdProperty(rs.getLong("name_id"), value == null ? null : new String(value));
 		}
 	};
@@ -81,7 +85,12 @@ public class PropertyDaoImpl extends DaoBase implements PropertyDao, Initializin
 		params.put("name_id", propertyNameId);
 		params.put(VALUE_FIELD_NAME, propertyValue);
 
-		jdbc.update(sqlPutProperty, params);
+		try {
+			jdbc.update(sqlPutProperty, params);
+		} catch (Exception e) {
+			daoExceptionTranslator.translateAndThrowIfApplicableUnchecked(e);
+			throw e;
+		}
 	}
 
 	@Override
@@ -117,7 +126,12 @@ public class PropertyDaoImpl extends DaoBase implements PropertyDao, Initializin
 		params.put("domain_id", domainId);
 		params.put("subject_id", subjectId);
 
-		jdbc.update(sqlDeleAllSubjectProperties, params);
+		try {
+			jdbc.update(sqlDeleAllSubjectProperties, params);
+		} catch (Exception e) {
+			daoExceptionTranslator.translateAndThrowIfApplicableUnchecked(e);
+			throw e;
+		}
 	}
 
 	public String getTableName() {
@@ -126,6 +140,14 @@ public class PropertyDaoImpl extends DaoBase implements PropertyDao, Initializin
 
 	public void setTableName(String tableName) {
 		this.tableName = tableName;
+	}
+
+	public DaoExceptionTranslator getDaoExceptionToFveTranslator() {
+		return daoExceptionTranslator;
+	}
+
+	public void setDaoExceptionToFveTranslator(DaoExceptionTranslator daoExceptionTranslator) {
+		this.daoExceptionTranslator = daoExceptionTranslator;
 	}
 
 }

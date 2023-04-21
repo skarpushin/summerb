@@ -143,7 +143,7 @@ public class ControllerExceptionHandlerStrategyLegacyImpl
 
 		NotAuthorizedException nae;
 		FieldValidationException fve;
-		AccessDeniedException ade;
+		// AccessDeniedException ade;
 		boolean translateAuthExc = Boolean.TRUE
 				.equals(Boolean.valueOf(req.getHeader(RestExceptionTranslator.X_TRANSLATE_AUTHORIZATION_ERRORS)));
 		if ((nae = ExceptionUtils.findExceptionOfType(ex, NotAuthorizedException.class)) != null) {
@@ -155,7 +155,7 @@ public class ControllerExceptionHandlerStrategyLegacyImpl
 				respondWithJson(naeResult, res);
 				return null;
 			}
-		} else if ((ade = ExceptionUtils.findExceptionOfType(ex, AccessDeniedException.class)) != null) {
+		} else if ((ExceptionUtils.findExceptionOfType(ex, AccessDeniedException.class)) != null) {
 			res.setStatus(isAnonymous() ? HttpServletResponse.SC_UNAUTHORIZED : HttpServletResponse.SC_FORBIDDEN);
 			if (translateAuthExc) {
 				return new ModelAndView(jsonView, ControllerBase.ATTR_EXCEPTION, msg);
