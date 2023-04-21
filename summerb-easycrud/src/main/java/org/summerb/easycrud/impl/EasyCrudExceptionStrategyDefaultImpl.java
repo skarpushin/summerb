@@ -15,6 +15,8 @@
  ******************************************************************************/
 package org.summerb.easycrud.impl;
 
+import java.sql.SQLIntegrityConstraintViolationException;
+
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.util.StringUtils;
 import org.summerb.easycrud.api.EasyCrudExceptionStrategy;
@@ -22,7 +24,9 @@ import org.summerb.easycrud.api.EasyCrudMessageCodes;
 import org.summerb.easycrud.api.exceptions.EasyCrudUnexpectedException;
 import org.summerb.easycrud.api.exceptions.EntityNotFoundException;
 import org.summerb.easycrud.api.exceptions.GenericEntityNotFoundException;
+import org.summerb.easycrud.api.validation_errors.ReferencedRowCannotBeDeletedValidationError;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
+import org.summerb.utils.exceptions.ExceptionUtils;
 import org.summerb.validation.FieldValidationException;
 
 import com.google.common.base.Preconditions;
@@ -64,7 +68,33 @@ public class EasyCrudExceptionStrategyDefaultImpl<TId> implements EasyCrudExcept
 			throws NotAuthorizedException, EntityNotFoundException {
 		Throwables.throwIfInstanceOf(t, NotAuthorizedException.class);
 		Throwables.throwIfInstanceOf(t, EntityNotFoundException.class);
+
+		FieldValidationException fve = tryExtractConstraintViolation(t);
+		if (fve != null) {
+			return new RuntimeException("Constraint violation", fve);
+		}
+
 		return buildUnexpectedAtDelete(t);
+	}
+
+	/**
+	 * This is special case to handle errors like: "Cannot delete or update a parent
+	 * row: a foreign key constraint fails (`cdb`.`badges`, CONSTRAINT
+	 * `badges_FK_care_team_members` FOREIGN KEY (`care_team_member_id`) REFERENCES
+	 * `care_team_members` (`id`))"
+	 */
+	private FieldValidationException tryExtractConstraintViolation(Throwable t) {
+		SQLIntegrityConstraintViolationException sqlExc = ExceptionUtils.findExceptionOfType(t,
+				SQLIntegrityConstraintViolationException.class);
+		if (sqlExc == null) {
+			return null;
+		}
+
+		if (sqlExc.getErrorCode() == 1451 && "23000".equals(sqlExc.getSQLState())) {
+			return new FieldValidationException(new ReferencedRowCannotBeDeletedValidationError());
+		}
+
+		return null;
 	}
 
 	@Override

@@ -15,11 +15,9 @@
  ******************************************************************************/
 package org.summerb.easycrud.api.query.restrictions;
 
-import org.summerb.easycrud.api.query.Restriction;
-
 import com.google.common.base.Preconditions;
 
-public class NumberGreaterOrEqualRestriction extends NegativableRestrictionBase implements Restriction<Long> {
+public class NumberGreaterOrEqualRestriction extends NegatableRestrictionBase<Long> {
 	private static final long serialVersionUID = 471006414190458384L;
 
 	private long value;

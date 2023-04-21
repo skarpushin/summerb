@@ -32,12 +32,15 @@ import org.summerb.easycrud.api.query.restrictions.IsNullRestriction;
 import org.summerb.easycrud.api.query.restrictions.NumberBetweenRestriction;
 import org.summerb.easycrud.api.query.restrictions.NumberEqRestriction;
 import org.summerb.easycrud.api.query.restrictions.NumberGreaterOrEqualRestriction;
+import org.summerb.easycrud.api.query.restrictions.NumberLessOrEqualsRestriction;
 import org.summerb.easycrud.api.query.restrictions.NumberOneOfRestriction;
 import org.summerb.easycrud.api.query.restrictions.StringBetweenRestriction;
 import org.summerb.easycrud.api.query.restrictions.StringContainsRestriction;
 import org.summerb.easycrud.api.query.restrictions.StringEqRestriction;
 import org.summerb.easycrud.api.query.restrictions.StringLengthBetweenRestriction;
+import org.summerb.easycrud.api.query.restrictions.StringLessOrEqualsRestriction;
 import org.summerb.easycrud.api.query.restrictions.StringOneOfRestriction;
+import org.summerb.easycrud.api.query.restrictions.StringStartsWithRestriction;
 
 /**
  * MySQL specific impl of {@link QueryToNativeSqlCompiler}
@@ -52,15 +55,20 @@ public class QueryToNativeSqlCompilerMySqlImpl implements QueryToNativeSqlCompil
 	public QueryToNativeSqlCompilerMySqlImpl() {
 		converters.put(BooleanEqRestriction.class, booleanEqRestriction);
 		converters.put(IsNullRestriction.class, isNullRestriction);
+
 		converters.put(NumberBetweenRestriction.class, numberBetweenRestriction);
 		converters.put(NumberEqRestriction.class, numberEqRestriction);
+		converters.put(NumberLessOrEqualsRestriction.class, numberLessOrEqualsRestriction);
 		converters.put(NumberGreaterOrEqualRestriction.class, numberGreaterOrEqualRestriction);
 		converters.put(NumberOneOfRestriction.class, numberOneOfRestriction);
+
 		converters.put(StringEqRestriction.class, stringEqRestriction);
 		converters.put(StringOneOfRestriction.class, stringOneOfRestriction);
 		converters.put(StringContainsRestriction.class, stringContainsRestriction);
 		converters.put(StringBetweenRestriction.class, stringBetweenRestriction);
 		converters.put(StringLengthBetweenRestriction.class, stringLengthBetweenRestriction);
+		converters.put(StringStartsWithRestriction.class, stringStartsWithRestriction);
+		converters.put(StringLessOrEqualsRestriction.class, stringLessOrEqualsRestriction);
 	}
 
 	@Override
@@ -224,6 +232,36 @@ public class QueryToNativeSqlCompilerMySqlImpl implements QueryToNativeSqlCompil
 			params.addValue(pn, r.getValues());
 			String ret = underscoredFieldName + (r.isNegative() ? " NOT IN (:" : " IN (:") + pn + ")";
 			return ret;
+		}
+	};
+
+	private ConditionConverter<StringStartsWithRestriction> stringStartsWithRestriction = new ConditionConverter<StringStartsWithRestriction>() {
+		@Override
+		public String convert(StringStartsWithRestriction r, MapSqlParameterSource params, AtomicInteger paramIdx,
+				String underscoredFieldName) {
+			String pn = pname(paramIdx);
+			params.addValue(pn, r.getValue() + "%");
+			return underscoredFieldName + (r.isNegative() ? " NOT LIKE :" : " LIKE :") + pn;
+		}
+	};
+
+	private ConditionConverter<StringLessOrEqualsRestriction> stringLessOrEqualsRestriction = new ConditionConverter<StringLessOrEqualsRestriction>() {
+		@Override
+		public String convert(StringLessOrEqualsRestriction r, MapSqlParameterSource params, AtomicInteger paramIdx,
+				String underscoredFieldName) {
+			String pn = pname(paramIdx);
+			params.addValue(pn, r.getValue());
+			return underscoredFieldName + (!r.isNegative() ? " <= :" : " > :") + pn;
+		}
+	};
+
+	private ConditionConverter<NumberLessOrEqualsRestriction> numberLessOrEqualsRestriction = new ConditionConverter<NumberLessOrEqualsRestriction>() {
+		@Override
+		public String convert(NumberLessOrEqualsRestriction r, MapSqlParameterSource params, AtomicInteger paramIdx,
+				String underscoredFieldName) {
+			String pn = pname(paramIdx);
+			params.addValue(pn, r.getValue());
+			return underscoredFieldName + (!r.isNegative() ? " <= :" : " > :") + pn;
 		}
 	};
 

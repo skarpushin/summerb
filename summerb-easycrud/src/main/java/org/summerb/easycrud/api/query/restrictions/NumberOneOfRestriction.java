@@ -19,9 +19,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.summerb.easycrud.api.query.Restriction;
-
-public class NumberOneOfRestriction extends NegativableRestrictionBase implements Restriction<Long> {
+public class NumberOneOfRestriction extends NegatableRestrictionBase<Long> {
 	private static final long serialVersionUID = 4538148232283195229L;
 
 	private Set<Long> values;

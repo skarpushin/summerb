@@ -15,11 +15,9 @@
  ******************************************************************************/
 package org.summerb.easycrud.api.query.restrictions;
 
-import org.summerb.easycrud.api.query.Restriction;
-
 import com.google.common.base.Preconditions;
 
-public class StringBetweenRestriction extends NegativableRestrictionBase implements Restriction<String> {
+public class StringBetweenRestriction extends NegatableRestrictionBase<String> {
 	private static final long serialVersionUID = -1804000515828431204L;
 
 	private String lowerBound;

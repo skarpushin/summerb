@@ -119,11 +119,12 @@ public class EasyCrudRestControllerBase<TId, TDto extends HasId<TId>, TEasyCrudS
 	 * @return list of items
 	 */
 	@GetMapping
-	public MultipleItemsResult<TId, TDto> getList(PagerParams pagerParams, OrderBy orderBy,
-			/* @ApiIgnore */ PathVariablesMap pathVariables,
+	public MultipleItemsResult<TId, TDto> getList(
+			@RequestParam(value = "pagerParams", required = false) PagerParams pagerParams,
+			@RequestParam(value = "orderBy", required = false) OrderBy orderBy,
 			@RequestParam(value = "needPerms", required = false) boolean needPerms,
-			@RequestParam(value = "referencesToResolve", required = false) List<String> referencesToResolve)
-			throws Exception {
+			@RequestParam(value = "referencesToResolve", required = false) List<String> referencesToResolve,
+			/* @ApiIgnore */ PathVariablesMap pathVariables) throws Exception {
 		if (orderBy != null && (orderBy.getDirection() == null || orderBy.getFieldName() == null)) {
 			orderBy = defaultOrderBy;
 		}

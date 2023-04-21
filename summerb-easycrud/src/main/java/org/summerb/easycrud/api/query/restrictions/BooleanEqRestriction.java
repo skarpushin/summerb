@@ -15,11 +15,9 @@
  ******************************************************************************/
 package org.summerb.easycrud.api.query.restrictions;
 
-import org.summerb.easycrud.api.query.Restriction;
-
 import com.google.common.base.Preconditions;
 
-public class BooleanEqRestriction extends NegativableRestrictionBase implements Restriction<Boolean> {
+public class BooleanEqRestriction extends NegatableRestrictionBase<Boolean> {
 	private static final long serialVersionUID = 1809030822888453382L;
 
 	private boolean value;

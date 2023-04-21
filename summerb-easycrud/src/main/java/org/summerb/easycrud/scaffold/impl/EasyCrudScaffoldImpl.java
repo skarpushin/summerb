@@ -19,6 +19,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -33,11 +34,13 @@ import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.api.EasyCrudTableAuthStrategy;
 import org.summerb.easycrud.api.EasyCrudValidationStrategy;
 import org.summerb.easycrud.api.EasyCrudWireTap;
+import org.summerb.easycrud.api.ParameterSourceBuilder;
 import org.summerb.easycrud.api.dto.HasId;
 import org.summerb.easycrud.impl.EasyCrudServicePluggableImpl;
 import org.summerb.easycrud.impl.mysql.EasyCrudDaoMySqlImpl;
 import org.summerb.easycrud.impl.mysql.QueryToNativeSqlCompilerMySqlImpl;
 import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapDelegatingImpl;
+import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapEventBusImpl;
 import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapPerRowAuthImpl;
 import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapTableAuthImpl;
 import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapValidationImpl;
@@ -46,6 +49,7 @@ import org.summerb.easycrud.scaffold.api.EasyCrudServiceProxyFactory;
 import org.summerb.utils.DtoBase;
 
 import com.google.common.base.Preconditions;
+import com.google.common.eventbus.EventBus;
 
 /**
  * Default impl of {@link EasyCrudScaffold}
@@ -93,7 +97,7 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold {
 		service.setDtoClass(dtoClass);
 		service.setDao(dao);
 		service.setEntityTypeMessageCode(messageCode);
-		beanFactory.autowireBean(service);
+		getBeanFactory().autowireBean(service);
 
 		if (injections == null || injections.length == 0) {
 			service.afterPropertiesSet();
@@ -101,10 +105,10 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold {
 		}
 
 		// NOTE: Ok. This thing around EasyCrudExceptionStrategy tells me this code is
-		// begging to be refactored. Screamign about OCP... I'll do it later.
+		// begging to be refactoried. Screaming about OCP... I'll do it later.
 		List<EasyCrudWireTap<TId, TDto>> wireTaps = Arrays.stream(injections)
-				.filter(x -> !(x instanceof EasyCrudExceptionStrategy))
-				.map(injectionToWireTapMapper(dtoClass, messageCode, tableName)).collect(Collectors.toList());
+				.map(injectionToWireTapMapper(dtoClass, messageCode, tableName)).filter(Objects::nonNull)
+				.collect(Collectors.toList());
 		if (wireTaps.size() > 0) {
 			service.setWireTap(new EasyCrudWireTapDelegatingImpl<>(wireTaps));
 		}
@@ -115,6 +119,9 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold {
 		if (exceptionStrategy != null) {
 			service.setGenericExceptionStrategy(exceptionStrategy);
 		}
+
+		// TZD: Give a warning or maybe even a failure if some of the injections were
+		// not used
 
 		// x.
 		service.afterPropertiesSet();
@@ -133,9 +140,16 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold {
 				return new EasyCrudWireTapTableAuthImpl<>((EasyCrudTableAuthStrategy) inj);
 			} else if (inj instanceof EasyCrudWireTap) {
 				return (EasyCrudWireTap<TId, TDto>) inj;
+			} else if (inj instanceof EventBus) {
+				return new EasyCrudWireTapEventBusImpl<>((EventBus) inj);
+			} else if (inj instanceof EasyCrudExceptionStrategy) {
+				// do nothing - it was injected above
+				return null;
+			} else if (inj instanceof ParameterSourceBuilder) {
+				// do nothing - it was injected above
+				return null;
 			} else {
-				throw new IllegalStateException(
-						"Can't convert injection " + inj + " into wireTap for service for " + dtoClass);
+				throw new IllegalStateException("Failed to automatically inject " + inj);
 			}
 		};
 	}
@@ -160,15 +174,16 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold {
 		this.dataSource = dataSource;
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public <TId, TDto extends HasId<TId>, TService extends EasyCrudService<TId, TDto>> TService fromService(
 			Class<TService> serviceInterface, String messageCode, String tableName, Object... injections) {
+
 		try {
 			Class<TDto> dtoClass = discoverDtoClassFromServiceInterface(serviceInterface);
-			EasyCrudDao<TId, TDto> dao = buildDao(dtoClass, tableName);
+			EasyCrudDao<TId, TDto> dao = buildDao(dtoClass, tableName, injections);
 
-			TService proxy = easyCrudServiceProxyFactory.createImpl(serviceInterface);
+			TService proxy = getEasyCrudServiceProxyFactory().createImpl(serviceInterface);
 			EasyCrudServicePluggableImpl service = (EasyCrudServicePluggableImpl) java.lang.reflect.Proxy
 					.getInvocationHandler(proxy);
 			initService(service, dtoClass, messageCode, tableName, dao, injections);
@@ -177,6 +192,27 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold {
 		} catch (Throwable t) {
 			throw new RuntimeException("Failed to scaffold EasyCrudService for " + serviceInterface, t);
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	protected <TId, TDto extends HasId<TId>> EasyCrudDao<TId, TDto> buildDao(Class<TDto> dtoClass, String tableName,
+			Object... injections) throws Exception {
+		EasyCrudDaoMySqlImpl<TId, TDto> dao = new EasyCrudDaoMySqlImpl<>();
+		dao.setDataSource(getDataSource());
+		dao.setDtoClass(dtoClass);
+		dao.setTableName(tableName);
+		getBeanFactory().autowireBean(dao);
+
+		if (injections != null) {
+			for (Object inj : injections) {
+				if (inj instanceof ParameterSourceBuilder) {
+					dao.setParameterSourceBuilder((ParameterSourceBuilder<TDto>) inj);
+				}
+			}
+		}
+
+		dao.afterPropertiesSet();
+		return dao;
 	}
 
 	@SuppressWarnings("unchecked")

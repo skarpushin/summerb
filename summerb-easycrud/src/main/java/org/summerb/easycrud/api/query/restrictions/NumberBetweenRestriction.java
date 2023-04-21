@@ -15,9 +15,7 @@
  ******************************************************************************/
 package org.summerb.easycrud.api.query.restrictions;
 
-import org.summerb.easycrud.api.query.Restriction;
-
-public class NumberBetweenRestriction extends NegativableRestrictionBase implements Restriction<Long> {
+public class NumberBetweenRestriction extends NegatableRestrictionBase<Long> {
 	private static final long serialVersionUID = -7489366611902539609L;
 
 	private long lowerBound;

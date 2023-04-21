@@ -16,8 +16,11 @@
 package org.summerb.easycrud.api.query;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.PropertyAccessor;
 import org.summerb.easycrud.api.EasyCrudDao;
@@ -28,12 +31,14 @@ import org.summerb.easycrud.api.query.restrictions.IsNullRestriction;
 import org.summerb.easycrud.api.query.restrictions.NumberBetweenRestriction;
 import org.summerb.easycrud.api.query.restrictions.NumberEqRestriction;
 import org.summerb.easycrud.api.query.restrictions.NumberGreaterOrEqualRestriction;
+import org.summerb.easycrud.api.query.restrictions.NumberLessOrEqualsRestriction;
 import org.summerb.easycrud.api.query.restrictions.NumberOneOfRestriction;
 import org.summerb.easycrud.api.query.restrictions.StringBetweenRestriction;
 import org.summerb.easycrud.api.query.restrictions.StringContainsRestriction;
 import org.summerb.easycrud.api.query.restrictions.StringEqRestriction;
 import org.summerb.easycrud.api.query.restrictions.StringLengthBetweenRestriction;
 import org.summerb.easycrud.api.query.restrictions.StringOneOfRestriction;
+import org.summerb.easycrud.api.query.restrictions.StringStartsWithRestriction;
 
 /**
  * This class is used to build very simple queries to {@link EasyCrudService}
@@ -55,7 +60,7 @@ import org.summerb.easycrud.api.query.restrictions.StringOneOfRestriction;
 public class Query implements Serializable {
 	private static final long serialVersionUID = 3434200920910840380L;
 
-	private List<Restriction<PropertyAccessor>> restrictions = new LinkedList<Restriction<PropertyAccessor>>();
+	protected List<Restriction<PropertyAccessor>> restrictions = new LinkedList<Restriction<PropertyAccessor>>();
 
 	/**
 	 * Shortcut for creating new instance of this class
@@ -200,6 +205,58 @@ public class Query implements Serializable {
 	public Query ge(String fieldName, long value) {
 		restrictions.add(new FieldCondition(fieldName, new NumberGreaterOrEqualRestriction(value)));
 		return this;
+	}
+
+	public Query le(String fieldName, long value) {
+		getRestrictions().add(new FieldCondition(fieldName, new NumberLessOrEqualsRestriction(value)));
+		return this;
+	}
+
+	public Query notLe(String fieldName, long value) {
+		getRestrictions().add(new FieldCondition(fieldName, new NumberLessOrEqualsRestriction(value).asNegative()));
+		return this;
+	}
+
+	public Query startsWith(String fieldName, String value) {
+		getRestrictions().add(new FieldCondition(fieldName, new StringStartsWithRestriction(value)));
+		return this;
+	}
+
+	public Query notStartsWith(String fieldName, String value) {
+		getRestrictions().add(new FieldCondition(fieldName, new StringStartsWithRestriction(value).asNegative()));
+		return this;
+	}
+
+	public Query inStrings(String fieldName, Collection<String> values) {
+		getRestrictions().add(new FieldCondition(fieldName, new StringOneOfRestriction(asSet(values))));
+		return this;
+	}
+
+	public Query notInStrings(String fieldName, Collection<String> values) {
+		StringOneOfRestriction notIn = new StringOneOfRestriction(asSet(values));
+		notIn.setNegative(true);
+		getRestrictions().add(new FieldCondition(fieldName, notIn));
+		return this;
+	}
+
+	public Query inLongs(String fieldName, Collection<Long> values) {
+		getRestrictions().add(new FieldCondition(fieldName, new NumberOneOfRestriction(asSet(values))));
+		return this;
+	}
+
+	public Query notInLongs(String fieldName, Collection<Long> values) {
+		NumberOneOfRestriction notIn = new NumberOneOfRestriction(asSet(values));
+		notIn.setNegative(true);
+		getRestrictions().add(new FieldCondition(fieldName, notIn));
+		return this;
+	}
+
+	protected <T> Set<T> asSet(Collection<T> values) {
+		if (values instanceof Set) {
+			return (Set<T>) values;
+		}
+
+		return new HashSet<>(values);
 	}
 
 	@Override

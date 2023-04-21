@@ -15,9 +15,7 @@
  ******************************************************************************/
 package org.summerb.easycrud.api.query.restrictions;
 
-import org.summerb.easycrud.api.query.Restriction;
-
-public class StringEqRestriction extends NegativableRestrictionBase implements Restriction<String> {
+public class StringEqRestriction extends NegatableRestrictionBase<String> {
 	private static final long serialVersionUID = -5623781369783055479L;
 
 	private String value;
