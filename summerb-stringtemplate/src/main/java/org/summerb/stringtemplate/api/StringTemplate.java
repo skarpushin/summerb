@@ -26,7 +26,7 @@ import org.summerb.stringtemplate.impl.StringTemplateStaticImpl;
  * @author skarpushin
  * 
  * @see StringTemplateStaticImpl
- * @see StringTemplateCompiler
+ * @see StringTemplateFactory
  */
 public interface StringTemplate {
 	String applyTo(Object rootObject);

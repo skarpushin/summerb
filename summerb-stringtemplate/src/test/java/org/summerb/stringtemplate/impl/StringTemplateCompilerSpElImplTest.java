@@ -28,7 +28,7 @@ public class StringTemplateCompilerSpElImplTest {
 	 * @see ru.skarpushin.services.stringtemplate.impl.
 	 *      StringTemplateCompilerSpElImpl
 	 */
-	private StringTemplateCompilerlImpl fixture = new StringTemplateCompilerlImpl();
+	private StringTemplateFactorySpElImpl fixture = new StringTemplateFactorySpElImpl();
 
 	/**
 	 * Run the StringTemplate compile(String) method test
@@ -36,7 +36,7 @@ public class StringTemplateCompilerSpElImplTest {
 	@Test
 	public void testCompile() {
 		String template = "Hello ${name}! I hope you are fine. Now you have ${amount} money!";
-		StringTemplate stringTemplate = fixture.compile(template);
+		StringTemplate stringTemplate = fixture.build(template);
 		String result = stringTemplate.applyTo(new DomainObjectExample("Bob", 1234));
 		assertEquals("Hello Bob! I hope you are fine. Now you have 1234 money!", result);
 	}

@@ -334,4 +334,13 @@ public class ValidationContext {
 		}
 	}
 
+  public boolean validateLessOrEqual(double subject, double border, String fieldToken) {
+      if (subject <= border) {
+        return true;
+      }
+  
+      add(new MustBeLessOrEqualValidationError(subject, border, fieldToken));
+      return false;
+    }
+
 }

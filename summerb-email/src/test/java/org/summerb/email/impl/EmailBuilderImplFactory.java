@@ -17,19 +17,19 @@ package org.summerb.email.impl;
 
 import java.util.Locale;
 
-import org.summerb.stringtemplate.api.StringTemplateCompiler;
-import org.summerb.stringtemplate.impl.StringTemplateCompilerlImpl;
+import org.summerb.stringtemplate.api.StringTemplateFactory;
+import org.summerb.stringtemplate.impl.StringTemplateFactorySpElImpl;
 
 public class EmailBuilderImplFactory {
-	static StringTemplateCompiler stringTemplateCompiler = new StringTemplateCompilerlImpl();
+	static StringTemplateFactory stringTemplateFactory = new StringTemplateFactorySpElImpl();
 
 	public static EmailMessageBuilderImpl createEmailBuilderImplUS() {
 		EmailMessageBuilderImpl fixture = new EmailMessageBuilderImpl();
 
-		fixture.setFromNameTemplate(stringTemplateCompiler.compile("From: ${from.name}"));
-		fixture.setToNameTemplate(stringTemplateCompiler.compile("To: ${to.name}"));
-		fixture.setSubjectTemplate(stringTemplateCompiler.compile("Subject: ${body.id}"));
-		fixture.setBodyTemplate(stringTemplateCompiler.compile("Body: ${body.msg}"));
+		fixture.setFromNameTemplate(stringTemplateFactory.build("From: ${from.name}"));
+		fixture.setToNameTemplate(stringTemplateFactory.build("To: ${to.name}"));
+		fixture.setSubjectTemplate(stringTemplateFactory.build("Subject: ${body.id}"));
+		fixture.setBodyTemplate(stringTemplateFactory.build("Body: ${body.msg}"));
 		fixture.setLocale(Locale.US);
 
 		return fixture;
@@ -38,10 +38,10 @@ public class EmailBuilderImplFactory {
 	public static EmailMessageBuilderImpl createEmailBuilderImplRU() {
 		EmailMessageBuilderImpl fixture = new EmailMessageBuilderImpl();
 
-		fixture.setFromNameTemplate(stringTemplateCompiler.compile("От: ${from.name}"));
-		fixture.setToNameTemplate(stringTemplateCompiler.compile("К: ${to.name}"));
-		fixture.setSubjectTemplate(stringTemplateCompiler.compile("Тема: ${body.id}"));
-		fixture.setBodyTemplate(stringTemplateCompiler.compile("Тело: ${body.msg}"));
+		fixture.setFromNameTemplate(stringTemplateFactory.build("От: ${from.name}"));
+		fixture.setToNameTemplate(stringTemplateFactory.build("К: ${to.name}"));
+		fixture.setSubjectTemplate(stringTemplateFactory.build("Тема: ${body.id}"));
+		fixture.setBodyTemplate(stringTemplateFactory.build("Тело: ${body.msg}"));
 		fixture.setLocale(new Locale("ru", "RU"));
 
 		return fixture;

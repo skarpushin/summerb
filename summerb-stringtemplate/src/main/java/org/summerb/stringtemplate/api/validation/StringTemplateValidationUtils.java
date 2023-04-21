@@ -15,7 +15,7 @@
  ******************************************************************************/
 package org.summerb.stringtemplate.api.validation;
 
-import org.summerb.stringtemplate.api.StringTemplateCompiler;
+import org.summerb.stringtemplate.api.StringTemplateFactory;
 import org.summerb.validation.ValidationContext;
 
 import com.google.common.base.Preconditions;
@@ -33,7 +33,7 @@ public class StringTemplateValidationUtils {
 	 * Validate string template basically using compiler. If compile successful,
 	 * that template validates fine
 	 * 
-	 * @param stringTemplateCompiler
+	 * @param stringTemplateFactory
 	 *            compiler to validate against
 	 * @param stringTemplate
 	 *            template to validate
@@ -42,14 +42,14 @@ public class StringTemplateValidationUtils {
 	 * @param fieldToken
 	 *            field token
 	 */
-	public static void validateStringTemplate(StringTemplateCompiler stringTemplateCompiler, String stringTemplate,
+	public static void validateStringTemplate(StringTemplateFactory stringTemplateFactory, String stringTemplate,
 			ValidationContext ctx, String fieldToken) {
 
-		Preconditions.checkArgument(stringTemplateCompiler != null);
+		Preconditions.checkArgument(stringTemplateFactory != null);
 		Preconditions.checkArgument(ctx != null);
 
 		try {
-			stringTemplateCompiler.compile(stringTemplate);
+			stringTemplateFactory.build(stringTemplate);
 		} catch (Throwable t) {
 			ctx.getErrors().add(new StringTemplateValidationError(fieldToken, t));
 		}

@@ -26,7 +26,7 @@ import org.summerb.minicms.api.AttachmentService;
 import org.summerb.minicms.api.dto.Article;
 import org.summerb.minicms.api.dto.consuming.RenderedArticle;
 import org.summerb.stringtemplate.api.StringTemplate;
-import org.summerb.stringtemplate.api.StringTemplateCompiler;
+import org.summerb.stringtemplate.api.StringTemplateFactory;
 
 import com.google.common.base.Preconditions;
 
@@ -34,7 +34,7 @@ public class ArticleRendererImpl implements ArticleRenderer {
 	private ArticleService articleService;
 	private AttachmentService attachmentService;
 	private ArticleAbsoluteUrlBuilder articleAbsoluteUrlBuilder;
-	private StringTemplateCompiler stringTemplateCompiler;
+	private StringTemplateFactory stringTemplateFactory;
 
 	@Override
 	public RenderedArticle renderArticle(String key, Locale locale) {
@@ -51,9 +51,9 @@ public class ArticleRendererImpl implements ArticleRenderer {
 			ArticleRenderingContext articleRenderingContext = new ArticleRenderingContext(locale, renderedArticle,
 					articleService, attachmentService, articleAbsoluteUrlBuilder);
 
-			StringTemplate annotationTemplate = stringTemplateCompiler.compile(article.getAnnotation());
+			StringTemplate annotationTemplate = stringTemplateFactory.build(article.getAnnotation());
 			renderedArticle.setAnnotation(annotationTemplate.applyTo(articleRenderingContext));
-			StringTemplate contentTemplate = stringTemplateCompiler.compile(article.getContent());
+			StringTemplate contentTemplate = stringTemplateFactory.build(article.getContent());
 			renderedArticle.setContent(contentTemplate.applyTo(articleRenderingContext));
 
 			return renderedArticle;
@@ -94,13 +94,13 @@ public class ArticleRendererImpl implements ArticleRenderer {
 		this.articleAbsoluteUrlBuilder = articleAbsoluteUrlBuilder;
 	}
 
-	public StringTemplateCompiler getStringTemplateCompiler() {
-		return stringTemplateCompiler;
+	public StringTemplateFactory getStringTemplateCompiler() {
+		return stringTemplateFactory;
 	}
 
 	@Autowired
-	public void setStringTemplateCompiler(StringTemplateCompiler stringTemplateCompiler) {
-		this.stringTemplateCompiler = stringTemplateCompiler;
+	public void setStringTemplateCompiler(StringTemplateFactory stringTemplateFactory) {
+		this.stringTemplateFactory = stringTemplateFactory;
 	}
 
 	public AttachmentService getAttachmentService() {

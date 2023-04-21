@@ -22,6 +22,6 @@ package org.summerb.stringtemplate.api;
  * @author skarpushin
  * 
  */
-public interface StringTemplateCompiler {
-	StringTemplate compile(String template);
+public interface StringTemplateFactory {
+	StringTemplate build(String template);
 }

@@ -23,9 +23,9 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.util.StringUtils;
 import org.summerb.stringtemplate.api.StringTemplate;
-import org.summerb.stringtemplate.api.StringTemplateCompiler;
+import org.summerb.stringtemplate.api.StringTemplateFactory;
 
-public class StringTemplateCompilerlImpl implements StringTemplateCompiler {
+public class StringTemplateFactorySpElImpl implements StringTemplateFactory {
 	private ExpressionParser expressionParser = new SpelExpressionParser();
 	private ParserContext templateParserContext = new ParserContext() {
 		@Override
@@ -45,7 +45,7 @@ public class StringTemplateCompilerlImpl implements StringTemplateCompiler {
 	};
 
 	@Override
-	public StringTemplate compile(String template) {
+	public StringTemplate build(String template) {
 		try {
 			if (!StringUtils.hasText(template)) {
 				return new StringTemplateStaticImpl("");

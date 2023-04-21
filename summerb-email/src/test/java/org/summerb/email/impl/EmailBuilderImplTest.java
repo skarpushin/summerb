@@ -24,12 +24,12 @@ import org.junit.Test;
 import org.summerb.email.api.dto.EmailMessage;
 import org.summerb.email.api.dto.EmailTemplateParams;
 import org.summerb.email.api.dto.EmailTemplateParamsFactory;
-import org.summerb.stringtemplate.api.StringTemplateCompiler;
-import org.summerb.stringtemplate.impl.StringTemplateCompilerlImpl;
+import org.summerb.stringtemplate.api.StringTemplateFactory;
+import org.summerb.stringtemplate.impl.StringTemplateFactorySpElImpl;
 
 public class EmailBuilderImplTest {
 
-	StringTemplateCompiler stringTemplateCompiler = new StringTemplateCompilerlImpl();
+	StringTemplateFactory stringTemplateFactory = new StringTemplateFactorySpElImpl();
 
 	@Test
 	public void testBuildEmail_1() throws Exception {

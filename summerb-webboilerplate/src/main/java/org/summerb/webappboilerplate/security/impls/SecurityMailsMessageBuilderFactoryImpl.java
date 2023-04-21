@@ -31,7 +31,7 @@ import org.summerb.email.impl.EmailMessageBuilderImpl;
 import org.summerb.email.impl.LocaleAwareEmailMessageBuilderImpl;
 import org.summerb.minicms.api.ArticleService;
 import org.summerb.minicms.api.dto.Article;
-import org.summerb.stringtemplate.api.StringTemplateCompiler;
+import org.summerb.stringtemplate.api.StringTemplateFactory;
 import org.summerb.stringtemplate.impl.StringTemplateStaticImpl;
 import org.summerb.users.api.dto.User;
 import org.summerb.webappboilerplate.security.apis.SecurityMailsMessageBuilderFactory;
@@ -46,7 +46,7 @@ public class SecurityMailsMessageBuilderFactoryImpl implements SecurityMailsMess
 	public static final String EMAIL_PASSWORD_RESET_REQUEST = "email-reset-password-request";
 
 	private ArticleService articleService;
-	private StringTemplateCompiler stringTemplateCompiler;
+	private StringTemplateFactory stringTemplateFactory;
 	private EventBus eventBus;
 
 	private User registrationEmailSender;
@@ -92,9 +92,9 @@ public class SecurityMailsMessageBuilderFactoryImpl implements SecurityMailsMess
 				builder.setLocale(entry.getKey());
 
 				builder.setFromNameTemplate(new StringTemplateStaticImpl(sender.getDisplayName()));
-				builder.setToNameTemplate(stringTemplateCompiler.compile("${to.displayName}"));
+				builder.setToNameTemplate(stringTemplateFactory.build("${to.displayName}"));
 				builder.setSubjectTemplate(new StringTemplateStaticImpl(entry.getValue().getTitle()));
-				builder.setBodyTemplate(stringTemplateCompiler.compile(entry.getValue().getContent()));
+				builder.setBodyTemplate(stringTemplateFactory.build(entry.getValue().getContent()));
 
 				ret.getLocaleSpecificBuilders().add(builder);
 			}
@@ -133,13 +133,13 @@ public class SecurityMailsMessageBuilderFactoryImpl implements SecurityMailsMess
 		return passwordResetEmailBuilder;
 	}
 
-	public StringTemplateCompiler getStringTemplateCompiler() {
-		return stringTemplateCompiler;
+	public StringTemplateFactory getStringTemplateCompiler() {
+		return stringTemplateFactory;
 	}
 
 	@Autowired
-	public void setStringTemplateCompiler(StringTemplateCompiler stringTemplateCompiler) {
-		this.stringTemplateCompiler = stringTemplateCompiler;
+	public void setStringTemplateCompiler(StringTemplateFactory stringTemplateFactory) {
+		this.stringTemplateFactory = stringTemplateFactory;
 	}
 
 	@Autowired

@@ -81,7 +81,7 @@ import com.google.common.base.Preconditions;
  */
 public class EasyCrudRestControllerBase<TId, TDto extends HasId<TId>, TEasyCrudService extends EasyCrudService<TId, TDto>>
 		implements ApplicationContextAware, InitializingBean {
-	private static final String PERM_RESOLVER_REQ = "Cannot provide permissions since permissionsResolverStrategy is not set";
+	protected static final String PERM_RESOLVER_REQ = "Cannot provide permissions since permissionsResolverStrategy is not set";
 
 	protected TEasyCrudService service;
 	protected DataSetLoader dataSetLoader;

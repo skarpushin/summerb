@@ -34,7 +34,7 @@ import org.summerb.minicms.api.dto.Article;
 import org.summerb.minicms.api.dto.Attachment;
 import org.summerb.minicms.api.dto.consuming.RenderedArticle;
 import org.summerb.minicms.impl.ArticleRendererImpl;
-import org.summerb.stringtemplate.impl.StringTemplateCompilerlImpl;
+import org.summerb.stringtemplate.impl.StringTemplateFactorySpElImpl;
 
 import integr.org.summerb.minicms.impl.UrlBuilderTestImpl;
 
@@ -72,7 +72,7 @@ public class ArticleRenderingServiceImplTest {
 		fixture.setArticleAbsoluteUrlBuilder(articleAbsoluteUrlBuilder);
 		fixture.setArticleService(articleService);
 		fixture.setAttachmentService(attachmentService);
-		fixture.setStringTemplateCompiler(new StringTemplateCompilerlImpl());
+		fixture.setStringTemplateCompiler(new StringTemplateFactorySpElImpl());
 
 		RenderedArticle result = fixture.renderArticle("a1", Locale.ENGLISH);
 		assertNotNull(result);
