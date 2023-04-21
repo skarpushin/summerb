@@ -22,8 +22,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.DefaultRedirectStrategy;
@@ -40,7 +40,7 @@ import org.summerb.webappboilerplate.security.mvc.SecurityActionsUrlsProviderDef
  *
  */
 public class InvalidSessionStrategyImpl implements InvalidSessionStrategy, InitializingBean {
-	private Logger log = LogManager.getLogger(getClass());
+	private Logger log = LoggerFactory.getLogger(getClass());
 
 	private RedirectStrategy redirectStrategy;
 	private SecurityActionsUrlsProvider securityActionsUrlsProvider;

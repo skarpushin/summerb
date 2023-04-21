@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Copyright 2015-2019 Sergey Karpushin
+  Copyright 2015-2023 Sergey Karpushin
   
   Licensed under the Apache License, Version 2.0 (the "License"); you may not
   use this file except in compliance with the License.  You may obtain a copy
@@ -21,7 +21,7 @@
 	<parent>
 		<groupId>com.github.skarpushin</groupId>
 		<artifactId>summerb-parent</artifactId>
-		<version>5.0.1</version>
+		<version>6.0.0</version>
 		<relativePath>../summerb-parent</relativePath>
 	</parent>
 	<artifactId>summerb-email</artifactId>
@@ -42,13 +42,13 @@
 		<dependency>
 			<groupId>javax.mail</groupId>
 			<artifactId>mail</artifactId>
-			<version>1.4.7</version>
+			<version>${mail.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>dumbster</groupId>
 			<artifactId>dumbster</artifactId>
-			<version>1.6</version>
+			<version>${dumbster.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

@@ -18,8 +18,8 @@ package org.summerb.easycrud.rest.commonpathvars;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 
@@ -43,10 +43,10 @@ import springfox.documentation.swagger.common.SwaggerPluginSupport;
  */
 @Order(SwaggerPluginSupport.SWAGGER_PLUGIN_ORDER + 1000)
 public class CommonPathVariableOperationBuilderPlugin implements OperationBuilderPlugin {
-	protected Logger log = LogManager.getLogger(getClass());
+	protected Logger log = LoggerFactory.getLogger(getClass());
 
 	@Autowired
-	private TypeResolver typeResolver;
+	protected TypeResolver typeResolver;
 
 	public CommonPathVariableOperationBuilderPlugin() {
 	}
@@ -73,7 +73,7 @@ public class CommonPathVariableOperationBuilderPlugin implements OperationBuilde
 		opCtx.operationBuilder().parameters(ret);
 	}
 
-	private Parameter addParameter(HasCommonPathVariable ann) {
+	protected Parameter addParameter(HasCommonPathVariable ann) {
 		ParameterBuilder pb = new ParameterBuilder();
 		pb.parameterType("path").name(ann.name()).type(typeResolver.resolve(ann.type()));
 		pb.modelRef(new ModelRef("string"));

@@ -18,8 +18,8 @@ package org.summerb.users.impl;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -31,7 +31,7 @@ import com.google.common.base.Preconditions;
 
 public class PermissionServiceImpl implements PermissionService {
 	private static final String DEFAULT = "default";
-	private static Logger log = LogManager.getLogger(PermissionServiceImpl.class);
+	private static Logger log = LoggerFactory.getLogger(PermissionServiceImpl.class);
 
 	private PermissionDao permissionDao;
 

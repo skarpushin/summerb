@@ -25,8 +25,8 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -40,7 +40,7 @@ import org.springframework.util.Assert;
 public abstract class AbstractJdbcUpdate {
 
 	/** Logger available to subclasses */
-	protected final Logger logger = LogManager.getLogger(getClass());
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
 	/** Lower-level class used to execute SQL */
 	private final JdbcTemplate jdbcTemplate;

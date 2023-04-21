@@ -18,8 +18,8 @@ package org.summerb.webappboilerplate.security.impls;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.authentication.rememberme.PersistentRememberMeToken;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
@@ -36,7 +36,7 @@ import org.summerb.webappboilerplate.utils.CurrentRequestUtils;
  * 
  */
 public class PersistentTokenRepositoryDefaultImpl implements PersistentTokenRepository {
-	private Logger log = LogManager.getLogger(getClass());
+	private Logger log = LoggerFactory.getLogger(getClass());
 
 	private AuthTokenService authTokenService;
 	private UserService userService;

@@ -21,15 +21,15 @@ import java.io.InputStream;
 import javax.activation.FileTypeMap;
 import javax.activation.MimetypesFileTypeMap;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
 
 public class MimeTypeResolverImpl implements MimeTypeResolver {
-	private static Logger log = LogManager.getLogger(MimeTypeResolverImpl.class);
+	private static Logger log = LoggerFactory.getLogger(MimeTypeResolverImpl.class);
 
 	private FileTypeMap fileTypeMap;
 

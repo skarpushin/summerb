@@ -6,7 +6,7 @@
 
 	<groupId>com.github.skarpushin</groupId>
 	<artifactId>summerb</artifactId>
-	<version>5.0.1</version>
+	<version>6.0.0</version>
 	<packaging>pom</packaging>
 
 	<name>summerb</name>
@@ -20,6 +20,7 @@
 		<module>summerb-security</module>
 		<module>summerb-email</module>
 		<module>summerb-easycrud</module>
+		<module>summerb-easycrud_swagger2</module>
 		<module>summerb-properties</module>
 		<module>summerb-users</module>
 		<module>summerb-minicms</module>

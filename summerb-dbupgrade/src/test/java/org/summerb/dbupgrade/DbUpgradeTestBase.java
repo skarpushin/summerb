@@ -18,17 +18,17 @@ package org.summerb.dbupgrade;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.summerb.dbupgrade.api.UpgradePackageBeanAbstract;
 import org.summerb.dbupgrade.impl.VersionTableDbDialect;
 
 public abstract class DbUpgradeTestBase {
-	protected Logger log = LogManager.getLogger(getClass());
+	protected Logger log = LoggerFactory.getLogger(getClass());
 
 	@Autowired
 	private DbUpgrade dbUpgrade;

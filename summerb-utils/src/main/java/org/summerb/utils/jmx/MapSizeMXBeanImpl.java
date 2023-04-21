@@ -21,15 +21,15 @@ import java.util.Map;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import com.google.common.base.Preconditions;
 
 @SuppressWarnings("rawtypes")
 public class MapSizeMXBeanImpl implements MapSizeMXBean {
-	private static Logger log = LogManager.getLogger(MapSizeMXBeanImpl.class);
+	private static Logger log = LoggerFactory.getLogger(MapSizeMXBeanImpl.class);
 	private Map map;
 
 	public MapSizeMXBeanImpl(String cname, Map map) {

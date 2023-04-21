@@ -18,8 +18,8 @@ package org.summerb.webappboilerplate.security.mvc;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.annotation.Secured;
@@ -72,7 +72,7 @@ import org.summerb.webappboilerplate.utils.CaptchaController;
 public class LoginController extends ControllerBase {
 	public static final String AUDIT_PASSWORD_RESET_TOKEN_INVALID = "PWDRSTINV";
 
-	private Logger log = LogManager.getLogger(getClass());
+	private Logger log = LoggerFactory.getLogger(getClass());
 
 	private static final String ATTR_PASSWORD_RESET_TOKEN = "passwordResetToken";
 	private static final String ATTR_ACTIVATED = "activated";

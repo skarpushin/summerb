@@ -24,8 +24,8 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.SqlTypeValue;
 import org.springframework.jdbc.core.metadata.TableMetaDataProvider;
 import org.springframework.jdbc.core.metadata.TableMetaDataProviderFactory;
@@ -37,7 +37,7 @@ import org.springframework.jdbc.support.JdbcUtils;
 public class TableMetaDataContext {
 
 	/** Logger available to subclasses */
-	protected final Logger logger = LogManager.getLogger(getClass());
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
 	/** name of procedure to call **/
 	private String tableName;

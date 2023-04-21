@@ -22,7 +22,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.logging.log4j.ThreadContext;
+import org.slf4j.MDC;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -32,7 +32,7 @@ public class IpToMdcContextFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
-		ThreadContext.put(CLIENT_IP, resolveRemoteAddr(request));
+		MDC.put(CLIENT_IP, resolveRemoteAddr(request));
 		filterChain.doFilter(request, response);
 	}
 

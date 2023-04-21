@@ -20,12 +20,12 @@ import java.lang.management.ManagementFactory;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.summerb.utils.exceptions.ExceptionUtils;
 
 public class RecurringBackgroundTask implements RecurringBackgroundTaskMXBean {
-	private static Logger log = LogManager.getLogger(RecurringBackgroundTask.class);
+	private static Logger log = LoggerFactory.getLogger(RecurringBackgroundTask.class);
 
 	private Runnable runnable;
 	private long delayMs;

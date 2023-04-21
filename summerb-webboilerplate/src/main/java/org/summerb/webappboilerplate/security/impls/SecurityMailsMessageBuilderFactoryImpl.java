@@ -19,8 +19,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
@@ -40,7 +40,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 public class SecurityMailsMessageBuilderFactoryImpl implements SecurityMailsMessageBuilderFactory, InitializingBean {
-	private Logger log = LogManager.getLogger(getClass());
+	private Logger log = LoggerFactory.getLogger(getClass());
 
 	public static final String EMAIL_REGISTRATION_CONFIRMATION_REQUEST = "email-registration-confirmation-request";
 	public static final String EMAIL_PASSWORD_RESET_REQUEST = "email-reset-password-request";

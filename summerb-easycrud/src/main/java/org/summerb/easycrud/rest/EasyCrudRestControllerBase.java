@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015-2021 Sergey Karpushin
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -60,32 +60,24 @@ import org.summerb.security.api.exceptions.NotAuthorizedException;
 
 import com.google.common.base.Preconditions;
 
-import springfox.documentation.annotations.ApiIgnore;
-
 /**
  * Base class for EasyCrud REST API controllers which main responsibility is to
  * serve CRUD requests for entities managed by {@link EasyCrudService}.
- * 
+ *
  * <p>
- * 
  * It designed to be sub-classed. See
  * https://github.com/skarpushin/summerb/wiki/Easy-CRUD#rest-api-controller for
  * details.
- * 
+ *
  * <p>
- * 
  * NOTE: Exception handling is not implemented here because we rely on
  * RestExceptionTranslator, which is subclass of {@link GenericFilterBean}
  * (Spring approach on filtering requests).
- * 
- * @author sergeyk
  *
- * @param <TId>
- *            primary key type
- * @param <TDto>
- *            entity type
- * @param <TEasyCrudService>
- *            service type
+ * @author sergeyk
+ * @param <TId>              primary key type
+ * @param <TDto>             entity type
+ * @param <TEasyCrudService> service type
  */
 public class EasyCrudRestControllerBase<TId, TDto extends HasId<TId>, TEasyCrudService extends EasyCrudService<TId, TDto>>
 		implements ApplicationContextAware, InitializingBean {
@@ -116,19 +108,19 @@ public class EasyCrudRestControllerBase<TId, TDto extends HasId<TId>, TEasyCrudS
 	/**
 	 * Default action to get list of items in this collection with either non or
 	 * simple query parameters.
-	 * 
+	 *
+	 * <p>
 	 * In order for this method to work properly (including orderBy and pagerParams)
 	 * make sure to register PojoFieldsArgumentResolver within spring mvc.
-	 * 
+	 *
 	 * @param pagerParams
 	 * @param orderBy
-	 * @param needPerms
-	 *            provide true if needed to know permissions
+	 * @param needPerms   provide true if needed to know permissions
 	 * @return list of items
 	 */
 	@GetMapping
 	public MultipleItemsResult<TId, TDto> getList(PagerParams pagerParams, OrderBy orderBy,
-			@ApiIgnore PathVariablesMap pathVariables,
+			/* @ApiIgnore */ PathVariablesMap pathVariables,
 			@RequestParam(value = "needPerms", required = false) boolean needPerms,
 			@RequestParam(value = "referencesToResolve", required = false) List<String> referencesToResolve)
 			throws Exception {
@@ -186,7 +178,7 @@ public class EasyCrudRestControllerBase<TId, TDto extends HasId<TId>, TEasyCrudS
 	public MultipleItemsResult<TId, TDto> getListWithQuery(@RequestBody EasyCrudQueryParams filteringParams,
 			@RequestParam(value = "needPerms", required = false) boolean needPerms,
 			@RequestParam(value = "referencesToResolve", required = false) List<String> referencesToResolve,
-			@ApiIgnore PathVariablesMap pathVariables) throws Exception {
+			/* @ApiIgnore */ PathVariablesMap pathVariables) throws Exception {
 
 		if ((filteringParams.getOrderBy() == null || filteringParams.getOrderBy().length == 0)
 				&& defaultOrderBy != null) {

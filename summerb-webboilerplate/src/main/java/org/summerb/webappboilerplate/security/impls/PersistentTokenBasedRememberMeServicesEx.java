@@ -18,8 +18,8 @@ package org.summerb.webappboilerplate.security.impls;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.rememberme.CookieTheftException;
@@ -39,7 +39,7 @@ import org.summerb.webappboilerplate.security.apis.RememberMeRequestedStrategy;
  * 
  */
 public class PersistentTokenBasedRememberMeServicesEx extends PersistentTokenBasedRememberMeServices {
-	protected Logger log = LogManager.getLogger(getClass());
+	protected Logger log = LoggerFactory.getLogger(getClass());
 
 	private RememberMeRequestedStrategy rememberMeRequestedStrategy = new RememberMeRequestedStrategyImpl();
 
