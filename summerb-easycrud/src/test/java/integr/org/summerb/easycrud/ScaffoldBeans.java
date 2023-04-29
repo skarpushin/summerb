@@ -42,12 +42,12 @@ public class ScaffoldBeans {
 
 	@Bean
 	public EasyCrudService<String, TestDto1> testDto1ServiceEb(EventBus eventBus) {
-		return easyCrudScaffold.fromDto(TestDto1.class, TestDto1.class.getCanonicalName(), "forms_test_1",
+		return easyCrudScaffold.fromRowClass(TestDto1.class, TestDto1.class.getCanonicalName(), "forms_test_1",
 				easyCrudWireTapEventBus);
 	}
 
 	@Bean
 	public EasyCrudService<Long, TestDto2> testDto2Service() {
-		return easyCrudScaffold.fromDto(TestDto2.class, TestDto2.class.getCanonicalName(), "forms_test_2");
+		return easyCrudScaffold.fromRowClass(TestDto2.class, TestDto2.class.getCanonicalName(), "forms_test_2");
 	}
 }

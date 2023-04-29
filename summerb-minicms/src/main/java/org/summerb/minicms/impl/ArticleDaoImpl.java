@@ -21,6 +21,6 @@ import org.summerb.minicms.api.dto.Article;
 
 public class ArticleDaoImpl extends EasyCrudDaoMySqlImpl<Long, Article> implements ArticleDao {
 	public ArticleDaoImpl() {
-		setDtoClass(Article.class);
+		setRowClass(Article.class);
 	}
 }

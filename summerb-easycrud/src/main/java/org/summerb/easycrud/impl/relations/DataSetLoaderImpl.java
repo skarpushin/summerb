@@ -77,7 +77,7 @@ public class DataSetLoaderImpl implements DataSetLoader {
 			throws EntityNotFoundException, NotAuthorizedException {
 		Preconditions.checkArgument(!CollectionUtils.isEmpty(ids));
 
-		EasyCrudService service = easyCrudServiceResolver.resolveByEntityType(entityTypeName);
+		EasyCrudService service = easyCrudServiceResolver.resolveByRowMessageCode(entityTypeName);
 		Object firstId = ids.iterator().next();
 		List<HasId> ret = new ArrayList<>(ids.size());
 		if (ids.size() == 1) {
@@ -256,7 +256,7 @@ public class DataSetLoaderImpl implements DataSetLoader {
 		ManyToManyRefToReferenceesMap ret = new ManyToManyRefToReferenceesMap();
 		for (Entry<Ref, Set<Object>> refToReferencersEntry : manyToManyReferences.entrySet()) {
 			EasyCrudService m2mServiceTmp = easyCrudServiceResolver
-					.resolveByEntityType(refToReferencersEntry.getKey().getM2mEntity());
+					.resolveByRowMessageCode(refToReferencersEntry.getKey().getM2mEntity());
 			Preconditions.checkState(m2mServiceTmp instanceof EasyCrudM2mService);
 			EasyCrudM2mService m2mService = (EasyCrudM2mService) m2mServiceTmp;
 
@@ -352,7 +352,7 @@ public class DataSetLoaderImpl implements DataSetLoader {
 			}
 			Query q = queries.size() == 1 ? queries.get(0) : Query.n().or(queries.toArray(new Query[0]));
 
-			EasyCrudService service = easyCrudServiceResolver.resolveByEntityType(entityTypeCode);
+			EasyCrudService service = easyCrudServiceResolver.resolveByRowMessageCode(entityTypeCode);
 			PaginatedList<HasId> results = service.find(PagerParams.ALL, q);
 			ret.put(entityTypeCode, new ArrayList<>(results.getItems()));
 		}

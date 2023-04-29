@@ -79,7 +79,7 @@ public class EasyCrudServicePluggableImpl<TId, TDto extends HasId<TId>, TDao ext
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		Preconditions.checkState(rowClass != null, "DtoClass is required");
+		Preconditions.checkState(rowClass != null, "rowClass is required");
 		Preconditions.checkState(!HasAuthor.class.isAssignableFrom(rowClass) || currentUserResolver != null,
 				"CurrentUserResolver required");
 		Preconditions.checkState(dao != null, "dao is required");
@@ -407,8 +407,8 @@ public class EasyCrudServicePluggableImpl<TId, TDto extends HasId<TId>, TDao ext
 		return rowClass;
 	}
 
-	public void setRowClass(Class<TDto> dtoClass) {
-		this.rowClass = dtoClass;
+	public void setRowClass(Class<TDto> rowClass) {
+		this.rowClass = rowClass;
 	}
 
 	public EasyCrudExceptionStrategy<TId> getGenericExceptionStrategy() {

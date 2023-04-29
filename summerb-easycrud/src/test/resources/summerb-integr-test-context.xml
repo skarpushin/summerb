@@ -66,14 +66,14 @@
 	<bean id="testDto1Dao" class="org.summerb.easycrud.impl.mysql.EasyCrudDaoMySqlImpl">
 		<property name="dataSource" ref="dataSource" />
 		<property name="tableName" value="forms_test_1" />
-		<property name="dtoClass">
+		<property name="rowClass">
 			<value type="java.lang.Class">integr.org.summerb.easycrud.TestDto1
 			</value>
 		</property>
 	</bean>
 	<bean id="testDto1Service" class="org.summerb.easycrud.impl.EasyCrudServiceTableAuthImpl">
 		<property name="dao" ref="testDto1Dao" />
-		<property name="dtoClass">
+		<property name="rowClass">
 			<value type="java.lang.Class">integr.org.summerb.easycrud.TestDto1
 			</value>
 		</property>
@@ -82,7 +82,7 @@
 
 	<bean id="testDto1ServiceEb" class="org.summerb.easycrud.impl.EasyCrudServiceTableAuthImpl">
 		<property name="dao" ref="testDto1Dao" />
-		<property name="dtoClass">
+		<property name="rowClass">
 			<value type="java.lang.Class">integr.org.summerb.easycrud.TestDto1
 			</value>
 		</property>
@@ -93,14 +93,14 @@
 	<bean id="testDto2Dao" class="org.summerb.easycrud.impl.mysql.EasyCrudDaoMySqlImpl">
 		<property name="dataSource" ref="dataSource" />
 		<property name="tableName" value="forms_test_2" />
-		<property name="dtoClass">
+		<property name="rowClass">
 			<value type="java.lang.Class">integr.org.summerb.easycrud.TestDto2
 			</value>
 		</property>
 	</bean>
 	<bean id="testDto2Service" class="org.summerb.easycrud.impl.EasyCrudServiceTableAuthImpl">
 		<property name="dao" ref="testDto2Dao" />
-		<property name="dtoClass">
+		<property name="rowClass">
 			<value type="java.lang.Class">integr.org.summerb.easycrud.TestDto2
 			</value>
 		</property>
@@ -109,7 +109,7 @@
 
 	<bean id="testDto1ServiceBasicAuthEb" class="org.summerb.easycrud.impl.EasyCrudServicePerRowAuthImpl">
 		<property name="dao" ref="testDto1Dao" />
-		<property name="dtoClass">
+		<property name="rowClass">
 			<value type="java.lang.Class">integr.org.summerb.easycrud.TestDto1
 			</value>
 		</property>
@@ -119,7 +119,7 @@
 	</bean>
 	<bean id="testDto1ServiceBasicAuth" class="org.summerb.easycrud.impl.EasyCrudServicePerRowAuthImpl">
 		<property name="dao" ref="testDto1Dao" />
-		<property name="dtoClass">
+		<property name="rowClass">
 			<value type="java.lang.Class">integr.org.summerb.easycrud.TestDto1
 			</value>
 		</property>
@@ -131,7 +131,7 @@
 
 	<bean id="testDto2ServiceBasicAuth" class="org.summerb.easycrud.impl.EasyCrudServicePerRowAuthImpl">
 		<property name="dao" ref="testDto2Dao" />
-		<property name="dtoClass">
+		<property name="rowClass">
 			<value type="java.lang.Class">integr.org.summerb.easycrud.TestDto2
 			</value>
 		</property>
@@ -144,13 +144,13 @@
 			<bean class="org.summerb.easycrud.impl.mysql.EasyCrudDaoMySqlImpl">
 				<property name="dataSource" ref="dataSource" />
 				<property name="tableName" value="forms_test_3" />
-				<property name="dtoClass">
+				<property name="rowClass">
 					<value type="java.lang.Class">integr.org.summerb.easycrud.TestDto3
 					</value>
 				</property>
 			</bean>
 		</property>
-		<property name="dtoClass">
+		<property name="rowClass">
 			<value type="java.lang.Class">integr.org.summerb.easycrud.TestDto3
 			</value>
 		</property>

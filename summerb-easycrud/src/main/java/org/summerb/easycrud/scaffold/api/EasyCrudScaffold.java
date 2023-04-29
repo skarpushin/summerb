@@ -62,17 +62,17 @@ public interface EasyCrudScaffold {
 	 * name of the DTO class is SomeDto then message code will be "SomeDto" and
 	 * table name will be "some_dto".
 	 * 
-	 * You can use {@link #fromDto(Class, String, String, Object...)} in case you
+	 * You can use {@link #fromRowClass(Class, String, String, Object...)} in case you
 	 * want to specify those manually. It also allows you to provide list of
 	 * injections you want to do into service implementation.
 	 * 
 	 */
-	<TId, TDto extends HasId<TId>> EasyCrudService<TId, TDto> fromDto(Class<TDto> dtoClass);
+	<TId, TDto extends HasId<TId>> EasyCrudService<TId, TDto> fromRowClass(Class<TDto> rowClass);
 
 	/**
 	 * 
 	 * 
-	 * @param dtoClass    dto that reflects row in a database
+	 * @param rowClass    dto that reflects row in a database
 	 * @param messageCode message code used to identify service
 	 * @param tableName   name of the table in the database
 	 * @param injections  optional list of injections you want to make into service.
@@ -81,7 +81,7 @@ public interface EasyCrudScaffold {
 	 *                    depending on impl)
 	 * @return EasyCrudService ready for use
 	 */
-	<TId, TDto extends HasId<TId>> EasyCrudService<TId, TDto> fromDto(Class<TDto> dtoClass, String messageCode,
+	<TId, TDto extends HasId<TId>> EasyCrudService<TId, TDto> fromRowClass(Class<TDto> rowClass, String messageCode,
 			String tableName, Object... injections);
 
 }

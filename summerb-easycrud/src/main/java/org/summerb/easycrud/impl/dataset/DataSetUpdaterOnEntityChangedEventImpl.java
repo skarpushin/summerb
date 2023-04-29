@@ -46,7 +46,7 @@ public class DataSetUpdaterOnEntityChangedEventImpl implements DataSetUpdaterOnE
 			return;
 		}
 
-		EasyCrudService service = easyCrudServiceResolver.resolveByDtoClass(e.getValue().getClass());
+		EasyCrudService service = easyCrudServiceResolver.resolveByRowClass(e.getValue().getClass());
 		if (!dataSet.getTables().containsKey(service.getRowMessageCode())) {
 			return;
 		}

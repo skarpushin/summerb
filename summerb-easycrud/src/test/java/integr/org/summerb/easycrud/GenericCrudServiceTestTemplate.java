@@ -63,7 +63,7 @@ public abstract class GenericCrudServiceTestTemplate {
 	@SuppressWarnings("rawtypes")
 	@Test
 	public void testServiceResolver_expectOneServicesFound() {
-		EasyCrudService service = easyCrudServiceResolver.resolveByEntityType(TestDto1.class.getCanonicalName());
+		EasyCrudService service = easyCrudServiceResolver.resolveByRowMessageCode(TestDto1.class.getCanonicalName());
 		assertNotNull(service);
 		assertEquals(TestDto1.class.getCanonicalName(), service.getRowMessageCode());
 	}

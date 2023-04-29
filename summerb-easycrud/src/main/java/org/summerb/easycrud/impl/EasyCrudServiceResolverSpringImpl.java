@@ -45,14 +45,14 @@ public class EasyCrudServiceResolverSpringImpl implements EasyCrudServiceResolve
 	private Map<Class<?>, EasyCrudService> servicesMapByClass;
 
 	@Override
-	public EasyCrudService resolveByEntityType(String entityName) {
+	public EasyCrudService resolveByRowMessageCode(String entityName) {
 		EasyCrudService ret = getServicesMap().get(entityName);
 		Preconditions.checkArgument(ret != null, "Serivce for that entity wasn't found: " + entityName);
 		return ret;
 	}
 
 	@Override
-	public EasyCrudService resolveByDtoClass(Class<?> entityClass) {
+	public EasyCrudService resolveByRowClass(Class<?> entityClass) {
 		getServicesMap();
 		EasyCrudService ret = servicesMapByClass.get(entityClass);
 		Preconditions.checkArgument(ret != null, "Serivce for that entity (by class) wasn't found: " + entityClass);
@@ -94,7 +94,7 @@ public class EasyCrudServiceResolverSpringImpl implements EasyCrudServiceResolve
 			EasyCrudService service = entry.getValue();
 			EasyCrudService wasOverwritten = ret.put(service.getRowClass(), service);
 			if (wasOverwritten != null) {
-				log.warn("Ambigious EasyCrudService for same dtoClass 1st " + wasOverwritten + " and 2nd " + service
+				log.warn("Ambigious EasyCrudService for same rowClass 1st " + wasOverwritten + " and 2nd " + service
 						+ " named " + entry.getKey());
 			}
 		}

@@ -25,11 +25,11 @@ public class EasyCrudM2mDaoImpl<T1Id, T1Dto extends HasId<T1Id>, T2Id, T2Dto ext
 	@SuppressWarnings("unchecked")
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		if (getDtoClass() == null) {
+		if (getRowClass() == null) {
 			ManyToManyDto<T1Id, T2Id> d = new ManyToManyDto<T1Id, T2Id>();
 			// NOTE: I have no idea what is wrong with compiler or my
 			// understanding of generics. That's why I did this dirty workaround
-			setDtoClass((Class<ManyToManyDto<T1Id, T2Id>>) d.getClass());
+			setRowClass((Class<ManyToManyDto<T1Id, T2Id>>) d.getClass());
 		}
 		super.afterPropertiesSet();
 	}

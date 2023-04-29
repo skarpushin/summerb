@@ -149,12 +149,12 @@ Example:
 ```java
 public class DeviceDaoImpl extends EasyCrudDaoMySqlImpl<Long, DeviceRow> implements DeviceDao {
 	public DeviceDaoImpl() {
-		setDtoClass(DeviceRow.class);
+		setRowClass(DeviceRow.class);
 	}
 	// no other class members required, everything else is handled by base class
 }
 ```
-NOTE: You need to clarify DTO class by calling `setDtoClass` method in the constructor.
+NOTE: You need to clarify DTO class by calling `setRowClass` method in the constructor.
 
 ### Customizing DAO
 In most situations you won't need to customize DAO. But if you need to, you have couple options:
@@ -187,13 +187,13 @@ Example:
 public class DeviceServiceImpl extends EasyCrudServicePluggableImpl<Long, DeviceRow, DeviceDao>
 		implements DeviceService {
 	public DeviceServiceImpl() {
-		setDtoClass(DeviceRow.class);
+		setRowClass(DeviceRow.class);
 		setEntityTypeMessageCode("term.device");
 	}
 	// no other class members required, everything else is handled by base class
 }
 ```
-NOTE 1: You need to clarify DTO class by calling `setDtoClass` method in the constructor.
+NOTE 1: You need to clarify DTO class by calling `setRowClass` method in the constructor.
 
 NOTE 2: You need to provide message code that corresponds to managed entity. Service layer is designed to be user-language agnostic, thus no message translation is happening on this layer. 
 

@@ -64,7 +64,7 @@ public class AttachmentDaoExtFilesImpl extends EasyCrudDaoMySqlImpl<Long, Attach
 	public AttachmentDaoExtFilesImpl() {
 		setRowMapper(rowMapper);
 		setParameterSourceBuilder(parameterSourceBuilder);
-		setDtoClass(Attachment.class);
+		setRowClass(Attachment.class);
 	}
 
 	@Override

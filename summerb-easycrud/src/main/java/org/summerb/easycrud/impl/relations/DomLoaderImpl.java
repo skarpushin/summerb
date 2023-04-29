@@ -297,24 +297,24 @@ public class DomLoaderImpl implements DomLoader {
 
 	protected <TDomClass> String resolveDtoMessageCodeFromDomClass(Class<TDomClass> domClass) {
 		try {
-			Class<? super TDomClass> dtoClass = domClass.getSuperclass();
+			Class<? super TDomClass> rowClass = domClass.getSuperclass();
 
 			// TBD: Support case when Dom class contains list of Dto class (no
 			// need to create Dom class for leafs, for example). I.e. If Device
 			// class will have field List<AssetRow> ==>> then we don't nee dto
 			// use superclass. MAYBE we can just go up one level until
-			// easyCrudServiceResolver.resolveByDtoClass returns something
+			// easyCrudServiceResolver.resolveByMessageCode returns something
 
-			Preconditions.checkArgument(dtoClass != null,
+			Preconditions.checkArgument(rowClass != null,
 					"DOM class %s supposed to inherit from DTO class, but it's not", domClass);
-			Preconditions.checkArgument(DtoBase.class.isAssignableFrom(dtoClass),
+			Preconditions.checkArgument(DtoBase.class.isAssignableFrom(rowClass),
 					"DOM's parent class (%s) supposed to implement org.summerb.easycrud.common.Dtobase, but it's not",
-					dtoClass);
-			Preconditions.checkArgument(HasId.class.isAssignableFrom(dtoClass),
+					rowClass);
+			Preconditions.checkArgument(HasId.class.isAssignableFrom(rowClass),
 					"DOM's parent class (%s) supposed to implement org.summerb.easycrud.api.dto, but it's not",
-					dtoClass);
+					rowClass);
 
-			return easyCrudServiceResolver.resolveByDtoClass(dtoClass).getRowMessageCode();
+			return easyCrudServiceResolver.resolveByRowClass(rowClass).getRowMessageCode();
 		} catch (Throwable t) {
 			throw new RuntimeException(
 					"Failed to resolve DTO class. It looks like your DOM object is not a subclass of appropriate DTO",

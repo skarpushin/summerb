@@ -40,7 +40,7 @@ public class AttachmentDaoImpl extends EasyCrudDaoMySqlImpl<Long, Attachment> im
 	public AttachmentDaoImpl() {
 		setRowMapper(rowMapper);
 		setParameterSourceBuilder(parameterSourceBuilder);
-		setDtoClass(Attachment.class);
+		setRowClass(Attachment.class);
 	}
 
 	@Override

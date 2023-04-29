@@ -74,7 +74,7 @@ public class EasyCrudDaoMySqlImpl<TId, TDto extends HasId<TId>> extends DaoBase
 	protected static final List<String> allowedSortDirections = Arrays.asList("asc", "desc");
 
 	private String tableName;
-	private Class<TDto> dtoClass;
+	private Class<TDto> rowClass;
 	private RowMapper<TDto> rowMapper;
 	private ParameterSourceBuilder<TDto> parameterSourceBuilder;
 	private ConversionService conversionService;
@@ -96,10 +96,10 @@ public class EasyCrudDaoMySqlImpl<TId, TDto extends HasId<TId>> extends DaoBase
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		Preconditions.checkState(StringUtils.hasText(tableName), "TableName required");
-		Preconditions.checkState(dtoClass != null, "DtoClass required");
+		Preconditions.checkState(rowClass != null, "rowClass required");
 
 		if (rowMapper == null) {
-			rowMapper = new BeanPropertyRowMapper<TDto>(dtoClass);
+			rowMapper = new BeanPropertyRowMapper<TDto>(rowClass);
 			if (conversionService != null) {
 				((BeanPropertyRowMapper<TDto>) rowMapper).setConversionService(conversionService);
 			}
@@ -132,7 +132,7 @@ public class EasyCrudDaoMySqlImpl<TId, TDto extends HasId<TId>> extends DaoBase
 
 	protected SimpleJdbcInsert buildJdbcInsert() {
 		SimpleJdbcInsert ret = new SimpleJdbcInsert(getDataSource()).withTableName(tableName);
-		if (HasAutoincrementId.class.isAssignableFrom(dtoClass)) {
+		if (HasAutoincrementId.class.isAssignableFrom(rowClass)) {
 			ret = ret.usingGeneratedKeyColumns("id");
 		}
 		return ret;
@@ -145,7 +145,7 @@ public class EasyCrudDaoMySqlImpl<TId, TDto extends HasId<TId>> extends DaoBase
 		// update
 		List<String> restrictingColumns = new ArrayList<String>();
 		restrictingColumns.add(QueryToNativeSqlCompilerMySqlImpl.underscore(HasId.FN_ID));
-		if (HasTimestamps.class.isAssignableFrom(dtoClass)) {
+		if (HasTimestamps.class.isAssignableFrom(rowClass)) {
 			restrictingColumns.add(QueryToNativeSqlCompilerMySqlImpl.underscore(HasTimestamps.FN_MODIFIED_AT));
 		}
 		ret.setRestrictingColumns(restrictingColumns);
@@ -159,10 +159,10 @@ public class EasyCrudDaoMySqlImpl<TId, TDto extends HasId<TId>> extends DaoBase
 		public Collection<? extends String> getColumnsForUpdate(TableMetaDataContext tableMetaDataContext) {
 			List<String> updatingColumns = new ArrayList<String>(tableMetaDataContext.createColumns());
 			remove("id", updatingColumns);
-			if (HasTimestamps.class.isAssignableFrom(dtoClass)) {
+			if (HasTimestamps.class.isAssignableFrom(rowClass)) {
 				remove(QueryToNativeSqlCompilerMySqlImpl.underscore(HasTimestamps.FN_CREATED_AT), updatingColumns);
 			}
-			if (HasAuthor.class.isAssignableFrom(dtoClass)) {
+			if (HasAuthor.class.isAssignableFrom(rowClass)) {
 				remove(QueryToNativeSqlCompilerMySqlImpl.underscore(HasAuthor.FN_CREATED_BY), updatingColumns);
 			}
 			return updatingColumns;
@@ -336,12 +336,12 @@ public class EasyCrudDaoMySqlImpl<TId, TDto extends HasId<TId>> extends DaoBase
 		this.tableName = tableName;
 	}
 
-	public Class<TDto> getDtoClass() {
-		return dtoClass;
+	public Class<TDto> getRowClass() {
+		return rowClass;
 	}
 
-	public void setDtoClass(Class<TDto> dtoClass) {
-		this.dtoClass = dtoClass;
+	public void setRowClass(Class<TDto> rowClass) {
+		this.rowClass = rowClass;
 	}
 
 	public RowMapper<TDto> getRowMapper() {

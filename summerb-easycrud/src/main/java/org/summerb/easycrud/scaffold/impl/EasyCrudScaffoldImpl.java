@@ -64,29 +64,29 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold {
 	protected AutowireCapableBeanFactory beanFactory;
 
 	@Override
-	public <TId, TDto extends HasId<TId>> EasyCrudService<TId, TDto> fromDto(Class<TDto> dtoClass) {
-		String messageCode = dtoClass.getSimpleName();
+	public <TId, TDto extends HasId<TId>> EasyCrudService<TId, TDto> fromRowClass(Class<TDto> rowClass) {
+		String messageCode = rowClass.getSimpleName();
 		String tableName = QueryToNativeSqlCompilerMySqlImpl.underscore(messageCode);
-		return fromDto(dtoClass, messageCode, tableName);
+		return fromRowClass(rowClass, messageCode, tableName);
 	}
 
 	@Override
-	public <TId, TDto extends HasId<TId>> EasyCrudService<TId, TDto> fromDto(Class<TDto> dtoClass, String messageCode,
+	public <TId, TDto extends HasId<TId>> EasyCrudService<TId, TDto> fromRowClass(Class<TDto> rowClass, String messageCode,
 			String tableName, Object... injections) {
 		try {
-			EasyCrudDao<TId, TDto> dao = buildDao(dtoClass, tableName);
-			EasyCrudService<TId, TDto> service = buildService(dtoClass, messageCode, tableName, dao, injections);
+			EasyCrudDao<TId, TDto> dao = buildDao(rowClass, tableName);
+			EasyCrudService<TId, TDto> service = buildService(rowClass, messageCode, tableName, dao, injections);
 			return service;
 		} catch (Throwable t) {
-			throw new RuntimeException("Failed to scaffold EasyCrudService for " + dtoClass, t);
+			throw new RuntimeException("Failed to scaffold EasyCrudService for " + rowClass, t);
 		}
 	}
 
-	protected <TDto extends HasId<TId>, TId> EasyCrudServicePluggableImpl<TId, TDto, EasyCrudDao<TId, TDto>> buildService(
-			Class<TDto> dtoClass, String messageCode, String tableName, EasyCrudDao<TId, TDto> dao,
+	protected <TRow extends HasId<TId>, TId> EasyCrudServicePluggableImpl<TId, TRow, EasyCrudDao<TId, TRow>> buildService(
+			Class<TRow> rowClass, String messageCode, String tableName, EasyCrudDao<TId, TRow> dao,
 			Object... injections) throws Exception {
-		EasyCrudServicePluggableImpl<TId, TDto, EasyCrudDao<TId, TDto>> service = buildServiceImpl();
-		initService(service, dtoClass, messageCode, tableName, dao, injections);
+		EasyCrudServicePluggableImpl<TId, TRow, EasyCrudDao<TId, TRow>> service = buildServiceImpl();
+		initService(service, rowClass, messageCode, tableName, dao, injections);
 		return service;
 	}
 
@@ -96,9 +96,9 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected <TId, TDto extends HasId<TId>> void initService(
-			EasyCrudServicePluggableImpl<TId, TDto, EasyCrudDao<TId, TDto>> service, Class<TDto> dtoClass,
+			EasyCrudServicePluggableImpl<TId, TDto, EasyCrudDao<TId, TDto>> service, Class<TDto> rowClass,
 			String messageCode, String tableName, EasyCrudDao<TId, TDto> dao, Object... injections) throws Exception {
-		service.setRowClass(dtoClass);
+		service.setRowClass(rowClass);
 		service.setDao(dao);
 		service.setRowMessageCode(messageCode);
 		getBeanFactory().autowireBean(service);
@@ -111,7 +111,7 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold {
 		// NOTE: Ok. This thing around EasyCrudExceptionStrategy tells me this code is
 		// begging to be refactoried. Screaming about OCP... I'll do it later.
 		List<EasyCrudWireTap<TId, TDto>> wireTaps = Arrays.stream(injections)
-				.map(injectionToWireTapMapper(dtoClass, messageCode, tableName)).filter(Objects::nonNull)
+				.map(injectionToWireTapMapper(rowClass, messageCode, tableName)).filter(Objects::nonNull)
 				.collect(Collectors.toList());
 		if (wireTaps.size() > 0) {
 			service.setWireTap(new EasyCrudWireTapDelegatingImpl<>(wireTaps));
@@ -133,7 +133,7 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold {
 
 	@SuppressWarnings("unchecked")
 	protected <TId, TDto extends HasId<TId>> Function<Object, EasyCrudWireTap<TId, TDto>> injectionToWireTapMapper(
-			Class<TDto> dtoClass, String messageCode, String tableName) {
+			Class<TDto> rowClass, String messageCode, String tableName) {
 		return inj -> {
 			// Note: I know, OCP smell
 			if (inj instanceof EasyCrudValidationStrategy) {
@@ -158,11 +158,11 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold {
 		};
 	}
 
-	protected <TId, TDto extends HasId<TId>> EasyCrudDao<TId, TDto> buildDao(Class<TDto> dtoClass, String tableName)
+	protected <TId, TDto extends HasId<TId>> EasyCrudDao<TId, TDto> buildDao(Class<TDto> rowClass, String tableName)
 			throws Exception {
 		EasyCrudDaoMySqlImpl<TId, TDto> dao = buildInstance();
 		dao.setDataSource(getDataSource());
-		dao.setDtoClass(dtoClass);
+		dao.setRowClass(rowClass);
 		dao.setTableName(tableName);
 		beanFactory.autowireBean(dao);
 		dao.afterPropertiesSet();
@@ -188,13 +188,13 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold {
 			Class<TService> serviceInterface, String messageCode, String tableName, Object... injections) {
 
 		try {
-			Class<TDto> dtoClass = discoverDtoClassFromServiceInterface(serviceInterface);
-			EasyCrudDao<TId, TDto> dao = buildDao(dtoClass, tableName, injections);
+			Class<TDto> rowClass = discoverRowClassFromServiceInterface(serviceInterface);
+			EasyCrudDao<TId, TDto> dao = buildDao(rowClass, tableName, injections);
 
 			TService proxy = getEasyCrudServiceProxyFactory().createImpl(serviceInterface);
 			EasyCrudServicePluggableImpl service = (EasyCrudServicePluggableImpl) java.lang.reflect.Proxy
 					.getInvocationHandler(proxy);
-			initService(service, dtoClass, messageCode, tableName, dao, injections);
+			initService(service, rowClass, messageCode, tableName, dao, injections);
 
 			return proxy;
 		} catch (Throwable t) {
@@ -202,11 +202,11 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold {
 		}
 	}
 
-	protected <TId, TDto extends HasId<TId>> EasyCrudDao<TId, TDto> buildDao(Class<TDto> dtoClass, String tableName,
+	protected <TId, TDto extends HasId<TId>> EasyCrudDao<TId, TDto> buildDao(Class<TDto> rowClass, String tableName,
 			Object... injections) throws Exception {
 		EasyCrudDaoMySqlImpl<TId, TDto> dao = buildInstance();
 		dao.setDataSource(getDataSource());
-		dao.setDtoClass(dtoClass);
+		dao.setRowClass(rowClass);
 		dao.setTableName(tableName);
 		beanFactory.autowireBean(dao);
 		propagateInjectionsIntoDaoIfAny(dao, injections);
@@ -227,7 +227,7 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold {
 	}
 
 	@SuppressWarnings("unchecked")
-	protected <TId, TDto extends HasId<TId>, TService extends EasyCrudService<TId, TDto>> Class<TDto> discoverDtoClassFromServiceInterface(
+	protected <TId, TDto extends HasId<TId>, TService extends EasyCrudService<TId, TDto>> Class<TDto> discoverRowClassFromServiceInterface(
 			Class<TService> serviceInterface) {
 		Preconditions.checkArgument(EasyCrudService.class.isAssignableFrom(serviceInterface),
 				"Service interface is supposed to be a subclass of EasyCrudService");

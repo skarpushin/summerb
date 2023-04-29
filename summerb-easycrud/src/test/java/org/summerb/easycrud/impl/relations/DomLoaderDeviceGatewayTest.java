@@ -82,14 +82,14 @@ public class DomLoaderDeviceGatewayTest {
 
 		DeviceService deviceService = mock(DeviceService.class);
 		when(deviceService.getRowMessageCode()).thenReturn(DeviceService.ENTITY_TYPE_MESSAGE_CODE);
-		when(easyCrudServiceResolver.resolveByDtoClass(DeviceRow.class)).thenReturn(deviceService);
-		when(easyCrudServiceResolver.resolveByEntityType(DeviceService.ENTITY_TYPE_MESSAGE_CODE))
+		when(easyCrudServiceResolver.resolveByRowClass(DeviceRow.class)).thenReturn(deviceService);
+		when(easyCrudServiceResolver.resolveByRowMessageCode(DeviceService.ENTITY_TYPE_MESSAGE_CODE))
 				.thenReturn(deviceService);
 
 		EnvService envService = mock(EnvService.class);
 		when(envService.getRowMessageCode()).thenReturn(EnvService.ENTITY_TYPE_MESSAGE_CODE);
-		when(easyCrudServiceResolver.resolveByDtoClass(EnvironmentRow.class)).thenReturn(envService);
-		when(easyCrudServiceResolver.resolveByEntityType(EnvService.ENTITY_TYPE_MESSAGE_CODE)).thenReturn(envService);
+		when(easyCrudServiceResolver.resolveByRowClass(EnvironmentRow.class)).thenReturn(envService);
+		when(easyCrudServiceResolver.resolveByRowMessageCode(EnvService.ENTITY_TYPE_MESSAGE_CODE)).thenReturn(envService);
 
 		DataSetLoaderImpl dataSetLoader = new DataSetLoaderImpl();
 		dataSetLoader.setEasyCrudServiceResolver(easyCrudServiceResolver);

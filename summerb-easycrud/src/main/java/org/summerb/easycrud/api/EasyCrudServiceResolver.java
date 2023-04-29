@@ -29,8 +29,8 @@ import org.summerb.easycrud.api.relations.DataSetLoader;
  */
 public interface EasyCrudServiceResolver {
 	@SuppressWarnings("rawtypes")
-	EasyCrudService resolveByEntityType(String entityName);
+	EasyCrudService resolveByRowMessageCode(String entityName);
 
 	@SuppressWarnings("rawtypes")
-	EasyCrudService resolveByDtoClass(Class<?> entityClass);
+	EasyCrudService resolveByRowClass(Class<?> entityClass);
 }
