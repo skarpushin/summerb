@@ -58,10 +58,10 @@ import com.google.common.eventbus.EventBus;
  *
  */
 public class EasyCrudScaffoldImpl implements EasyCrudScaffold {
-	private DataSource dataSource;
+	protected DataSource dataSource;
 
-	private EasyCrudServiceProxyFactory easyCrudServiceProxyFactory = new EasyCrudServiceProxyFactoryImpl();
-	private AutowireCapableBeanFactory beanFactory;
+	protected EasyCrudServiceProxyFactory easyCrudServiceProxyFactory = new EasyCrudServiceProxyFactoryImpl();
+	protected AutowireCapableBeanFactory beanFactory;
 
 	@Override
 	public <TId, TDto extends HasId<TId>> EasyCrudService<TId, TDto> fromDto(Class<TDto> dtoClass) {
@@ -85,9 +85,13 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold {
 	protected <TDto extends HasId<TId>, TId> EasyCrudServicePluggableImpl<TId, TDto, EasyCrudDao<TId, TDto>> buildService(
 			Class<TDto> dtoClass, String messageCode, String tableName, EasyCrudDao<TId, TDto> dao,
 			Object... injections) throws Exception {
-		EasyCrudServicePluggableImpl<TId, TDto, EasyCrudDao<TId, TDto>> service = new EasyCrudServicePluggableImpl<>();
+		EasyCrudServicePluggableImpl<TId, TDto, EasyCrudDao<TId, TDto>> service = buildServiceImpl();
 		initService(service, dtoClass, messageCode, tableName, dao, injections);
 		return service;
+	}
+
+	protected <TDto extends HasId<TId>, TId> EasyCrudServicePluggableImpl<TId, TDto, EasyCrudDao<TId, TDto>> buildServiceImpl() {
+		return new EasyCrudServicePluggableImpl<>();
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -156,13 +160,17 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold {
 
 	protected <TId, TDto extends HasId<TId>> EasyCrudDao<TId, TDto> buildDao(Class<TDto> dtoClass, String tableName)
 			throws Exception {
-		EasyCrudDaoMySqlImpl<TId, TDto> dao = new EasyCrudDaoMySqlImpl<>();
-		dao.setDataSource(dataSource);
+		EasyCrudDaoMySqlImpl<TId, TDto> dao = buildInstance();
+		dao.setDataSource(getDataSource());
 		dao.setDtoClass(dtoClass);
 		dao.setTableName(tableName);
 		beanFactory.autowireBean(dao);
 		dao.afterPropertiesSet();
 		return dao;
+	}
+
+	protected <TDto extends HasId<TId>, TId> EasyCrudDaoMySqlImpl<TId, TDto> buildInstance() {
+		return new EasyCrudDaoMySqlImpl<>();
 	}
 
 	public DataSource getDataSource() {
@@ -194,15 +202,21 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	protected <TId, TDto extends HasId<TId>> EasyCrudDao<TId, TDto> buildDao(Class<TDto> dtoClass, String tableName,
 			Object... injections) throws Exception {
-		EasyCrudDaoMySqlImpl<TId, TDto> dao = new EasyCrudDaoMySqlImpl<>();
+		EasyCrudDaoMySqlImpl<TId, TDto> dao = buildInstance();
 		dao.setDataSource(getDataSource());
 		dao.setDtoClass(dtoClass);
 		dao.setTableName(tableName);
-		getBeanFactory().autowireBean(dao);
+		beanFactory.autowireBean(dao);
+		propagateInjectionsIntoDaoIfAny(dao, injections);
+		dao.afterPropertiesSet();
+		return dao;
+	}
 
+	@SuppressWarnings("unchecked")
+	protected <TDto extends HasId<TId>, TId> void propagateInjectionsIntoDaoIfAny(EasyCrudDaoMySqlImpl<TId, TDto> dao,
+			Object... injections) {
 		if (injections != null) {
 			for (Object inj : injections) {
 				if (inj instanceof ParameterSourceBuilder) {
@@ -210,9 +224,6 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold {
 				}
 			}
 		}
-
-		dao.afterPropertiesSet();
-		return dao;
 	}
 
 	@SuppressWarnings("unchecked")

@@ -34,33 +34,44 @@ public class EasyCrudServiceScaffoldedImpl
 		extends EasyCrudServicePluggableImpl<Object, HasId<Object>, EasyCrudDao<Object, HasId<Object>>>
 		implements java.lang.reflect.InvocationHandler {
 
-	private ScaffoldedMethodFactory scaffoldedMethodFactory;
+	protected ScaffoldedMethodFactory scaffoldedMethodFactory;
+	protected Class<?> interfaceType;
 
 	/**
 	 * We'd better cache method callers so that we don't need to do rather expensive
 	 * reflection-based checks on every invocation
 	 */
-	private LoadingCache<Method, CallableMethod> methodCallers;
+	protected LoadingCache<Method, CallableMethod> methodCallers;
+
+	public EasyCrudServiceScaffoldedImpl(ScaffoldedMethodFactory scaffoldedMethodFactory, Class<?> interfaceType) {
+		this.scaffoldedMethodFactory = scaffoldedMethodFactory;
+		this.interfaceType = interfaceType;
+
+		methodCallers = CacheBuilder.newBuilder().build(methodCallerFactory);
+	}
 
 	@SuppressWarnings("unchecked")
 	public static <T> T createImpl(Class<T> interfaceType, ScaffoldedMethodFactory scaffoldedMethodFactory) {
 		ClassLoader cl = interfaceType.getClassLoader();
 		Class<?>[] target = new Class<?>[] { interfaceType };
-		EasyCrudServiceScaffoldedImpl proxyImpl = new EasyCrudServiceScaffoldedImpl(scaffoldedMethodFactory);
+		EasyCrudServiceScaffoldedImpl proxyImpl = new EasyCrudServiceScaffoldedImpl(scaffoldedMethodFactory,
+				interfaceType);
 		return (T) Proxy.newProxyInstance(cl, target, proxyImpl);
-	}
-
-	public EasyCrudServiceScaffoldedImpl(ScaffoldedMethodFactory scaffoldedMethodFactory) {
-		this.scaffoldedMethodFactory = scaffoldedMethodFactory;
-		methodCallers = CacheBuilder.newBuilder().build(methodCallerFactory);
 	}
 
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 		try {
-			if (scaffoldedMethodFactory == null) {
-				// Since scaffoldedMethodFactory is null, we're not expecting any
-				// ScaffoldedQuery methods
+			CallableMethod ret = methodCallers.getIfPresent(method);
+			if (ret != null) {
+				return ret.call(args);
+			}
+
+			if (method.isDefault()) {
+				invokeDefault(proxy, method, args);
+			}
+
+			if (Object.class.equals(method.getDeclaringClass())) {
 				return method.invoke(this, args);
 			}
 
@@ -70,7 +81,11 @@ public class EasyCrudServiceScaffoldedImpl
 		}
 	}
 
-	private CacheLoader<Method, CallableMethod> methodCallerFactory = new CacheLoader<Method, CallableMethod>() {
+	protected void invokeDefault(Object proxy, Method method, Object[] args) {
+		throw new IllegalArgumentException("default methods invocation is not supported yet");
+	}
+
+	protected CacheLoader<Method, CallableMethod> methodCallerFactory = new CacheLoader<Method, CallableMethod>() {
 		@Override
 		public CallableMethod load(Method key) throws Exception {
 			if (EasyCrudService.class.equals(key.getDeclaringClass())) {
@@ -84,7 +99,7 @@ public class EasyCrudServiceScaffoldedImpl
 	};
 
 	public class CallableMethodLocalImpl implements CallableMethod {
-		private Method method;
+		protected Method method;
 
 		public CallableMethodLocalImpl(Method method) {
 			this.method = method;

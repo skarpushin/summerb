@@ -15,6 +15,8 @@
  ******************************************************************************/
 package org.summerb.easycrud.impl.mysql;
 
+import static org.summerb.easycrud.impl.mysql.QueryToNativeSqlCompilerMySqlImpl.underscore;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -300,26 +302,30 @@ public class EasyCrudDaoMySqlImpl<TId, TDto extends HasId<TId>> extends DaoBase
 		return new PaginatedList<TDto>(pagerParams, list, totalResultsCount);
 	}
 
-	protected String buildOrderBySubclause(OrderBy[] orderBy) {
-		if (orderBy == null || orderBy.length == 0) {
+	protected String buildOrderBySubclause(OrderBy[] orderByArr) {
+		if (orderByArr == null || orderByArr.length == 0) {
 			return "";
 		}
 
 		StringBuilder ret = new StringBuilder();
-		ret.append(" ORDER BY ");
-		for (int i = 0; i < orderBy.length; i++) {
-			if (i > 0) {
+		for (int i = 0; i < orderByArr.length; i++) {
+			if (ret.length() > 0) {
 				ret.append(", ");
 			}
 
-			OrderBy o = orderBy[i];
-			ret.append(QueryToNativeSqlCompilerMySqlImpl.underscore(o.getFieldName()));
+			OrderBy orderBy = orderByArr[i];
+			if (orderBy == null || !StringUtils.hasText(orderBy.getDirection())
+					|| !StringUtils.hasText(orderBy.getFieldName())) {
+				continue;
+			}
+
+			ret.append(underscore(orderBy.getFieldName()));
 			ret.append(" ");
-			Preconditions.checkArgument(allowedSortDirections.contains(o.getDirection().toLowerCase()),
-					"OrderBy not allowed: " + o.getDirection());
-			ret.append(o.getDirection());
+			Preconditions.checkArgument(allowedSortDirections.contains(orderBy.getDirection().toLowerCase()),
+					"OrderBy not allowed: %s", orderBy.getDirection());
+			ret.append(orderBy.getDirection());
 		}
-		return ret.toString();
+		return ret.length() == 0 ? "" : " ORDER BY " + ret.toString();
 	}
 
 	public String getTableName() {
