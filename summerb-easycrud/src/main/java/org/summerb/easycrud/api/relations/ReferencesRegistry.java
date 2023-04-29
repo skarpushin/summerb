@@ -31,9 +31,9 @@ public interface ReferencesRegistry {
 	Ref getRefByName(String name) throws IllegalArgumentException;
 
 	/**
-	 * Get all references originating from provided table
+	 * @param sourceEntityName set {@link EasyCrudService#getRowMessageCode()}
 	 * 
-	 * @param sourceEntityName sett {@link EasyCrudService#getRowMessageCode()}
+	 * @return all references originating from provided table
 	 */
 	Collection<Ref> findRefsFromSource(String sourceEntityName);
 

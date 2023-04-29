@@ -64,10 +64,10 @@ import com.google.common.base.Throwables;
  * 
  * @author sergeyk
  *
- * @param <T1Id>
- * @param <T1Dto>
- * @param <T2Id>
- * @param <T2Dto>
+ * @param <T1Id>  T1Id
+ * @param <T1Dto> T1Dto
+ * @param <T2Id>  T2Id
+ * @param <T2Dto> T2Dto
  */
 public class EasyCrudM2mServiceImpl<T1Id, T1Dto extends HasId<T1Id>, T2Id, T2Dto extends HasId<T2Id>> extends
 		EasyCrudServicePluggableImpl<Long, ManyToManyDto<T1Id, T2Id>, EasyCrudM2mDaoImpl<T1Id, T1Dto, T2Id, T2Dto>>

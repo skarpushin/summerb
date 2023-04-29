@@ -29,6 +29,8 @@ public class OrderBy {
 
 	/**
 	 * @param fieldName field name
+	 * 
+	 * @return OrderBy instance
 	 */
 	public static OrderBy Asc(String fieldName) {
 		OrderBy ret = new OrderBy();
@@ -39,6 +41,8 @@ public class OrderBy {
 
 	/**
 	 * @param fieldName field name
+	 * 
+	 * @return OrderBy instance
 	 */
 	public static OrderBy Desc(String fieldName) {
 		OrderBy ret = new OrderBy();

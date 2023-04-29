@@ -48,26 +48,35 @@ public interface EasyCrudScaffold {
 	 *                         service. Scaffolder will automatically detect
 	 *                         supported types and will wrap it into wire taps if
 	 *                         needed (or other way, depending on impl)
+	 * 
+	 * @param <TId>            type of id
+	 * @param <TRow>           row type
+	 * @param <TService>       service type
+	 * 
 	 * @return impl of the service
 	 */
-	<TId, TDto extends HasId<TId>, TService extends EasyCrudService<TId, TDto>> TService fromService(
+	<TId, TRow extends HasId<TId>, TService extends EasyCrudService<TId, TRow>> TService fromService(
 			Class<TService> serviceInterface, String messageCode, String tableName, Object... injections);
 
 	/**
 	 * Build impl of {@link EasyCrudService} based on the provided DTO class
 	 * 
 	 * <p>
-	 * 
 	 * Message code and Table name will be assumed based on DTO class name. I.e. if
 	 * name of the DTO class is SomeDto then message code will be "SomeDto" and
 	 * table name will be "some_dto".
 	 * 
-	 * You can use {@link #fromRowClass(Class, String, String, Object...)} in case you
-	 * want to specify those manually. It also allows you to provide list of
+	 * You can use {@link #fromRowClass(Class, String, String, Object...)} in case
+	 * you want to specify those manually. It also allows you to provide list of
 	 * injections you want to do into service implementation.
 	 * 
+	 * @param <TId>    type of id
+	 * @param <TRow>   type of row
+	 * @param rowClass row class
+	 * 
+	 * @return impl of the service
 	 */
-	<TId, TDto extends HasId<TId>> EasyCrudService<TId, TDto> fromRowClass(Class<TDto> rowClass);
+	<TId, TRow extends HasId<TId>> EasyCrudService<TId, TRow> fromRowClass(Class<TRow> rowClass);
 
 	/**
 	 * 
@@ -79,9 +88,13 @@ public interface EasyCrudScaffold {
 	 *                    Scaffolder will automatically detect supported types and
 	 *                    will wrap it into wire taps if needed (or other way,
 	 *                    depending on impl)
+	 * 
+	 * @param <TId>       type of id
+	 * @param <TRow>      type of row
+	 * 
 	 * @return EasyCrudService ready for use
 	 */
-	<TId, TDto extends HasId<TId>> EasyCrudService<TId, TDto> fromRowClass(Class<TDto> rowClass, String messageCode,
+	<TId, TRow extends HasId<TId>> EasyCrudService<TId, TRow> fromRowClass(Class<TRow> rowClass, String messageCode,
 			String tableName, Object... injections);
 
 }

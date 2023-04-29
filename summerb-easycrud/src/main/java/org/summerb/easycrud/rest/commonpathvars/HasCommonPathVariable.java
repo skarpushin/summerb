@@ -45,10 +45,9 @@ import org.summerb.easycrud.rest.EasyCrudRestControllerBase;
 &lt;/mvc:annotation-driven&gt;
  * </code>
  * 
- * In case Swagger is being used then
- * {@link org.summerb.easycrud.rest.commonpathvars.CommonPathVariableOperationBuilderPlugin}
- * needs to be registered as a Spring bean in the context (Swagger will locate
- * it automatically)
+ * In case Swagger is being used then CommonPathVariableOperationBuilderPlugin
+ * (see easycrud-swagger2 artifact) needs to be registered as a Spring bean in
+ * the context (Swagger will locate it automatically)
  * 
  * @author sergeyk
  *
@@ -57,7 +56,7 @@ import org.summerb.easycrud.rest.EasyCrudRestControllerBase;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface HasCommonPathVariable {
 	/**
-	 * The URI template variable to bind to.
+	 * @return The URI template variable to bind to.
 	 */
 	String name();
 

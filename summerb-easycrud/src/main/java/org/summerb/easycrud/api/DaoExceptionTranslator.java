@@ -41,8 +41,10 @@ public interface DaoExceptionTranslator {
 	void translateAndThrowIfApplicable(Throwable t) throws FieldValidationException;
 
 	/**
-	 * same as {@link #translateAndThrowIfApplicable(Throwable)} but will wrap
+	 * Same as {@link #translateAndThrowIfApplicable(Throwable)} but will wrap
 	 * exception in unchecked {@link RuntimeException}
+	 * 
+	 * @param e exception
 	 */
 	void translateAndThrowIfApplicableUnchecked(Exception e);
 

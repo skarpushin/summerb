@@ -116,9 +116,15 @@ public class DomLoaderImpl implements DomLoader {
 	}
 
 	/**
-	 * @param domClass class of DOM objects
-	 * @param refs     references to be traversed
-	 * @param ds       dataset
+	 * @param dtoMessageCode dtoMessageCode
+	 * @param domClass       class of DOM objects
+	 * @param refs           references to be traversed
+	 * @param ds             dataset
+	 * @param cache          cache
+	 * 
+	 * @param <TId>          id type
+	 * @param <TRowClass>    row type
+	 * @param <TDomClass>    dom type
 	 * 
 	 * @return mapper which can translate from ROW to DOM
 	 */

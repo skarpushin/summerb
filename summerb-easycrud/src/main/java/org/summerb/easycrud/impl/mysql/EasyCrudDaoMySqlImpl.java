@@ -383,9 +383,10 @@ public class EasyCrudDaoMySqlImpl<TId, TDto extends HasId<TId>> extends DaoBase
 	}
 
 	/**
-	 * Set it only if you want to customize default behavior when DTO's has
-	 * {@link HasUuid} interface. Default is {@link StringIdGeneratorUuidImpl} and
-	 * if. This is NOT applicable for other cases.
+	 * @param stringIdGenerator Set it only if you want to customize default
+	 *                          behavior when Row has {@link HasUuid} interface.
+	 *                          Default is {@link StringIdGeneratorUuidImpl} and if.
+	 *                          This is NOT applicable for other cases.
 	 */
 	@Autowired(required = false)
 	public void setStringIdGenerator(StringIdGenerator stringIdGenerator) {

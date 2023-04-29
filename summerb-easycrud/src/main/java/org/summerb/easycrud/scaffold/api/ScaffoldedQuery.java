@@ -51,13 +51,13 @@ import org.summerb.easycrud.scaffold.impl.ScaffoldedMethodFactoryMySqlImpl;
 @Target(ElementType.METHOD)
 public @interface ScaffoldedQuery {
 	/**
-	 * Query
+	 * @return SQL query to be used to perform the query
 	 */
 	String value();
 
 	/**
-	 * Customize row mapper if needed. Default will be used
-	 * {@link BeanPropertyRowMapper}
+	 * @return Customize row mapper if needed. Default will be used
+	 *         {@link BeanPropertyRowMapper}
 	 */
 	@SuppressWarnings("rawtypes")
 	Class<? extends RowMapper> rowMapper() default BeanPropertyRowMapper.class;

@@ -92,11 +92,11 @@ public interface SimpleJdbcUpdateOperations {
 	SimpleJdbcUpdateOperations includeSynonymsForTableColumnMetaData();
 
 	/**
-	 * Use a the provided NativeJdbcExtractor during the column meta data lookups
-	 * via JDBC. Note: this is only necessary to include when running with a
-	 * connection pool that wraps the meta data connection and when using a database
-	 * like Oracle where it is necessary to access the native connection to include
-	 * synonyms.
+	 * @param flag Use a the provided NativeJdbcExtractor during the column meta
+	 *             data lookups via JDBC. Note: this is only necessary to include
+	 *             when running with a connection pool that wraps the meta data
+	 *             connection and when using a database like Oracle where it is
+	 *             necessary to access the native connection to include synonyms.
 	 * 
 	 * @return the instance of this SimpleJdbcUpdate
 	 */

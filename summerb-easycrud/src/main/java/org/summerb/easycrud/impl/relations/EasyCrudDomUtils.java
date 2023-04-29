@@ -35,21 +35,26 @@ public class EasyCrudDomUtils {
 	/**
 	 * Finds all referenced objects and creates a list of them
 	 * 
-	 * @param dataSet  data set where source and all possible targets are located
-	 * @param src      id of the referencer
-	 * @param ref      description of the reference
-	 * @param rowClass DTO class, it's used to avoid cimpiler confusing between
-	 *                 TRowDto and TRetDto class, since latter one might be a
-	 *                 subclass of former one
-	 * @param builder  function that can take id of an referencee and build new
-	 *                 instance. This will be added to the returned list
+	 * @param dataSet   data set where source and all possible targets are located
+	 * @param src       id of the referencer
+	 * @param ref       description of the reference
+	 * @param rowClass  DTO class, it's used to avoid cimpiler confusing between
+	 *                  TRowDto and TRetDto class, since latter one might be a
+	 *                  subclass of former one
+	 * @param builder   function that can take id of an referencee and build new
+	 *                  instance. This will be added to the returned list
+	 * 
+	 * @param <TSrcId>  TSrcId
+	 * @param <TSrcRow> TSrcRow
+	 * @param <TId>     TId
+	 * @param <TRowDto> TRowDto
+	 * @param <TRetRow> TRetRow
+	 * 
 	 * @return list of referenced objects or empty list if none found. Changes to a
 	 *         list will not affect the database
-	 * 
-	 *         TBD: THINK: Why not add this functionality?
 	 */
-	public static <TSrcId, TSrcDto extends HasId<TSrcId>, TId, TRowDto extends HasId<TId>, TRetDto extends TRowDto> List<TRetDto> buildReferencedObjectsList(
-			DataSet dataSet, TSrcDto src, Ref ref, Class<TRowDto> rowClass, Function<TRowDto, TRetDto> builder) {
+	public static <TSrcId, TSrcRow extends HasId<TSrcId>, TId, TRowDto extends HasId<TId>, TRetRow extends TRowDto> List<TRetRow> buildReferencedObjectsList(
+			DataSet dataSet, TSrcRow src, Ref ref, Class<TRowDto> rowClass, Function<TRowDto, TRetRow> builder) {
 		try {
 			Preconditions.checkArgument(ref.getQuantity() != RefQuantity.Many2Many,
 					"ManyToMany is not supported (yet) by this method");
@@ -66,11 +71,11 @@ public class EasyCrudDomUtils {
 			PropertyDescriptor targetField = BeanUtils.getPropertyDescriptor(targetExample.getClass(),
 					ref.getToField());
 
-			List<TRetDto> ret = new ArrayList<>();
+			List<TRetRow> ret = new ArrayList<>();
 			for (TRowDto row : target.getRows().values()) {
 				Object targetValue = targetField.getReadMethod().invoke(row);
 				if (ObjectUtils.nullSafeEquals(srcValue, targetValue)) {
-					TRetDto rowToAdd = builder.apply(row);
+					TRetRow rowToAdd = builder.apply(row);
 					ret.add(rowToAdd);
 				}
 			}

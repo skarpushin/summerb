@@ -23,7 +23,6 @@ import org.summerb.easycrud.api.dto.HasTimestamps;
 import org.summerb.easycrud.api.dto.PagerParams;
 import org.summerb.easycrud.api.dto.PaginatedList;
 import org.summerb.easycrud.api.exceptions.EntityNotFoundException;
-import org.summerb.easycrud.api.exceptions.GenericEntityNotFoundException;
 import org.summerb.easycrud.api.query.OrderBy;
 import org.summerb.easycrud.api.query.Query;
 import org.summerb.i18n.HasMessageCode;
@@ -55,11 +54,17 @@ public interface EasyCrudService<TId, TRow> {
 	/**
 	 * Create row
 	 * 
+	 * @param row row to create
+	 * 
 	 * @return newly created row. It is possible that fields will differ due to ID
 	 *         set and other modifications set by {@link EasyCrudWireTap} injected
 	 *         into this service
-	 * @throws FieldValidationException
-	 * @throws NotAuthorizedException
+	 * 
+	 * @throws FieldValidationException in case of field validation errors. Some
+	 *                                  data access exceptions might be translated
+	 *                                  into field validatnion errors as well
+	 * @throws NotAuthorizedException   if user is not authorized o perform this
+	 *                                  operation
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	TRow create(TRow row);
@@ -67,79 +72,111 @@ public interface EasyCrudService<TId, TRow> {
 	/**
 	 * Update row
 	 * 
+	 * @param row row to update
+	 * 
 	 * @return updated row. It is possible that fields will differ due to ID set and
 	 *         other modifications set by {@link EasyCrudWireTap} injected into this
 	 *         service
-	 * @throws FieldValidationException
-	 * @throws NotAuthorizedException
-	 * @throws EntityNotFoundException
+	 * @throws FieldValidationException in case of field validation errors. Some
+	 *                                  data access exceptions might be translated
+	 *                                  into field validatnion errors as well
+	 * @throws NotAuthorizedException   if user is not authorized o perform this
+	 *                                  operation
+	 * @throws EntityNotFoundException  in case entity does not exist
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	TRow update(TRow row);
 
 	/**
+	 * @param id id of row to find
+	 * 
 	 * @return row or null if not found
 	 * 
-	 * @throws NotAuthorizedException
+	 * @throws NotAuthorizedException if user is not authorized o perform this
+	 *                                operation
 	 */
 	TRow findById(TId id);
 
 	/**
-	 * @return row, never null. If row not found, throws
-	 *         {@link GenericEntityNotFoundException}
+	 * @param id id of row to get
 	 * 
-	 * @throws NotAuthorizedException
-	 * @throws GenericEntityNotFoundException
+	 * @return row, never null. If row not found, throws
+	 *         {@link EntityNotFoundException}
+	 * 
+	 * @throws NotAuthorizedException  if user is not authorized o perform this
+	 *                                 operation
+	 * @throws EntityNotFoundException in case entity does not exist
 	 */
 	TRow getById(TId id);
 
 	/**
+	 * @param query query for locating row
+	 * 
 	 * @return Row or null if not found. If more than 1 row matched query exception
 	 *         will be thrown
 	 * 
-	 * @throws NotAuthorizedException
+	 * @throws NotAuthorizedException if user is not authorized o perform this
+	 *                                operation
 	 */
 	TRow findOneByQuery(Query query);
 
 	/**
-	 * @return row, never null. If nothing found, throws
-	 *         {@link GenericEntityNotFoundException}
+	 * @param query query for locating row
+	 * @param orderBy order by, optional - can be missing/null
 	 * 
-	 * @throws NotAuthorizedException
-	 * @throws GenericEntityNotFoundException
+	 * @return row, never null. If nothing found, throws
+	 *         {@link EntityNotFoundException}
+	 * 
+	 * @throws NotAuthorizedException  if user is not authorized o perform this
+	 *                                 operation
+	 * @throws EntityNotFoundException in case entity does not exist
 	 */
 	TRow getFirstByQuery(Query query, OrderBy... orderBy);
 
 	/**
+	 * @param pagerParams   pagination parameters
+	 * @param optionalQuery optional Query, might be null
+	 * @param orderBy       optional orderBy, might be missing/null
+	 * 
 	 * @return results, might be empty, but never null
 	 * 
-	 * @throws NotAuthorizedException
+	 * @throws NotAuthorizedException if user is not authorized o perform this
+	 *                                operation
 	 */
 	PaginatedList<TRow> find(PagerParams pagerParams, Query optionalQuery, OrderBy... orderBy);
 
 	/**
+	 * @param optionalQuery optional Query, might be null
+	 * @param orderBy       optional orderBy, might be missing/null
+	 * 
 	 * @return results, might be empty, but never null
 	 * 
 	 * @param optionalQuery - optional {@link Query}. If null, then this call is
 	 *                      same as {@link #findAll(OrderBy...)}
 	 * 
-	 * @throws NotAuthorizedException
+	 * @throws NotAuthorizedException if user is not authorized o perform this
+	 *                                operation
 	 */
 	List<TRow> findAll(Query optionalQuery, OrderBy... orderBy);
 
 	/**
+	 * @param orderBy optional orderBy, might be missing/null
+	 * 
 	 * @return results, might be empty, but never null
 	 * 
-	 * @throws NotAuthorizedException
+	 * @throws NotAuthorizedException if user is not authorized o perform this
+	 *                                operation
 	 */
 	List<TRow> findAll(OrderBy... orderBy);
 
 	/**
 	 * Deletes row by id.
 	 * 
-	 * @throws NotAuthorizedException
-	 * @throws EntityNotFoundException
-	 * @throws GenericEntityNotFoundException
+	 * @param id id of the row to delete
+	 * 
+	 * @throws NotAuthorizedException  if user is not authorized o perform this
+	 *                                 operation
+	 * @throws EntityNotFoundException in case entity does not exist
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	void deleteById(TId id);
@@ -148,9 +185,13 @@ public interface EasyCrudService<TId, TRow> {
 	 * Deletes row by example. If TRow implements {@link HasTimestamps} then this
 	 * call is equivalent to {@link #deleteByIdOptimistic(Object, long)}
 	 * 
-	 * @throws NotAuthorizedException
-	 * @throws EntityNotFoundException
-	 * @throws GenericEntityNotFoundException
+	 * Deletes row by example
+	 * 
+	 * @param row row to get id and (optionally) modifiedAt from
+	 * 
+	 * @throws NotAuthorizedException  if user is not authorized o perform this
+	 *                                 operation
+	 * @throws EntityNotFoundException in case entity does not exist
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	void delete(TRow row);
@@ -159,9 +200,13 @@ public interface EasyCrudService<TId, TRow> {
 	 * Delete row by id and modifiedAt. Applicable only in cases when row class
 	 * extends {@link HasTimestamps}.
 	 * 
-	 * @throws NotAuthorizedException
-	 * @throws EntityNotFoundException
-	 * @throws GenericEntityNotFoundException
+	 * @param id         id of the row to delete
+	 * @param modifiedAt timestamp of most recent modification of the row. Used for
+	 *                   optimistic locking logic
+	 * 
+	 * @throws NotAuthorizedException            if user is not authorized o perform
+	 *                                           this operation
+	 * @throws EntityNotFoundException           in case entity does not exist
 	 * @throws OptimisticLockingFailureException if row version doesn't match
 	 *                                           provided one
 	 */
@@ -171,9 +216,12 @@ public interface EasyCrudService<TId, TRow> {
 	/**
 	 * Delete rows by query
 	 * 
-	 * @param query
+	 * @param query query that used to locate rows for deletion
+	 * 
 	 * @return number of affected rows
-	 * @throws NotAuthorizedException
+	 * 
+	 * @throws NotAuthorizedException if user is not authorized o perform this
+	 *                                operation
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	int deleteByQuery(Query query);

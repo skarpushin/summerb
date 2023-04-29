@@ -74,6 +74,8 @@ public abstract class AbstractJdbcUpdate {
 
 	/**
 	 * Constructor for subclasses to delegate to for setting the DataSource.
+	 * 
+	 * @param dataSource dataSource
 	 */
 	protected AbstractJdbcUpdate(DataSource dataSource) {
 		this(new JdbcTemplate(dataSource));
@@ -81,6 +83,8 @@ public abstract class AbstractJdbcUpdate {
 
 	/**
 	 * Constructor for subclasses to delegate to for setting the JdbcTemplate.
+	 * 
+	 * @param jdbcTemplate jdbcTemplate
 	 */
 	protected AbstractJdbcUpdate(JdbcTemplate jdbcTemplate) {
 		Assert.notNull(jdbcTemplate, "JdbcTemplate must not be null");
@@ -92,14 +96,14 @@ public abstract class AbstractJdbcUpdate {
 	// -------------------------------------------------------------------------
 
 	/**
-	 * Get the name of the table for this update
+	 * @return the name of the table for this update
 	 */
 	public String getTableName() {
 		return this.tableMetaDataContext.getTableName();
 	}
 
 	/**
-	 * Set the name of the table for this update
+	 * @param tableName the name of the table for this update
 	 */
 	public void setTableName(String tableName) {
 		checkIfConfigurationModificationIsAllowed();
@@ -107,14 +111,14 @@ public abstract class AbstractJdbcUpdate {
 	}
 
 	/**
-	 * Get the name of the schema for this update
+	 * @return the name of the schema for this update
 	 */
 	public String getSchemaName() {
 		return this.tableMetaDataContext.getSchemaName();
 	}
 
 	/**
-	 * Set the name of the schema for this update
+	 * @param schemaName the name of the schema for this update
 	 */
 	public void setSchemaName(String schemaName) {
 		checkIfConfigurationModificationIsAllowed();
@@ -122,14 +126,14 @@ public abstract class AbstractJdbcUpdate {
 	}
 
 	/**
-	 * Get the name of the catalog for this update
+	 * @return the name of the catalog for this update
 	 */
 	public String getCatalogName() {
 		return this.tableMetaDataContext.getCatalogName();
 	}
 
 	/**
-	 * Set the name of the catalog for this update
+	 * @param catalogName the name of the catalog for this update
 	 */
 	public void setCatalogName(String catalogName) {
 		checkIfConfigurationModificationIsAllowed();
@@ -137,14 +141,14 @@ public abstract class AbstractJdbcUpdate {
 	}
 
 	/**
-	 * Get the names of the columns used
+	 * @return the names of the columns used
 	 */
 	public List<String> getDeclaredUpdatingColumns() {
 		return Collections.unmodifiableList(this.declaredUpdatingColumns);
 	}
 
 	/**
-	 * Set the names of the columns to be used
+	 * @param declaredNames the names of the columns to be used
 	 */
 	public void setDeclaredUpdatingColumns(List<String> declaredNames) {
 		checkIfConfigurationModificationIsAllowed();
@@ -153,14 +157,14 @@ public abstract class AbstractJdbcUpdate {
 	}
 
 	/**
-	 * Get the names of 'where' columns
+	 * @return the names of 'where' columns
 	 */
 	public Set<String> getRestrictingColumns() {
 		return Collections.unmodifiableSet(this.restrictingColumns.keySet());
 	}
 
 	/**
-	 * Set the names of any primary keys
+	 * @param whereNames the names of any primary keys
 	 */
 	public void setRestrictingColumns(List<String> whereNames) {
 		Map<String, Operator> columns = new HashMap<String, Operator>();
@@ -171,7 +175,7 @@ public abstract class AbstractJdbcUpdate {
 	}
 
 	/**
-	 * Set the names of any where columns
+	 * @param whereNames the names of any where columns
 	 */
 	public void setRestrictingColumns(Map<String, Operator> whereNames) {
 		checkIfConfigurationModificationIsAllowed();
@@ -180,37 +184,38 @@ public abstract class AbstractJdbcUpdate {
 	}
 
 	/**
-	 * Specify whether the parameter metadata for the call should be used. The
-	 * default is true.
+	 * @param accessTableColumnMetaData specifys whether the parameter metadata for
+	 *                                  the call should be used. The default is
+	 *                                  true.
 	 */
 	public void setAccessTableColumnMetaData(boolean accessTableColumnMetaData) {
 		this.tableMetaDataContext.setAccessTableColumnMetaData(accessTableColumnMetaData);
 	}
 
 	/**
-	 * Specify whether the default for including synonyms should be changed. The
-	 * default is false.
+	 * @param override specify whether the default for including synonyms should be
+	 *                 changed. The default is false.
 	 */
 	public void setOverrideIncludeSynonymsDefault(boolean override) {
 		this.tableMetaDataContext.setOverrideIncludeSynonymsDefault(override);
 	}
 
 	/**
-	 * Get the update string to be used
+	 * @return the update string to be used
 	 */
 	protected String getUpdateString() {
 		return this.updateString;
 	}
 
 	/**
-	 * Get the array of {@link java.sql.Types} to be used in 'set' clause
+	 * @return the array of {@link java.sql.Types} to be used in 'set' clause
 	 */
 	protected int[] getColumnTypes() {
 		return this.columnTypes;
 	}
 
 	/**
-	 * Get the {@link JdbcTemplate} that is configured to be used
+	 * @return the {@link JdbcTemplate} that is configured to be used
 	 */
 	protected JdbcTemplate getJdbcTemplate() {
 		return this.jdbcTemplate;
@@ -364,9 +369,6 @@ public abstract class AbstractJdbcUpdate {
 		return executeUpdateInternal(values);
 	}
 
-	/**
-	 * Method to execute the update
-	 */
 	private int executeUpdateInternal(List<Object> values) {
 		if (logger.isDebugEnabled()) {
 			logger.debug("The following parameters are used for update " + getUpdateString() + " with: " + values);
@@ -376,10 +378,12 @@ public abstract class AbstractJdbcUpdate {
 	}
 
 	/**
-	 * Match the provided in parameter values with regitered parameters and
-	 * parameters defined via metedata processing.
+	 * Match the provided in parameter values with registered parameters and
+	 * parameters defined via metadata processing.
 	 * 
-	 * @param args the parameter values provided in a Map
+	 * @param args    the parameter values provided in a Map
+	 * @param columns columns
+	 * 
 	 * @return Map with parameter names and values
 	 */
 	protected List<Object> matchInParameterValuesWithUpdateColumns(Map<String, Object> args, List<String> columns) {
@@ -392,6 +396,8 @@ public abstract class AbstractJdbcUpdate {
 	 * 
 	 * @param parameterSource the parameter vakues provided as a
 	 *                        {@link SqlParameterSource}
+	 * @param columns         columns
+	 * 
 	 * @return Map with parameter names and values
 	 */
 	protected List<Object> matchInParameterValuesWithUpdateColumns(SqlParameterSource parameterSource,

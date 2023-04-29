@@ -58,14 +58,14 @@ public class DataTable<TId, T extends HasId<TId>> {
 	}
 
 	/**
-	 * Shortcut method to add a row.
+	 * @param row to add
 	 */
 	public void put(T row) {
 		rows.put(row.getId(), row);
 	}
 
 	/**
-	 * Shortcut method to add multiple rows at a time
+	 * @param rows rows to add
 	 */
 	public void putAll(Iterable<T> rows) {
 		for (T row : rows) {

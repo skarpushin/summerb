@@ -14,12 +14,8 @@ import com.github.mustachejava.MustacheFactory;
 /**
  * Mustache-based impl of the template.
  * 
- * IMPORTANT: You'll need to include mustache in your pom manually.
- * 
- * <pre>
- *    <groupId>com.github.spullara.mustache.java</groupId>
- *    <artifactId>compiler</artifactId>
- * </pre>
+ * IMPORTANT: You'll need to include mustache in your pom manually (groupId =
+ * com.github.spullara.mustache.java, artifactId = compiler).
  * 
  * @author Sergey Karpushin
  *

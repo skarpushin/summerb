@@ -43,10 +43,10 @@ public class StringIdGeneratorUuidImpl implements StringIdGenerator {
 	}
 
 	/**
-	 * If true, will use UUID to verify format. If false will only verify length of
-	 * the string which must be 36 char long.
+	 * @return If true, will use UUID to verify format. If false will only verify
+	 *         length of the string which must be 36 char long.
 	 * 
-	 * For legacy compatibility is set to false by default.
+	 *         For legacy compatibility is set to false by default.
 	 */
 	public boolean isStrictUuidMode() {
 		return strictUuidMode;

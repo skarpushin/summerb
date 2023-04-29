@@ -45,6 +45,8 @@ public interface EasyCrudM2mService<T1Id, T1Dto extends HasId<T1Id>, T2Id, T2Dto
 	List<T2Dto> findReferenceeByReferencer(T1Id referencerId);
 
 	/**
+	 * @param referencerIds referencer ids
+	 * 
 	 * @return mapping between referencer id and list of referencee
 	 */
 	Map<T1Id, List<T2Dto>> findReferenceeByReferencers(Set<T1Id> referencerIds);

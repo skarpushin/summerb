@@ -37,8 +37,8 @@ import com.google.common.base.Preconditions;
  * 
  * @author sergeyk
  *
- * @param <TId1>
- * @param <TId2>
+ * @param <TId1> TId1
+ * @param <TId2> TId2
  */
 public class M2mAuthorizationWireTapImpl<TId1, TId2> extends EasyCrudWireTapNoOpImpl<Long, ManyToManyDto<TId1, TId2>>
 		implements InitializingBean {

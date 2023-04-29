@@ -72,8 +72,8 @@ public class StringIdGeneratorAlphaNumericImpl implements StringIdGenerator {
 	}
 
 	/**
-	 * The length of the generated ID. 8 is considered string enough and this is a
-	 * default value
+	 * @param length The length of the generated ID. 8 is considered string enough
+	 *               and this is a default value
 	 */
 	public void setLength(int length) {
 		this.length = length;

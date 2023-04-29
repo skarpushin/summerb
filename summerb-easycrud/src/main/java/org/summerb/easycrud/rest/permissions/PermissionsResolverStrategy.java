@@ -30,6 +30,8 @@ public interface PermissionsResolverStrategy<TId, TDto extends HasId<TId>> {
 	/**
 	 * @param contextVariables variables that defines current context that can be
 	 *                         used for table-wide permissions resolution
+	 * 
+	 * @param ret              object to populate with permissions
 	 */
 	void resolvePermissions(MultipleItemsResult<TId, TDto> ret, PathVariablesMap contextVariables);
 

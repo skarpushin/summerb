@@ -60,104 +60,109 @@ public class TableMetaDataContext {
 	private TableMetaDataProvider metaDataProvider;
 
 	/**
-	 * Set the name of the table for this context.
+	 * @param tableName the name of the table for this context.
 	 */
 	public void setTableName(String tableName) {
 		this.tableName = tableName;
 	}
 
 	/**
-	 * Get the name of the table for this context.
+	 * @return the name of the table for this context.
 	 */
 	public String getTableName() {
 		return this.tableName;
 	}
 
 	/**
-	 * Set the name of the catalog for this context.
+	 * @param catalogName the name of the catalog for this context.
 	 */
 	public void setCatalogName(String catalogName) {
 		this.catalogName = catalogName;
 	}
 
 	/**
-	 * Get the name of the catalog for this context.
+	 * @return the name of the catalog for this context.
 	 */
 	public String getCatalogName() {
 		return this.catalogName;
 	}
 
 	/**
-	 * Set the name of the schema for this context.
+	 * @param schemaName the name of the schema for this context.
 	 */
 	public void setSchemaName(String schemaName) {
 		this.schemaName = schemaName;
 	}
 
 	/**
-	 * Get the name of the schema for this context.
+	 * @return the name of the schema for this context.
 	 */
 	public String getSchemaName() {
 		return this.schemaName;
 	}
 
 	/**
-	 * Specify whether we should access table column meta data.
+	 * @param accessTableColumnMetaData whether we should access table column meta data.
 	 */
 	public void setAccessTableColumnMetaData(boolean accessTableColumnMetaData) {
 		this.accessTableColumnMetaData = accessTableColumnMetaData;
 	}
 
 	/**
-	 * Are we accessing table meta data?
+	 * @return Are we accessing table meta data?
 	 */
 	public boolean isAccessTableColumnMetaData() {
 		return this.accessTableColumnMetaData;
 	}
 
 	/**
-	 * Specify whether we should override default for accessing synonyms.
+	 * @param override whether we should override default for accessing synonyms.
 	 */
 	public void setOverrideIncludeSynonymsDefault(boolean override) {
 		this.overrideIncludeSynonymsDefault = override;
 	}
 
 	/**
-	 * Are we overriding include synonyms default?
+	 * @return are we overriding include synonyms default?
 	 */
 	public boolean isOverrideIncludeSynonymsDefault() {
 		return this.overrideIncludeSynonymsDefault;
 	}
 
 	/**
-	 * Does this database support the JDBC 3.0 feature of retrieving generated keys
-	 * {@link java.sql.DatabaseMetaData#supportsGetGeneratedKeys()}?
+	 * @return Does this database support the JDBC 3.0 feature of retrieving
+	 *         generated keys
+	 *         {@link java.sql.DatabaseMetaData#supportsGetGeneratedKeys()}?
 	 */
 	public boolean isGetGeneratedKeysSupported() {
 		return this.metaDataProvider.isGetGeneratedKeysSupported();
 	}
 
 	/**
-	 * Does this database support simple query to retrieve generated keys when the
-	 * JDBC 3.0 feature is not supported.
-	 * {@link java.sql.DatabaseMetaData#supportsGetGeneratedKeys()}?
+	 * @return Does this database support simple query to retrieve generated keys
+	 *         when the JDBC 3.0 feature is not supported.
+	 *         {@link java.sql.DatabaseMetaData#supportsGetGeneratedKeys()}?
 	 */
 	public boolean isGetGeneratedKeysSimulated() {
 		return this.metaDataProvider.isGetGeneratedKeysSimulated();
 	}
 
 	/**
-	 * Does this database support simple query to retrieve generated keys when the
-	 * JDBC 3.0 feature is not supported.
-	 * {@link java.sql.DatabaseMetaData#supportsGetGeneratedKeys()}?
+	 * @param tableName tableName
+	 * @param keyColumnName keyColumnName
+	 * 
+	 * @return Does this database support simple query to retrieve generated keys
+	 *         when the JDBC 3.0 feature is not supported.
+	 *         {@link java.sql.DatabaseMetaData#supportsGetGeneratedKeys()}?
 	 */
 	public String getSimulationQueryForGetGeneratedKey(String tableName, String keyColumnName) {
 		return this.metaDataProvider.getSimpleQueryForGetGeneratedKey(tableName, keyColumnName);
 	}
 
 	/**
-	 * Is a column name String array for retrieving generated keys supported?
-	 * {@link java.sql.Connection#createStruct(String, Object[])}?
+	 * @return Is a column name String array for retrieving generated keys
+	 *         supported?
+	 *         {@link java.sql.Connection#createStruct(String, Object[])}?
 	 */
 	public boolean isGeneratedKeysColumnNameArraySupported() {
 		return this.metaDataProvider.isGeneratedKeysColumnNameArraySupported();
@@ -165,6 +170,8 @@ public class TableMetaDataContext {
 
 	/**
 	 * Process the current meta data with the provided configuration options.
+	 * 
+	 * @param dataSource data source
 	 */
 	public void processMetaData(DataSource dataSource) {
 		// TBD: comment to explain this HORRIBLE thing!
@@ -181,11 +188,11 @@ public class TableMetaDataContext {
 	}
 
 	/**
-	 * Compare columns created from metadata with declared columns and return a
-	 * reconciled list.
-	 * 
 	 * @param declaredColumns   declared column names
 	 * @param generatedKeyNames names of generated key columns
+	 * 
+	 * @return Compare columns created from metadata with declared columns and
+	 *         return a reconciled list.
 	 */
 	protected List<String> reconcileColumnsToUse(List<String> declaredColumns, String[] generatedKeyNames) {
 		if (declaredColumns.size() > 0) {
@@ -208,7 +215,9 @@ public class TableMetaDataContext {
 	 * Match the provided column names and values with the list of columns used.
 	 * 
 	 * @param sqlParameterSource        the parameter names and values
-	 * @param reconciledUpdatingColumns
+	 * @param reconciledUpdatingColumns reconciled Updating Columns
+	 * 
+	 * @return values
 	 */
 	public List<Object> sortAndTypeInParameter(SqlParameterSource sqlParameterSource,
 			List<String> reconciledUpdatingColumns) {
@@ -247,7 +256,10 @@ public class TableMetaDataContext {
 	/**
 	 * Match the provided column names and values with the list of columns used.
 	 * 
-	 * @param inParameters the parameter names and values
+	 * @param inParameters              the parameter names and values
+	 * @param reconciledUpdatingColumns reconciled Updating Columns
+	 * 
+	 * @return values
 	 */
 	public List<Object> sortAndTypeInParameter(Map<String, Object> inParameters,
 			List<String> reconciledUpdatingColumns) {
@@ -274,6 +286,8 @@ public class TableMetaDataContext {
 	/**
 	 * Build the array of {@link java.sql.Types} based on configuration and metadata
 	 * information
+	 * 
+	 * @param columns columns
 	 * 
 	 * @return the array of types to be used
 	 */

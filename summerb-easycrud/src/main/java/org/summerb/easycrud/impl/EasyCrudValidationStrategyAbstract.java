@@ -26,11 +26,11 @@ import org.summerb.validation.ValidationContext;
  * 
  * @author sergeyk
  *
- * @param <TDto>
+ * @param <TRow> row type
  */
-public abstract class EasyCrudValidationStrategyAbstract<TDto> implements EasyCrudValidationStrategy<TDto> {
+public abstract class EasyCrudValidationStrategyAbstract<TRow> implements EasyCrudValidationStrategy<TRow> {
 	@Override
-	public void validateForCreate(TDto dto) throws FieldValidationException {
+	public void validateForCreate(TRow dto) throws FieldValidationException {
 		ValidationContext ctx = new ValidationContext();
 
 		doValidateForCreate(dto, ctx);
@@ -40,10 +40,10 @@ public abstract class EasyCrudValidationStrategyAbstract<TDto> implements EasyCr
 		}
 	}
 
-	protected abstract void doValidateForCreate(TDto dto, ValidationContext ctx);
+	protected abstract void doValidateForCreate(TRow dto, ValidationContext ctx);
 
 	@Override
-	public void validateForUpdate(TDto existingVersion, TDto newVersion) throws FieldValidationException {
+	public void validateForUpdate(TRow existingVersion, TRow newVersion) throws FieldValidationException {
 		ValidationContext ctx = new ValidationContext();
 
 		doValidateForUpdate(existingVersion, newVersion, ctx);
@@ -53,7 +53,7 @@ public abstract class EasyCrudValidationStrategyAbstract<TDto> implements EasyCr
 		}
 	}
 
-	protected void doValidateForUpdate(TDto existingVersion, TDto newVersion, ValidationContext ctx) {
+	protected void doValidateForUpdate(TRow existingVersion, TRow newVersion, ValidationContext ctx) {
 		doValidateForCreate(newVersion, ctx);
 	};
 

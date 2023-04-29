@@ -74,10 +74,11 @@ import com.google.common.base.Preconditions;
  * RestExceptionTranslator, which is subclass of {@link GenericFilterBean}
  * (Spring approach on filtering requests).
  *
- * @author sergeyk
  * @param <TId>              primary key type
  * @param <TDto>             entity type
  * @param <TEasyCrudService> service type
+ * 
+ * @author sergeyk
  */
 public class EasyCrudRestControllerBase<TId, TDto extends HasId<TId>, TEasyCrudService extends EasyCrudService<TId, TDto>>
 		implements ApplicationContextAware, InitializingBean {
@@ -113,9 +114,12 @@ public class EasyCrudRestControllerBase<TId, TDto extends HasId<TId>, TEasyCrudS
 	 * In order for this method to work properly (including orderBy and pagerParams)
 	 * make sure to register PojoFieldsArgumentResolver within spring mvc.
 	 *
-	 * @param pagerParams
-	 * @param orderBy
-	 * @param needPerms   provide true if needed to know permissions
+	 * @param pagerParams         pagerParams
+	 * @param orderBy             orderBy
+	 * @param needPerms           provide true if needed to know permissions
+	 * @param referencesToResolve references to resolve
+	 * @param pathVariables       path variables
+	 * 
 	 * @return list of items
 	 */
 	@GetMapping

@@ -71,6 +71,10 @@ public class CustomizedParameterSourceBuilder<T> extends ParameterSourceBuilderB
 		 * @param fieldName   field to override
 		 * @param type        one of {@link Types}
 		 * @param valueGetter function to get field value
+		 * 
+		 * @param <T>         Row class to get field value from
+		 * 
+		 * @return configured FieldOverride
 		 */
 		public static <T> FieldOverride<T> of(String fieldName, int type, Function<T, Object> valueGetter) {
 			Preconditions.checkArgument(StringUtils.hasText(fieldName), "fieldName required");

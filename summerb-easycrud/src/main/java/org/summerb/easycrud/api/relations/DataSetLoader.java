@@ -43,6 +43,8 @@ public interface DataSetLoader {
 	 * 
 	 * @param ids            of objects to load
 	 * @param entityTypeName type of entity. Same as returned by it's service
+	 * 
+	 * @return loaded objects list
 	 */
 	@SuppressWarnings("rawtypes")
 	List<HasId> loadObjectsByIds(Set<Object> ids, String entityTypeName)

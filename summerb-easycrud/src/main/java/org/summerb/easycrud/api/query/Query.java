@@ -66,6 +66,8 @@ public class Query implements Serializable {
 
 	/**
 	 * Shortcut for creating new instance of this class
+	 * 
+	 * @return initialized (and empty) Query instance
 	 */
 	public static Query n() {
 		return new Query();
