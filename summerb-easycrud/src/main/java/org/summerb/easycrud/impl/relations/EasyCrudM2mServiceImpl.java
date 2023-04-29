@@ -79,13 +79,13 @@ public class EasyCrudM2mServiceImpl<T1Id, T1Dto extends HasId<T1Id>, T2Id, T2Dto
 	@SuppressWarnings("unchecked")
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		if (getEntityTypeMessageCode() == null) {
-			setEntityTypeMessageCode(Ref.buildDefaultM2mEntityName(serviceFrom.getEntityTypeMessageCode(),
-					serviceTo.getEntityTypeMessageCode()));
+		if (getRowMessageCode() == null) {
+			setRowMessageCode(Ref.buildDefaultM2mEntityName(serviceFrom.getRowMessageCode(),
+					serviceTo.getRowMessageCode()));
 		}
 
 		ManyToManyDto<T1Id, T2Id> example = new ManyToManyDto<>();
-		setDtoClass((Class<ManyToManyDto<T1Id, T2Id>>) example.getClass());
+		setRowClass((Class<ManyToManyDto<T1Id, T2Id>>) example.getClass());
 
 		super.afterPropertiesSet();
 	}
@@ -95,15 +95,15 @@ public class EasyCrudM2mServiceImpl<T1Id, T1Dto extends HasId<T1Id>, T2Id, T2Dto
 		try {
 			Preconditions.checkArgument(referencerId != null, "referencerId is required");
 			Query q = buildQueryToFindReferenceeByReferencerId(referencerId);
-			List<ManyToManyDto<T1Id, T2Id>> m2mPairs = query(PagerParams.ALL, q).getItems();
+			List<ManyToManyDto<T1Id, T2Id>> m2mPairs = find(PagerParams.ALL, q).getItems();
 			if (m2mPairs.size() == 0) {
 				return Collections.emptyList();
 			}
 			Set<T2Id> referenceeIds = collectReferenceeIds(m2mPairs);
-			return serviceTo.query(PagerParams.ALL, buildQueryToFindObjectsByIds(referenceeIds)).getItems();
+			return serviceTo.find(PagerParams.ALL, buildQueryToFindObjectsByIds(referenceeIds)).getItems();
 		} catch (Throwable t) {
-			throw new RuntimeException("Failed to find " + serviceTo.getEntityTypeMessageCode() + " refernced by "
-					+ serviceFrom.getEntityTypeMessageCode() + " identified by " + referencerId, t);
+			throw new RuntimeException("Failed to find " + serviceTo.getRowMessageCode() + " refernced by "
+					+ serviceFrom.getRowMessageCode() + " identified by " + referencerId, t);
 		}
 	}
 
@@ -158,19 +158,19 @@ public class EasyCrudM2mServiceImpl<T1Id, T1Dto extends HasId<T1Id>, T2Id, T2Dto
 		try {
 			Preconditions.checkArgument(!CollectionUtils.isEmpty(referencerIds), "referencerId is required");
 			Query q = buildQueryToFindReferenceeByReferencerId(referencerIds);
-			List<ManyToManyDto<T1Id, T2Id>> m2mPairs = query(PagerParams.ALL, q).getItems();
+			List<ManyToManyDto<T1Id, T2Id>> m2mPairs = find(PagerParams.ALL, q).getItems();
 			if (m2mPairs.size() == 0) {
 				// Q: Should we fill key set with null (or empty lists)??...
 				return Collections.emptyMap();
 			}
 			Set<T2Id> referenceeIds = collectReferenceeIds(m2mPairs);
-			List<T2Dto> referencee = serviceTo.query(PagerParams.ALL, buildQueryToFindObjectsByIds(referenceeIds))
+			List<T2Dto> referencee = serviceTo.find(PagerParams.ALL, buildQueryToFindObjectsByIds(referenceeIds))
 					.getItems();
 			Map<T1Id, List<T2Dto>> ret = buildResultForFindReferenceeByReferencer(m2mPairs, referencee);
 			return ret;
 		} catch (Throwable t) {
-			throw new RuntimeException("Failed to find " + serviceTo.getEntityTypeMessageCode() + " refernced by "
-					+ serviceFrom.getEntityTypeMessageCode() + " identified by "
+			throw new RuntimeException("Failed to find " + serviceTo.getRowMessageCode() + " refernced by "
+					+ serviceFrom.getRowMessageCode() + " identified by "
 					+ Arrays.toString(referencerIds.toArray()), t);
 		}
 	}
@@ -199,8 +199,8 @@ public class EasyCrudM2mServiceImpl<T1Id, T1Dto extends HasId<T1Id>, T2Id, T2Dto
 			return create(pair);
 		} catch (Throwable t) {
 			Throwables.throwIfInstanceOf(t, NotAuthorizedException.class);
-			throw new RuntimeException("Failed to add reference from " + serviceFrom.getEntityTypeMessageCode()
-					+ " identified by " + referencerId + " to " + serviceTo.getEntityTypeMessageCode()
+			throw new RuntimeException("Failed to add reference from " + serviceFrom.getRowMessageCode()
+					+ " identified by " + referencerId + " to " + serviceTo.getRowMessageCode()
 					+ " identified by " + referenceeId, t);
 		}
 	}
@@ -214,7 +214,7 @@ public class EasyCrudM2mServiceImpl<T1Id, T1Dto extends HasId<T1Id>, T2Id, T2Dto
 			ManyToManyDto<T1Id, T2Id> pair = findOneByQuery(q);
 			try {
 				if (pair == null) {
-					throw new GenericEntityNotFoundException(getEntityTypeMessageCode(),
+					throw new GenericEntityNotFoundException(getRowMessageCode(),
 							"" + referencerId + "<->" + referenceeId);
 				}
 				deleteById(pair.getId());
@@ -225,8 +225,8 @@ public class EasyCrudM2mServiceImpl<T1Id, T1Dto extends HasId<T1Id>, T2Id, T2Dto
 			}
 		} catch (Throwable t) {
 			Throwables.throwIfInstanceOf(t, NotAuthorizedException.class);
-			throw new RuntimeException("Failed to remove reference from " + serviceFrom.getEntityTypeMessageCode()
-					+ " identified by " + referencerId + " to " + serviceTo.getEntityTypeMessageCode()
+			throw new RuntimeException("Failed to remove reference from " + serviceFrom.getRowMessageCode()
+					+ " identified by " + referencerId + " to " + serviceTo.getRowMessageCode()
 					+ " identified by " + referenceeId, t);
 		}
 	}

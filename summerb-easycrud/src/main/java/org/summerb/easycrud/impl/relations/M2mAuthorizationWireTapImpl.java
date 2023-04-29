@@ -51,7 +51,7 @@ public class M2mAuthorizationWireTapImpl<TId1, TId2> extends EasyCrudWireTapNoOp
 	public void afterPropertiesSet() throws Exception {
 		referencerAuthRequiresFullDto = referencerAuthorizationWireTap.requiresFullDto();
 		if (!referencerAuthRequiresFullDto) {
-			referencerClass = referencerService.getDtoClass();
+			referencerClass = referencerService.getRowClass();
 		}
 	}
 
@@ -71,7 +71,7 @@ public class M2mAuthorizationWireTapImpl<TId1, TId2> extends EasyCrudWireTapNoOp
 		if (referencerAuthRequiresFullDto) {
 			referencer = referencerService.findById(dto.getSrc());
 			Preconditions.checkState(referencer != null,
-					referencerService.getEntityTypeMessageCode() + " identified by " + dto.getSrc() + " wasn't found");
+					referencerService.getRowMessageCode() + " identified by " + dto.getSrc() + " wasn't found");
 		} else {
 			referencer = buildDtoWithId(dto.getSrc());
 		}
@@ -102,7 +102,7 @@ public class M2mAuthorizationWireTapImpl<TId1, TId2> extends EasyCrudWireTapNoOp
 		if (referencerAuthRequiresFullDto) {
 			referencer = referencerService.findById(to.getSrc());
 			Preconditions.checkState(referencer != null,
-					referencerService.getEntityTypeMessageCode() + " identified by " + from.getSrc() + " wasn't found");
+					referencerService.getRowMessageCode() + " identified by " + from.getSrc() + " wasn't found");
 		} else {
 			referencer = buildDtoWithId(to.getSrc());
 		}
@@ -120,7 +120,7 @@ public class M2mAuthorizationWireTapImpl<TId1, TId2> extends EasyCrudWireTapNoOp
 		if (referencerAuthRequiresFullDto) {
 			referencer = referencerService.findById(dto.getSrc());
 			Preconditions.checkState(referencer != null,
-					referencerService.getEntityTypeMessageCode() + " identified by " + dto.getSrc() + " wasn't found");
+					referencerService.getRowMessageCode() + " identified by " + dto.getSrc() + " wasn't found");
 		} else {
 			referencer = buildDtoWithId(dto.getSrc());
 		}

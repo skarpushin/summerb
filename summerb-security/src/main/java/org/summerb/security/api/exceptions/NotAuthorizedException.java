@@ -32,7 +32,7 @@ import com.google.common.base.Preconditions;
  * 
  */
 @SuppressWarnings("serial")
-public class NotAuthorizedException extends Exception implements HasMessageCode, HasMessageArgs,
+public class NotAuthorizedException extends RuntimeException implements HasMessageCode, HasMessageArgs,
 		HasMessageArgsConverters, HasErrorDescriptionObject<NotAuthorizedResult> {
 
 	private final NotAuthorizedResult result;

@@ -36,8 +36,8 @@ public class AttachmentServiceImpl extends EasyCrudServicePluggableImpl<Long, At
 	private static Attachment[] attachmentArrayType = new Attachment[0];
 
 	public AttachmentServiceImpl() {
-		setDtoClass(Attachment.class);
-		setEntityTypeMessageCode("term.articles.attachment");
+		setRowClass(Attachment.class);
+		setRowMessageCode("term.articles.attachment");
 
 		// Legacy:
 		setWireTap(new EasyCrudWireTapValidationImpl<>(new AttachmentValidationStrategyImpl()));
@@ -45,13 +45,13 @@ public class AttachmentServiceImpl extends EasyCrudServicePluggableImpl<Long, At
 
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public Attachment create(Attachment dto) throws FieldValidationException, NotAuthorizedException {
+	public Attachment create(Attachment row) throws FieldValidationException, NotAuthorizedException {
 		try {
-			return super.create(dto);
+			return super.create(row);
 		} finally {
-			if (dto != null && dto.getContents() != null) {
+			if (row != null && row.getContents() != null) {
 				try {
-					dto.getContents().close();
+					row.getContents().close();
 				} catch (IOException e) {
 					// don't care
 				}
@@ -70,7 +70,7 @@ public class AttachmentServiceImpl extends EasyCrudServicePluggableImpl<Long, At
 
 	@Override
 	public Attachment[] findArticleAttachments(long articleId) throws NotAuthorizedException {
-		PaginatedList<Attachment> results = query(PagerParams.ALL, Query.n().eq(Attachment.FN_ARTICLE_ID, articleId),
+		PaginatedList<Attachment> results = find(PagerParams.ALL, Query.n().eq(Attachment.FN_ARTICLE_ID, articleId),
 				OrderBy.Asc(Attachment.FN_NAME));
 		return results.getItems().toArray(attachmentArrayType);
 	}

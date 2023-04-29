@@ -317,7 +317,7 @@ public class DomLoaderImpl implements DomLoader {
 					"DOM's parent class (%s) supposed to implement org.summerb.easycrud.api.dto, but it's not",
 					dtoClass);
 
-			return easyCrudServiceResolver.resolveByDtoClass(dtoClass).getEntityTypeMessageCode();
+			return easyCrudServiceResolver.resolveByDtoClass(dtoClass).getRowMessageCode();
 		} catch (Throwable t) {
 			throw new RuntimeException(
 					"Failed to resolve DTO class. It looks like your DOM object is not a subclass of appropriate DTO",

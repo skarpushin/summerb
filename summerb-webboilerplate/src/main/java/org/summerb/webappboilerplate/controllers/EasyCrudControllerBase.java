@@ -97,7 +97,7 @@ public class EasyCrudControllerBase<TId, TDto extends HasId<TId>, TEasyCrudServi
 	public ModelAndView getList(HttpServletResponse response) throws Exception {
 		ModelAndView ret = new ModelAndView(viewNameForList);
 		if (initialPageSize > 0) {
-			ret.addObject(ATTR_LIST, service.query(new PagerParams(0, initialPageSize), null));
+			ret.addObject(ATTR_LIST, service.find(new PagerParams(0, initialPageSize), null));
 		}
 
 		// TBD: Shouldn't we cache such things?
@@ -142,8 +142,8 @@ public class EasyCrudControllerBase<TId, TDto extends HasId<TId>, TEasyCrudServi
 	@RequestMapping(method = RequestMethod.POST, value = "ajaxList")
 	public @ResponseBody Map<String, ? extends Object> ajaxList(@RequestBody EasyCrudQueryParams filteringParams,
 			HttpServletResponse response) throws Exception {
-		Query query = filteringParamsToQueryConverter.convert(filteringParams.getFilterParams(), service.getDtoClass());
-		PaginatedList<TDto> results = service.query(filteringParams.getPagerParams(), query,
+		Query query = filteringParamsToQueryConverter.convert(filteringParams.getFilterParams(), service.getRowClass());
+		PaginatedList<TDto> results = service.find(filteringParams.getPagerParams(), query,
 				filteringParams.getOrderBy());
 		return Collections.singletonMap(ATTR_LIST, results);
 	}

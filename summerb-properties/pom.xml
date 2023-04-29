@@ -21,7 +21,7 @@
 	<parent>
 		<groupId>com.github.skarpushin</groupId>
 		<artifactId>summerb-parent</artifactId>
-		<version>6.0.0</version>
+		<version>6.1.0</version>
 		<relativePath>../summerb-parent</relativePath>
 	</parent>
 	<artifactId>summerb-properties</artifactId>

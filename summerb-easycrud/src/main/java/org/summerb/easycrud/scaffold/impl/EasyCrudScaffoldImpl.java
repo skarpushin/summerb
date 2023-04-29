@@ -94,9 +94,9 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold {
 	protected <TId, TDto extends HasId<TId>> void initService(
 			EasyCrudServicePluggableImpl<TId, TDto, EasyCrudDao<TId, TDto>> service, Class<TDto> dtoClass,
 			String messageCode, String tableName, EasyCrudDao<TId, TDto> dao, Object... injections) throws Exception {
-		service.setDtoClass(dtoClass);
+		service.setRowClass(dtoClass);
 		service.setDao(dao);
-		service.setEntityTypeMessageCode(messageCode);
+		service.setRowMessageCode(messageCode);
 		getBeanFactory().autowireBean(service);
 
 		if (injections == null || injections.length == 0) {

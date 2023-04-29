@@ -25,7 +25,7 @@ import org.summerb.i18n.HasMessageCode;
  * @author sergey.karpushin
  * 
  */
-public abstract class EntityNotFoundException extends Exception implements HasMessageCode, HasMessageArgs {
+public abstract class EntityNotFoundException extends RuntimeException implements HasMessageCode, HasMessageArgs {
 	private static final long serialVersionUID = 3254284449960233351L;
 
 	protected Object identity;

@@ -93,12 +93,12 @@ public class DataSetLoaderTest {
 
 		DataSet result = new DataSet();
 		Map<String, Set<Object>> idsToLoad = new HashMap<String, Set<Object>>();
-		idsToLoad.put(testDto2Service.getEntityTypeMessageCode(), ids(d2i1.getId()));
-		idsToLoad.put(testDto3Service.getEntityTypeMessageCode(), ids(d3i1.getId()));
+		idsToLoad.put(testDto2Service.getRowMessageCode(), ids(d2i1.getId()));
+		idsToLoad.put(testDto3Service.getRowMessageCode(), ids(d3i1.getId()));
 		loader.loadObjectsByIds(idsToLoad, result);
 
-		assertNotNull(result.get(testDto2Service.getEntityTypeMessageCode()).find(d2i1.getId()));
-		assertNotNull(result.get(testDto3Service.getEntityTypeMessageCode()).find(d3i1.getId()));
+		assertNotNull(result.get(testDto2Service.getRowMessageCode()).find(d2i1.getId()));
+		assertNotNull(result.get(testDto3Service.getRowMessageCode()).find(d3i1.getId()));
 	}
 
 	@Test
@@ -116,7 +116,7 @@ public class DataSetLoaderTest {
 		d2i2.setLinkToFullDonwload("asdad");
 		d2i2 = testDto2Service.create(d2i2);
 
-		List<HasId> result = loader.loadObjectsByIds(ids(d2i1, d2i2), testDto2Service.getEntityTypeMessageCode());
+		List<HasId> result = loader.loadObjectsByIds(ids(d2i1, d2i2), testDto2Service.getRowMessageCode());
 		assertNotNull(result);
 		assertEquals(2, result.size());
 	}
@@ -131,7 +131,7 @@ public class DataSetLoaderTest {
 		d2i1.setLinkToFullDonwload("asdad");
 		d2i1 = testDto2Service.create(d2i1);
 
-		List<HasId> result = loader.loadObjectsByIds(ids(d2i1), testDto2Service.getEntityTypeMessageCode());
+		List<HasId> result = loader.loadObjectsByIds(ids(d2i1), testDto2Service.getRowMessageCode());
 		assertNotNull(result);
 		assertEquals(1, result.size());
 	}
@@ -152,12 +152,12 @@ public class DataSetLoaderTest {
 
 		DataSet result = new DataSet();
 		Map<String, Set<Object>> idsToLoad = new HashMap<String, Set<Object>>();
-		idsToLoad.put(testDto3Service.getEntityTypeMessageCode(), ids(d3i1.getId()));
+		idsToLoad.put(testDto3Service.getRowMessageCode(), ids(d3i1.getId()));
 		loader.loadObjectsByIds(idsToLoad, result);
 
 		loader.resolveReferencedObjects(result, Refs.ref3to2mand, Refs.ref3to1);
 
-		assertNotNull(result.get(testDto2Service.getEntityTypeMessageCode()).find(d2i1.getId()));
+		assertNotNull(result.get(testDto2Service.getRowMessageCode()).find(d2i1.getId()));
 	}
 
 	@Test
@@ -181,13 +181,13 @@ public class DataSetLoaderTest {
 
 		DataSet result = new DataSet();
 		Map<String, Set<Object>> idsToLoad = new HashMap<String, Set<Object>>();
-		idsToLoad.put(testDto3Service.getEntityTypeMessageCode(), ids(d3i1.getId()));
+		idsToLoad.put(testDto3Service.getRowMessageCode(), ids(d3i1.getId()));
 		loader.loadObjectsByIds(idsToLoad, result);
 
 		loader.resolveReferencedObjects(result, Refs.ref3to2mand, Refs.ref2to1);
 
-		assertNotNull(result.get(testDto2Service.getEntityTypeMessageCode()).find(d2i1.getId()));
-		assertNotNull(result.get(testDto1Service.getEntityTypeMessageCode()).find(d1i1.getId()));
+		assertNotNull(result.get(testDto2Service.getRowMessageCode()).find(d2i1.getId()));
+		assertNotNull(result.get(testDto1Service.getRowMessageCode()).find(d1i1.getId()));
 	}
 
 	@Test
@@ -209,12 +209,12 @@ public class DataSetLoaderTest {
 		d3i2 = testDto3Service.create(d3i2);
 
 		DataSet result = new DataSet();
-		result.get(testDto2Service.getEntityTypeMessageCode()).put(d2i1);
+		result.get(testDto2Service.getRowMessageCode()).put(d2i1);
 
 		loader.resolveReferencedObjects(result, Refs.ref3to2mand.reverse());
 
-		assertNotNull(result.get(testDto3Service.getEntityTypeMessageCode()).find(d3i1.getId()));
-		assertNotNull(result.get(testDto3Service.getEntityTypeMessageCode()).find(d3i2.getId()));
+		assertNotNull(result.get(testDto3Service.getRowMessageCode()).find(d3i1.getId()));
+		assertNotNull(result.get(testDto3Service.getRowMessageCode()).find(d3i2.getId()));
 	}
 
 	@Test
@@ -242,13 +242,13 @@ public class DataSetLoaderTest {
 		d3i2 = testDto3Service.create(d3i2);
 
 		DataSet result = new DataSet();
-		result.get(testDto2Service.getEntityTypeMessageCode()).put(d2i1);
+		result.get(testDto2Service.getRowMessageCode()).put(d2i1);
 
 		loader.resolveReferencedObjects(result, Refs.ref3to2mand.reverse(), Refs.ref3to1);
 
-		assertNotNull(result.get(testDto3Service.getEntityTypeMessageCode()).find(d3i1.getId()));
-		assertNotNull(result.get(testDto3Service.getEntityTypeMessageCode()).find(d3i2.getId()));
-		assertNotNull(result.get(testDto1Service.getEntityTypeMessageCode()).find(d1i1.getId()));
+		assertNotNull(result.get(testDto3Service.getRowMessageCode()).find(d3i1.getId()));
+		assertNotNull(result.get(testDto3Service.getRowMessageCode()).find(d3i2.getId()));
+		assertNotNull(result.get(testDto1Service.getRowMessageCode()).find(d1i1.getId()));
 	}
 
 	@Test
@@ -276,13 +276,13 @@ public class DataSetLoaderTest {
 		d3i2 = testDto3Service.create(d3i2);
 
 		DataSet result = new DataSet();
-		result.get(testDto2Service.getEntityTypeMessageCode()).put(d2i1);
-		result.get(testDto1Service.getEntityTypeMessageCode()).put(d1i1);
+		result.get(testDto2Service.getRowMessageCode()).put(d2i1);
+		result.get(testDto1Service.getRowMessageCode()).put(d1i1);
 
 		loader.resolveReferencedObjects(result, Refs.ref3to2mand.reverse(), Refs.ref3to1.reverse());
 
-		assertNotNull(result.get(testDto3Service.getEntityTypeMessageCode()).find(d3i1.getId()));
-		assertNotNull(result.get(testDto3Service.getEntityTypeMessageCode()).find(d3i2.getId()));
+		assertNotNull(result.get(testDto3Service.getRowMessageCode()).find(d3i1.getId()));
+		assertNotNull(result.get(testDto3Service.getRowMessageCode()).find(d3i2.getId()));
 	}
 
 	@Test
@@ -309,9 +309,9 @@ public class DataSetLoaderTest {
 		d3i2.setLinkToDtoOneOptional(d1i1.getId());
 		d3i2 = testDto3Service.create(d3i2);
 
-		String t1 = testDto1Service.getEntityTypeMessageCode();
-		String t2 = testDto2Service.getEntityTypeMessageCode();
-		String t3 = testDto3Service.getEntityTypeMessageCode();
+		String t1 = testDto1Service.getRowMessageCode();
+		String t2 = testDto2Service.getRowMessageCode();
+		String t3 = testDto3Service.getRowMessageCode();
 		DataSet result = new DataSet();
 		result.get(t2).put(d2i1);
 		result.get(t1).put(d1i1);
@@ -354,9 +354,9 @@ public class DataSetLoaderTest {
 		m2mService.addReferencee(d2i1.getId(), d1i2.getId());
 
 		// -----------------------------------
-		String t1 = testDto1Service.getEntityTypeMessageCode();
-		String t2 = testDto2Service.getEntityTypeMessageCode();
-		String t3 = testDto3Service.getEntityTypeMessageCode();
+		String t1 = testDto1Service.getRowMessageCode();
+		String t2 = testDto2Service.getRowMessageCode();
+		String t3 = testDto3Service.getRowMessageCode();
 		DataSet result = new DataSet();
 		loader.loadObjectAndItsRefs(d2i1.getId(), t2, result, Refs.ref2to1m2m, Refs.ref1to3);
 

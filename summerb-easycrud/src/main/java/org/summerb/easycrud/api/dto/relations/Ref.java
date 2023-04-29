@@ -131,7 +131,7 @@ public class Ref implements Serializable {
 
 	/**
 	 * @return entity type message code See
-	 *         {@link EasyCrudService#getEntityTypeMessageCode()}
+	 *         {@link EasyCrudService#getRowMessageCode()}
 	 */
 	public String getFromEntity() {
 		return fromEntity;
@@ -151,7 +151,7 @@ public class Ref implements Serializable {
 
 	/**
 	 * @return entity type message code See
-	 *         {@link EasyCrudService#getEntityTypeMessageCode()}
+	 *         {@link EasyCrudService#getRowMessageCode()}
 	 */
 	public String getToEntity() {
 		return toEntity;

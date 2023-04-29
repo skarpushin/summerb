@@ -26,6 +26,8 @@ import org.springframework.beans.PropertyAccessor;
 import org.summerb.easycrud.api.EasyCrudDao;
 import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.api.QueryToNativeSqlCompiler;
+import org.summerb.easycrud.api.dto.HasId;
+import org.summerb.easycrud.api.dto.tools.EasyCrudDtoUtils;
 import org.summerb.easycrud.api.query.restrictions.BooleanEqRestriction;
 import org.summerb.easycrud.api.query.restrictions.IsNullRestriction;
 import org.summerb.easycrud.api.query.restrictions.NumberBetweenRestriction;
@@ -232,6 +234,14 @@ public class Query implements Serializable {
 		return this;
 	}
 
+	public Query inIdsStrings(String fieldName, Iterable<? extends HasId<String>> dtos) {
+		return inStrings(fieldName, EasyCrudDtoUtils.enumerateIds(dtos));
+	}
+
+	public Query notInIdsStrings(String fieldName, Iterable<? extends HasId<String>> dtos) {
+		return notInStrings(fieldName, EasyCrudDtoUtils.enumerateIds(dtos));
+	}
+
 	public Query notInStrings(String fieldName, Collection<String> values) {
 		StringOneOfRestriction notIn = new StringOneOfRestriction(asSet(values));
 		notIn.setNegative(true);
@@ -249,6 +259,14 @@ public class Query implements Serializable {
 		notIn.setNegative(true);
 		getRestrictions().add(new FieldCondition(fieldName, notIn));
 		return this;
+	}
+
+	public Query inIdsLongs(String fieldName, Iterable<? extends HasId<Long>> dtos) {
+		return inLongs(fieldName, EasyCrudDtoUtils.enumerateIds(dtos));
+	}
+
+	public Query notInIdsLongs(String fieldName, Iterable<? extends HasId<Long>> dtos) {
+		return notInLongs(fieldName, EasyCrudDtoUtils.enumerateIds(dtos));
 	}
 
 	protected <T> Set<T> asSet(Collection<T> values) {

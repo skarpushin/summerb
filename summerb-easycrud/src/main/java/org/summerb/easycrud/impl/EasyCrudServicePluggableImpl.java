@@ -33,7 +33,9 @@ import org.summerb.easycrud.api.dto.HasTimestamps;
 import org.summerb.easycrud.api.dto.HasUuid;
 import org.summerb.easycrud.api.dto.PagerParams;
 import org.summerb.easycrud.api.dto.PaginatedList;
+import org.summerb.easycrud.api.dto.Top;
 import org.summerb.easycrud.api.exceptions.EntityNotFoundException;
+import org.summerb.easycrud.api.exceptions.GenericEntityNotFoundException;
 import org.summerb.easycrud.api.query.OrderBy;
 import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapNoOpImpl;
@@ -56,16 +58,14 @@ import com.google.common.base.Preconditions;
  * 
  * @author sergeyk
  *
- * @param <TId>
- *            type of id
- * @param <TDto>
- *            type of dto (must have {@link HasId} interface
- * @param <TDao>
- *            type of dao, must be a subclass of {@link EasyCrudDao}
+ * @param <TId>  type of id
+ * @param <TDto> type of dto (must have {@link HasId} interface
+ * @param <TDao> type of dao, must be a subclass of {@link EasyCrudDao}
  */
 public class EasyCrudServicePluggableImpl<TId, TDto extends HasId<TId>, TDao extends EasyCrudDao<TId, TDto>>
 		implements EasyCrudService<TId, TDto>, InitializingBean {
 	public static final String OPTIMISTIC_LOCK_FAILED_TECH_MESSAGE = "Optimistic lock failed, record was already updated but someone else";
+	private static final PagerParams TOP_ONE = new Top(1);
 
 	protected EasyCrudExceptionStrategy<TId> exceptionStrategy;
 	private EasyCrudWireTap<TId, TDto> wireTap;
@@ -73,19 +73,19 @@ public class EasyCrudServicePluggableImpl<TId, TDto extends HasId<TId>, TDao ext
 	protected TDao dao;
 	@Autowired(required = false)
 	protected CurrentUserResolver<?> currentUserResolver;
-	private Class<TDto> dtoClass;
-	private String entityTypeMessageCode;
+	private Class<TDto> rowClass;
+	private String rowMessageCode;
 	private StringIdGenerator stringIdGenerator;
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		Preconditions.checkState(dtoClass != null, "DtoClass is required");
-		Preconditions.checkState(!HasAuthor.class.isAssignableFrom(dtoClass) || currentUserResolver != null,
+		Preconditions.checkState(rowClass != null, "DtoClass is required");
+		Preconditions.checkState(!HasAuthor.class.isAssignableFrom(rowClass) || currentUserResolver != null,
 				"CurrentUserResolver required");
 		Preconditions.checkState(dao != null, "dao is required");
 
-		if (entityTypeMessageCode == null) {
-			entityTypeMessageCode = dtoClass.getCanonicalName();
+		if (rowMessageCode == null) {
+			rowMessageCode = rowClass.getCanonicalName();
 		}
 
 		if (wireTap == null) {
@@ -93,7 +93,7 @@ public class EasyCrudServicePluggableImpl<TId, TDto extends HasId<TId>, TDao ext
 		}
 
 		if (exceptionStrategy == null) {
-			exceptionStrategy = new EasyCrudExceptionStrategyDefaultImpl<TId>(getEntityTypeMessageCode());
+			exceptionStrategy = new EasyCrudExceptionStrategyDefaultImpl<TId>(rowMessageCode);
 		}
 
 		if (stringIdGenerator == null) {
@@ -102,11 +102,11 @@ public class EasyCrudServicePluggableImpl<TId, TDto extends HasId<TId>, TDao ext
 	}
 
 	@Override
-	public TDto create(TDto dto) throws FieldValidationException, NotAuthorizedException {
+	public TDto create(TDto row) throws FieldValidationException, NotAuthorizedException {
 		try {
-			Preconditions.checkArgument(dto != null);
+			Preconditions.checkArgument(row != null);
 
-			TDto ret = copyDto(dto);
+			TDto ret = copyDto(row);
 
 			boolean wireTapRequired = wireTap.requiresOnCreate();
 			if (wireTapRequired) {
@@ -164,7 +164,7 @@ public class EasyCrudServicePluggableImpl<TId, TDto extends HasId<TId>, TDao ext
 
 			TDto currentVersion = dao.findById(newVersion.getId());
 			if (currentVersion == null) {
-				throw exceptionStrategy.buildNotFoundException(getEntityTypeMessageCode(), newVersion.getId());
+				throw exceptionStrategy.buildNotFoundException(rowMessageCode, newVersion.getId());
 			}
 
 			TDto ret = copyDto(newVersion);
@@ -201,13 +201,29 @@ public class EasyCrudServicePluggableImpl<TId, TDto extends HasId<TId>, TDao ext
 	}
 
 	@Override
+	public void delete(TDto row) {
+		try {
+			Preconditions.checkArgument(row != null);
+			Preconditions.checkArgument(row.getId() != null);
+
+			if (row instanceof HasTimestamps) {
+				deleteByIdOptimistic(row.getId(), ((HasTimestamps) row).getModifiedAt());
+			} else {
+				deleteById(row.getId());
+			}
+		} catch (Throwable t) {
+			throw exceptionStrategy.handleExceptionAtDelete(t);
+		}
+	}
+
+	@Override
 	public void deleteById(TId id) throws NotAuthorizedException, EntityNotFoundException {
 		try {
 			Preconditions.checkArgument(id != null);
 
 			TDto existing = findById(id);
 			if (existing == null) {
-				throw exceptionStrategy.buildNotFoundException(getEntityTypeMessageCode(), id);
+				throw exceptionStrategy.buildNotFoundException(rowMessageCode, id);
 			}
 			boolean wireTapRequired = wireTap.requiresOnDelete();
 			if (wireTapRequired) {
@@ -216,7 +232,7 @@ public class EasyCrudServicePluggableImpl<TId, TDto extends HasId<TId>, TDao ext
 
 			int affected = dao.delete(id);
 			if (affected != 1) {
-				throw exceptionStrategy.buildNotFoundException(getEntityTypeMessageCode(), id);
+				throw exceptionStrategy.buildNotFoundException(rowMessageCode, id);
 			}
 
 			if (wireTapRequired) {
@@ -231,12 +247,12 @@ public class EasyCrudServicePluggableImpl<TId, TDto extends HasId<TId>, TDao ext
 	public void deleteByIdOptimistic(TId id, long modifiedAt) throws NotAuthorizedException, EntityNotFoundException {
 		try {
 			Preconditions.checkArgument(id != null);
-			Preconditions.checkState(HasTimestamps.class.isAssignableFrom(dtoClass),
+			Preconditions.checkState(HasTimestamps.class.isAssignableFrom(rowClass),
 					"Delete using optimistic lock is not allowed for DTO which doesn't support HasTimestamps");
 
 			TDto existing = findById(id);
 			if (existing == null) {
-				throw exceptionStrategy.buildNotFoundException(getEntityTypeMessageCode(), id);
+				throw exceptionStrategy.buildNotFoundException(rowMessageCode, id);
 			}
 			boolean wireTapRequired = wireTap.requiresOnDelete();
 			if (wireTapRequired) {
@@ -265,7 +281,7 @@ public class EasyCrudServicePluggableImpl<TId, TDto extends HasId<TId>, TDao ext
 				return dao.deleteByQuery(query);
 			}
 
-			PaginatedList<TDto> toDelete = query(PagerParams.ALL, query);
+			PaginatedList<TDto> toDelete = find(PagerParams.ALL, query);
 			List<TDto> deleted = new ArrayList<TDto>();
 			for (TDto dto : toDelete.getItems()) {
 				wireTap.beforeDelete(dto);
@@ -308,6 +324,15 @@ public class EasyCrudServicePluggableImpl<TId, TDto extends HasId<TId>, TDao ext
 	}
 
 	@Override
+	public TDto getById(TId id) {
+		TDto ret = findById(id);
+		if (ret == null) {
+			throw new GenericEntityNotFoundException(rowMessageCode, id);
+		}
+		return ret;
+	}
+
+	@Override
 	public TDto findOneByQuery(Query query) throws NotAuthorizedException {
 		try {
 			Preconditions.checkArgument(query != null);
@@ -323,7 +348,7 @@ public class EasyCrudServicePluggableImpl<TId, TDto extends HasId<TId>, TDao ext
 	}
 
 	@Override
-	public PaginatedList<TDto> query(PagerParams pagerParams, Query optionalQuery, OrderBy... orderBy)
+	public PaginatedList<TDto> find(PagerParams pagerParams, Query optionalQuery, OrderBy... orderBy)
 			throws NotAuthorizedException {
 		try {
 			Preconditions.checkArgument(pagerParams != null, "PagerParams is a must");
@@ -337,6 +362,25 @@ public class EasyCrudServicePluggableImpl<TId, TDto extends HasId<TId>, TDao ext
 		} catch (Throwable t) {
 			throw exceptionStrategy.handleExceptionAtFind(t);
 		}
+	}
+
+	@Override
+	public List<TDto> findAll(Query optionalQuery, OrderBy... orderBy) {
+		return find(PagerParams.ALL, optionalQuery, orderBy).getItems();
+	}
+
+	@Override
+	public List<TDto> findAll(OrderBy... orderBy) {
+		return find(PagerParams.ALL, null, orderBy).getItems();
+	}
+
+	@Override
+	public TDto getFirstByQuery(Query query, OrderBy... orderBy) {
+		PaginatedList<TDto> results = find(TOP_ONE, null, orderBy);
+		if (results.getItems().isEmpty()) {
+			throw new GenericEntityNotFoundException(rowMessageCode, query);
+		}
+		return results.getItems().get(0);
 	}
 
 	public TDao getDao() {
@@ -359,12 +403,12 @@ public class EasyCrudServicePluggableImpl<TId, TDto extends HasId<TId>, TDao ext
 	}
 
 	@Override
-	public Class<TDto> getDtoClass() {
-		return dtoClass;
+	public Class<TDto> getRowClass() {
+		return rowClass;
 	}
 
-	public void setDtoClass(Class<TDto> dtoClass) {
-		this.dtoClass = dtoClass;
+	public void setRowClass(Class<TDto> dtoClass) {
+		this.rowClass = dtoClass;
 	}
 
 	public EasyCrudExceptionStrategy<TId> getGenericExceptionStrategy() {
@@ -376,12 +420,12 @@ public class EasyCrudServicePluggableImpl<TId, TDto extends HasId<TId>, TDao ext
 	}
 
 	@Override
-	public String getEntityTypeMessageCode() {
-		return entityTypeMessageCode;
+	public String getRowMessageCode() {
+		return rowMessageCode;
 	}
 
-	public void setEntityTypeMessageCode(String entityTypeMessageCode) {
-		this.entityTypeMessageCode = entityTypeMessageCode;
+	public void setRowMessageCode(String entityTypeMessageCode) {
+		this.rowMessageCode = entityTypeMessageCode;
 	}
 
 	public EasyCrudWireTap<TId, TDto> getWireTap() {

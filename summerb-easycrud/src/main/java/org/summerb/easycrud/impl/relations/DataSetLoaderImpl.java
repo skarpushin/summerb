@@ -112,14 +112,14 @@ public class DataSetLoaderImpl implements DataSetLoader {
 	private HasId loadOne(Object id, EasyCrudService<Object, HasId> service)
 			throws NotAuthorizedException, GenericEntityNotFoundException {
 		HasId ret = service.findById(id);
-		String entityTypeName = service.getEntityTypeMessageCode();
+		String entityTypeName = service.getRowMessageCode();
 		assertFound(ret != null, entityTypeName, id);
 		return ret;
 	}
 
 	private List<HasId> loadMultipleByQuery(Query query, EasyCrudService service)
 			throws NotAuthorizedException, GenericEntityNotFoundException {
-		PaginatedList<HasId> result = service.query(PagerParams.ALL, query);
+		PaginatedList<HasId> result = service.find(PagerParams.ALL, query);
 		return new ArrayList<>(result.getItems());
 	}
 
@@ -353,7 +353,7 @@ public class DataSetLoaderImpl implements DataSetLoader {
 			Query q = queries.size() == 1 ? queries.get(0) : Query.n().or(queries.toArray(new Query[0]));
 
 			EasyCrudService service = easyCrudServiceResolver.resolveByEntityType(entityTypeCode);
-			PaginatedList<HasId> results = service.query(PagerParams.ALL, q);
+			PaginatedList<HasId> results = service.find(PagerParams.ALL, q);
 			ret.put(entityTypeCode, new ArrayList<>(results.getItems()));
 		}
 

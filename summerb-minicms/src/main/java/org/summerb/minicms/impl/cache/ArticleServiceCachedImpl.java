@@ -19,22 +19,17 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
 import org.summerb.easycrud.api.dto.EntityChangedEvent;
 import org.summerb.easycrud.api.dto.PagerParams;
 import org.summerb.easycrud.api.dto.PaginatedList;
-import org.summerb.easycrud.api.exceptions.EntityNotFoundException;
-import org.summerb.easycrud.api.query.OrderBy;
-import org.summerb.easycrud.api.query.Query;
+import org.summerb.easycrud.impl.EasyCrudServiceWrapper;
 import org.summerb.minicms.api.ArticleService;
 import org.summerb.minicms.api.dto.Article;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
 import org.summerb.utils.cache.CachesInvalidationNeeded;
 import org.summerb.utils.tx.TransactionBoundCache;
-import org.summerb.validation.FieldValidationException;
 
+import com.google.common.base.Preconditions;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -42,17 +37,22 @@ import com.google.common.cache.Weigher;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
-public class ArticleServiceCachedImpl implements ArticleService, InitializingBean {
-	private ArticleService articleService;
-	private EventBus eventBus;
+public class ArticleServiceCachedImpl extends EasyCrudServiceWrapper<Long, Article, ArticleService>
+		implements ArticleService {
+	private final EventBus eventBus;
 
 	private LoadingCache<GroupArticlesKey, List<Article>> cache;
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		eventBus.register(this);
+	public ArticleServiceCachedImpl(ArticleService actual, EventBus eventBus) {
+		super(actual);
+
+		Preconditions.checkArgument(eventBus != null);
+		this.eventBus = eventBus;
+		this.eventBus.register(this);
+
 		cache = new TransactionBoundCache<>("ArticleServiceCachedImpl",
 				CacheBuilder.newBuilder().maximumWeight(2000000).weigher(weigher).recordStats(), loader);
+
 	}
 
 	private Weigher<GroupArticlesKey, List<Article>> weigher = new Weigher<GroupArticlesKey, List<Article>>() {
@@ -69,7 +69,7 @@ public class ArticleServiceCachedImpl implements ArticleService, InitializingBea
 	private CacheLoader<GroupArticlesKey, List<Article>> loader = new CacheLoader<GroupArticlesKey, List<Article>>() {
 		@Override
 		public List<Article> load(GroupArticlesKey key) throws NotAuthorizedException {
-			return articleService.findByGroup(key.group, new Locale(key.lang));
+			return actual.findByGroup(key.group, new Locale(key.lang));
 		}
 	};
 
@@ -89,94 +89,24 @@ public class ArticleServiceCachedImpl implements ArticleService, InitializingBea
 	}
 
 	@Override
-	public Article create(Article dto) throws FieldValidationException, NotAuthorizedException {
-		return articleService.create(dto);
-	}
-
-	@Override
-	public Article update(Article dto)
-			throws FieldValidationException, NotAuthorizedException, EntityNotFoundException {
-		return articleService.update(dto);
-	}
-
-	@Override
-	public Article findById(Long id) throws NotAuthorizedException {
-		return articleService.findById(id);
-	}
-
-	@Override
-	public Map<Locale, Article> findArticleLocalizations(String articleKey) {
-		return articleService.findArticleLocalizations(articleKey);
-	}
-
-	@Override
 	public List<Article> findByGroup(String group, Locale locale) {
 		// NOTE: NotAuithExc is not propagated correctly. Is that a problem?
 		return cache.getUnchecked(new GroupArticlesKey(group, locale));
 	}
 
 	@Override
+	public Map<Locale, Article> findArticleLocalizations(String articleKey) {
+		return actual.findArticleLocalizations(articleKey);
+	}
+
+	@Override
 	public PaginatedList<Article> findArticles(PagerParams pagerParams, Locale locale) throws NotAuthorizedException {
-		return articleService.findArticles(pagerParams, locale);
+		return actual.findArticles(pagerParams, locale);
 	}
 
 	@Override
 	public Article findArticleByKeyAndLocale(String key, Locale locale) throws NotAuthorizedException {
-		return articleService.findArticleByKeyAndLocale(key, locale);
-	}
-
-	@Override
-	public void deleteByIdOptimistic(Long id, long modifiedAt) throws NotAuthorizedException, EntityNotFoundException {
-		articleService.deleteByIdOptimistic(id, modifiedAt);
-	}
-
-	public ArticleService getArticleService() {
-		return articleService;
-	}
-
-	@Required
-	public void setArticleService(ArticleService articleService) {
-		this.articleService = articleService;
-	}
-
-	public EventBus getEventBus() {
-		return eventBus;
-	}
-
-	@Autowired
-	public void setEventBus(EventBus eventBus) {
-		this.eventBus = eventBus;
-	}
-
-	@Override
-	public Article findOneByQuery(Query query) throws NotAuthorizedException {
-		return articleService.findOneByQuery(query);
-	}
-
-	@Override
-	public PaginatedList<Article> query(PagerParams pagerParams, Query optionalQuery, OrderBy... orderBy)
-			throws NotAuthorizedException {
-		return articleService.query(pagerParams, optionalQuery, orderBy);
-	}
-
-	@Override
-	public void deleteById(Long id) throws NotAuthorizedException, EntityNotFoundException {
-		articleService.deleteById(id);
-	}
-
-	@Override
-	public int deleteByQuery(Query query) throws NotAuthorizedException {
-		return articleService.deleteByQuery(query);
-	}
-
-	@Override
-	public Class<Article> getDtoClass() {
-		return articleService.getDtoClass();
-	}
-
-	@Override
-	public String getEntityTypeMessageCode() {
-		return articleService.getEntityTypeMessageCode();
+		return actual.findArticleByKeyAndLocale(key, locale);
 	}
 
 }

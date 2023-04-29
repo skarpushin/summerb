@@ -27,7 +27,7 @@ import org.summerb.utils.exceptions.HasErrorDescriptionObject;
  * @author sergey.karpushin
  *
  */
-public class FieldValidationException extends Exception
+public class FieldValidationException extends RuntimeException
 		implements HasMessageCode, HasErrorDescriptionObject<ValidationErrors> {
 	private static final long serialVersionUID = -310812271204903287L;
 

@@ -110,7 +110,7 @@ public class AttachmentServiceImplTest {
 		a.setName("test attachment 2");
 		attachmentService.create(a);
 
-		PaginatedList<Attachment> result = attachmentService.query(new PagerParams(0, 100),
+		PaginatedList<Attachment> result = attachmentService.find(new PagerParams(0, 100),
 				Query.n().eq(Attachment.FN_ARTICLE_ID, a.getArticleId()));
 		assertEquals(2, result.getItems().size());
 	}

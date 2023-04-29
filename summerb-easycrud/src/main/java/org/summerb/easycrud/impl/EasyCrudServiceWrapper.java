@@ -15,6 +15,8 @@
  ******************************************************************************/
 package org.summerb.easycrud.impl;
 
+import java.util.List;
+
 import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.api.dto.PagerParams;
 import org.summerb.easycrud.api.dto.PaginatedList;
@@ -26,8 +28,8 @@ import org.summerb.validation.FieldValidationException;
 
 import com.google.common.base.Preconditions;
 
-public class EasyCrudServiceWrapper<TId, TDto, TActual extends EasyCrudService<TId, TDto>>
-		implements EasyCrudService<TId, TDto> {
+public class EasyCrudServiceWrapper<TId, TRow, TActual extends EasyCrudService<TId, TRow>>
+		implements EasyCrudService<TId, TRow> {
 	protected TActual actual;
 
 	public EasyCrudServiceWrapper(TActual actual) {
@@ -36,29 +38,29 @@ public class EasyCrudServiceWrapper<TId, TDto, TActual extends EasyCrudService<T
 	}
 
 	@Override
-	public TDto create(TDto dto) throws FieldValidationException, NotAuthorizedException {
-		return actual.create(dto);
+	public TRow create(TRow row) throws FieldValidationException, NotAuthorizedException {
+		return actual.create(row);
 	}
 
 	@Override
-	public TDto update(TDto dto) throws FieldValidationException, NotAuthorizedException, EntityNotFoundException {
-		return actual.update(dto);
+	public TRow update(TRow row) throws FieldValidationException, NotAuthorizedException, EntityNotFoundException {
+		return actual.update(row);
 	}
 
 	@Override
-	public TDto findById(TId id) throws NotAuthorizedException {
+	public TRow findById(TId id) throws NotAuthorizedException {
 		return actual.findById(id);
 	}
 
 	@Override
-	public TDto findOneByQuery(Query query) throws NotAuthorizedException {
+	public TRow findOneByQuery(Query query) throws NotAuthorizedException {
 		return actual.findOneByQuery(query);
 	}
 
 	@Override
-	public PaginatedList<TDto> query(PagerParams pagerParams, Query optionalQuery, OrderBy... orderBy)
+	public PaginatedList<TRow> find(PagerParams pagerParams, Query optionalQuery, OrderBy... orderBy)
 			throws NotAuthorizedException {
-		return actual.query(pagerParams, optionalQuery, orderBy);
+		return actual.find(pagerParams, optionalQuery, orderBy);
 	}
 
 	@Override
@@ -77,13 +79,38 @@ public class EasyCrudServiceWrapper<TId, TDto, TActual extends EasyCrudService<T
 	}
 
 	@Override
-	public Class<TDto> getDtoClass() {
-		return actual.getDtoClass();
+	public Class<TRow> getRowClass() {
+		return actual.getRowClass();
 	}
 
 	@Override
-	public String getEntityTypeMessageCode() {
-		return actual.getEntityTypeMessageCode();
+	public String getRowMessageCode() {
+		return actual.getRowMessageCode();
+	}
+
+	@Override
+	public TRow getById(TId id) {
+		return actual.getById(id);
+	}
+
+	@Override
+	public TRow getFirstByQuery(Query query, OrderBy... orderBy) {
+		return actual.getFirstByQuery(query, orderBy);
+	}
+
+	@Override
+	public List<TRow> findAll(Query optionalQuery, OrderBy... orderBy) {
+		return actual.findAll(optionalQuery, orderBy);
+	}
+
+	@Override
+	public List<TRow> findAll(OrderBy... orderBy) {
+		return actual.findAll(orderBy);
+	}
+
+	@Override
+	public void delete(TRow row) {
+		actual.delete(row);
 	}
 
 }

@@ -19,8 +19,8 @@ import org.summerb.easycrud.api.relations.DataSetLoader;
 
 /**
  * Interface used to resolve services by
- * {@link EasyCrudService#getEntityTypeMessageCode()} or
- * {@link EasyCrudService#getDtoClass()}
+ * {@link EasyCrudService#getRowMessageCode()} or
+ * {@link EasyCrudService#getRowClass()}
  * 
  * Supposed to be used mostly by {@link DataSetLoader}
  * 

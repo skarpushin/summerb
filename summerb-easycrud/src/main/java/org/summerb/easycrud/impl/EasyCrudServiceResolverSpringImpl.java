@@ -77,7 +77,7 @@ public class EasyCrudServiceResolverSpringImpl implements EasyCrudServiceResolve
 		Map<String, EasyCrudService> ret = new HashMap<>();
 		for (Entry<String, EasyCrudService> entry : foundBeans.entrySet()) {
 			EasyCrudService service = entry.getValue();
-			EasyCrudService wasOverwritten = ret.put(service.getEntityTypeMessageCode(), service);
+			EasyCrudService wasOverwritten = ret.put(service.getRowMessageCode(), service);
 			if (wasOverwritten != null) {
 				log.warn("Ambigious EasyCrudService for same entityTypeMessageCode 1st " + wasOverwritten + " and 2nd "
 						+ service + " named " + entry.getKey());
@@ -92,7 +92,7 @@ public class EasyCrudServiceResolverSpringImpl implements EasyCrudServiceResolve
 		Map<Class<?>, EasyCrudService> ret = new HashMap<>();
 		for (Entry<String, EasyCrudService> entry : foundBeans.entrySet()) {
 			EasyCrudService service = entry.getValue();
-			EasyCrudService wasOverwritten = ret.put(service.getDtoClass(), service);
+			EasyCrudService wasOverwritten = ret.put(service.getRowClass(), service);
 			if (wasOverwritten != null) {
 				log.warn("Ambigious EasyCrudService for same dtoClass 1st " + wasOverwritten + " and 2nd " + service
 						+ " named " + entry.getKey());

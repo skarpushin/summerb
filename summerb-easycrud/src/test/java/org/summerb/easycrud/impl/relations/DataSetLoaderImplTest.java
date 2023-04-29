@@ -109,7 +109,7 @@ public class DataSetLoaderImplTest {
 		Matcher<Query> matcher = IsEqual.equalTo(Query.n().in(HasId.FN_ID, new Long[] { 1L, 2L }));
 		PaginatedList mockret = new PaginatedList<>(new PagerParams(), Arrays.asList(new TestDto1(), new TestDto1()),
 				2);
-		when(service.query(any(PagerParams.class), argThat(matcher))).thenReturn(mockret);
+		when(service.find(any(PagerParams.class), argThat(matcher))).thenReturn(mockret);
 
 		List<HasId> ret = fixture.loadObjectsByIds(ids(1L, 2L), "dto1");
 		assertNotNull(ret);
@@ -123,7 +123,7 @@ public class DataSetLoaderImplTest {
 		when(fixture.getEasyCrudServiceResolver().resolveByEntityType("dto1")).thenReturn(service);
 
 		PaginatedList mockret = new PaginatedList<>(new PagerParams(), Collections.emptyList(), 0);
-		when(service.query(any(PagerParams.class), any(Query.class))).thenReturn(mockret);
+		when(service.find(any(PagerParams.class), any(Query.class))).thenReturn(mockret);
 
 		fixture.loadObjectsByIds(ids(1L, 2L), "dto1");
 	}
@@ -137,7 +137,7 @@ public class DataSetLoaderImplTest {
 		Matcher<Query> matcher = IsEqual.equalTo(Query.n().in(HasId.FN_ID, new String[] { "s1", "s2" }));
 		PaginatedList mockret = new PaginatedList<>(new PagerParams(), Arrays.asList(new TestDto1(), new TestDto1()),
 				2);
-		when(service.query(any(PagerParams.class), argThat(matcher))).thenReturn(mockret);
+		when(service.find(any(PagerParams.class), argThat(matcher))).thenReturn(mockret);
 
 		List<HasId> ret = fixture.loadObjectsByIds(ids("s1", "s2"), "dto1");
 		assertNotNull(ret);

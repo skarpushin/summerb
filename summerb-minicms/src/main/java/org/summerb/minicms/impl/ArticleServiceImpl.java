@@ -39,8 +39,8 @@ public class ArticleServiceImpl extends EasyCrudServicePluggableImpl<Long, Artic
 	private Locale fallbackToLocale = new Locale("en");
 
 	public ArticleServiceImpl() {
-		setDtoClass(Article.class);
-		setEntityTypeMessageCode("term.articles.article");
+		setRowClass(Article.class);
+		setRowMessageCode("term.articles.article");
 
 		// Legacy compatibility:
 		setWireTap(new EasyCrudWireTapValidationImpl<>(new ArticleValidationStrategyImpl()));
@@ -58,7 +58,7 @@ public class ArticleServiceImpl extends EasyCrudServicePluggableImpl<Long, Artic
 	@Override
 	public Map<Locale, Article> findArticleLocalizations(String articleKey) {
 		try {
-			PaginatedList<Article> articleOptions = query(PagerParams.ALL, Query.n().eq(Article.FN_KEY, articleKey));
+			PaginatedList<Article> articleOptions = find(PagerParams.ALL, Query.n().eq(Article.FN_KEY, articleKey));
 			Map<Locale, Article> ret = new HashMap<Locale, Article>(articleOptions.getItems().size());
 			for (Article a : articleOptions.getItems()) {
 				ret.put(new Locale(a.getLang()), a);
@@ -74,13 +74,13 @@ public class ArticleServiceImpl extends EasyCrudServicePluggableImpl<Long, Artic
 		Preconditions.checkArgument(StringUtils.hasText(group));
 		Preconditions.checkArgument(locale != null);
 
-		return query(PagerParams.ALL, Query.n().eq(Article.FN_GROUP, group).eq(Article.FN_LANG, locale.getLanguage()))
+		return find(PagerParams.ALL, Query.n().eq(Article.FN_GROUP, group).eq(Article.FN_LANG, locale.getLanguage()))
 				.getItems();
 	}
 
 	@Override
 	public PaginatedList<Article> findArticles(PagerParams pagerParams, Locale locale) throws NotAuthorizedException {
-		return query(pagerParams, Query.n().eq(Article.FN_LANG, locale.getLanguage()));
+		return find(pagerParams, Query.n().eq(Article.FN_LANG, locale.getLanguage()));
 	}
 
 	public Locale getFallbackToLocale() {

@@ -47,11 +47,11 @@ public class DataSetUpdaterOnEntityChangedEventImpl implements DataSetUpdaterOnE
 		}
 
 		EasyCrudService service = easyCrudServiceResolver.resolveByDtoClass(e.getValue().getClass());
-		if (!dataSet.getTables().containsKey(service.getEntityTypeMessageCode())) {
+		if (!dataSet.getTables().containsKey(service.getRowMessageCode())) {
 			return;
 		}
 
-		DataTable table = dataSet.getTables().get(service.getEntityTypeMessageCode());
+		DataTable table = dataSet.getTables().get(service.getRowMessageCode());
 		HasId dto = (HasId) e.getValue();
 		if (e.getChangeType() == ChangeType.REMOVED) {
 			table.getRows().remove(dto.getId());

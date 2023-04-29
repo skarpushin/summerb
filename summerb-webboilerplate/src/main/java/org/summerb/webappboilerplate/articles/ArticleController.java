@@ -171,8 +171,8 @@ public class ArticleController extends ControllerBase {
 	public @ResponseBody Map<String, ? extends Object> ajaxList(@RequestBody EasyCrudQueryParams filteringParams,
 			HttpServletResponse response) throws NotAuthorizedException {
 		Query query = filteringParamsToQueryConverter.convert(filteringParams.getFilterParams(),
-				attachmentService.getDtoClass());
-		PaginatedList<Attachment> ret = attachmentService.query(filteringParams.getPagerParams(), query,
+				attachmentService.getRowClass());
+		PaginatedList<Attachment> ret = attachmentService.find(filteringParams.getPagerParams(), query,
 				filteringParams.getOrderBy());
 		return Collections.singletonMap(EasyCrudControllerBase.ATTR_LIST, ret);
 	}

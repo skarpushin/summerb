@@ -134,11 +134,11 @@ public class EasyCrudRestControllerBase<TId, TDto extends HasId<TId>, TEasyCrudS
 
 		PaginatedList<TDto> rows;
 		if (orderBy == null) {
-			rows = service.query(pagerParams, queryNarrowerStrategy.narrow(null, pathVariables));
+			rows = service.find(pagerParams, queryNarrowerStrategy.narrow(null, pathVariables));
 		} else {
-			rows = service.query(pagerParams, queryNarrowerStrategy.narrow(null, pathVariables), orderBy);
+			rows = service.find(pagerParams, queryNarrowerStrategy.narrow(null, pathVariables), orderBy);
 		}
-		MultipleItemsResult<TId, TDto> ret = new MultipleItemsResult<>(service.getEntityTypeMessageCode(), rows);
+		MultipleItemsResult<TId, TDto> ret = new MultipleItemsResult<>(service.getRowMessageCode(), rows);
 
 		if (needPerms) {
 			Preconditions.checkArgument(permissionsResolverStrategy != null, PERM_RESOLVER_REQ);
@@ -157,7 +157,7 @@ public class EasyCrudRestControllerBase<TId, TDto extends HasId<TId>, TEasyCrudS
 		Preconditions.checkState(dataSetLoader != null, "DataSetLoader is required to resolve references");
 		Preconditions.checkState(referencesRegistry != null, "referencesRegistry is required to resolve references");
 		DataSet ds = new DataSet();
-		DataTable<TId, TDto> table = new DataTable<>(service.getEntityTypeMessageCode());
+		DataTable<TId, TDto> table = new DataTable<>(service.getRowMessageCode());
 		table.putAll(items);
 		ds.getTables().put(table.getName(), table);
 
@@ -189,11 +189,11 @@ public class EasyCrudRestControllerBase<TId, TDto extends HasId<TId>, TEasyCrudS
 			filteringParams.setPagerParams(defaultPagerParams);
 		}
 
-		Query query = filteringParamsToQueryConverter.convert(filteringParams.getFilterParams(), service.getDtoClass());
+		Query query = filteringParamsToQueryConverter.convert(filteringParams.getFilterParams(), service.getRowClass());
 		query = queryNarrowerStrategy.narrow(query, pathVariables);
 
-		PaginatedList<TDto> rows = service.query(filteringParams.getPagerParams(), query, filteringParams.getOrderBy());
-		MultipleItemsResult<TId, TDto> ret = new MultipleItemsResult<>(service.getEntityTypeMessageCode(), rows);
+		PaginatedList<TDto> rows = service.find(filteringParams.getPagerParams(), query, filteringParams.getOrderBy());
+		MultipleItemsResult<TId, TDto> ret = new MultipleItemsResult<>(service.getRowMessageCode(), rows);
 
 		if (needPerms) {
 			Preconditions.checkArgument(permissionsResolverStrategy != null, PERM_RESOLVER_REQ);
@@ -214,7 +214,7 @@ public class EasyCrudRestControllerBase<TId, TDto extends HasId<TId>, TEasyCrudS
 			throws Exception {
 
 		TDto row = service.findById(id);
-		SingleItemResult<TId, TDto> ret = new SingleItemResult<TId, TDto>(service.getEntityTypeMessageCode(), row);
+		SingleItemResult<TId, TDto> ret = new SingleItemResult<TId, TDto>(service.getRowMessageCode(), row);
 
 		if (needPerms && row != null) {
 			Preconditions.checkArgument(permissionsResolverStrategy != null, PERM_RESOLVER_REQ);
@@ -232,7 +232,7 @@ public class EasyCrudRestControllerBase<TId, TDto extends HasId<TId>, TEasyCrudS
 	public SingleItemResult<TId, TDto> createNewItem(@RequestBody TDto dto,
 			@RequestParam(value = "needPerms", required = false) boolean needPerms) throws Exception {
 		TDto row = service.create(dto);
-		SingleItemResult<TId, TDto> ret = new SingleItemResult<>(service.getEntityTypeMessageCode(), row);
+		SingleItemResult<TId, TDto> ret = new SingleItemResult<>(service.getRowMessageCode(), row);
 		if (needPerms) {
 			Preconditions.checkArgument(permissionsResolverStrategy != null, PERM_RESOLVER_REQ);
 			permissionsResolverStrategy.resolvePermissions(ret);
@@ -244,7 +244,7 @@ public class EasyCrudRestControllerBase<TId, TDto extends HasId<TId>, TEasyCrudS
 	public SingleItemResult<TId, TDto> updateItem(@PathVariable("id") TId id, @RequestBody TDto rowToUpdate,
 			@RequestParam(value = "needPerms", required = false) boolean needPerms) throws Exception {
 		TDto row = service.update(rowToUpdate);
-		SingleItemResult<TId, TDto> ret = new SingleItemResult<>(service.getEntityTypeMessageCode(), row);
+		SingleItemResult<TId, TDto> ret = new SingleItemResult<>(service.getRowMessageCode(), row);
 		if (needPerms) {
 			Preconditions.checkArgument(permissionsResolverStrategy != null, PERM_RESOLVER_REQ);
 			permissionsResolverStrategy.resolvePermissions(ret);

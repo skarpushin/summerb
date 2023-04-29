@@ -81,13 +81,13 @@ public class DomLoaderDeviceGatewayTest {
 		EasyCrudServiceResolver easyCrudServiceResolver = mock(EasyCrudServiceResolver.class);
 
 		DeviceService deviceService = mock(DeviceService.class);
-		when(deviceService.getEntityTypeMessageCode()).thenReturn(DeviceService.ENTITY_TYPE_MESSAGE_CODE);
+		when(deviceService.getRowMessageCode()).thenReturn(DeviceService.ENTITY_TYPE_MESSAGE_CODE);
 		when(easyCrudServiceResolver.resolveByDtoClass(DeviceRow.class)).thenReturn(deviceService);
 		when(easyCrudServiceResolver.resolveByEntityType(DeviceService.ENTITY_TYPE_MESSAGE_CODE))
 				.thenReturn(deviceService);
 
 		EnvService envService = mock(EnvService.class);
-		when(envService.getEntityTypeMessageCode()).thenReturn(EnvService.ENTITY_TYPE_MESSAGE_CODE);
+		when(envService.getRowMessageCode()).thenReturn(EnvService.ENTITY_TYPE_MESSAGE_CODE);
 		when(easyCrudServiceResolver.resolveByDtoClass(EnvironmentRow.class)).thenReturn(envService);
 		when(easyCrudServiceResolver.resolveByEntityType(EnvService.ENTITY_TYPE_MESSAGE_CODE)).thenReturn(envService);
 
@@ -103,7 +103,7 @@ public class DomLoaderDeviceGatewayTest {
 		EnvironmentRow envRow = new EnvironmentRow();
 		envRow.setId(1L);
 		envRow.setName("Hurray");
-		when(envService.query(any(), any(), any()))
+		when(envService.find(any(), any(), any()))
 				.thenReturn(new PaginatedList<>(PagerParams.ALL, Arrays.asList(envRow), 1));
 		when(envService.findById(1L)).thenReturn(envRow);
 		// ds.get(EnvService.ENTITY_TYPE_MESSAGE_CODE).put(envRow);
@@ -112,7 +112,7 @@ public class DomLoaderDeviceGatewayTest {
 		deviceRow.setId(2L);
 		deviceRow.setEnvId(1);
 		deviceRow.setName("Yes it is");
-		when(deviceService.query(any(), any()))
+		when(deviceService.find(any(), any()))
 				.thenReturn(new PaginatedList<>(PagerParams.ALL, Arrays.asList(deviceRow), 1));
 		when(deviceService.findById(2L)).thenReturn(deviceRow);
 		// ds.get(DeviceService.ENTITY_TYPE_MESSAGE_CODE).put(deviceRow);
