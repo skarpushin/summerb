@@ -25,14 +25,13 @@ public interface AuditEvents {
 	/**
 	 * report record to audit log
 	 * 
-	 * @param auditEventCode
-	 *            record type code. It's expected that all events with this code
-	 *            will have same type of data argument
-	 * @param data
-	 *            event data that will be serialized to audit log. Underlying
-	 *            implementation will choose serialization format. Default is JSON.
-	 *            If you want to put simple scalar value - it's recommended to use
-	 *            {@link ScalarValue} instance
+	 * @param auditEventCode record type code. It's expected that all events with
+	 *                       this code will have same type of data argument
+	 * @param data           event data that will be serialized to audit log.
+	 *                       Underlying implementation will choose serialization
+	 *                       format. Default is JSON. If you want to put simple
+	 *                       scalar value - it's recommended to use
+	 *                       {@link ScalarValue} instance
 	 */
 	void report(String auditEventCode, Serializable data);
 }

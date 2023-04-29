@@ -40,14 +40,10 @@ import java.util.Map;
 public interface PermissionService {
 	/**
 	 * 
-	 * @param optionalDomainName
-	 *            i.e. TSACCESS
-	 * @param userUuid
-	 *            i.e. 12312312-3123-123-123
-	 * @param optionalSubjectId
-	 *            i.e. TS-123123-1231-23-123
-	 * @param permissionKey
-	 *            i.e. MEMBER
+	 * @param optionalDomainName i.e. TSACCESS
+	 * @param userUuid           i.e. 12312312-3123-123-123
+	 * @param optionalSubjectId  i.e. TS-123123-1231-23-123
+	 * @param permissionKey      i.e. MEMBER
 	 */
 	void grantPermission(String optionalDomainName, String userUuid, String optionalSubjectId, String permissionKey);
 
@@ -69,9 +65,9 @@ public interface PermissionService {
 	 * Get subject list where user has permissions in current domain. Optionally
 	 * filtered by specific permission.
 	 * 
-	 * @param optionalRequiredPermission
-	 *            if specified will be used to filter only those subjects where use
-	 *            has this permission
+	 * @param optionalRequiredPermission if specified will be used to filter only
+	 *                                   those subjects where use has this
+	 *                                   permission
 	 * 
 	 * @return list of subjects user has permissions for
 	 */

@@ -25,10 +25,8 @@ import org.summerb.utils.DtoBase;
  * 
  * @author sergeyk
  *
- * @param <T1Id>
- *            type of referencer id (who references)
- * @param <T2Id>
- *            type of referencee id (who is being referenced)
+ * @param <T1Id> type of referencer id (who references)
+ * @param <T2Id> type of referencee id (who is being referenced)
  */
 public class ManyToManyDto<T1Id, T2Id> implements DtoBase, HasAutoincrementId {
 	private static final long serialVersionUID = 2609297133758985L;

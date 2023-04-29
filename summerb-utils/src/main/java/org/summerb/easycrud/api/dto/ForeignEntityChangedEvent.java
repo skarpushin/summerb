@@ -32,10 +32,8 @@ public class ForeignEntityChangedEvent<T extends DtoBase> extends EntityChangedE
 	private Object origin;
 
 	/**
-	 * @param base
-	 *            even
-	 * @param origin
-	 *            where this event came from, i.e. node id
+	 * @param base   even
+	 * @param origin where this event came from, i.e. node id
 	 */
 	@SuppressWarnings("deprecation")
 	public ForeignEntityChangedEvent(EntityChangedEvent<T> base, Object origin) {

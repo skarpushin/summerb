@@ -184,10 +184,8 @@ public class TableMetaDataContext {
 	 * Compare columns created from metadata with declared columns and return a
 	 * reconciled list.
 	 * 
-	 * @param declaredColumns
-	 *            declared column names
-	 * @param generatedKeyNames
-	 *            names of generated key columns
+	 * @param declaredColumns   declared column names
+	 * @param generatedKeyNames names of generated key columns
 	 */
 	protected List<String> reconcileColumnsToUse(List<String> declaredColumns, String[] generatedKeyNames) {
 		if (declaredColumns.size() > 0) {
@@ -209,8 +207,7 @@ public class TableMetaDataContext {
 	/**
 	 * Match the provided column names and values with the list of columns used.
 	 * 
-	 * @param sqlParameterSource
-	 *            the parameter names and values
+	 * @param sqlParameterSource        the parameter names and values
 	 * @param reconciledUpdatingColumns
 	 */
 	public List<Object> sortAndTypeInParameter(SqlParameterSource sqlParameterSource,
@@ -250,8 +247,7 @@ public class TableMetaDataContext {
 	/**
 	 * Match the provided column names and values with the list of columns used.
 	 * 
-	 * @param inParameters
-	 *            the parameter names and values
+	 * @param inParameters the parameter names and values
 	 */
 	public List<Object> sortAndTypeInParameter(Map<String, Object> inParameters,
 			List<String> reconciledUpdatingColumns) {

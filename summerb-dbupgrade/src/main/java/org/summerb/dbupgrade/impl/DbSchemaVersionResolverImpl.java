@@ -36,11 +36,9 @@ public class DbSchemaVersionResolverImpl implements DbSchemaVersionResolver {
 	protected SimpleJdbcInsert jdbcInsert;
 	private boolean versioningTableEnsured;
 
-	public DbSchemaVersionResolverImpl(DataSource dataSource,
-			VersionTableDbDialect versionTableDbDialect) {
+	public DbSchemaVersionResolverImpl(DataSource dataSource, VersionTableDbDialect versionTableDbDialect) {
 		Preconditions.checkArgument(dataSource != null, "dataSource required");
-		Preconditions.checkArgument(versionTableDbDialect != null,
-				"versionTableDbDialect required");
+		Preconditions.checkArgument(versionTableDbDialect != null, "versionTableDbDialect required");
 
 		this.dataSource = dataSource;
 		this.versionTableDbDialect = versionTableDbDialect;
@@ -60,8 +58,7 @@ public class DbSchemaVersionResolverImpl implements DbSchemaVersionResolver {
 				throw new RuntimeException("Failed to verify if database contains table for tracking db versions", exc);
 			}
 		}
-		this.jdbcInsert = new SimpleJdbcInsert(dataSource)
-				.withTableName(versionTableDbDialect.getTableName());
+		this.jdbcInsert = new SimpleJdbcInsert(dataSource).withTableName(versionTableDbDialect.getTableName());
 		versioningTableEnsured = true;
 	}
 
@@ -78,8 +75,7 @@ public class DbSchemaVersionResolverImpl implements DbSchemaVersionResolver {
 	public int getCurrentDbVersion() {
 		try {
 			ensureVersionTrackingTablePresent();
-			Integer ret = jdbcTemplate.queryForObject(versionTableDbDialect.getCurrentDbVersionQuery(),
-					Integer.class);
+			Integer ret = jdbcTemplate.queryForObject(versionTableDbDialect.getCurrentDbVersionQuery(), Integer.class);
 			return ret == null ? -1 : ret;
 		} catch (Exception e) {
 			throw new RuntimeException("Failed to query current db version", e);

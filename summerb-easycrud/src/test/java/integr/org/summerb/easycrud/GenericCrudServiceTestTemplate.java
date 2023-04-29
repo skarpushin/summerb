@@ -416,8 +416,7 @@ public abstract class GenericCrudServiceTestTemplate {
 	public void testFindByQueryBooleanTrue() throws Exception {
 		createTestData();
 
-		PaginatedList<TestDto1> result = getTestDto1Service().find(new PagerParams(0, 100),
-				Query.n().isTrue("active"));
+		PaginatedList<TestDto1> result = getTestDto1Service().find(new PagerParams(0, 100), Query.n().isTrue("active"));
 		assertEquals(2, result.getTotalResults());
 
 		result = getTestDto1Service().find(new PagerParams(0, 100), Query.n().ne("active", false));

@@ -41,10 +41,8 @@ public interface DataSetLoader {
 	 * Simplified version of {@link #loadObjectsByIds(Map, DataSet)} allows to load
 	 * only objects of certain type
 	 * 
-	 * @param ids
-	 *            of objects to load
-	 * @param entityTypeName
-	 *            type of entity. Same as returned by it's service
+	 * @param ids            of objects to load
+	 * @param entityTypeName type of entity. Same as returned by it's service
 	 */
 	@SuppressWarnings("rawtypes")
 	List<HasId> loadObjectsByIds(Set<Object> ids, String entityTypeName)
@@ -63,10 +61,8 @@ public interface DataSetLoader {
 	 * It will NOT load referenced objects. Use
 	 * {@link #resolveReferencedObjects(DataSet, Ref...)} if needed
 	 * 
-	 * @param ids
-	 *            map of ids to load. Entitype is mapped to list of ids
-	 * @param dataSet
-	 *            target for loaded data.
+	 * @param ids     map of ids to load. Entitype is mapped to list of ids
+	 * @param dataSet target for loaded data.
 	 */
 	void loadObjectsByIds(Map<String, Set<Object>> ids, DataSet dataSet)
 			throws EntityNotFoundException, NotAuthorizedException;
@@ -78,17 +74,13 @@ public interface DataSetLoader {
 	 * In case dataSet and/or references and/or non of the dataSet rows have matched
 	 * references - method will end silently without exceptions.
 	 * 
-	 * @param dataSet
-	 *            data set with some objects present in it
-	 * @param references
-	 *            list of references that needs to be satisfied (referenced objects
-	 *            loaded)
-	 * @throws EntityNotFoundException
-	 *             in case referenced object not found
-	 * @throws NotAuthorizedException
-	 *             in case user is not authorized to read certain objects
-	 * @throws IllegalArgumentException
-	 *             in case dataSet and/or references is null
+	 * @param dataSet    data set with some objects present in it
+	 * @param references list of references that needs to be satisfied (referenced
+	 *                   objects loaded)
+	 * @throws EntityNotFoundException  in case referenced object not found
+	 * @throws NotAuthorizedException   in case user is not authorized to read
+	 *                                  certain objects
+	 * @throws IllegalArgumentException in case dataSet and/or references is null
 	 */
 	void resolveReferencedObjects(DataSet dataSet, Ref... references)
 			throws EntityNotFoundException, NotAuthorizedException;

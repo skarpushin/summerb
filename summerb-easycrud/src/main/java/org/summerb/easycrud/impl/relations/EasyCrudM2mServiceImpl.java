@@ -80,8 +80,8 @@ public class EasyCrudM2mServiceImpl<T1Id, T1Dto extends HasId<T1Id>, T2Id, T2Dto
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (getRowMessageCode() == null) {
-			setRowMessageCode(Ref.buildDefaultM2mEntityName(serviceFrom.getRowMessageCode(),
-					serviceTo.getRowMessageCode()));
+			setRowMessageCode(
+					Ref.buildDefaultM2mEntityName(serviceFrom.getRowMessageCode(), serviceTo.getRowMessageCode()));
 		}
 
 		ManyToManyDto<T1Id, T2Id> example = new ManyToManyDto<>();
@@ -170,8 +170,8 @@ public class EasyCrudM2mServiceImpl<T1Id, T1Dto extends HasId<T1Id>, T2Id, T2Dto
 			return ret;
 		} catch (Throwable t) {
 			throw new RuntimeException("Failed to find " + serviceTo.getRowMessageCode() + " refernced by "
-					+ serviceFrom.getRowMessageCode() + " identified by "
-					+ Arrays.toString(referencerIds.toArray()), t);
+					+ serviceFrom.getRowMessageCode() + " identified by " + Arrays.toString(referencerIds.toArray()),
+					t);
 		}
 	}
 
@@ -199,9 +199,10 @@ public class EasyCrudM2mServiceImpl<T1Id, T1Dto extends HasId<T1Id>, T2Id, T2Dto
 			return create(pair);
 		} catch (Throwable t) {
 			Throwables.throwIfInstanceOf(t, NotAuthorizedException.class);
-			throw new RuntimeException("Failed to add reference from " + serviceFrom.getRowMessageCode()
-					+ " identified by " + referencerId + " to " + serviceTo.getRowMessageCode()
-					+ " identified by " + referenceeId, t);
+			throw new RuntimeException(
+					"Failed to add reference from " + serviceFrom.getRowMessageCode() + " identified by " + referencerId
+							+ " to " + serviceTo.getRowMessageCode() + " identified by " + referenceeId,
+					t);
 		}
 	}
 
@@ -225,9 +226,10 @@ public class EasyCrudM2mServiceImpl<T1Id, T1Dto extends HasId<T1Id>, T2Id, T2Dto
 			}
 		} catch (Throwable t) {
 			Throwables.throwIfInstanceOf(t, NotAuthorizedException.class);
-			throw new RuntimeException("Failed to remove reference from " + serviceFrom.getRowMessageCode()
-					+ " identified by " + referencerId + " to " + serviceTo.getRowMessageCode()
-					+ " identified by " + referenceeId, t);
+			throw new RuntimeException(
+					"Failed to remove reference from " + serviceFrom.getRowMessageCode() + " identified by "
+							+ referencerId + " to " + serviceTo.getRowMessageCode() + " identified by " + referenceeId,
+					t);
 		}
 	}
 

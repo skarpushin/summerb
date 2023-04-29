@@ -51,8 +51,7 @@ public class SimpleJdbcUpdate extends AbstractJdbcUpdate implements SimpleJdbcUp
 	 * Constructor that takes one parameter with the JDBC DataSource to use when
 	 * creating the JdbcTemplate.
 	 * 
-	 * @param dataSource
-	 *            the <code>DataSource</code> to use
+	 * @param dataSource the <code>DataSource</code> to use
 	 * @see org.springframework.jdbc.core.JdbcTemplate#setDataSource
 	 */
 	public SimpleJdbcUpdate(DataSource dataSource) {
@@ -63,8 +62,7 @@ public class SimpleJdbcUpdate extends AbstractJdbcUpdate implements SimpleJdbcUp
 	 * Alternative Constructor that takes one parameter with the JdbcTemplate to be
 	 * used.
 	 * 
-	 * @param jdbcTemplate
-	 *            the <code>JdbcTemplate</code> to use
+	 * @param jdbcTemplate the <code>JdbcTemplate</code> to use
 	 * @see org.springframework.jdbc.core.JdbcTemplate#setDataSource
 	 */
 	public SimpleJdbcUpdate(JdbcTemplate jdbcTemplate) {

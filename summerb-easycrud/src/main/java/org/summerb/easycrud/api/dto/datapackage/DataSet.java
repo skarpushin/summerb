@@ -37,8 +37,7 @@ public class DataSet {
 	/**
 	 * Get tanle by name
 	 * 
-	 * @param name
-	 *            table name
+	 * @param name table name
 	 * @return never null instance of {@link DataTable}
 	 */
 	public DataTable get(String name) {

@@ -36,14 +36,13 @@ import org.summerb.easycrud.rest.commonpathvars.PathVariablesMap;
 public interface PermissionsResolverPerRow<TId, TDto extends HasId<TId>> {
 
 	/**
-	 * @param optionalDto
-	 *            could be null. In this case it means we need to provide table-wide
-	 *            permissions
+	 * @param optionalDto      could be null. In this case it means we need to
+	 *                         provide table-wide permissions
 	 * 
-	 * @param contextVariables
-	 *            context variables which were resolved from {@link RequestMapping}
-	 *            based on Controller-wide {@link HasCommonPathVariable} and
-	 *            {@link HasCommonPathVariables} annotations.
+	 * @param contextVariables context variables which were resolved from
+	 *                         {@link RequestMapping} based on Controller-wide
+	 *                         {@link HasCommonPathVariable} and
+	 *                         {@link HasCommonPathVariables} annotations.
 	 * 
 	 * @return pairs: permission - availability. For standard action constants see
 	 *         {@link Permissions}

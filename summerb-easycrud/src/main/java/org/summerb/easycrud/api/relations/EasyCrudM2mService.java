@@ -34,14 +34,10 @@ import org.summerb.validation.FieldValidationException;
  * 
  * @author sergeyk
  *
- * @param <T1Id>
- *            id of referencer
- * @param <T1Dto>
- *            referencer. Dto that suppose to reference dictionary objects
- * @param <T2Id>
- *            id of referencee
- * @param <T2Dto>
- *            referencee dto. The one is referenced by many referencers
+ * @param <T1Id>  id of referencer
+ * @param <T1Dto> referencer. Dto that suppose to reference dictionary objects
+ * @param <T2Id>  id of referencee
+ * @param <T2Dto> referencee dto. The one is referenced by many referencers
  */
 public interface EasyCrudM2mService<T1Id, T1Dto extends HasId<T1Id>, T2Id, T2Dto extends HasId<T2Id>>
 		extends EasyCrudService<Long, ManyToManyDto<T1Id, T2Id>> {

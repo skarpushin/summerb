@@ -361,13 +361,11 @@ public class DataSetLoaderImpl implements DataSetLoader {
 	}
 
 	/**
-	 * @param scanForReferences
-	 *            dataSet to scan for Many2one & One2one referenced objects
-	 * @param checkForExistence
-	 *            data set that contains already loaded objects so that we can skip
-	 *            loading these objects again
-	 * @param references
-	 *            references to use
+	 * @param scanForReferences dataSet to scan for Many2one & One2one referenced
+	 *                          objects
+	 * @param checkForExistence data set that contains already loaded objects so
+	 *                          that we can skip loading these objects again
+	 * @param references        references to use
 	 * @return map entityTypeCode to list of ids of these entities to be loaded
 	 */
 	private Map<String, Set<Object>> enumerateOutgoingReferences(DataSet scanForReferences, DataSet checkForExistence,

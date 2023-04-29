@@ -74,9 +74,8 @@ public class AttachmentFilesRemover implements InitializingBean {
 	 * Provide an {@link EventBus} which will be used to transmit
 	 * {@link EntityChangedEvent} upon transaction completion.
 	 * 
-	 * @param eventBus
-	 *            It could be any event bus, but it's batter to have tx-bound one so
-	 *            that files are deleted only if transaction committed
+	 * @param eventBus It could be any event bus, but it's batter to have tx-bound
+	 *                 one so that files are deleted only if transaction committed
 	 */
 	@Required
 	public void setEventBus(EventBus eventBus) {

@@ -35,10 +35,9 @@ public class BackgroundProcessAuthentication implements Authentication {
 
 	/**
 	 * 
-	 * @param origin
-	 *            some string which is probably suppose to clarify what is the
-	 *            origin of that authentication. Not used for any logic - just for
-	 *            tracing/debugging purposes
+	 * @param origin some string which is probably suppose to clarify what is the
+	 *               origin of that authentication. Not used for any logic - just
+	 *               for tracing/debugging purposes
 	 */
 	public BackgroundProcessAuthentication(String origin) {
 		this.origin = origin;

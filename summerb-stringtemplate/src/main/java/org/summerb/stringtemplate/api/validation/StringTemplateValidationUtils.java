@@ -33,14 +33,10 @@ public class StringTemplateValidationUtils {
 	 * Validate string template basically using compiler. If compile successful,
 	 * that template validates fine
 	 * 
-	 * @param stringTemplateFactory
-	 *            compiler to validate against
-	 * @param stringTemplate
-	 *            template to validate
-	 * @param ctx
-	 *            validation context
-	 * @param fieldToken
-	 *            field token
+	 * @param stringTemplateFactory compiler to validate against
+	 * @param stringTemplate        template to validate
+	 * @param ctx                   validation context
+	 * @param fieldToken            field token
 	 */
 	public static void validateStringTemplate(StringTemplateFactory stringTemplateFactory, String stringTemplate,
 			ValidationContext ctx, String fieldToken) {

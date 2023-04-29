@@ -25,8 +25,7 @@ public interface ExceptionUnwindingStrategy {
 	 * meaningless exceptions like {@link NestedServletException},
 	 * {@link UndeclaredThrowableException}, etc..
 	 * 
-	 * @param current
-	 *            current exception at hand
+	 * @param current current exception at hand
 	 * @return either the same exception or more meaningful.
 	 */
 	Throwable getNextMeaningfulExc(Throwable current);

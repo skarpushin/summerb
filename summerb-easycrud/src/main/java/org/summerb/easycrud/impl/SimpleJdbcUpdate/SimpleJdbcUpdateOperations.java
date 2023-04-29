@@ -30,8 +30,7 @@ public interface SimpleJdbcUpdateOperations {
 	/**
 	 * Specify the table name to be used for the update.
 	 * 
-	 * @param tableName
-	 *            the name of the stored table
+	 * @param tableName the name of the stored table
 	 * @return the instance of this SimpleJdbcUpdate
 	 */
 	SimpleJdbcUpdateOperations withTableName(String tableName);
@@ -39,8 +38,7 @@ public interface SimpleJdbcUpdateOperations {
 	/**
 	 * Specify the shema name, if any, to be used for the update.
 	 * 
-	 * @param schemaName
-	 *            the name of the schema
+	 * @param schemaName the name of the schema
 	 * @return the instance of this SimpleJdbcUpdate
 	 */
 	SimpleJdbcUpdateOperations withSchemaName(String schemaName);
@@ -48,8 +46,7 @@ public interface SimpleJdbcUpdateOperations {
 	/**
 	 * Specify the catalog name, if any, to be used for the update.
 	 * 
-	 * @param catalogName
-	 *            the name of the catalog
+	 * @param catalogName the name of the catalog
 	 * @return the instance of this SimpleJdbcUpdate
 	 */
 	SimpleJdbcUpdateOperations withCatalogName(String catalogName);
@@ -57,8 +54,7 @@ public interface SimpleJdbcUpdateOperations {
 	/**
 	 * Specify the column names that the update statement should be limited to use.
 	 * 
-	 * @param columnNames
-	 *            one or more column names
+	 * @param columnNames one or more column names
 	 * @return the instance of this SimpleJdbcUpdate
 	 */
 	SimpleJdbcUpdateOperations updatingColumns(String... columnNames);
@@ -66,8 +62,7 @@ public interface SimpleJdbcUpdateOperations {
 	/**
 	 * Specify the names of any columns that is a primary key.
 	 * 
-	 * @param columnNames
-	 *            one or more column names
+	 * @param columnNames one or more column names
 	 * @return the instance of this SimpleJdbcUpdate
 	 */
 	SimpleJdbcUpdate restrictingColumns(String... columnNames);
@@ -75,8 +70,7 @@ public interface SimpleJdbcUpdateOperations {
 	/**
 	 * Specify the names of any columns that are to be part of the where clause.
 	 * 
-	 * @param columnsToOperators
-	 *            one or more column names
+	 * @param columnsToOperators one or more column names
 	 * @return the instance of this SimpleJdbcUpdate
 	 */
 	SimpleJdbcUpdate restrictingColumns(Map<String, Operator> columnsToOperators);
@@ -111,10 +105,8 @@ public interface SimpleJdbcUpdateOperations {
 	/**
 	 * Execute the update using the values passed in.
 	 * 
-	 * @param updatingValues
-	 *            Map containing column names and corresponding value
-	 * @param restrictingValues
-	 *            List containing PK column values
+	 * @param updatingValues    Map containing column names and corresponding value
+	 * @param restrictingValues List containing PK column values
 	 * @return the number of rows affected as returned by the JDBC driver
 	 */
 	int execute(Map<String, Object> updatingValues, Map<String, Object> restrictingValues);
@@ -122,10 +114,9 @@ public interface SimpleJdbcUpdateOperations {
 	/**
 	 * Execute the update using the values passed in.
 	 * 
-	 * @param updatingValues
-	 *            SqlParameterSource containing values to use for update
-	 * @param restrictingValues
-	 *            List containing PK column values
+	 * @param updatingValues    SqlParameterSource containing values to use for
+	 *                          update
+	 * @param restrictingValues List containing PK column values
 	 * @return the number of rows affected as returned by the JDBC driver
 	 */
 	int execute(SqlParameterSource updatingValues, SqlParameterSource restrictingValues);

@@ -93,11 +93,11 @@ public class StringTokenizer {
 				i++;
 			}
 		}
-		
+
 		if (delimLength > 0) {
 			lastSelectedDelimeterIndex = indexOfNearestDelimeter(delimPos);
 		}
-		
+
 		return true;
 	}
 

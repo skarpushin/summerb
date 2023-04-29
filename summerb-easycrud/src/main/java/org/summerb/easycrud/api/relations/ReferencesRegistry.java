@@ -33,8 +33,7 @@ public interface ReferencesRegistry {
 	/**
 	 * Get all references originating from provided table
 	 * 
-	 * @param sourceEntityName
-	 *            sett {@link EasyCrudService#getRowMessageCode()}
+	 * @param sourceEntityName sett {@link EasyCrudService#getRowMessageCode()}
 	 */
 	Collection<Ref> findRefsFromSource(String sourceEntityName);
 

@@ -30,8 +30,7 @@ public interface StringIdAliasService {
 	/**
 	 * Get 'long' alias for string value
 	 * 
-	 * @param str
-	 *            string value
+	 * @param str string value
 	 * @return unique long value associated with provided string
 	 */
 	long getAliasFor(String str);

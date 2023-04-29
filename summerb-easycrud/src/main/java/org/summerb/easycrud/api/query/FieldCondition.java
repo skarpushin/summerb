@@ -43,8 +43,7 @@ public class FieldCondition implements Restriction<PropertyAccessor> {
 	/**
 	 * Method to verify restriction in-memory
 	 * 
-	 * @param formData
-	 *            {@link PropertyAccessor} instance to access DTO fields
+	 * @param formData {@link PropertyAccessor} instance to access DTO fields
 	 */
 	@Override
 	@SuppressWarnings("unchecked")

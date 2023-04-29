@@ -41,16 +41,13 @@ public interface EasyCrudScaffold {
 	/**
 	 * Build impl of the custom service interface
 	 * 
-	 * @param serviceInterface
-	 *            custom service interface
-	 * @param messageCode
-	 *            entity message code
-	 * @param tableName
-	 *            name of the datble in the database
-	 * @param injections
-	 *            optional list of injections you want to make into service.
-	 *            Scaffolder will automatically detect supported types and will wrap
-	 *            it into wire taps if needed (or other way, depending on impl)
+	 * @param serviceInterface custom service interface
+	 * @param messageCode      entity message code
+	 * @param tableName        name of the datble in the database
+	 * @param injections       optional list of injections you want to make into
+	 *                         service. Scaffolder will automatically detect
+	 *                         supported types and will wrap it into wire taps if
+	 *                         needed (or other way, depending on impl)
 	 * @return impl of the service
 	 */
 	<TId, TDto extends HasId<TId>, TService extends EasyCrudService<TId, TDto>> TService fromService(
@@ -75,16 +72,13 @@ public interface EasyCrudScaffold {
 	/**
 	 * 
 	 * 
-	 * @param dtoClass
-	 *            dto that reflects row in a database
-	 * @param messageCode
-	 *            message code used to identify service
-	 * @param tableName
-	 *            name of the table in the database
-	 * @param injections
-	 *            optional list of injections you want to make into service.
-	 *            Scaffolder will automatically detect supported types and will wrap
-	 *            it into wire taps if needed (or other way, depending on impl)
+	 * @param dtoClass    dto that reflects row in a database
+	 * @param messageCode message code used to identify service
+	 * @param tableName   name of the table in the database
+	 * @param injections  optional list of injections you want to make into service.
+	 *                    Scaffolder will automatically detect supported types and
+	 *                    will wrap it into wire taps if needed (or other way,
+	 *                    depending on impl)
 	 * @return EasyCrudService ready for use
 	 */
 	<TId, TDto extends HasId<TId>> EasyCrudService<TId, TDto> fromDto(Class<TDto> dtoClass, String messageCode,

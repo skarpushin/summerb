@@ -37,12 +37,9 @@ public interface AuthTokenService {
 	 * {@link #createAuthToken(String, String, String, String)}
 	 * 
 	 * @return created auth token
-	 * @throws UserNotFoundException
-	 *             if such user not found
-	 * @throws FieldValidationException
-	 *             if email has wrong format
-	 * @throws InvalidPasswordException
-	 *             if unable to verify password validity
+	 * @throws UserNotFoundException    if such user not found
+	 * @throws FieldValidationException if email has wrong format
+	 * @throws InvalidPasswordException if unable to verify password validity
 	 */
 	AuthToken authenticate(String userEmail, String passwordPlain, String clientIp)
 			throws UserNotFoundException, FieldValidationException, InvalidPasswordException;
@@ -52,10 +49,8 @@ public interface AuthTokenService {
 	 * chesk/validations
 	 * 
 	 * @return created auth token
-	 * @throws UserNotFoundException
-	 *             if such user not found
-	 * @throws FieldValidationException
-	 *             if email has wrong format
+	 * @throws UserNotFoundException    if such user not found
+	 * @throws FieldValidationException if email has wrong format
 	 */
 	AuthToken createAuthToken(String userEmail, String clientIp, String tokenUuid, String tokenValueUuid)
 			throws UserNotFoundException, FieldValidationException;
@@ -71,33 +66,25 @@ public interface AuthTokenService {
 	 * {@link #updateToken(String, long, String)} to mitigate the "stolen token
 	 * database" situation
 	 * 
-	 * @param userUuid
-	 *            user which this auth token related to
-	 * @param authTokenUuid
-	 *            auth token unique id
-	 * @param tokenValue
-	 *            auth token value (AuthTokenService will generate new value for
-	 *            this field after successful validation)
+	 * @param userUuid      user which this auth token related to
+	 * @param authTokenUuid auth token unique id
+	 * @param tokenValue    auth token value (AuthTokenService will generate new
+	 *                      value for this field after successful validation)
 	 * @return new Auth token or null if token is not valid
-	 * @throws UserNotFoundException
-	 *             if user not found
+	 * @throws UserNotFoundException if user not found
 	 */
 	AuthToken isAuthTokenValid(String userUuid, String authTokenUuid, String tokenValue) throws UserNotFoundException;
 
 	/**
 	 * Update token with new 2nd part security value
 	 * 
-	 * @param authTokenUuid
-	 *            token uuid to update
-	 * @param lastVerifiedAt
-	 *            when this token was last verified
-	 * @param newTokenValue
-	 *            new value for tokenValue field. It MUST NOT be equal to previous
-	 *            value
-	 * @throws AuthTokenNotFoundException
-	 *             if auth token is not found
-	 * @throws FieldValidationException
-	 *             if newTokenValue = current tokenValue for that token
+	 * @param authTokenUuid  token uuid to update
+	 * @param lastVerifiedAt when this token was last verified
+	 * @param newTokenValue  new value for tokenValue field. It MUST NOT be equal to
+	 *                       previous value
+	 * @throws AuthTokenNotFoundException if auth token is not found
+	 * @throws FieldValidationException   if newTokenValue = current tokenValue for
+	 *                                    that token
 	 */
 	void updateToken(String authTokenUuid, long lastVerifiedAt, String newTokenValue)
 			throws AuthTokenNotFoundException, FieldValidationException;

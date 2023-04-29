@@ -28,9 +28,8 @@ import org.summerb.easycrud.rest.dto.SingleItemResult;
  */
 public interface PermissionsResolverStrategy<TId, TDto extends HasId<TId>> {
 	/**
-	 * @param contextVariables
-	 *            variables that defines current context that can be used for
-	 *            table-wide permissions resolution
+	 * @param contextVariables variables that defines current context that can be
+	 *                         used for table-wide permissions resolution
 	 */
 	void resolvePermissions(MultipleItemsResult<TId, TDto> ret, PathVariablesMap contextVariables);
 

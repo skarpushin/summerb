@@ -116,12 +116,9 @@ public class DomLoaderImpl implements DomLoader {
 	}
 
 	/**
-	 * @param domClass
-	 *            class of DOM objects
-	 * @param refs
-	 *            references to be traversed
-	 * @param ds
-	 *            dataset
+	 * @param domClass class of DOM objects
+	 * @param refs     references to be traversed
+	 * @param ds       dataset
 	 * 
 	 * @return mapper which can translate from ROW to DOM
 	 */

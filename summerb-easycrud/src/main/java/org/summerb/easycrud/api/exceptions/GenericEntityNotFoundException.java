@@ -33,10 +33,8 @@ public class GenericEntityNotFoundException extends EntityNotFoundException impl
 	private String subjectTypeMessageCode;
 
 	/**
-	 * @param subjectTypeMessageCode
-	 *            entity type message code
-	 * @param identity
-	 *            primary key value
+	 * @param subjectTypeMessageCode entity type message code
+	 * @param identity               primary key value
 	 */
 	public GenericEntityNotFoundException(String subjectTypeMessageCode, Object identity) {
 		this(subjectTypeMessageCode, identity, null);

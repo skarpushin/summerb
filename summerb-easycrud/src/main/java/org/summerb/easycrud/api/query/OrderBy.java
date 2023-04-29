@@ -28,8 +28,7 @@ public class OrderBy {
 	private String fieldName;
 
 	/**
-	 * @param fieldName
-	 *            field name
+	 * @param fieldName field name
 	 */
 	public static OrderBy Asc(String fieldName) {
 		OrderBy ret = new OrderBy();
@@ -39,8 +38,7 @@ public class OrderBy {
 	}
 
 	/**
-	 * @param fieldName
-	 *            field name
+	 * @param fieldName field name
 	 */
 	public static OrderBy Desc(String fieldName) {
 		OrderBy ret = new OrderBy();

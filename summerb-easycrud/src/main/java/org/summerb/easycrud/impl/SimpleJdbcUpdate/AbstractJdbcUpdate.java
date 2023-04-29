@@ -226,9 +226,18 @@ public abstract class AbstractJdbcUpdate {
 	 * attempts to compile are ignored. This will be implicitly called the first
 	 * time an un-compiled update is executed.
 	 * 
-	 * @throws org.springframework.dao.InvalidDataAccessApiUsageException
-	 *             if the object hasn't been correctly initialized, for example if
-	 *             no DataSource has been provided
+	 * @throws org.springframework.dao.InvalidDataAccessApiUsageException if the
+	 *                                                                    object
+	 *                                                                    hasn't
+	 *                                                                    been
+	 *                                                                    correctly
+	 *                                                                    initialized,
+	 *                                                                    for
+	 *                                                                    example if
+	 *                                                                    no
+	 *                                                                    DataSource
+	 *                                                                    has been
+	 *                                                                    provided
 	 */
 	public synchronized final void compile() throws InvalidDataAccessApiUsageException {
 		if (!isCompiled()) {
@@ -324,10 +333,8 @@ public abstract class AbstractJdbcUpdate {
 	 * Method that provides execution of the update using the passed in
 	 * {@link SqlParameterSource}
 	 * 
-	 * @param updatingValues
-	 *            parameter names and values to be used in update
-	 * @param restrictingValues
-	 *            List containing PK column values
+	 * @param updatingValues    parameter names and values to be used in update
+	 * @param restrictingValues List containing PK column values
 	 * @return number of rows affected
 	 */
 	protected int doExecute(Map<String, Object> updatingValues, Map<String, Object> restrictingValues) {
@@ -343,10 +350,9 @@ public abstract class AbstractJdbcUpdate {
 	 * Method that provides execution of the update using the passed in Map of
 	 * parameters
 	 * 
-	 * @param updatingValues
-	 *            Map with parameter names and values to be used in update
-	 * @param restrictingValues
-	 *            List containing PK column values
+	 * @param updatingValues    Map with parameter names and values to be used in
+	 *                          update
+	 * @param restrictingValues List containing PK column values
 	 * @return number of rows affected
 	 */
 	protected int doExecute(SqlParameterSource updatingValues, SqlParameterSource restrictingValues) {
@@ -373,8 +379,7 @@ public abstract class AbstractJdbcUpdate {
 	 * Match the provided in parameter values with regitered parameters and
 	 * parameters defined via metedata processing.
 	 * 
-	 * @param args
-	 *            the parameter values provided in a Map
+	 * @param args the parameter values provided in a Map
 	 * @return Map with parameter names and values
 	 */
 	protected List<Object> matchInParameterValuesWithUpdateColumns(Map<String, Object> args, List<String> columns) {
@@ -385,8 +390,8 @@ public abstract class AbstractJdbcUpdate {
 	 * Match the provided in parameter values with regitered parameters and
 	 * parameters defined via metedata processing.
 	 * 
-	 * @param parameterSource
-	 *            the parameter vakues provided as a {@link SqlParameterSource}
+	 * @param parameterSource the parameter vakues provided as a
+	 *                        {@link SqlParameterSource}
 	 * @return Map with parameter names and values
 	 */
 	protected List<Object> matchInParameterValuesWithUpdateColumns(SqlParameterSource parameterSource,

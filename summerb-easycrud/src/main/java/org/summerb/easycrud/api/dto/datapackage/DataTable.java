@@ -29,10 +29,8 @@ import org.summerb.easycrud.api.relations.DataSetLoader;
  * 
  * @author sergeyk
  *
- * @param <TId>
- *            type of primary key
- * @param <T>
- *            DTO type
+ * @param <TId> type of primary key
+ * @param <T>   DTO type
  */
 public class DataTable<TId, T extends HasId<TId>> {
 	private String name;
@@ -42,9 +40,8 @@ public class DataTable<TId, T extends HasId<TId>> {
 
 	/**
 	 * 
-	 * @param name
-	 *            most often this will match value of {@link EasyCrudService}'s
-	 *            getEntityTypeMessageCode() method
+	 * @param name most often this will match value of {@link EasyCrudService}'s
+	 *             getEntityTypeMessageCode() method
 	 */
 	public DataTable(String name) {
 		this.name = name;

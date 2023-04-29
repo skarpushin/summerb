@@ -27,10 +27,8 @@ public class ObjCopyUtils {
 	 * Get property values from source object (using getters) and assign to
 	 * destination (using setters)
 	 * 
-	 * @param src
-	 *            source object
-	 * @param dst
-	 *            target object. source class expected to be assignable from
+	 * @param src source object
+	 * @param dst target object. source class expected to be assignable from
 	 *            destination
 	 */
 	public static <TSrc, TDst extends TSrc> void assignFields(TSrc src, TDst dst) {

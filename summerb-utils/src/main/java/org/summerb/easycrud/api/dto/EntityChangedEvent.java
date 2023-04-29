@@ -27,8 +27,7 @@ import com.google.common.base.Preconditions;
  * 
  * @author sergeyk
  *
- * @param <T>
- *            type of dto. Note: T type is limited to {@link DtoBase} for
+ * @param <T> type of dto. Note: T type is limited to {@link DtoBase} for
  *            security reasons
  */
 public class EntityChangedEvent<T extends DtoBase> implements Serializable {
