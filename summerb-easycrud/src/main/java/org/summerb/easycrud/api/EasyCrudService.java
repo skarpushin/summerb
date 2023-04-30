@@ -121,7 +121,7 @@ public interface EasyCrudService<TId, TRow> {
 	TRow findOneByQuery(Query query);
 
 	/**
-	 * @param query query for locating row
+	 * @param query   query for locating row
 	 * @param orderBy order by, optional - can be missing/null
 	 * 
 	 * @return row, never null. If nothing found, throws
@@ -132,6 +132,17 @@ public interface EasyCrudService<TId, TRow> {
 	 * @throws EntityNotFoundException in case entity does not exist
 	 */
 	TRow getFirstByQuery(Query query, OrderBy... orderBy);
+
+	/**
+	 * @param query   query for locating row
+	 * @param orderBy order by, optional - can be missing/null
+	 * 
+	 * @return row, or null if not found
+	 * 
+	 * @throws NotAuthorizedException if user is not authorized o perform this
+	 *                                operation
+	 */
+	TRow findFirstByQuery(Query query, OrderBy... orderBy);
 
 	/**
 	 * @param pagerParams   pagination parameters

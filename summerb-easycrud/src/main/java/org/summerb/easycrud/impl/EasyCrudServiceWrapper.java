@@ -99,6 +99,11 @@ public class EasyCrudServiceWrapper<TId, TRow, TActual extends EasyCrudService<T
 	}
 
 	@Override
+	public TRow findFirstByQuery(Query query, OrderBy... orderBy) {
+		return actual.findFirstByQuery(query, orderBy);
+	}
+
+	@Override
 	public List<TRow> findAll(Query optionalQuery, OrderBy... orderBy) {
 		return actual.findAll(optionalQuery, orderBy);
 	}

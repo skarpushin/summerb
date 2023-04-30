@@ -375,12 +375,22 @@ public class EasyCrudServicePluggableImpl<TId, TDto extends HasId<TId>, TDao ext
 	}
 
 	@Override
-	public TDto getFirstByQuery(Query query, OrderBy... orderBy) {
+	public TDto findFirstByQuery(Query query, OrderBy... orderBy) {
 		PaginatedList<TDto> results = find(TOP_ONE, null, orderBy);
 		if (results.getItems().isEmpty()) {
-			throw new GenericEntityNotFoundException(rowMessageCode, query);
+			return null;
 		}
 		return results.getItems().get(0);
+	}
+
+	@Override
+	public TDto getFirstByQuery(Query query, OrderBy... orderBy) {
+		TDto result = findFirstByQuery(query, orderBy);
+		if (result == null) {
+			throw new GenericEntityNotFoundException(rowMessageCode, query);
+		}
+
+		return result;
 	}
 
 	public TDao getDao() {
