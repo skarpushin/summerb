@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015-2023 Sergey Karpushin
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -20,16 +20,13 @@ import java.lang.reflect.Method;
 import org.summerb.easycrud.api.EasyCrudService;
 
 /**
- * Impl of this interface will be responsible for creating impls for methods of
- * sub-interfaces of {@link EasyCrudService} marked with {@link ScaffoldedQuery}
- * annotation and instantiated using
+ * Impl of this interface will be responsible for creating impls for methods of sub-interfaces of
+ * {@link EasyCrudService} marked with {@link ScaffoldedQuery} annotation and instantiated using
  * {@link EasyCrudScaffold#fromService(Class, String, String, Object...)}
- * 
- * @author sergeyk
  *
+ * @author sergeyk
  */
 public interface ScaffoldedMethodFactory {
 
-	CallableMethod create(Method key);
-
+  CallableMethod create(Method key);
 }

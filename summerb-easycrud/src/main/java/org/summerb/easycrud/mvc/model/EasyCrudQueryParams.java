@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015-2023 Sergey Karpushin
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -22,31 +22,31 @@ import org.summerb.easycrud.api.query.OrderBy;
 import org.summerb.easycrud.mvc.filter.FilteringParam;
 
 public class EasyCrudQueryParams {
-	private Map<String, FilteringParam> filterParams;
-	private OrderBy[] orderBy;
-	private PagerParams pagerParams;
+  private Map<String, FilteringParam> filterParams;
+  private OrderBy[] orderBy;
+  private PagerParams pagerParams;
 
-	public PagerParams getPagerParams() {
-		return pagerParams;
-	}
+  public PagerParams getPagerParams() {
+    return pagerParams;
+  }
 
-	public void setPagerParams(PagerParams pagerParams) {
-		this.pagerParams = pagerParams;
-	}
+  public void setPagerParams(PagerParams pagerParams) {
+    this.pagerParams = pagerParams;
+  }
 
-	public Map<String, FilteringParam> getFilterParams() {
-		return filterParams;
-	}
+  public Map<String, FilteringParam> getFilterParams() {
+    return filterParams;
+  }
 
-	public void setFilterParams(Map<String, FilteringParam> filterParams) {
-		this.filterParams = filterParams;
-	}
+  public void setFilterParams(Map<String, FilteringParam> filterParams) {
+    this.filterParams = filterParams;
+  }
 
-	public OrderBy[] getOrderBy() {
-		return orderBy;
-	}
+  public OrderBy[] getOrderBy() {
+    return orderBy;
+  }
 
-	public void setOrderBy(OrderBy[] orderBy) {
-		this.orderBy = orderBy;
-	}
+  public void setOrderBy(OrderBy[] orderBy) {
+    this.orderBy = orderBy;
+  }
 }

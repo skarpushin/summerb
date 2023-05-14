@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015-2023 Sergey Karpushin
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -35,82 +35,99 @@ import org.springframework.web.servlet.View;
 import com.google.common.base.Preconditions;
 
 public class PathVariablesMapArgumentResolver implements HandlerMethodArgumentResolver {
-	@Override
-	public boolean supportsParameter(MethodParameter parameter) {
-		return parameter.getParameterType().equals(PathVariablesMap.class);
-	}
+  @Override
+  public boolean supportsParameter(MethodParameter parameter) {
+    return parameter.getParameterType().equals(PathVariablesMap.class);
+  }
 
-	@Override
-	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-			NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-		PathVariablesMap ret = new PathVariablesMap();
+  @Override
+  public Object resolveArgument(
+      MethodParameter parameter,
+      ModelAndViewContainer mavContainer,
+      NativeWebRequest webRequest,
+      WebDataBinderFactory binderFactory)
+      throws Exception {
+    PathVariablesMap ret = new PathVariablesMap();
 
-		Class<?> containingClass = parameter.getContainingClass();
-		HasCommonPathVariables annPlural = containingClass.getAnnotation(HasCommonPathVariables.class);
-		HasCommonPathVariable annSingle = containingClass.getAnnotation(HasCommonPathVariable.class);
-		if (annPlural == null && annSingle == null) {
-			return ret;
-		}
+    Class<?> containingClass = parameter.getContainingClass();
+    HasCommonPathVariables annPlural = containingClass.getAnnotation(HasCommonPathVariables.class);
+    HasCommonPathVariable annSingle = containingClass.getAnnotation(HasCommonPathVariable.class);
+    if (annPlural == null && annSingle == null) {
+      return ret;
+    }
 
-		if (annSingle != null) {
-			processCommonPathVariable(parameter, annSingle, webRequest, binderFactory, ret);
-		}
+    if (annSingle != null) {
+      processCommonPathVariable(parameter, annSingle, webRequest, binderFactory, ret);
+    }
 
-		if (annPlural != null && annPlural.value() != null) {
-			for (HasCommonPathVariable ann : annPlural.value()) {
-				processCommonPathVariable(parameter, ann, webRequest, binderFactory, ret);
-			}
-		}
+    if (annPlural != null && annPlural.value() != null) {
+      for (HasCommonPathVariable ann : annPlural.value()) {
+        processCommonPathVariable(parameter, ann, webRequest, binderFactory, ret);
+      }
+    }
 
-		return ret;
-	}
+    return ret;
+  }
 
-	private void processCommonPathVariable(MethodParameter parameter, HasCommonPathVariable ann,
-			NativeWebRequest webRequest, WebDataBinderFactory binderFactory, PathVariablesMap ret) throws Exception {
-		String paramName = ann.name();
-		Object value = findValue(paramName, webRequest, ann);
-		value = convertValueIfNeeded(paramName, value, parameter, webRequest, binderFactory, ann);
-		addToPathVariables(webRequest, paramName, value);
-		ret.put(paramName, value);
-	}
+  private void processCommonPathVariable(
+      MethodParameter parameter,
+      HasCommonPathVariable ann,
+      NativeWebRequest webRequest,
+      WebDataBinderFactory binderFactory,
+      PathVariablesMap ret)
+      throws Exception {
+    String paramName = ann.name();
+    Object value = findValue(paramName, webRequest, ann);
+    value = convertValueIfNeeded(paramName, value, parameter, webRequest, binderFactory, ann);
+    addToPathVariables(webRequest, paramName, value);
+    ret.put(paramName, value);
+  }
 
-	@SuppressWarnings("unchecked")
-	private Object findValue(String paramName, NativeWebRequest webRequest, HasCommonPathVariable ann) {
-		Map<String, String> uriTemplateVars = (Map<String, String>) webRequest
-				.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
-		Object value = (uriTemplateVars != null ? uriTemplateVars.get(paramName) : null);
-		if (value == null) {
-			value = ann.defaultValue();
-		}
-		Preconditions.checkArgument(value != null, "Value must be provided for path variable: " + paramName);
-		return value;
-	}
+  @SuppressWarnings("unchecked")
+  private Object findValue(
+      String paramName, NativeWebRequest webRequest, HasCommonPathVariable ann) {
+    Map<String, String> uriTemplateVars =
+        (Map<String, String>)
+            webRequest.getAttribute(
+                HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
+    Object value = (uriTemplateVars != null ? uriTemplateVars.get(paramName) : null);
+    if (value == null) {
+      value = ann.defaultValue();
+    }
+    Preconditions.checkArgument(
+        value != null, "Value must be provided for path variable: " + paramName);
+    return value;
+  }
 
-	private Object convertValueIfNeeded(String paramName, Object value, MethodParameter parameter,
-			NativeWebRequest webRequest, WebDataBinderFactory binderFactory, HasCommonPathVariable ann)
-			throws Exception {
-		WebDataBinder binder = binderFactory.createBinder(webRequest, null, paramName);
-		try {
-			return binder.convertIfNecessary(value, ann.type(), parameter);
-		} catch (ConversionNotSupportedException ex) {
-			throw new MethodArgumentConversionNotSupportedException(value, ex.getRequiredType(), paramName, parameter,
-					ex.getCause());
-		} catch (TypeMismatchException ex) {
-			throw new MethodArgumentTypeMismatchException(value, ex.getRequiredType(), paramName, parameter,
-					ex.getCause());
-		}
-	}
+  private Object convertValueIfNeeded(
+      String paramName,
+      Object value,
+      MethodParameter parameter,
+      NativeWebRequest webRequest,
+      WebDataBinderFactory binderFactory,
+      HasCommonPathVariable ann)
+      throws Exception {
+    WebDataBinder binder = binderFactory.createBinder(webRequest, null, paramName);
+    try {
+      return binder.convertIfNecessary(value, ann.type(), parameter);
+    } catch (ConversionNotSupportedException ex) {
+      throw new MethodArgumentConversionNotSupportedException(
+          value, ex.getRequiredType(), paramName, parameter, ex.getCause());
+    } catch (TypeMismatchException ex) {
+      throw new MethodArgumentTypeMismatchException(
+          value, ex.getRequiredType(), paramName, parameter, ex.getCause());
+    }
+  }
 
-	@SuppressWarnings("unchecked")
-	private void addToPathVariables(NativeWebRequest webRequest, String paramName, Object value) {
-		String key = View.PATH_VARIABLES;
-		int scope = RequestAttributes.SCOPE_REQUEST;
-		Map<String, Object> pathVars = (Map<String, Object>) webRequest.getAttribute(key, scope);
-		if (pathVars == null) {
-			pathVars = new HashMap<String, Object>();
-			webRequest.setAttribute(key, pathVars, scope);
-		}
-		pathVars.put(paramName, value);
-	}
-
+  @SuppressWarnings("unchecked")
+  private void addToPathVariables(NativeWebRequest webRequest, String paramName, Object value) {
+    String key = View.PATH_VARIABLES;
+    int scope = RequestAttributes.SCOPE_REQUEST;
+    Map<String, Object> pathVars = (Map<String, Object>) webRequest.getAttribute(key, scope);
+    if (pathVars == null) {
+      pathVars = new HashMap<String, Object>();
+      webRequest.setAttribute(key, pathVars, scope);
+    }
+    pathVars.put(paramName, value);
+  }
 }

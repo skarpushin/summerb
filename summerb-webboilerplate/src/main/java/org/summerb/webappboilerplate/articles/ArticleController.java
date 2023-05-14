@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015-2023 Sergey Karpushin
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -59,129 +59,142 @@ import org.summerb.webappboilerplate.utils.MimeTypeResolver;
 
 @Controller
 public class ArticleController extends ControllerBase {
-	public static final long HOUR = 1000L * 60L * 60L;
-	public static final long DAY = HOUR * 24L;
+  public static final long HOUR = 1000L * 60L * 60L;
+  public static final long DAY = HOUR * 24L;
 
-	private Logger log = LoggerFactory.getLogger(getClass());
+  private Logger log = LoggerFactory.getLogger(getClass());
 
-	private static final String ATTR_ARTICLE = "article";
+  private static final String ATTR_ARTICLE = "article";
 
-	@Autowired
-	private ArticleRenderer articleRenderer;
+  @Autowired private ArticleRenderer articleRenderer;
 
-	@Autowired
-	private AttachmentService attachmentService;
-	@Autowired
-	private ExceptionTranslator exceptionTranslator;
+  @Autowired private AttachmentService attachmentService;
+  @Autowired private ExceptionTranslator exceptionTranslator;
 
-	@Autowired
-	private MimeTypeResolver mimeTypeResolver;
+  @Autowired private MimeTypeResolver mimeTypeResolver;
 
-	private String viewNameArticle = "articles/article";
+  private String viewNameArticle = "articles/article";
 
-	private FilteringParamsToQueryConverter filteringParamsToQueryConverter = new FilteringParamsToQueryConverterImpl();
+  private FilteringParamsToQueryConverter filteringParamsToQueryConverter =
+      new FilteringParamsToQueryConverterImpl();
 
-	@SuppressWarnings("serial")
-	public static class AttachmentNotFoundException extends Exception {
-		public AttachmentNotFoundException(long id) {
-			super("article attachment " + id + " not found");
-		}
-	}
+  @SuppressWarnings("serial")
+  public static class AttachmentNotFoundException extends Exception {
+    public AttachmentNotFoundException(long id) {
+      super("article attachment " + id + " not found");
+    }
+  }
 
-	@RequestMapping(method = RequestMethod.GET, value = ArticleAbsoluteUrlBuilderImpl.DEFAULT_PATH_ARTICLES_ATTACHMENTS
-			+ "/{id}/{proposedName}")
-	public ResponseEntity<InputStreamResource> getAttachment(Model model, @PathVariable("id") long id,
-			HttpServletResponse response) throws AttachmentNotFoundException {
-		try {
-			Attachment attachment = attachmentService.findById(id);
-			if (attachment == null) {
-				throw new AttachmentNotFoundException(id);
-			}
-			long now = new Date().getTime();
+  @RequestMapping(
+      method = RequestMethod.GET,
+      value =
+          ArticleAbsoluteUrlBuilderImpl.DEFAULT_PATH_ARTICLES_ATTACHMENTS + "/{id}/{proposedName}")
+  public ResponseEntity<InputStreamResource> getAttachment(
+      Model model, @PathVariable("id") long id, HttpServletResponse response)
+      throws AttachmentNotFoundException {
+    try {
+      Attachment attachment = attachmentService.findById(id);
+      if (attachment == null) {
+        throw new AttachmentNotFoundException(id);
+      }
+      long now = new Date().getTime();
 
-			HttpHeaders headers = new HttpHeaders();
-			headers.setCacheControl("private");
-			headers.setExpires(now + DAY);
-			headers.setContentType(
-					MediaType.parseMediaType(mimeTypeResolver.resolveContentTypeByFileName(attachment.getName())));
-			headers.setContentLength((int) attachment.getSize());
+      HttpHeaders headers = new HttpHeaders();
+      headers.setCacheControl("private");
+      headers.setExpires(now + DAY);
+      headers.setContentType(
+          MediaType.parseMediaType(
+              mimeTypeResolver.resolveContentTypeByFileName(attachment.getName())));
+      headers.setContentLength((int) attachment.getSize());
 
-			response.setHeader("Content-Disposition", "attachment; filename=\"" + attachment.getName() + "\"");
-			// NOTE: Looks like there is a bug in the spring - it will add
-			// Last-Modified twice to the response
-			// responseHeaders.setLastModified(maxLastModified);
-			response.setDateHeader("Last-Modified", now);
+      response.setHeader(
+          "Content-Disposition", "attachment; filename=\"" + attachment.getName() + "\"");
+      // NOTE: Looks like there is a bug in the spring - it will add
+      // Last-Modified twice to the response
+      // responseHeaders.setLastModified(maxLastModified);
+      response.setDateHeader("Last-Modified", now);
 
-			InputStreamResource ret = new InputStreamResource(attachmentService.getContentInputStream(id));
-			return new ResponseEntity<InputStreamResource>(ret, headers, HttpStatus.OK);
-		} catch (AttachmentNotFoundException t) {
-			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-			response.setHeader("Error", "File not found");
-			return null;
-		} catch (Throwable t) {
-			log.warn("Failed to get article attachment", t);
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			String msg = exceptionTranslator.buildUserMessage(t, CurrentRequestUtils.getLocale());
-			response.setHeader("Error", "Failed to get article attachment -> " + msg);
-			return null;
-		}
-	}
+      InputStreamResource ret =
+          new InputStreamResource(attachmentService.getContentInputStream(id));
+      return new ResponseEntity<InputStreamResource>(ret, headers, HttpStatus.OK);
+    } catch (AttachmentNotFoundException t) {
+      response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+      response.setHeader("Error", "File not found");
+      return null;
+    } catch (Throwable t) {
+      log.warn("Failed to get article attachment", t);
+      response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+      String msg = exceptionTranslator.buildUserMessage(t, CurrentRequestUtils.getLocale());
+      response.setHeader("Error", "Failed to get article attachment -> " + msg);
+      return null;
+    }
+  }
 
-	@RequestMapping(method = RequestMethod.GET, value = ArticleAbsoluteUrlBuilderImpl.DEFAULT_PATH_ARTICLES_ATTACHMENTS
-			+ "/{id}")
-	public ModelAndView getAttachment2(Model model, @PathVariable("id") long id, HttpServletResponse response) {
-		try {
-			Attachment attachment = attachmentService.findById(id);
+  @RequestMapping(
+      method = RequestMethod.GET,
+      value = ArticleAbsoluteUrlBuilderImpl.DEFAULT_PATH_ARTICLES_ATTACHMENTS + "/{id}")
+  public ModelAndView getAttachment2(
+      Model model, @PathVariable("id") long id, HttpServletResponse response) {
+    try {
+      Attachment attachment = attachmentService.findById(id);
 
-			response.setContentType(mimeTypeResolver.resolveContentTypeByFileName(attachment.getName()));
-			response.setContentLength((int) attachment.getSize());
-			response.setHeader("Content-Disposition", "attachment; filename=\"" + attachment.getName() + "\"");
+      response.setContentType(mimeTypeResolver.resolveContentTypeByFileName(attachment.getName()));
+      response.setContentLength((int) attachment.getSize());
+      response.setHeader(
+          "Content-Disposition", "attachment; filename=\"" + attachment.getName() + "\"");
 
-			FileCopyUtils.copy(attachmentService.getContentInputStream(id), response.getOutputStream());
+      FileCopyUtils.copy(attachmentService.getContentInputStream(id), response.getOutputStream());
 
-			return null;
-		} catch (Throwable t) {
-			log.debug("Failed to get article attachment", t);
+      return null;
+    } catch (Throwable t) {
+      log.debug("Failed to get article attachment", t);
 
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			String msg = exceptionTranslator.buildUserMessage(t, CurrentRequestUtils.getLocale());
-			response.setHeader("Error", "Failed to get article attachment -> " + msg);
-			return null;
-		}
-	}
+      response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+      String msg = exceptionTranslator.buildUserMessage(t, CurrentRequestUtils.getLocale());
+      response.setHeader("Error", "Failed to get article attachment -> " + msg);
+      return null;
+    }
+  }
 
-	@RequestMapping(method = RequestMethod.GET, value = ArticleAbsoluteUrlBuilderImpl.DEFAULT_PATH_ARTICLES
-			+ "/{articleKey}")
-	public String get(Model model, @PathVariable("articleKey") String articleKey, HttpServletResponse respons,
-			Locale locale) {
+  @RequestMapping(
+      method = RequestMethod.GET,
+      value = ArticleAbsoluteUrlBuilderImpl.DEFAULT_PATH_ARTICLES + "/{articleKey}")
+  public String get(
+      Model model,
+      @PathVariable("articleKey") String articleKey,
+      HttpServletResponse respons,
+      Locale locale) {
 
-		try {
-			RenderedArticle article = articleRenderer.renderArticle(articleKey, locale);
-			model.addAttribute(ATTR_ARTICLE, article);
-		} catch (Throwable t) {
-			log.debug("Failed to get article", t);
-			String msg = exceptionTranslator.buildUserMessage(t, CurrentRequestUtils.getLocale());
-			addPageMessage(model.asMap(), new PageMessage(msg, MessageSeverity.Danger));
-		}
+    try {
+      RenderedArticle article = articleRenderer.renderArticle(articleKey, locale);
+      model.addAttribute(ATTR_ARTICLE, article);
+    } catch (Throwable t) {
+      log.debug("Failed to get article", t);
+      String msg = exceptionTranslator.buildUserMessage(t, CurrentRequestUtils.getLocale());
+      addPageMessage(model.asMap(), new PageMessage(msg, MessageSeverity.Danger));
+    }
 
-		return viewNameArticle;
-	}
+    return viewNameArticle;
+  }
 
-	@RequestMapping(method = RequestMethod.POST, value = "/rest/articles-attachments/ajaxList")
-	public @ResponseBody Map<String, ? extends Object> ajaxList(@RequestBody EasyCrudQueryParams filteringParams,
-			HttpServletResponse response) throws NotAuthorizedException {
-		Query query = filteringParamsToQueryConverter.convert(filteringParams.getFilterParams(),
-				attachmentService.getRowClass());
-		PaginatedList<Attachment> ret = attachmentService.find(filteringParams.getPagerParams(), query,
-				filteringParams.getOrderBy());
-		return Collections.singletonMap(EasyCrudControllerBase.ATTR_LIST, ret);
-	}
+  @RequestMapping(method = RequestMethod.POST, value = "/rest/articles-attachments/ajaxList")
+  public @ResponseBody Map<String, ? extends Object> ajaxList(
+      @RequestBody EasyCrudQueryParams filteringParams, HttpServletResponse response)
+      throws NotAuthorizedException {
+    Query query =
+        filteringParamsToQueryConverter.convert(
+            filteringParams.getFilterParams(), attachmentService.getRowClass());
+    PaginatedList<Attachment> ret =
+        attachmentService.find(
+            filteringParams.getPagerParams(), query, filteringParams.getOrderBy());
+    return Collections.singletonMap(EasyCrudControllerBase.ATTR_LIST, ret);
+  }
 
-	public String getViewNameArticle() {
-		return viewNameArticle;
-	}
+  public String getViewNameArticle() {
+    return viewNameArticle;
+  }
 
-	public void setViewNameArticle(String viewNameArticle) {
-		this.viewNameArticle = viewNameArticle;
-	}
+  public void setViewNameArticle(String viewNameArticle) {
+    this.viewNameArticle = viewNameArticle;
+  }
 }

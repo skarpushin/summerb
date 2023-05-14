@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015-2023 Sergey Karpushin
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -37,113 +37,117 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 public class SimplePropertyServiceCachedImpl implements SimplePropertyService, InitializingBean {
-	private SimplePropertyService simplePropertyService;
-	private EventBus eventBus;
+  private SimplePropertyService simplePropertyService;
+  private EventBus eventBus;
 
-	private LoadingCache<String, Map<String, String>> cache;
+  private LoadingCache<String, Map<String, String>> cache;
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		String jmxName = "SimplePropertyServiceCachedImpl_" + simplePropertyService.getAppName() + "_"
-				+ simplePropertyService.getDomainName();
-		CacheBuilder cacheBuilder = CacheBuilder.newBuilder().maximumSize(5000).recordStats();
-		cache = new TransactionBoundCache<>(jmxName, cacheBuilder, loader);
-		eventBus.register(this);
-	}
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    String jmxName =
+        "SimplePropertyServiceCachedImpl_"
+            + simplePropertyService.getAppName()
+            + "_"
+            + simplePropertyService.getDomainName();
+    CacheBuilder cacheBuilder = CacheBuilder.newBuilder().maximumSize(5000).recordStats();
+    cache = new TransactionBoundCache<>(jmxName, cacheBuilder, loader);
+    eventBus.register(this);
+  }
 
-	private CacheLoader<String, Map<String, String>> loader = new CacheLoader<String, Map<String, String>>() {
-		@Override
-		public Map<String, String> load(String key) {
-			Map<String, String> ret = simplePropertyService.findSubjectProperties(key);
-			return ret == null ? new HashMap<String, String>() : ret;
-		}
-	};
+  private CacheLoader<String, Map<String, String>> loader =
+      new CacheLoader<String, Map<String, String>>() {
+        @Override
+        public Map<String, String> load(String key) {
+          Map<String, String> ret = simplePropertyService.findSubjectProperties(key);
+          return ret == null ? new HashMap<String, String>() : ret;
+        }
+      };
 
-	@Subscribe
-	public void onEntityChange(EntityChangedEvent<SimplePropertiesSubject> evt) {
-		if (!evt.isTypeOf(SimplePropertiesSubject.class)) {
-			return;
-		}
+  @Subscribe
+  public void onEntityChange(EntityChangedEvent<SimplePropertiesSubject> evt) {
+    if (!evt.isTypeOf(SimplePropertiesSubject.class)) {
+      return;
+    }
 
-		if (!isSameDomain(evt.getValue())) {
-			return;
-		}
+    if (!isSameDomain(evt.getValue())) {
+      return;
+    }
 
-		String subjectId = evt.getValue().getSubjectId();
-		cache.invalidate(subjectId);
-	}
+    String subjectId = evt.getValue().getSubjectId();
+    cache.invalidate(subjectId);
+  }
 
-	private boolean isSameDomain(SimplePropertiesSubject value) {
-		return simplePropertyService.getAppName().equals(value.getAppName())
-				&& simplePropertyService.getDomainName().equals(value.getDomainName());
-	}
+  private boolean isSameDomain(SimplePropertiesSubject value) {
+    return simplePropertyService.getAppName().equals(value.getAppName())
+        && simplePropertyService.getDomainName().equals(value.getDomainName());
+  }
 
-	@Subscribe
-	public void onCacheInvalidationRequest(CachesInvalidationNeeded evt) {
-		cache.invalidateAll();
-	}
+  @Subscribe
+  public void onCacheInvalidationRequest(CachesInvalidationNeeded evt) {
+    cache.invalidateAll();
+  }
 
-	@Override
-	public String findSubjectProperty(String subjectId, String propertyName) {
-		return findSubjectProperties(subjectId).get(propertyName);
-	}
+  @Override
+  public String findSubjectProperty(String subjectId, String propertyName) {
+    return findSubjectProperties(subjectId).get(propertyName);
+  }
 
-	@Override
-	public Map<String, String> findSubjectProperties(String subjectId) {
-		return cache.getUnchecked(subjectId);
-	}
+  @Override
+  public Map<String, String> findSubjectProperties(String subjectId) {
+    return cache.getUnchecked(subjectId);
+  }
 
-	@Override
-	public void putSubjectProperties(String subjectId, List<NamedProperty> namedProperties) {
-		simplePropertyService.putSubjectProperties(subjectId, namedProperties);
-	}
+  @Override
+  public void putSubjectProperties(String subjectId, List<NamedProperty> namedProperties) {
+    simplePropertyService.putSubjectProperties(subjectId, namedProperties);
+  }
 
-	@Override
-	public void putSubjectProperty(String subjectId, String propertyName, String propertyValue) {
-		Map<String, String> cachedProp = cache.getIfPresent(subjectId);
-		if (cachedProp != null && ObjectUtils.nullSafeEquals(cachedProp.get(propertyName), propertyValue)) {
-			// no change detected - so not changing
-			return;
-		}
-		simplePropertyService.putSubjectProperty(subjectId, propertyName, propertyValue);
-	}
+  @Override
+  public void putSubjectProperty(String subjectId, String propertyName, String propertyValue) {
+    Map<String, String> cachedProp = cache.getIfPresent(subjectId);
+    if (cachedProp != null
+        && ObjectUtils.nullSafeEquals(cachedProp.get(propertyName), propertyValue)) {
+      // no change detected - so not changing
+      return;
+    }
+    simplePropertyService.putSubjectProperty(subjectId, propertyName, propertyValue);
+  }
 
-	@Override
-	public void deleteSubjectProperties(String subjectId) {
-		simplePropertyService.deleteSubjectProperties(subjectId);
-	}
+  @Override
+  public void deleteSubjectProperties(String subjectId) {
+    simplePropertyService.deleteSubjectProperties(subjectId);
+  }
 
-	public SimplePropertyService getSimplePropertyService() {
-		return simplePropertyService;
-	}
+  public SimplePropertyService getSimplePropertyService() {
+    return simplePropertyService;
+  }
 
-	@Required
-	public void setSimplePropertyService(SimplePropertyService service) {
-		this.simplePropertyService = service;
-	}
+  @Required
+  public void setSimplePropertyService(SimplePropertyService service) {
+    this.simplePropertyService = service;
+  }
 
-	@Override
-	public String getAppName() {
-		return simplePropertyService.getAppName();
-	}
+  @Override
+  public String getAppName() {
+    return simplePropertyService.getAppName();
+  }
 
-	@Override
-	public String getDomainName() {
-		return simplePropertyService.getDomainName();
-	}
+  @Override
+  public String getDomainName() {
+    return simplePropertyService.getDomainName();
+  }
 
-	public EventBus getEventBus() {
-		return eventBus;
-	}
+  public EventBus getEventBus() {
+    return eventBus;
+  }
 
-	@Autowired
-	public void setEventBus(EventBus eventBus) {
-		this.eventBus = eventBus;
-	}
+  @Autowired
+  public void setEventBus(EventBus eventBus) {
+    this.eventBus = eventBus;
+  }
 
-	public void resetCaches() {
-		cache.invalidateAll();
-	}
-
+  public void resetCaches() {
+    cache.invalidateAll();
+  }
 }

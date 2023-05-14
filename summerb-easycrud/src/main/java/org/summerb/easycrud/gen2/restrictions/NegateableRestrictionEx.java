@@ -13,5 +13,4 @@ public abstract class NegateableRestrictionEx<T> extends RestrictionEx {
   public boolean isNot() {
     return not;
   }
-  
 }

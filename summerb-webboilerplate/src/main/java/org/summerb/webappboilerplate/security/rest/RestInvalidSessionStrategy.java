@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015-2023 Sergey Karpushin
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -28,26 +28,25 @@ import org.summerb.utils.json.JsonResponseWriter;
 import org.summerb.utils.json.JsonResponseWriterGsonImpl;
 
 public class RestInvalidSessionStrategy implements InvalidSessionStrategy {
-	private JsonResponseWriter jsonResponseHelper;
+  private JsonResponseWriter jsonResponseHelper;
 
-	public RestInvalidSessionStrategy() {
-		jsonResponseHelper = new JsonResponseWriterGsonImpl();
-	}
+  public RestInvalidSessionStrategy() {
+    jsonResponseHelper = new JsonResponseWriterGsonImpl();
+  }
 
-	public RestInvalidSessionStrategy(JsonResponseWriter jsonResponseHelper) {
-		this.jsonResponseHelper = jsonResponseHelper;
-	}
+  public RestInvalidSessionStrategy(JsonResponseWriter jsonResponseHelper) {
+    this.jsonResponseHelper = jsonResponseHelper;
+  }
 
-	@Override
-	public void onInvalidSessionDetected(HttpServletRequest request, HttpServletResponse response)
-			throws IOException, ServletException {
-		// create new session, which will result in JSESSIONID coockie reset
-		request.getSession();
+  @Override
+  public void onInvalidSessionDetected(HttpServletRequest request, HttpServletResponse response)
+      throws IOException, ServletException {
+    // create new session, which will result in JSESSIONID coockie reset
+    request.getSession();
 
-		// Report that session changed and need to reestablish request
-		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-		jsonResponseHelper.writeResponseBody(new NotAuthorizedResult("anonymous", SecurityMessageCodes.INVALID_SESSION),
-				response);
-	}
-
+    // Report that session changed and need to reestablish request
+    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+    jsonResponseHelper.writeResponseBody(
+        new NotAuthorizedResult("anonymous", SecurityMessageCodes.INVALID_SESSION), response);
+  }
 }

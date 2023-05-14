@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015-2023 Sergey Karpushin
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -26,33 +26,31 @@ import org.summerb.security.api.exceptions.NotAuthorizedException;
 import org.summerb.validation.ValidationException;
 
 /**
- * Service for m2m references. It's based on {@link EasyCrudService}, but it's
- * more for compatibility reasons. Primarily methods of this interface should be
- * used.
- * 
- * it's assumed that there are many referencers, but few referencee
- * 
- * @author sergeyk
+ * Service for m2m references. It's based on {@link EasyCrudService}, but it's more for
+ * compatibility reasons. Primarily methods of this interface should be used.
  *
- * @param <T1Id>  id of referencer
+ * <p>it's assumed that there are many referencers, but few referencee
+ *
+ * @author sergeyk
+ * @param <T1Id> id of referencer
  * @param <T1Dto> referencer. Dto that suppose to reference dictionary objects
- * @param <T2Id>  id of referencee
+ * @param <T2Id> id of referencee
  * @param <T2Dto> referencee dto. The one is referenced by many referencers
  */
-public interface EasyCrudM2mService<T1Id, T1Dto extends HasId<T1Id>, T2Id, T2Dto extends HasId<T2Id>>
-		extends EasyCrudService<Long, ManyToManyDto<T1Id, T2Id>> {
+public interface EasyCrudM2mService<
+        T1Id, T1Dto extends HasId<T1Id>, T2Id, T2Dto extends HasId<T2Id>>
+    extends EasyCrudService<Long, ManyToManyDto<T1Id, T2Id>> {
 
-	List<T2Dto> findReferenceeByReferencer(T1Id referencerId);
+  List<T2Dto> findReferenceeByReferencer(T1Id referencerId);
 
-	/**
-	 * @param referencerIds referencer ids
-	 * 
-	 * @return mapping between referencer id and list of referencee
-	 */
-	Map<T1Id, List<T2Dto>> findReferenceeByReferencers(Set<T1Id> referencerIds);
+  /**
+   * @param referencerIds referencer ids
+   * @return mapping between referencer id and list of referencee
+   */
+  Map<T1Id, List<T2Dto>> findReferenceeByReferencers(Set<T1Id> referencerIds);
 
-	ManyToManyDto<T1Id, T2Id> addReferencee(T1Id referencerId, T2Id referenceeId)
-			throws ValidationException, NotAuthorizedException;
+  ManyToManyDto<T1Id, T2Id> addReferencee(T1Id referencerId, T2Id referenceeId)
+      throws ValidationException, NotAuthorizedException;
 
-	void removeReferencee(T1Id referencerId, T2Id referenceeId) throws NotAuthorizedException;
+  void removeReferencee(T1Id referencerId, T2Id referenceeId) throws NotAuthorizedException;
 }

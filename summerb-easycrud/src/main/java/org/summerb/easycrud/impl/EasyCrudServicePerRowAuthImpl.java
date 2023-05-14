@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015-2023 Sergey Karpushin
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -32,60 +32,61 @@ import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapValidationImpl;
 import com.google.common.eventbus.EventBus;
 
 /**
- * 
  * @author sergey.karpushin
  * @deprecated Use {@link EasyCrudServicePluggableImpl} instead
  */
 @Deprecated
-public class EasyCrudServicePerRowAuthImpl<TId, TDto extends HasId<TId>, TDao extends EasyCrudDao<TId, TDto>>
-		extends EasyCrudServicePluggableImpl<TId, TDto, EasyCrudDao<TId, TDto>> implements InitializingBean {
+public class EasyCrudServicePerRowAuthImpl<
+        TId, TDto extends HasId<TId>, TDao extends EasyCrudDao<TId, TDto>>
+    extends EasyCrudServicePluggableImpl<TId, TDto, EasyCrudDao<TId, TDto>>
+    implements InitializingBean {
 
-	private EasyCrudValidationStrategy<TDto> validationStrategy;
-	private EasyCrudPerRowAuthStrategy<TDto> perRowAuthStrategy;
-	protected EventBus eventBus;
+  private EasyCrudValidationStrategy<TDto> validationStrategy;
+  private EasyCrudPerRowAuthStrategy<TDto> perRowAuthStrategy;
+  protected EventBus eventBus;
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		List<EasyCrudWireTap<TId, TDto>> chain = new LinkedList<>();
-		if (validationStrategy != null) {
-			chain.add(new EasyCrudWireTapValidationImpl<TId, TDto>(validationStrategy));
-		}
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    List<EasyCrudWireTap<TId, TDto>> chain = new LinkedList<>();
+    if (validationStrategy != null) {
+      chain.add(new EasyCrudWireTapValidationImpl<TId, TDto>(validationStrategy));
+    }
 
-		if (perRowAuthStrategy != null) {
-			chain.add(new EasyCrudWireTapPerRowAuthImpl<TId, TDto>(perRowAuthStrategy));
-		}
+    if (perRowAuthStrategy != null) {
+      chain.add(new EasyCrudWireTapPerRowAuthImpl<TId, TDto>(perRowAuthStrategy));
+    }
 
-		if (eventBus != null) {
-			chain.add(new EasyCrudWireTapEventBusImpl<TId, TDto>(eventBus));
-		}
+    if (eventBus != null) {
+      chain.add(new EasyCrudWireTapEventBusImpl<TId, TDto>(eventBus));
+    }
 
-		EasyCrudWireTapDelegatingImpl<TId, TDto> newWireTap = new EasyCrudWireTapDelegatingImpl<TId, TDto>(chain);
-		setWireTap(newWireTap);
-		super.afterPropertiesSet();
-	}
+    EasyCrudWireTapDelegatingImpl<TId, TDto> newWireTap =
+        new EasyCrudWireTapDelegatingImpl<TId, TDto>(chain);
+    setWireTap(newWireTap);
+    super.afterPropertiesSet();
+  }
 
-	public EasyCrudValidationStrategy<TDto> getValidationStrategy() {
-		return validationStrategy;
-	}
+  public EasyCrudValidationStrategy<TDto> getValidationStrategy() {
+    return validationStrategy;
+  }
 
-	public void setValidationStrategy(EasyCrudValidationStrategy<TDto> validationStrategy) {
-		this.validationStrategy = validationStrategy;
-	}
+  public void setValidationStrategy(EasyCrudValidationStrategy<TDto> validationStrategy) {
+    this.validationStrategy = validationStrategy;
+  }
 
-	public EventBus getEventBus() {
-		return eventBus;
-	}
+  public EventBus getEventBus() {
+    return eventBus;
+  }
 
-	public void setEventBus(EventBus eventBus) {
-		this.eventBus = eventBus;
-	}
+  public void setEventBus(EventBus eventBus) {
+    this.eventBus = eventBus;
+  }
 
-	public EasyCrudPerRowAuthStrategy<TDto> getPerRowAuthStrategy() {
-		return perRowAuthStrategy;
-	}
+  public EasyCrudPerRowAuthStrategy<TDto> getPerRowAuthStrategy() {
+    return perRowAuthStrategy;
+  }
 
-	public void setPerRowAuthStrategy(EasyCrudPerRowAuthStrategy<TDto> perRowAuthStrategy) {
-		this.perRowAuthStrategy = perRowAuthStrategy;
-	}
-
+  public void setPerRowAuthStrategy(EasyCrudPerRowAuthStrategy<TDto> perRowAuthStrategy) {
+    this.perRowAuthStrategy = perRowAuthStrategy;
+  }
 }

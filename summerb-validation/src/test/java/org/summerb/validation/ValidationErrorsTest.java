@@ -32,7 +32,7 @@ class ValidationErrorsTest {
   MethodCapturerProxyClassFactory methodCapturerProxyClassFactory =
       new MethodCapturerProxyClassFactoryImpl();
   PropertyNameObtainerFactory propertyNameObtainerFactory =
-	      new PropertyNameObtainerFactoryImpl(methodCapturerProxyClassFactory);
+      new PropertyNameObtainerFactoryImpl(methodCapturerProxyClassFactory);
   ValidationContextFactory validationContextFactory =
       new ValidationContextFactoryImpl(propertyNameObtainerFactory, null);
 

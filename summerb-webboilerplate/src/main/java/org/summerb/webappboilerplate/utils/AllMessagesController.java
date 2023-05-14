@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015-2023 Sergey Karpushin
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -41,63 +41,67 @@ import com.google.gson.Gson;
 
 /**
  * This controller exposes all messages as a JSON object (map)
- * 
- * @author sergeyk
  *
+ * @author sergeyk
  */
 @Controller
 public class AllMessagesController extends ControllerBase implements InitializingBean {
-	private static final long MILLIS_PER_DAY = 86400000;
+  private static final long MILLIS_PER_DAY = 86400000;
 
-	private AllMessagesProvider allMessagesProvider;
-	private LoadingCache<Locale, Properties> messagesCache;
-	private Gson gson = new Gson();
+  private AllMessagesProvider allMessagesProvider;
+  private LoadingCache<Locale, Properties> messagesCache;
+  private Gson gson = new Gson();
 
-	// TBD: Do not hardcode this, check when messages were actually reloaded
-	private long lastModified = System.currentTimeMillis();
+  // TBD: Do not hardcode this, check when messages were actually reloaded
+  private long lastModified = System.currentTimeMillis();
 
-	@RequestMapping(method = RequestMethod.GET, value = "/rest/msgs")
-	public @ResponseBody Properties getMessageBundle() throws ExecutionException {
-		return messagesCache.get(CurrentRequestUtils.getLocale());
-	}
+  @RequestMapping(method = RequestMethod.GET, value = "/rest/msgs")
+  public @ResponseBody Properties getMessageBundle() throws ExecutionException {
+    return messagesCache.get(CurrentRequestUtils.getLocale());
+  }
 
-	@RequestMapping(method = RequestMethod.GET, value = "/msgs.js")
-	public ResponseEntity<String> getMessageBundleJs(WebRequest request, HttpServletResponse response)
-			throws ExecutionException {
-		// see if not modified
-		if (request.checkNotModified(lastModified)) {
-			return new ResponseEntity<String>(HttpStatus.NOT_MODIFIED);
-		}
+  @RequestMapping(method = RequestMethod.GET, value = "/msgs.js")
+  public ResponseEntity<String> getMessageBundleJs(WebRequest request, HttpServletResponse response)
+      throws ExecutionException {
+    // see if not modified
+    if (request.checkNotModified(lastModified)) {
+      return new ResponseEntity<String>(HttpStatus.NOT_MODIFIED);
+    }
 
-		// set headers
-		HttpHeaders responseHeaders = new HttpHeaders();
-		response.setHeader("Cache-Control", "max-age: 84600");
-		responseHeaders.setExpires(System.currentTimeMillis() + MILLIS_PER_DAY);
-		responseHeaders.set("Content-Type", "text/javascript; charset=UTF-8");
-		// NOTE: Looks like there is a bug in the spring - it will add
-		// Last-Modified twice to the response
-		// responseHeaders.setLastModified(maxLastModified);
-		response.setDateHeader("Last-Modified", lastModified);
-		Properties msgs = messagesCache.get(CurrentRequestUtils.getLocale());
-		return new ResponseEntity<String>("var msgs = " + gson.toJson(msgs), responseHeaders, HttpStatus.OK);
-	}
+    // set headers
+    HttpHeaders responseHeaders = new HttpHeaders();
+    response.setHeader("Cache-Control", "max-age: 84600");
+    responseHeaders.setExpires(System.currentTimeMillis() + MILLIS_PER_DAY);
+    responseHeaders.set("Content-Type", "text/javascript; charset=UTF-8");
+    // NOTE: Looks like there is a bug in the spring - it will add
+    // Last-Modified twice to the response
+    // responseHeaders.setLastModified(maxLastModified);
+    response.setDateHeader("Last-Modified", lastModified);
+    Properties msgs = messagesCache.get(CurrentRequestUtils.getLocale());
+    return new ResponseEntity<String>(
+        "var msgs = " + gson.toJson(msgs), responseHeaders, HttpStatus.OK);
+  }
 
-	private CacheLoader<Locale, Properties> messagesLoader = new CacheLoader<Locale, Properties>() {
-		@Override
-		public Properties load(Locale key) throws Exception {
-			return allMessagesProvider.getAllMessages(key);
-		}
-	};
+  private CacheLoader<Locale, Properties> messagesLoader =
+      new CacheLoader<Locale, Properties>() {
+        @Override
+        public Properties load(Locale key) throws Exception {
+          return allMessagesProvider.getAllMessages(key);
+        }
+      };
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		super.afterPropertiesSet();
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    super.afterPropertiesSet();
 
-		// TBD: Explain why not just Autowire it ??!?!!?!?!?!?!
-		allMessagesProvider = applicationContext.getBean(AllMessagesProvider.class);
+    // TBD: Explain why not just Autowire it ??!?!!?!?!?!?!
+    allMessagesProvider = applicationContext.getBean(AllMessagesProvider.class);
 
-		messagesCache = CacheBuilder.newBuilder().maximumSize(1000)
-				.expireAfterAccess(allMessagesProvider.getReloadIntervalSeconds(), TimeUnit.SECONDS).recordStats()
-				.build(messagesLoader);
-	}
+    messagesCache =
+        CacheBuilder.newBuilder()
+            .maximumSize(1000)
+            .expireAfterAccess(allMessagesProvider.getReloadIntervalSeconds(), TimeUnit.SECONDS)
+            .recordStats()
+            .build(messagesLoader);
+  }
 }

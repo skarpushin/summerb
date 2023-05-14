@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015-2023 Sergey Karpushin
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -20,29 +20,29 @@ import org.summerb.easycrud.api.EasyCrudPerRowAuthStrategy;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
 import org.summerb.spring.security.api.SecurityContextResolver;
 
-public abstract class EasyCrudPerRowAuthStrategyAbstract<TDto, TUserType> implements EasyCrudPerRowAuthStrategy<TDto> {
-	@Autowired
-	protected SecurityContextResolver<TUserType> securityContextResolver;
+public abstract class EasyCrudPerRowAuthStrategyAbstract<TDto, TUserType>
+    implements EasyCrudPerRowAuthStrategy<TDto> {
+  @Autowired protected SecurityContextResolver<TUserType> securityContextResolver;
 
-	protected TUserType getUser() {
-		return securityContextResolver.getUser();
-	}
+  protected TUserType getUser() {
+    return securityContextResolver.getUser();
+  }
 
-	@Override
-	public void assertAuthorizedToCreate(TDto dto) throws NotAuthorizedException {
-		assertAuthorizedToModify(dto);
-	}
+  @Override
+  public void assertAuthorizedToCreate(TDto dto) throws NotAuthorizedException {
+    assertAuthorizedToModify(dto);
+  }
 
-	protected abstract void assertAuthorizedToModify(TDto dto) throws NotAuthorizedException;
+  protected abstract void assertAuthorizedToModify(TDto dto) throws NotAuthorizedException;
 
-	@Override
-	public void assertAuthorizedToUpdate(TDto existingVersion, TDto newVersion) throws NotAuthorizedException {
-		assertAuthorizedToModify(newVersion);
-	}
+  @Override
+  public void assertAuthorizedToUpdate(TDto existingVersion, TDto newVersion)
+      throws NotAuthorizedException {
+    assertAuthorizedToModify(newVersion);
+  }
 
-	@Override
-	public void assertAuthorizedToDelete(TDto dto) throws NotAuthorizedException {
-		assertAuthorizedToModify(dto);
-	}
-
+  @Override
+  public void assertAuthorizedToDelete(TDto dto) throws NotAuthorizedException {
+    assertAuthorizedToModify(dto);
+  }
 }

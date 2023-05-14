@@ -61,226 +61,254 @@ import org.summerb.security.api.exceptions.NotAuthorizedException;
 import com.google.common.base.Preconditions;
 
 /**
- * Base class for EasyCrud REST API controllers which main responsibility is to
- * serve CRUD requests for entities managed by {@link EasyCrudService}.
+ * Base class for EasyCrud REST API controllers which main responsibility is to serve CRUD requests
+ * for entities managed by {@link EasyCrudService}.
  *
- * <p>
- * It designed to be sub-classed. See
- * https://github.com/skarpushin/summerb/wiki/Easy-CRUD#rest-api-controller for
- * details.
+ * <p>It designed to be sub-classed. See
+ * https://github.com/skarpushin/summerb/wiki/Easy-CRUD#rest-api-controller for details.
  *
- * <p>
- * NOTE: Exception handling is not implemented here because we rely on
- * RestExceptionTranslator, which is subclass of {@link GenericFilterBean}
- * (Spring approach on filtering requests).
+ * <p>NOTE: Exception handling is not implemented here because we rely on RestExceptionTranslator,
+ * which is subclass of {@link GenericFilterBean} (Spring approach on filtering requests).
  *
- * @param <TId>              primary key type
- * @param <TDto>             entity type
+ * @param <TId> primary key type
+ * @param <TDto> entity type
  * @param <TEasyCrudService> service type
- * 
  * @author sergeyk
  */
-public class EasyCrudRestControllerBase<TId, TDto extends HasId<TId>, TEasyCrudService extends EasyCrudService<TId, TDto>>
-		implements ApplicationContextAware, InitializingBean {
-	protected static final String PERM_RESOLVER_REQ = "Cannot provide permissions since permissionsResolverStrategy is not set";
+public class EasyCrudRestControllerBase<
+        TId, TDto extends HasId<TId>, TEasyCrudService extends EasyCrudService<TId, TDto>>
+    implements ApplicationContextAware, InitializingBean {
+  protected static final String PERM_RESOLVER_REQ =
+      "Cannot provide permissions since permissionsResolverStrategy is not set";
 
-	protected TEasyCrudService service;
-	protected DataSetLoader dataSetLoader;
-	protected ReferencesRegistry referencesRegistry;
+  protected TEasyCrudService service;
+  protected DataSetLoader dataSetLoader;
+  protected ReferencesRegistry referencesRegistry;
 
-	protected ConvertBeforeReturnStrategy<TId, TDto> convertBeforeReturnStrategy = new ConvertBeforeReturnStrategy<TId, TDto>();;
-	protected QueryNarrowerStrategy queryNarrowerStrategy = new QueryNarrowerStrategy();
-	protected PermissionsResolverStrategy<TId, TDto> permissionsResolverStrategy;
-	protected FilteringParamsToQueryConverter filteringParamsToQueryConverter = new FilteringParamsToQueryConverterImpl();
-	protected OrderBy defaultOrderBy;
-	protected PagerParams defaultPagerParams = new PagerParams();
+  protected ConvertBeforeReturnStrategy<TId, TDto> convertBeforeReturnStrategy =
+      new ConvertBeforeReturnStrategy<TId, TDto>();
+  ;
+  protected QueryNarrowerStrategy queryNarrowerStrategy = new QueryNarrowerStrategy();
+  protected PermissionsResolverStrategy<TId, TDto> permissionsResolverStrategy;
+  protected FilteringParamsToQueryConverter filteringParamsToQueryConverter =
+      new FilteringParamsToQueryConverterImpl();
+  protected OrderBy defaultOrderBy;
+  protected PagerParams defaultPagerParams = new PagerParams();
 
-	protected ApplicationContext applicationContext;
+  protected ApplicationContext applicationContext;
 
-	public EasyCrudRestControllerBase(TEasyCrudService service) {
-		Preconditions.checkArgument(service != null, "Service required");
-		this.service = service;
-	}
+  public EasyCrudRestControllerBase(TEasyCrudService service) {
+    Preconditions.checkArgument(service != null, "Service required");
+    this.service = service;
+  }
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
-	}
+  @Override
+  public void afterPropertiesSet() throws Exception {}
 
-	/**
-	 * Default action to get list of items in this collection with either non or
-	 * simple query parameters.
-	 *
-	 * <p>
-	 * In order for this method to work properly (including orderBy and pagerParams)
-	 * make sure to register PojoFieldsArgumentResolver within spring mvc.
-	 *
-	 * @param pagerParams         pagerParams
-	 * @param orderBy             orderBy
-	 * @param needPerms           provide true if needed to know permissions
-	 * @param referencesToResolve references to resolve
-	 * @param pathVariables       path variables
-	 * 
-	 * @return list of items
-	 */
-	@GetMapping
-	public MultipleItemsResult<TId, TDto> getList(
-			@RequestParam(value = "pagerParams", required = false) PagerParams pagerParams,
-			@RequestParam(value = "orderBy", required = false) OrderBy orderBy,
-			@RequestParam(value = "needPerms", required = false) boolean needPerms,
-			@RequestParam(value = "referencesToResolve", required = false) List<String> referencesToResolve,
-			/* @ApiIgnore */ PathVariablesMap pathVariables) throws Exception {
-		if (orderBy != null && (orderBy.getDirection() == null || orderBy.getFieldName() == null)) {
-			orderBy = defaultOrderBy;
-		}
-		if (pagerParams == null) {
-			pagerParams = defaultPagerParams;
-		}
+  /**
+   * Default action to get list of items in this collection with either non or simple query
+   * parameters.
+   *
+   * <p>In order for this method to work properly (including orderBy and pagerParams) make sure to
+   * register PojoFieldsArgumentResolver within spring mvc.
+   *
+   * @param pagerParams pagerParams
+   * @param orderBy orderBy
+   * @param needPerms provide true if needed to know permissions
+   * @param referencesToResolve references to resolve
+   * @param pathVariables path variables
+   * @return list of items
+   */
+  @GetMapping
+  public MultipleItemsResult<TId, TDto> getList(
+      @RequestParam(value = "pagerParams", required = false) PagerParams pagerParams,
+      @RequestParam(value = "orderBy", required = false) OrderBy orderBy,
+      @RequestParam(value = "needPerms", required = false) boolean needPerms,
+      @RequestParam(value = "referencesToResolve", required = false)
+          List<String> referencesToResolve,
+      /* @ApiIgnore */ PathVariablesMap pathVariables)
+      throws Exception {
+    if (orderBy != null && (orderBy.getDirection() == null || orderBy.getFieldName() == null)) {
+      orderBy = defaultOrderBy;
+    }
+    if (pagerParams == null) {
+      pagerParams = defaultPagerParams;
+    }
 
-		PaginatedList<TDto> rows;
-		if (orderBy == null) {
-			rows = service.find(pagerParams, queryNarrowerStrategy.narrow(null, pathVariables));
-		} else {
-			rows = service.find(pagerParams, queryNarrowerStrategy.narrow(null, pathVariables), orderBy);
-		}
-		MultipleItemsResult<TId, TDto> ret = new MultipleItemsResult<>(service.getRowMessageCode(), rows);
+    PaginatedList<TDto> rows;
+    if (orderBy == null) {
+      rows = service.find(pagerParams, queryNarrowerStrategy.narrow(null, pathVariables));
+    } else {
+      rows = service.find(pagerParams, queryNarrowerStrategy.narrow(null, pathVariables), orderBy);
+    }
+    MultipleItemsResult<TId, TDto> ret =
+        new MultipleItemsResult<>(service.getRowMessageCode(), rows);
 
-		if (needPerms) {
-			Preconditions.checkArgument(permissionsResolverStrategy != null, PERM_RESOLVER_REQ);
-			permissionsResolverStrategy.resolvePermissions(ret, pathVariables);
-		}
+    if (needPerms) {
+      Preconditions.checkArgument(permissionsResolverStrategy != null, PERM_RESOLVER_REQ);
+      permissionsResolverStrategy.resolvePermissions(ret, pathVariables);
+    }
 
-		if (rows.getHasItems() && !CollectionUtils.isEmpty(referencesToResolve)) {
-			resolveReferences(referencesToResolve, ret, rows.getItems());
-		}
+    if (rows.getHasItems() && !CollectionUtils.isEmpty(referencesToResolve)) {
+      resolveReferences(referencesToResolve, ret, rows.getItems());
+    }
 
-		return convertBeforeReturnStrategy.convert(ret);
-	}
+    return convertBeforeReturnStrategy.convert(ret);
+  }
 
-	protected void resolveReferences(List<String> referencesToResolve, CrudQueryResult<TId, TDto> ret, List<TDto> items)
-			throws EntityNotFoundException, NotAuthorizedException {
-		Preconditions.checkState(dataSetLoader != null, "DataSetLoader is required to resolve references");
-		Preconditions.checkState(referencesRegistry != null, "referencesRegistry is required to resolve references");
-		DataSet ds = new DataSet();
-		DataTable<TId, TDto> table = new DataTable<>(service.getRowMessageCode());
-		table.putAll(items);
-		ds.getTables().put(table.getName(), table);
+  protected void resolveReferences(
+      List<String> referencesToResolve, CrudQueryResult<TId, TDto> ret, List<TDto> items)
+      throws EntityNotFoundException, NotAuthorizedException {
+    Preconditions.checkState(
+        dataSetLoader != null, "DataSetLoader is required to resolve references");
+    Preconditions.checkState(
+        referencesRegistry != null, "referencesRegistry is required to resolve references");
+    DataSet ds = new DataSet();
+    DataTable<TId, TDto> table = new DataTable<>(service.getRowMessageCode());
+    table.putAll(items);
+    ds.getTables().put(table.getName(), table);
 
-		List<Ref> references = referencesToResolve.stream().map(name -> referencesRegistry.getRefByName(name))
-				.collect(Collectors.toList());
-		Ref[] refsArr = (Ref[]) references.toArray(new Ref[references.size()]);
-		dataSetLoader.resolveReferencedObjects(ds, refsArr);
+    List<Ref> references =
+        referencesToResolve.stream()
+            .map(name -> referencesRegistry.getRefByName(name))
+            .collect(Collectors.toList());
+    Ref[] refsArr = (Ref[]) references.toArray(new Ref[references.size()]);
+    dataSetLoader.resolveReferencedObjects(ds, refsArr);
 
-		// now remove initial table from dataset because we don't want to
-		// duplicate this. It's already populated to rows
-		ds.getTables().remove(table.getName());
+    // now remove initial table from dataset because we don't want to
+    // duplicate this. It's already populated to rows
+    ds.getTables().remove(table.getName());
 
-		// x. ret
-		ret.setRefsResolved(references.stream().collect(Collectors.toMap(Ref::getName, Function.identity())));
-		ret.setRefs(ds);
-	}
+    // x. ret
+    ret.setRefsResolved(
+        references.stream().collect(Collectors.toMap(Ref::getName, Function.identity())));
+    ret.setRefs(ds);
+  }
 
-	@PostMapping(path = "/query", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public MultipleItemsResult<TId, TDto> getListWithQuery(@RequestBody EasyCrudQueryParams filteringParams,
-			@RequestParam(value = "needPerms", required = false) boolean needPerms,
-			@RequestParam(value = "referencesToResolve", required = false) List<String> referencesToResolve,
-			/* @ApiIgnore */ PathVariablesMap pathVariables) throws Exception {
+  @PostMapping(
+      path = "/query",
+      produces = MediaType.APPLICATION_JSON_VALUE,
+      consumes = MediaType.APPLICATION_JSON_VALUE)
+  public MultipleItemsResult<TId, TDto> getListWithQuery(
+      @RequestBody EasyCrudQueryParams filteringParams,
+      @RequestParam(value = "needPerms", required = false) boolean needPerms,
+      @RequestParam(value = "referencesToResolve", required = false)
+          List<String> referencesToResolve,
+      /* @ApiIgnore */ PathVariablesMap pathVariables)
+      throws Exception {
 
-		if ((filteringParams.getOrderBy() == null || filteringParams.getOrderBy().length == 0)
-				&& defaultOrderBy != null) {
-			filteringParams.setOrderBy(new OrderBy[] { defaultOrderBy });
-		}
-		if (filteringParams.getPagerParams() == null) {
-			filteringParams.setPagerParams(defaultPagerParams);
-		}
+    if ((filteringParams.getOrderBy() == null || filteringParams.getOrderBy().length == 0)
+        && defaultOrderBy != null) {
+      filteringParams.setOrderBy(new OrderBy[] {defaultOrderBy});
+    }
+    if (filteringParams.getPagerParams() == null) {
+      filteringParams.setPagerParams(defaultPagerParams);
+    }
 
-		Query query = filteringParamsToQueryConverter.convert(filteringParams.getFilterParams(), service.getRowClass());
-		query = queryNarrowerStrategy.narrow(query, pathVariables);
+    Query query =
+        filteringParamsToQueryConverter.convert(
+            filteringParams.getFilterParams(), service.getRowClass());
+    query = queryNarrowerStrategy.narrow(query, pathVariables);
 
-		PaginatedList<TDto> rows = service.find(filteringParams.getPagerParams(), query, filteringParams.getOrderBy());
-		MultipleItemsResult<TId, TDto> ret = new MultipleItemsResult<>(service.getRowMessageCode(), rows);
+    PaginatedList<TDto> rows =
+        service.find(filteringParams.getPagerParams(), query, filteringParams.getOrderBy());
+    MultipleItemsResult<TId, TDto> ret =
+        new MultipleItemsResult<>(service.getRowMessageCode(), rows);
 
-		if (needPerms) {
-			Preconditions.checkArgument(permissionsResolverStrategy != null, PERM_RESOLVER_REQ);
-			permissionsResolverStrategy.resolvePermissions(ret, pathVariables);
-		}
+    if (needPerms) {
+      Preconditions.checkArgument(permissionsResolverStrategy != null, PERM_RESOLVER_REQ);
+      permissionsResolverStrategy.resolvePermissions(ret, pathVariables);
+    }
 
-		if (rows.getHasItems() && !CollectionUtils.isEmpty(referencesToResolve)) {
-			resolveReferences(referencesToResolve, ret, rows.getItems());
-		}
+    if (rows.getHasItems() && !CollectionUtils.isEmpty(referencesToResolve)) {
+      resolveReferences(referencesToResolve, ret, rows.getItems());
+    }
 
-		return convertBeforeReturnStrategy.convert(ret);
-	}
+    return convertBeforeReturnStrategy.convert(ret);
+  }
 
-	@GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public SingleItemResult<TId, TDto> getItem(@PathVariable("id") TId id,
-			@RequestParam(value = "needPerms", required = false) boolean needPerms,
-			@RequestParam(value = "referencesToResolve", required = false) List<String> referencesToResolve)
-			throws Exception {
+  @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+  public SingleItemResult<TId, TDto> getItem(
+      @PathVariable("id") TId id,
+      @RequestParam(value = "needPerms", required = false) boolean needPerms,
+      @RequestParam(value = "referencesToResolve", required = false)
+          List<String> referencesToResolve)
+      throws Exception {
 
-		TDto row = service.findById(id);
-		SingleItemResult<TId, TDto> ret = new SingleItemResult<TId, TDto>(service.getRowMessageCode(), row);
+    TDto row = service.findById(id);
+    SingleItemResult<TId, TDto> ret =
+        new SingleItemResult<TId, TDto>(service.getRowMessageCode(), row);
 
-		if (needPerms && row != null) {
-			Preconditions.checkArgument(permissionsResolverStrategy != null, PERM_RESOLVER_REQ);
-			permissionsResolverStrategy.resolvePermissions(ret);
-		}
+    if (needPerms && row != null) {
+      Preconditions.checkArgument(permissionsResolverStrategy != null, PERM_RESOLVER_REQ);
+      permissionsResolverStrategy.resolvePermissions(ret);
+    }
 
-		if (row != null && !CollectionUtils.isEmpty(referencesToResolve)) {
-			resolveReferences(referencesToResolve, ret, Arrays.asList(row));
-		}
+    if (row != null && !CollectionUtils.isEmpty(referencesToResolve)) {
+      resolveReferences(referencesToResolve, ret, Arrays.asList(row));
+    }
 
-		return convertBeforeReturnStrategy.convert(ret);
-	}
+    return convertBeforeReturnStrategy.convert(ret);
+  }
 
-	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public SingleItemResult<TId, TDto> createNewItem(@RequestBody TDto dto,
-			@RequestParam(value = "needPerms", required = false) boolean needPerms) throws Exception {
-		TDto row = service.create(dto);
-		SingleItemResult<TId, TDto> ret = new SingleItemResult<>(service.getRowMessageCode(), row);
-		if (needPerms) {
-			Preconditions.checkArgument(permissionsResolverStrategy != null, PERM_RESOLVER_REQ);
-			permissionsResolverStrategy.resolvePermissions(ret);
-		}
-		return convertBeforeReturnStrategy.convert(ret);
-	}
+  @PostMapping(
+      produces = MediaType.APPLICATION_JSON_VALUE,
+      consumes = MediaType.APPLICATION_JSON_VALUE)
+  public SingleItemResult<TId, TDto> createNewItem(
+      @RequestBody TDto dto, @RequestParam(value = "needPerms", required = false) boolean needPerms)
+      throws Exception {
+    TDto row = service.create(dto);
+    SingleItemResult<TId, TDto> ret = new SingleItemResult<>(service.getRowMessageCode(), row);
+    if (needPerms) {
+      Preconditions.checkArgument(permissionsResolverStrategy != null, PERM_RESOLVER_REQ);
+      permissionsResolverStrategy.resolvePermissions(ret);
+    }
+    return convertBeforeReturnStrategy.convert(ret);
+  }
 
-	@PutMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public SingleItemResult<TId, TDto> updateItem(@PathVariable("id") TId id, @RequestBody TDto rowToUpdate,
-			@RequestParam(value = "needPerms", required = false) boolean needPerms) throws Exception {
-		TDto row = service.update(rowToUpdate);
-		SingleItemResult<TId, TDto> ret = new SingleItemResult<>(service.getRowMessageCode(), row);
-		if (needPerms) {
-			Preconditions.checkArgument(permissionsResolverStrategy != null, PERM_RESOLVER_REQ);
-			permissionsResolverStrategy.resolvePermissions(ret);
-		}
-		return convertBeforeReturnStrategy.convert(ret);
-	}
+  @PutMapping(
+      path = "/{id}",
+      produces = MediaType.APPLICATION_JSON_VALUE,
+      consumes = MediaType.APPLICATION_JSON_VALUE)
+  public SingleItemResult<TId, TDto> updateItem(
+      @PathVariable("id") TId id,
+      @RequestBody TDto rowToUpdate,
+      @RequestParam(value = "needPerms", required = false) boolean needPerms)
+      throws Exception {
+    TDto row = service.update(rowToUpdate);
+    SingleItemResult<TId, TDto> ret = new SingleItemResult<>(service.getRowMessageCode(), row);
+    if (needPerms) {
+      Preconditions.checkArgument(permissionsResolverStrategy != null, PERM_RESOLVER_REQ);
+      permissionsResolverStrategy.resolvePermissions(ret);
+    }
+    return convertBeforeReturnStrategy.convert(ret);
+  }
 
-	@DeleteMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public void deleteItem(@PathVariable("id") TId id) throws Exception {
-		service.deleteById(id);
-	}
+  @DeleteMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+  public void deleteItem(@PathVariable("id") TId id) throws Exception {
+    service.deleteById(id);
+  }
 
-	public DataSetLoader getDataSetLoader() {
-		return dataSetLoader;
-	}
+  public DataSetLoader getDataSetLoader() {
+    return dataSetLoader;
+  }
 
-	@Autowired(required = false)
-	public void setDataSetLoader(DataSetLoader dataSetLoader) {
-		this.dataSetLoader = dataSetLoader;
-	}
+  @Autowired(required = false)
+  public void setDataSetLoader(DataSetLoader dataSetLoader) {
+    this.dataSetLoader = dataSetLoader;
+  }
 
-	public ReferencesRegistry getReferencesRegistry() {
-		return referencesRegistry;
-	}
+  public ReferencesRegistry getReferencesRegistry() {
+    return referencesRegistry;
+  }
 
-	@Autowired(required = false)
-	public void setReferencesRegistry(ReferencesRegistry referencesRegistry) {
-		this.referencesRegistry = referencesRegistry;
-	}
+  @Autowired(required = false)
+  public void setReferencesRegistry(ReferencesRegistry referencesRegistry) {
+    this.referencesRegistry = referencesRegistry;
+  }
 
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		this.applicationContext = applicationContext;
-	}
+  @Override
+  public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    this.applicationContext = applicationContext;
+  }
 }

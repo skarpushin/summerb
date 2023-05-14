@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015-2023 Sergey Karpushin
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -34,28 +34,32 @@ import org.summerb.dbupgrade.impl.postgress.VersionTableDbDialectPostgressImpl;
 @Configuration
 @PropertySource("test-dbconnection.properties")
 public class TestPostgressConfig extends TestConfigBase {
-	@Override
-	protected UpgradePackageMetaResolver upgradePackageMetaResolver() throws Exception {
-		return new UpgradePackageMetaResolverClasspathImpl(resourcePatternResolver, "classpath:/db_postgress/*");
-	}
+  @Override
+  protected UpgradePackageMetaResolver upgradePackageMetaResolver() throws Exception {
+    return new UpgradePackageMetaResolverClasspathImpl(
+        resourcePatternResolver, "classpath:/db_postgress/*");
+  }
 
-	@Bean
-	DataSource dataSource(@Value("${postgres.driverClassName}") String driver,
-			@Value("${postgres.databaseurl}") String url, @Value("${postgres.username}") String username,
-			@Value("${postgres.password}") String password) throws Exception {
-		return new SimpleDriverDataSource((Driver) Class.forName(driver).newInstance(), url, username, password);
-	}
+  @Bean
+  DataSource dataSource(
+      @Value("${postgres.driverClassName}") String driver,
+      @Value("${postgres.databaseurl}") String url,
+      @Value("${postgres.username}") String username,
+      @Value("${postgres.password}") String password)
+      throws Exception {
+    return new SimpleDriverDataSource(
+        (Driver) Class.forName(driver).newInstance(), url, username, password);
+  }
 
-	@Override
-	@Bean
-	protected SqlPackageParser sqlPackageParser() {
-		return new SqlPackageParserPostgressImpl();
-	}
+  @Override
+  @Bean
+  protected SqlPackageParser sqlPackageParser() {
+    return new SqlPackageParserPostgressImpl();
+  }
 
-	@Bean
-	@Override
-	protected VersionTableDbDialect versionTableDbDialect() {
-		return new VersionTableDbDialectPostgressImpl();
-	}
-
+  @Bean
+  @Override
+  protected VersionTableDbDialect versionTableDbDialect() {
+    return new VersionTableDbDialectPostgressImpl();
+  }
 }

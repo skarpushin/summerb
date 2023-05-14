@@ -15,75 +15,74 @@ import org.springframework.util.StringUtils;
 import com.google.common.base.Preconditions;
 
 /**
- * Abstract class for customizing mapping of field to parameters when executing
- * DAO queries
+ * Abstract class for customizing mapping of field to parameters when executing DAO queries
  *
  * @author Sergey Karpushin
  */
 public class CustomizedParameterSourceBuilder<T> extends ParameterSourceBuilderBeanPropImpl<T> {
 
-	protected Map<String, FieldOverride<T>> overrides;
+  protected Map<String, FieldOverride<T>> overrides;
 
-	public CustomizedParameterSourceBuilder(FieldOverride<T> override) {
-		super();
-		Preconditions.checkArgument(override != null, "override required");
-		this.overrides = new HashMap<>();
-		this.overrides.put(override.fieldName, override);
-	}
+  public CustomizedParameterSourceBuilder(FieldOverride<T> override) {
+    super();
+    Preconditions.checkArgument(override != null, "override required");
+    this.overrides = new HashMap<>();
+    this.overrides.put(override.fieldName, override);
+  }
 
-	public CustomizedParameterSourceBuilder(Collection<FieldOverride<T>> overrides) {
-		super();
-		Preconditions.checkArgument(!CollectionUtils.isEmpty(overrides), "overrides required");
-		this.overrides = overrides.stream().collect(Collectors.toMap(k -> k.fieldName, Function.identity()));
-	}
+  public CustomizedParameterSourceBuilder(Collection<FieldOverride<T>> overrides) {
+    super();
+    Preconditions.checkArgument(!CollectionUtils.isEmpty(overrides), "overrides required");
+    this.overrides =
+        overrides.stream().collect(Collectors.toMap(k -> k.fieldName, Function.identity()));
+  }
 
-	@Override
-	public SqlParameterSource buildParameterSource(T dto) {
-		return new BeanPropertySqlParameterSource(dto) {
-			@Override
-			public Object getValue(String paramName) throws IllegalArgumentException {
-				FieldOverride<T> override = overrides.get(paramName);
-				if (override == null) {
-					return super.getValue(paramName);
-				}
+  @Override
+  public SqlParameterSource buildParameterSource(T dto) {
+    return new BeanPropertySqlParameterSource(dto) {
+      @Override
+      public Object getValue(String paramName) throws IllegalArgumentException {
+        FieldOverride<T> override = overrides.get(paramName);
+        if (override == null) {
+          return super.getValue(paramName);
+        }
 
-				return override.valueGetter.apply(dto);
-			}
+        return override.valueGetter.apply(dto);
+      }
 
-			@Override
-			public int getSqlType(String paramName) {
-				FieldOverride<T> override = overrides.get(paramName);
-				if (override == null) {
-					return super.getSqlType(paramName);
-				}
+      @Override
+      public int getSqlType(String paramName) {
+        FieldOverride<T> override = overrides.get(paramName);
+        if (override == null) {
+          return super.getSqlType(paramName);
+        }
 
-				return override.sqlType;
-			}
-		};
-	}
+        return override.sqlType;
+      }
+    };
+  }
 
-	public static class FieldOverride<T> {
-		String fieldName;
-		int sqlType;
-		Function<T, Object> valueGetter;
+  public static class FieldOverride<T> {
+    String fieldName;
+    int sqlType;
+    Function<T, Object> valueGetter;
 
-		/**
-		 * @param fieldName   field to override
-		 * @param type        one of {@link Types}
-		 * @param valueGetter function to get field value
-		 * 
-		 * @param <T>         Row class to get field value from
-		 * 
-		 * @return configured FieldOverride
-		 */
-		public static <T> FieldOverride<T> of(String fieldName, int type, Function<T, Object> valueGetter) {
-			Preconditions.checkArgument(StringUtils.hasText(fieldName), "fieldName required");
-			Preconditions.checkArgument(valueGetter != null, "valueGetter required");
-			FieldOverride<T> ret = new FieldOverride<>();
-			ret.fieldName = fieldName;
-			ret.sqlType = type;
-			ret.valueGetter = valueGetter;
-			return ret;
-		}
-	}
+    /**
+     * @param fieldName field to override
+     * @param type one of {@link Types}
+     * @param valueGetter function to get field value
+     * @param <T> Row class to get field value from
+     * @return configured FieldOverride
+     */
+    public static <T> FieldOverride<T> of(
+        String fieldName, int type, Function<T, Object> valueGetter) {
+      Preconditions.checkArgument(StringUtils.hasText(fieldName), "fieldName required");
+      Preconditions.checkArgument(valueGetter != null, "valueGetter required");
+      FieldOverride<T> ret = new FieldOverride<>();
+      ret.fieldName = fieldName;
+      ret.sqlType = type;
+      ret.valueGetter = valueGetter;
+      return ret;
+    }
+  }
 }

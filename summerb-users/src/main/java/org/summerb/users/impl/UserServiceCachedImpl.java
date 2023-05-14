@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015-2023 Sergey Karpushin
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -39,125 +39,129 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 public class UserServiceCachedImpl implements UserService, InitializingBean {
-	private Logger log = LoggerFactory.getLogger(getClass());
+  private Logger log = LoggerFactory.getLogger(getClass());
 
-	private UserService userService;
-	private EventBus eventBus;
+  private UserService userService;
+  private EventBus eventBus;
 
-	private LoadingCache<String, User> cacheByEmail;
-	private LoadingCache<String, User> cacheByUuid;
+  private LoadingCache<String, User> cacheByEmail;
+  private LoadingCache<String, User> cacheByUuid;
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		CacheBuilder cacheBuilder = (CacheBuilder) CacheBuilder.newBuilder().maximumSize(1000).recordStats();
-		cacheByEmail = new TransactionBoundCache<String, User>("UserCacheByEmail", cacheBuilder, loaderByEmail);
-		cacheByUuid = new TransactionBoundCache<String, User>("UserCacheByUuid", cacheBuilder, loaderByUuid);
-		eventBus.register(this);
-	}
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    CacheBuilder cacheBuilder =
+        (CacheBuilder) CacheBuilder.newBuilder().maximumSize(1000).recordStats();
+    cacheByEmail =
+        new TransactionBoundCache<String, User>("UserCacheByEmail", cacheBuilder, loaderByEmail);
+    cacheByUuid =
+        new TransactionBoundCache<String, User>("UserCacheByUuid", cacheBuilder, loaderByUuid);
+    eventBus.register(this);
+  }
 
-	@Subscribe
-	public void onUserChanged(EntityChangedEvent<User> evt) {
-		if (!evt.isTypeOf(User.class)) {
-			return;
-		}
+  @Subscribe
+  public void onUserChanged(EntityChangedEvent<User> evt) {
+    if (!evt.isTypeOf(User.class)) {
+      return;
+    }
 
-		if (log.isTraceEnabled()) {
-			log.trace("User changed, invalidating cache for " + evt.getValue().getEmail());
-		}
+    if (log.isTraceEnabled()) {
+      log.trace("User changed, invalidating cache for " + evt.getValue().getEmail());
+    }
 
-		cacheByEmail.invalidate(evt.getValue().getEmail());
-		cacheByUuid.invalidate(evt.getValue().getUuid());
-	}
+    cacheByEmail.invalidate(evt.getValue().getEmail());
+    cacheByUuid.invalidate(evt.getValue().getUuid());
+  }
 
-	@Subscribe
-	public void onCacheInvalidationRequest(CachesInvalidationNeeded evt) {
-		cacheByEmail.invalidateAll();
-		cacheByUuid.invalidateAll();
-	}
+  @Subscribe
+  public void onCacheInvalidationRequest(CachesInvalidationNeeded evt) {
+    cacheByEmail.invalidateAll();
+    cacheByUuid.invalidateAll();
+  }
 
-	private CacheLoader<String, User> loaderByEmail = new CacheLoader<String, User>() {
-		@Override
-		public User load(String key) throws Exception {
-			User ret = userService.getUserByEmail(key);
-			if (log.isTraceEnabled()) {
-				log.trace("User loaded by email " + key + " = " + ret);
-			}
-			return ret;
-		}
-	};
+  private CacheLoader<String, User> loaderByEmail =
+      new CacheLoader<String, User>() {
+        @Override
+        public User load(String key) throws Exception {
+          User ret = userService.getUserByEmail(key);
+          if (log.isTraceEnabled()) {
+            log.trace("User loaded by email " + key + " = " + ret);
+          }
+          return ret;
+        }
+      };
 
-	private CacheLoader<String, User> loaderByUuid = new CacheLoader<String, User>() {
-		@Override
-		public User load(String key) throws Exception {
-			User ret = userService.getUserByUuid(key);
-			if (log.isTraceEnabled()) {
-				log.trace("User loaded by uuid " + key + " = " + ret);
-			}
-			return ret;
-		}
-	};
+  private CacheLoader<String, User> loaderByUuid =
+      new CacheLoader<String, User>() {
+        @Override
+        public User load(String key) throws Exception {
+          User ret = userService.getUserByUuid(key);
+          if (log.isTraceEnabled()) {
+            log.trace("User loaded by uuid " + key + " = " + ret);
+          }
+          return ret;
+        }
+      };
 
-	@Override
-	public User createUser(User user) throws ValidationException {
-		return userService.createUser(user);
-	}
+  @Override
+  public User createUser(User user) throws ValidationException {
+    return userService.createUser(user);
+  }
 
-	@Override
-	public User getUserByUuid(String userUuid) throws UserNotFoundException {
-		try {
-			return cacheByUuid.get(userUuid);
-		} catch (ExecutionException e) {
-			Throwables.throwIfInstanceOf(e.getCause(), UserNotFoundException.class);
-			Throwables.throwIfInstanceOf(e.getCause(), RuntimeException.class);
-			throw new RuntimeException("Unexpected failure during requesting user by email", e);
-		}
-	}
+  @Override
+  public User getUserByUuid(String userUuid) throws UserNotFoundException {
+    try {
+      return cacheByUuid.get(userUuid);
+    } catch (ExecutionException e) {
+      Throwables.throwIfInstanceOf(e.getCause(), UserNotFoundException.class);
+      Throwables.throwIfInstanceOf(e.getCause(), RuntimeException.class);
+      throw new RuntimeException("Unexpected failure during requesting user by email", e);
+    }
+  }
 
-	@Override
-	public User getUserByEmail(String userEmail) throws ValidationException, UserNotFoundException {
-		try {
-			return cacheByEmail.get(userEmail);
-		} catch (ExecutionException e) {
-			Throwables.throwIfInstanceOf(e.getCause(), UserNotFoundException.class);
-			Throwables.throwIfInstanceOf(e.getCause(), ValidationException.class);
-			Throwables.throwIfInstanceOf(e.getCause(), RuntimeException.class);
-			throw new RuntimeException("Unexpected failure during requesting user by email", e);
-		}
-	}
+  @Override
+  public User getUserByEmail(String userEmail) throws ValidationException, UserNotFoundException {
+    try {
+      return cacheByEmail.get(userEmail);
+    } catch (ExecutionException e) {
+      Throwables.throwIfInstanceOf(e.getCause(), UserNotFoundException.class);
+      Throwables.throwIfInstanceOf(e.getCause(), ValidationException.class);
+      Throwables.throwIfInstanceOf(e.getCause(), RuntimeException.class);
+      throw new RuntimeException("Unexpected failure during requesting user by email", e);
+    }
+  }
 
-	@Override
-	public PaginatedList<User> findUsersByDisplayNamePartial(String displayNamePartial, PagerParams pagerParams)
-			throws ValidationException {
-		return userService.findUsersByDisplayNamePartial(displayNamePartial, pagerParams);
-	}
+  @Override
+  public PaginatedList<User> findUsersByDisplayNamePartial(
+      String displayNamePartial, PagerParams pagerParams) throws ValidationException {
+    return userService.findUsersByDisplayNamePartial(displayNamePartial, pagerParams);
+  }
 
-	@Override
-	public void updateUser(User user) throws ValidationException, UserNotFoundException {
-		userService.updateUser(user);
-	}
+  @Override
+  public void updateUser(User user) throws ValidationException, UserNotFoundException {
+    userService.updateUser(user);
+  }
 
-	@Override
-	public void deleteUserByUuid(String userUuid) throws UserNotFoundException {
-		userService.deleteUserByUuid(userUuid);
-	}
+  @Override
+  public void deleteUserByUuid(String userUuid) throws UserNotFoundException {
+    userService.deleteUserByUuid(userUuid);
+  }
 
-	public UserService getUserService() {
-		return userService;
-	}
+  public UserService getUserService() {
+    return userService;
+  }
 
-	@Required
-	public void setUserService(UserService userService) {
-		this.userService = userService;
-	}
+  @Required
+  public void setUserService(UserService userService) {
+    this.userService = userService;
+  }
 
-	public EventBus getEventBus() {
-		return eventBus;
-	}
+  public EventBus getEventBus() {
+    return eventBus;
+  }
 
-	@Required
-	public void setEventBus(EventBus eventBus) {
-		this.eventBus = eventBus;
-	}
-
+  @Required
+  public void setEventBus(EventBus eventBus) {
+    this.eventBus = eventBus;
+  }
 }

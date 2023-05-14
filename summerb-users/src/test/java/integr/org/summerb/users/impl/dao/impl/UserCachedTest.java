@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015-2023 Sergey Karpushin
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -39,89 +39,88 @@ import org.summerb.users.api.exceptions.UserNotFoundException;
 @ProfileValueSourceConfiguration(SystemProfileValueSource.class)
 @Transactional
 public class UserCachedTest {
-	@Autowired
-	@Qualifier("userService")
-	private UserService userService;
+  @Autowired
+  @Qualifier("userService")
+  private UserService userService;
 
-	@Autowired
-	@Qualifier("userServiceNoncached")
-	private UserService userServiceNoncached;
+  @Autowired
+  @Qualifier("userServiceNoncached")
+  private UserService userServiceNoncached;
 
-	@Test
-	public void testGetUserByUuid_expectReferencesEqualityForReturnedDtos() throws Exception {
-		User userToCreate = UserFactory.createNewUserTemplate();
-		userToCreate = userService.createUser(userToCreate);
+  @Test
+  public void testGetUserByUuid_expectReferencesEqualityForReturnedDtos() throws Exception {
+    User userToCreate = UserFactory.createNewUserTemplate();
+    userToCreate = userService.createUser(userToCreate);
 
-		User foundUser = userService.getUserByUuid(userToCreate.getUuid());
-		User foundUserCached = userService.getUserByUuid(userToCreate.getUuid());
-		assertTrue(foundUser == foundUserCached);
-	}
+    User foundUser = userService.getUserByUuid(userToCreate.getUuid());
+    User foundUserCached = userService.getUserByUuid(userToCreate.getUuid());
+    assertTrue(foundUser == foundUserCached);
+  }
 
-	@Test
-	public void testGetUserByEmail_expectReferencesEqualityForReturnedDtos() throws Exception {
-		User userToCreate = UserFactory.createNewUserTemplate();
-		userToCreate = userService.createUser(userToCreate);
+  @Test
+  public void testGetUserByEmail_expectReferencesEqualityForReturnedDtos() throws Exception {
+    User userToCreate = UserFactory.createNewUserTemplate();
+    userToCreate = userService.createUser(userToCreate);
 
-		User foundUser = userService.getUserByEmail(userToCreate.getEmail());
-		User foundUserCached = userService.getUserByEmail(userToCreate.getEmail());
-		assertTrue(foundUser == foundUserCached);
-	}
+    User foundUser = userService.getUserByEmail(userToCreate.getEmail());
+    User foundUserCached = userService.getUserByEmail(userToCreate.getEmail());
+    assertTrue(foundUser == foundUserCached);
+  }
 
-	@Test
-	public void testUpdateUser_expectReferencesNonEqualityForReturnedDtos() throws Exception {
-		User userToCreate = UserFactory.createNewUserTemplate();
-		userToCreate.setDisplayName("Display name");
-		userToCreate = userService.createUser(userToCreate);
+  @Test
+  public void testUpdateUser_expectReferencesNonEqualityForReturnedDtos() throws Exception {
+    User userToCreate = UserFactory.createNewUserTemplate();
+    userToCreate.setDisplayName("Display name");
+    userToCreate = userService.createUser(userToCreate);
 
-		User foundUser = userService.getUserByUuid(userToCreate.getUuid());
+    User foundUser = userService.getUserByUuid(userToCreate.getUuid());
 
-		userToCreate.setDisplayName("Another display name");
-		userService.updateUser(userToCreate);
+    userToCreate.setDisplayName("Another display name");
+    userService.updateUser(userToCreate);
 
-		User foundUserAgain = userService.getUserByUuid(userToCreate.getUuid());
+    User foundUserAgain = userService.getUserByUuid(userToCreate.getUuid());
 
-		assertTrue(foundUser != foundUserAgain);
-		assertTrue(foundUserAgain.getDisplayName().equals("Another display name"));
-	}
+    assertTrue(foundUser != foundUserAgain);
+    assertTrue(foundUserAgain.getDisplayName().equals("Another display name"));
+  }
 
-	@Test // (expected=UserNotFoundException.class)
-	public void testDeleteUser_expectUserNotFoundException() throws Exception {
-		User userToCreate = UserFactory.createNewUserTemplate();
-		userToCreate = userService.createUser(userToCreate);
+  @Test // (expected=UserNotFoundException.class)
+  public void testDeleteUser_expectUserNotFoundException() throws Exception {
+    User userToCreate = UserFactory.createNewUserTemplate();
+    userToCreate = userService.createUser(userToCreate);
 
-		userService.getUserByUuid(userToCreate.getUuid());
+    userService.getUserByUuid(userToCreate.getUuid());
 
-		userService.deleteUserByUuid(userToCreate.getUuid());
+    userService.deleteUserByUuid(userToCreate.getUuid());
 
-		try {
-			userService.getUserByUuid(userToCreate.getUuid());
-			fail();
-		} catch (UserNotFoundException e) {
+    try {
+      userService.getUserByUuid(userToCreate.getUuid());
+      fail();
+    } catch (UserNotFoundException e) {
 
-		}
-	}
+    }
+  }
 
-	@Test
-	public void testPerformance_expectCacheFaster() throws Exception {
-		User userToCreate = UserFactory.createNewUserTemplate();
-		userToCreate = userService.createUser(userToCreate);
-		int cycles = 1000;
+  @Test
+  public void testPerformance_expectCacheFaster() throws Exception {
+    User userToCreate = UserFactory.createNewUserTemplate();
+    userToCreate = userService.createUser(userToCreate);
+    int cycles = 1000;
 
-		long before = new Date().getTime();
-		for (int i = 0; i < cycles; i++) {
-			userService.getUserByUuid(userToCreate.getUuid());
-		}
-		long after = new Date().getTime() - before;
+    long before = new Date().getTime();
+    for (int i = 0; i < cycles; i++) {
+      userService.getUserByUuid(userToCreate.getUuid());
+    }
+    long after = new Date().getTime() - before;
 
-		long beforeNonCached = new Date().getTime();
-		for (int i = 0; i < cycles; i++) {
-			userServiceNoncached.getUserByUuid(userToCreate.getUuid());
-		}
-		long afterNonCached = new Date().getTime() - beforeNonCached;
+    long beforeNonCached = new Date().getTime();
+    for (int i = 0; i < cycles; i++) {
+      userServiceNoncached.getUserByUuid(userToCreate.getUuid());
+    }
+    long afterNonCached = new Date().getTime() - beforeNonCached;
 
-		System.out.println("Cached: " + after + "ms");
-		System.out.println("Noncached: " + afterNonCached + "ms");
-		assertTrue(afterNonCached / 5 > after);
-	}
-
+    System.out.println("Cached: " + after + "ms");
+    System.out.println("Noncached: " + afterNonCached + "ms");
+    assertTrue(afterNonCached / 5 > after);
+  }
 }

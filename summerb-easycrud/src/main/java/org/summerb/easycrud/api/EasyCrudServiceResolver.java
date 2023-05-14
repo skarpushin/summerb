@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015-2023 Sergey Karpushin
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -18,19 +18,17 @@ package org.summerb.easycrud.api;
 import org.summerb.easycrud.api.relations.DataSetLoader;
 
 /**
- * Interface used to resolve services by
- * {@link EasyCrudService#getRowMessageCode()} or
- * {@link EasyCrudService#getRowClass()}
- * 
- * Supposed to be used mostly by {@link DataSetLoader}
- * 
- * @author sergeyk
+ * Interface used to resolve services by {@link EasyCrudService#getRowMessageCode()} or {@link
+ * EasyCrudService#getRowClass()}
  *
+ * <p>Supposed to be used mostly by {@link DataSetLoader}
+ *
+ * @author sergeyk
  */
 public interface EasyCrudServiceResolver {
-	@SuppressWarnings("rawtypes")
-	EasyCrudService resolveByRowMessageCode(String entityName);
+  @SuppressWarnings("rawtypes")
+  EasyCrudService resolveByRowMessageCode(String entityName);
 
-	@SuppressWarnings("rawtypes")
-	EasyCrudService resolveByRowClass(Class<?> entityClass);
+  @SuppressWarnings("rawtypes")
+  EasyCrudService resolveByRowClass(Class<?> entityClass);
 }

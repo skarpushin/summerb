@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015-2023 Sergey Karpushin
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -18,17 +18,16 @@ package org.summerb.users.api.exceptions;
 import org.summerb.i18n.HasMessageCode;
 
 public class UserServiceUnexpectedException extends RuntimeException implements HasMessageCode {
-	private static final long serialVersionUID = 663561647374456299L;
+  private static final long serialVersionUID = 663561647374456299L;
 
-	public UserServiceUnexpectedException() {
-	}
+  public UserServiceUnexpectedException() {}
 
-	public UserServiceUnexpectedException(String technicalMessage, Throwable cause) {
-		super(technicalMessage, cause);
-	}
+  public UserServiceUnexpectedException(String technicalMessage, Throwable cause) {
+    super(technicalMessage, cause);
+  }
 
-	@Override
-	public String getMessageCode() {
-		return "userService.unexpectedException";
-	}
+  @Override
+  public String getMessageCode() {
+    return "userService.unexpectedException";
+  }
 }

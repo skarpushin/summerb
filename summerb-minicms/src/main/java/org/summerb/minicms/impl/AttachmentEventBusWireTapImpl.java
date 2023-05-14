@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015-2023 Sergey Karpushin
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -31,70 +31,71 @@ import com.google.common.base.Preconditions;
 import com.google.common.eventbus.EventBus;
 
 /**
- * a modification of {@link EasyCrudWireTapEventBusImpl} that will essentially
- * remove {@link InputStream} if any from {@link Attachment#getContents()}
- * before sending into EventBus. It's important because messages often will be
- * serialized in some form to be written on disk or sent over the network
- * 
+ * a modification of {@link EasyCrudWireTapEventBusImpl} that will essentially remove {@link
+ * InputStream} if any from {@link Attachment#getContents()} before sending into EventBus. It's
+ * important because messages often will be serialized in some form to be written on disk or sent
+ * over the network
+ *
  * @author sergeyk
  */
 public class AttachmentEventBusWireTapImpl extends EasyCrudWireTapNoOpImpl<Long, Attachment> {
-	private EventBus eventBus;
+  private EventBus eventBus;
 
-	@Autowired
-	public AttachmentEventBusWireTapImpl(EventBus eventBus) {
-		Preconditions.checkArgument(eventBus != null);
-		this.eventBus = eventBus;
-	}
+  @Autowired
+  public AttachmentEventBusWireTapImpl(EventBus eventBus) {
+    Preconditions.checkArgument(eventBus != null);
+    this.eventBus = eventBus;
+  }
 
-	@Override
-	public boolean requiresOnCreate() throws ValidationException, NotAuthorizedException {
-		return true;
-	}
+  @Override
+  public boolean requiresOnCreate() throws ValidationException, NotAuthorizedException {
+    return true;
+  }
 
-	@Override
-	public void afterCreate(Attachment dto) throws ValidationException, NotAuthorizedException {
-		eventBus.post(EntityChangedEvent.added(getDtoSafeForEventBus(dto)));
-	}
+  @Override
+  public void afterCreate(Attachment dto) throws ValidationException, NotAuthorizedException {
+    eventBus.post(EntityChangedEvent.added(getDtoSafeForEventBus(dto)));
+  }
 
-	private Attachment getDtoSafeForEventBus(Attachment dto) {
-		try {
-			if (dto.getContents() == null) {
-				return dto;
-			}
-			InputStream contents = dto.getContents();
-			dto.setContents(null);
-			Attachment dto2 = DeepCopy.copyOrPopagateExcIfAny(dto);
-			dto.setContents(contents);
-			return dto2;
-		} catch (NotSerializableException e) {
-			throw new RuntimeException("Failed to identify the version of the Attachment DTO that is safe for eventBus",
-					e);
-		}
-	}
+  private Attachment getDtoSafeForEventBus(Attachment dto) {
+    try {
+      if (dto.getContents() == null) {
+        return dto;
+      }
+      InputStream contents = dto.getContents();
+      dto.setContents(null);
+      Attachment dto2 = DeepCopy.copyOrPopagateExcIfAny(dto);
+      dto.setContents(contents);
+      return dto2;
+    } catch (NotSerializableException e) {
+      throw new RuntimeException(
+          "Failed to identify the version of the Attachment DTO that is safe for eventBus", e);
+    }
+  }
 
-	@Override
-	public boolean requiresOnUpdate() throws NotAuthorizedException, ValidationException {
-		return true;
-	}
+  @Override
+  public boolean requiresOnUpdate() throws NotAuthorizedException, ValidationException {
+    return true;
+  }
 
-	@Override
-	public void afterUpdate(Attachment from, Attachment to) throws NotAuthorizedException, ValidationException {
-		eventBus.post(EntityChangedEvent.updated(getDtoSafeForEventBus(to)));
-	}
+  @Override
+  public void afterUpdate(Attachment from, Attachment to)
+      throws NotAuthorizedException, ValidationException {
+    eventBus.post(EntityChangedEvent.updated(getDtoSafeForEventBus(to)));
+  }
 
-	@Override
-	public boolean requiresOnDelete() throws ValidationException, NotAuthorizedException {
-		return true;
-	}
+  @Override
+  public boolean requiresOnDelete() throws ValidationException, NotAuthorizedException {
+    return true;
+  }
 
-	@Override
-	public void afterDelete(Attachment dto) throws ValidationException, NotAuthorizedException {
-		eventBus.post(EntityChangedEvent.removedObject(getDtoSafeForEventBus(dto)));
-	}
+  @Override
+  public void afterDelete(Attachment dto) throws ValidationException, NotAuthorizedException {
+    eventBus.post(EntityChangedEvent.removedObject(getDtoSafeForEventBus(dto)));
+  }
 
-	@Override
-	public boolean requiresOnRead() throws NotAuthorizedException, ValidationException {
-		return false;
-	}
+  @Override
+  public boolean requiresOnRead() throws NotAuthorizedException, ValidationException {
+    return false;
+  }
 }

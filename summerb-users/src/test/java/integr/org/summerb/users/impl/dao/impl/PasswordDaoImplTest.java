@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015-2023 Sergey Karpushin
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -39,63 +39,62 @@ import org.summerb.users.api.dto.UserFactory;
 @Transactional
 public class PasswordDaoImplTest {
 
-	@Autowired
-	private PasswordService passwordService;
+  @Autowired private PasswordService passwordService;
 
-	@Autowired
-	private UserService userService;
+  @Autowired private UserService userService;
 
-	@BeforeTransaction
-	public void verifyInitialDatabaseState() {
-		// logic to verify the initial state before a transaction is started
-	}
+  @BeforeTransaction
+  public void verifyInitialDatabaseState() {
+    // logic to verify the initial state before a transaction is started
+  }
 
-	@Before
-	public void setUp() {
-		// set up test data within the transaction
-	}
+  @Before
+  public void setUp() {
+    // set up test data within the transaction
+  }
 
-	@Test
-	public void testSetUserPassword_expectWillBePerformedOk() throws Exception {
-		User createdUser = userService.createUser(UserFactory.createNewUserTemplate());
+  @Test
+  public void testSetUserPassword_expectWillBePerformedOk() throws Exception {
+    User createdUser = userService.createUser(UserFactory.createNewUserTemplate());
 
-		String pwd1 = "aaaa";
-		passwordService.setUserPassword(createdUser.getUuid(), pwd1);
+    String pwd1 = "aaaa";
+    passwordService.setUserPassword(createdUser.getUuid(), pwd1);
 
-		boolean result = passwordService.isUserPasswordValid(createdUser.getUuid(), pwd1);
-		assertTrue(result);
-	}
+    boolean result = passwordService.isUserPasswordValid(createdUser.getUuid(), pwd1);
+    assertTrue(result);
+  }
 
-	@Test
-	public void testSetUserPassword_expectDuplicateWillBeRewrittenWithoutErrors() throws Exception {
-		User createdUser = userService.createUser(UserFactory.createNewUserTemplate());
+  @Test
+  public void testSetUserPassword_expectDuplicateWillBeRewrittenWithoutErrors() throws Exception {
+    User createdUser = userService.createUser(UserFactory.createNewUserTemplate());
 
-		String pwd1 = "aaaa";
-		passwordService.setUserPassword(createdUser.getUuid(), pwd1);
+    String pwd1 = "aaaa";
+    passwordService.setUserPassword(createdUser.getUuid(), pwd1);
 
-		String pwd2 = "bbbb";
-		passwordService.setUserPassword(createdUser.getUuid(), pwd2);
+    String pwd2 = "bbbb";
+    passwordService.setUserPassword(createdUser.getUuid(), pwd2);
 
-		boolean result = passwordService.isUserPasswordValid(createdUser.getUuid(), pwd2);
-		assertTrue(result);
-	}
+    boolean result = passwordService.isUserPasswordValid(createdUser.getUuid(), pwd2);
+    assertTrue(result);
+  }
 
-	@Test
-	public void testCreateRestorationToken_expectDuplicateWillBeRewrittenWithoutErrors() throws Exception {
-		User createdUser = userService.createUser(UserFactory.createNewUserTemplate());
+  @Test
+  public void testCreateRestorationToken_expectDuplicateWillBeRewrittenWithoutErrors()
+      throws Exception {
+    User createdUser = userService.createUser(UserFactory.createNewUserTemplate());
 
-		String pwd1 = "aaaa";
-		passwordService.setUserPassword(createdUser.getUuid(), pwd1);
+    String pwd1 = "aaaa";
+    passwordService.setUserPassword(createdUser.getUuid(), pwd1);
 
-		String restorationToken = passwordService.getNewRestorationTokenForUser(createdUser.getUuid());
+    String restorationToken = passwordService.getNewRestorationTokenForUser(createdUser.getUuid());
 
-		boolean result = passwordService.isRestorationTokenValid(createdUser.getUuid(), restorationToken);
-		assertTrue(result);
+    boolean result =
+        passwordService.isRestorationTokenValid(createdUser.getUuid(), restorationToken);
+    assertTrue(result);
 
-		passwordService.deleteRestorationToken(createdUser.getUuid());
+    passwordService.deleteRestorationToken(createdUser.getUuid());
 
-		result = passwordService.isRestorationTokenValid(createdUser.getUuid(), restorationToken);
-		assertFalse(result);
-	}
-
+    result = passwordService.isRestorationTokenValid(createdUser.getUuid(), restorationToken);
+    assertFalse(result);
+  }
 }

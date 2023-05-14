@@ -76,9 +76,9 @@ import org.summerb.validation.errors.MustNotEndWith;
 import org.summerb.validation.errors.MustNotStartWith;
 import org.summerb.validation.errors.MustStartWith;
 import org.summerb.validation.jakarta.JakartaValidator;
-import org.summerb.validation.testDtos.Dated;
 import org.summerb.validation.testDtos.Bean;
 import org.summerb.validation.testDtos.Beans;
+import org.summerb.validation.testDtos.Dated;
 
 import com.google.common.collect.Range;
 
@@ -463,7 +463,8 @@ class ValidationContextTest {
     assertEquals(1, f.errors.size());
     assertEquals(
         51,
-        f.findErrorOfTypeForField(MustBeGreaterOrEqual.class, Bean::getiValue1).getMessageArgs()[0]);
+        f.findErrorOfTypeForField(MustBeGreaterOrEqual.class, Bean::getiValue1)
+            .getMessageArgs()[0]);
 
     // edge case - good => equals
     f.errors.clear();
@@ -493,7 +494,8 @@ class ValidationContextTest {
     assertFalse(f.in(Bean::getiValue1, Arrays.asList(51, 52)));
     assertEquals(1, f.errors.size());
     assertEquals(
-        "[51, 52]", f.findErrorOfTypeForField(MustBeIn.class, Bean::getiValue1).getMessageArgs()[0]);
+        "[51, 52]",
+        f.findErrorOfTypeForField(MustBeIn.class, Bean::getiValue1).getMessageArgs()[0]);
   }
 
   @Test
@@ -694,7 +696,8 @@ class ValidationContextTest {
     // illegal args
     assertThrows(IllegalArgumentException.class, () -> f.notBetween(Bean::getiValue1, null));
     assertThrows(
-        IllegalArgumentException.class, () -> f.notBetween(Bean::getiValue1, Range.greaterThan(50)));
+        IllegalArgumentException.class,
+        () -> f.notBetween(Bean::getiValue1, Range.greaterThan(50)));
     assertThrows(
         IllegalArgumentException.class, () -> f.notBetween(Bean::getiValue1, Range.lessThan(50)));
 
@@ -801,7 +804,8 @@ class ValidationContextTest {
         IllegalArgumentException.class, () -> f.lengthNotBetween(Bean::getString2, 100, -1));
     assertThrows(
         IllegalArgumentException.class, () -> f.lengthNotBetween(Bean::getString2, 100, 50));
-    assertThrows(IllegalArgumentException.class, () -> f.lengthNotBetween(Bean::getString2, 50, 50));
+    assertThrows(
+        IllegalArgumentException.class, () -> f.lengthNotBetween(Bean::getString2, 50, 50));
 
     // null value
     assertTrue(f.lengthNotBetween(Bean::getString2, 1, 10));
@@ -915,7 +919,8 @@ class ValidationContextTest {
     assertFalse(f.startsWith(Bean::getString1, "123"));
     assertEquals(1, f.errors.size());
     assertEquals(
-        "123", f.findErrorOfTypeForField(MustStartWith.class, Bean::getString1).getMessageArgs()[0]);
+        "123",
+        f.findErrorOfTypeForField(MustStartWith.class, Bean::getString1).getMessageArgs()[0]);
   }
 
   @Test
@@ -1077,7 +1082,8 @@ class ValidationContextTest {
     assertFalse(f.lengthLess(Bean::getString2, 10));
     assertEquals(1, f.errors.size());
     assertEquals(
-        10, f.findErrorOfTypeForField(LengthMustBeLess.class, Bean::getString2).getMessageArgs()[0]);
+        10,
+        f.findErrorOfTypeForField(LengthMustBeLess.class, Bean::getString2).getMessageArgs()[0]);
   }
 
   @Test
@@ -1317,7 +1323,8 @@ class ValidationContextTest {
         () -> f.matches(Bean::getString1, null, MustMatchPattern.MESSAGE_CODE));
 
     // illegal - messageCode == null
-    assertThrows(IllegalArgumentException.class, () -> f.matches(Bean::getString1, s -> true, null));
+    assertThrows(
+        IllegalArgumentException.class, () -> f.matches(Bean::getString1, s -> true, null));
 
     // illegal - messageCode == ""
     assertThrows(IllegalArgumentException.class, () -> f.matches(Bean::getString1, s -> true, ""));

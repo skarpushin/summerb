@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015-2023 Sergey Karpushin
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -21,26 +21,25 @@ import org.summerb.properties.impl.dto.NamedIdProperty;
 
 /**
  * DAO abstraction for proeprty store
- * 
+ *
  * @author skarpushin
- * 
  */
 public interface PropertyDao {
-	/**
-	 * This constant used to identify data truncation errors for this specific
-	 * situation when data truncation happened with property values.
-	 * 
-	 * IMPORTANT! If impl of this class will throw truncation errors they must use
-	 * this name for value field
-	 */
-	public static final String VALUE_FIELD_NAME = "value";
+  /**
+   * This constant used to identify data truncation errors for this specific situation when data
+   * truncation happened with property values.
+   *
+   * <p>IMPORTANT! If impl of this class will throw truncation errors they must use this name for
+   * value field
+   */
+  public static final String VALUE_FIELD_NAME = "value";
 
-	void putProperty(long appId, long domainId, String subjectId, long propertyNameId, String propertyValue);
+  void putProperty(
+      long appId, long domainId, String subjectId, long propertyNameId, String propertyValue);
 
-	String findSubjectProperty(long appId, long domainId, String subjectId, long propertyNameId);
+  String findSubjectProperty(long appId, long domainId, String subjectId, long propertyNameId);
 
-	List<NamedIdProperty> findSubjectProperties(long appId, long domainId, String subjectId);
+  List<NamedIdProperty> findSubjectProperties(long appId, long domainId, String subjectId);
 
-	void deleteSubjectProperties(long appId, long domainId, String subjectId);
-
+  void deleteSubjectProperties(long appId, long domainId, String subjectId);
 }

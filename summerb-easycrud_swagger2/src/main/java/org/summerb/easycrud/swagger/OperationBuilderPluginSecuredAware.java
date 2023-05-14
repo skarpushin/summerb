@@ -13,33 +13,32 @@ import springfox.documentation.spi.service.OperationBuilderPlugin;
 import springfox.documentation.spi.service.contexts.OperationContext;
 import springfox.documentation.swagger.common.SwaggerPluginSupport;
 
-/**
- * This extension will retain information on roles specified in {@link Secured}
- * annotation
- */
+/** This extension will retain information on roles specified in {@link Secured} annotation */
 @Component
 @Order(SwaggerPluginSupport.SWAGGER_PLUGIN_ORDER + 1000)
 public class OperationBuilderPluginSecuredAware implements OperationBuilderPlugin {
-	@Override
-	public void apply(OperationContext context) {
-		Set<String> roles = new HashSet<>();
-		Secured controllerAnnotation = context.findControllerAnnotation(Secured.class).orNull();
-		if (controllerAnnotation != null) {
-			roles.addAll(Arrays.asList(controllerAnnotation.value()));
-		}
+  @Override
+  public void apply(OperationContext context) {
+    Set<String> roles = new HashSet<>();
+    Secured controllerAnnotation = context.findControllerAnnotation(Secured.class).orNull();
+    if (controllerAnnotation != null) {
+      roles.addAll(Arrays.asList(controllerAnnotation.value()));
+    }
 
-		Secured methodAnnotation = context.findAnnotation(Secured.class).orNull();
-		if (methodAnnotation != null) {
-			roles.addAll(Arrays.asList(methodAnnotation.value()));
-		}
+    Secured methodAnnotation = context.findAnnotation(Secured.class).orNull();
+    if (methodAnnotation != null) {
+      roles.addAll(Arrays.asList(methodAnnotation.value()));
+    }
 
-		if (!roles.isEmpty()) {
-			context.operationBuilder().extensions(Arrays.asList(new TrimToRoles(roles.toArray(new String[0]))));
-		}
-	}
+    if (!roles.isEmpty()) {
+      context
+          .operationBuilder()
+          .extensions(Arrays.asList(new TrimToRoles(roles.toArray(new String[0]))));
+    }
+  }
 
-	@Override
-	public boolean supports(DocumentationType delimiter) {
-		return SwaggerPluginSupport.pluginDoesApply(delimiter);
-	}
+  @Override
+  public boolean supports(DocumentationType delimiter) {
+    return SwaggerPluginSupport.pluginDoesApply(delimiter);
+  }
 }

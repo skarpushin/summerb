@@ -28,5 +28,4 @@ public class QueryExTest {
     FieldConditionEx fc2 = (FieldConditionEx) c2;
     assertEquals("active", fc2.getFieldName());
   }
-  
 }

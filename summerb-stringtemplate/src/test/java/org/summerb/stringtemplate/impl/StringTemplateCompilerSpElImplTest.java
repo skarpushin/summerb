@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015-2023 Sergey Karpushin
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -22,48 +22,45 @@ import org.summerb.stringtemplate.api.StringTemplate;
 
 public class StringTemplateCompilerSpElImplTest {
 
-	/**
-	 * The object that is being tested.
-	 * 
-	 * @see ru.skarpushin.services.stringtemplate.impl.
-	 *      StringTemplateCompilerSpElImpl
-	 */
-	private StringTemplateFactorySpElImpl fixture = new StringTemplateFactorySpElImpl();
+  /**
+   * The object that is being tested.
+   *
+   * @see ru.skarpushin.services.stringtemplate.impl. StringTemplateCompilerSpElImpl
+   */
+  private StringTemplateFactorySpElImpl fixture = new StringTemplateFactorySpElImpl();
 
-	/**
-	 * Run the StringTemplate compile(String) method test
-	 */
-	@Test
-	public void testCompile() {
-		String template = "Hello ${name}! I hope you are fine. Now you have ${amount} money!";
-		StringTemplate stringTemplate = fixture.build(template);
-		String result = stringTemplate.applyTo(new DomainObjectExample("Bob", 1234));
-		assertEquals("Hello Bob! I hope you are fine. Now you have 1234 money!", result);
-	}
+  /** Run the StringTemplate compile(String) method test */
+  @Test
+  public void testCompile() {
+    String template = "Hello ${name}! I hope you are fine. Now you have ${amount} money!";
+    StringTemplate stringTemplate = fixture.build(template);
+    String result = stringTemplate.applyTo(new DomainObjectExample("Bob", 1234));
+    assertEquals("Hello Bob! I hope you are fine. Now you have 1234 money!", result);
+  }
 
-	public static class DomainObjectExample {
-		private String name;
-		private int amount;
+  public static class DomainObjectExample {
+    private String name;
+    private int amount;
 
-		public DomainObjectExample(String name, int amount) {
-			this.name = name;
-			this.amount = amount;
-		}
+    public DomainObjectExample(String name, int amount) {
+      this.name = name;
+      this.amount = amount;
+    }
 
-		public String getName() {
-			return name;
-		}
+    public String getName() {
+      return name;
+    }
 
-		public void setName(String name) {
-			this.name = name;
-		}
+    public void setName(String name) {
+      this.name = name;
+    }
 
-		public int getAmount() {
-			return amount;
-		}
+    public int getAmount() {
+      return amount;
+    }
 
-		public void setAmount(int amount) {
-			this.amount = amount;
-		}
-	}
+    public void setAmount(int amount) {
+      this.amount = amount;
+    }
+  }
 }

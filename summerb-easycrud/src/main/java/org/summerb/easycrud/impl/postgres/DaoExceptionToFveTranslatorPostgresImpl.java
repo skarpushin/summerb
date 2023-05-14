@@ -21,8 +21,8 @@ import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.util.StringUtils;
 import org.summerb.easycrud.api.DaoExceptionTranslatorAbstract;
 import org.summerb.utils.exceptions.ExceptionUtils;
-import org.summerb.validation.ValidationException;
 import org.summerb.validation.ValidationContext;
+import org.summerb.validation.ValidationException;
 import org.summerb.validation.errors.DuplicateRecord;
 
 /**

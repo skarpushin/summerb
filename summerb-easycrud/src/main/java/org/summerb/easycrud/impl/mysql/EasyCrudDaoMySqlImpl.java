@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015-2023 Sergey Karpushin
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -60,345 +60,361 @@ import org.summerb.validation.ValidationException;
 import com.google.common.base.Preconditions;
 
 /**
- * Although this is a MySQL-specific impl of {@link EasyCrudDao} it has common
- * things for all SQL-like databases.
- * 
- * TBD: Change sql statements fields visibility to simplify
- * customization-by-inheritance
- * 
- * @author sergey.karpushin
+ * Although this is a MySQL-specific impl of {@link EasyCrudDao} it has common things for all
+ * SQL-like databases.
  *
+ * <p>TBD: Change sql statements fields visibility to simplify customization-by-inheritance
+ *
+ * @author sergey.karpushin
  */
 public class EasyCrudDaoMySqlImpl<TId, TDto extends HasId<TId>> extends DaoBase
-		implements EasyCrudDao<TId, TDto>, InitializingBean {
-	protected static final List<String> allowedSortDirections = Arrays.asList("asc", "desc");
+    implements EasyCrudDao<TId, TDto>, InitializingBean {
+  protected static final List<String> allowedSortDirections = Arrays.asList("asc", "desc");
 
-	private String tableName;
-	private Class<TDto> rowClass;
-	private RowMapper<TDto> rowMapper;
-	private ParameterSourceBuilder<TDto> parameterSourceBuilder;
-	private ConversionService conversionService;
-	private QueryToNativeSqlCompiler queryToNativeSqlCompiler = new QueryToNativeSqlCompilerMySqlImpl();
-	private StringIdGenerator stringIdGenerator = new StringIdGeneratorUuidImpl();
-	private DaoExceptionTranslator daoExceptionTranslator = new DaoExceptionToFveTranslatorMySqlImpl();
+  private String tableName;
+  private Class<TDto> rowClass;
+  private RowMapper<TDto> rowMapper;
+  private ParameterSourceBuilder<TDto> parameterSourceBuilder;
+  private ConversionService conversionService;
+  private QueryToNativeSqlCompiler queryToNativeSqlCompiler =
+      new QueryToNativeSqlCompilerMySqlImpl();
+  private StringIdGenerator stringIdGenerator = new StringIdGeneratorUuidImpl();
+  private DaoExceptionTranslator daoExceptionTranslator =
+      new DaoExceptionToFveTranslatorMySqlImpl();
 
-	protected SimpleJdbcInsert jdbcInsert;
-	protected SimpleJdbcUpdate jdbcUpdate;
+  protected SimpleJdbcInsert jdbcInsert;
+  protected SimpleJdbcUpdate jdbcUpdate;
 
-	protected String sqlFindById;
-	protected String sqlDeleteById;
-	protected String sqlDeleteOptimisticById;
-	protected String sqlFindByCustomQuery;
-	protected String sqlDeleteByCustomQuery;
-	protected String sqlFindByCustomQueryForCount;
-	protected String sqlPartPaginator;
+  protected String sqlFindById;
+  protected String sqlDeleteById;
+  protected String sqlDeleteOptimisticById;
+  protected String sqlFindByCustomQuery;
+  protected String sqlDeleteByCustomQuery;
+  protected String sqlFindByCustomQueryForCount;
+  protected String sqlPartPaginator;
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		Preconditions.checkState(StringUtils.hasText(tableName), "TableName required");
-		Preconditions.checkState(rowClass != null, "rowClass required");
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    Preconditions.checkState(StringUtils.hasText(tableName), "TableName required");
+    Preconditions.checkState(rowClass != null, "rowClass required");
 
-		if (rowMapper == null) {
-			rowMapper = new BeanPropertyRowMapper<TDto>(rowClass);
-			if (conversionService != null) {
-				((BeanPropertyRowMapper<TDto>) rowMapper).setConversionService(conversionService);
-			}
-		}
+    if (rowMapper == null) {
+      rowMapper = new BeanPropertyRowMapper<TDto>(rowClass);
+      if (conversionService != null) {
+        ((BeanPropertyRowMapper<TDto>) rowMapper).setConversionService(conversionService);
+      }
+    }
 
-		jdbcInsert = buildJdbcInsert();
-		jdbcUpdate = initJdbcUpdate();
+    jdbcInsert = buildJdbcInsert();
+    jdbcUpdate = initJdbcUpdate();
 
-		if (parameterSourceBuilder == null) {
-			parameterSourceBuilder = new ParameterSourceBuilderBeanPropImpl<TDto>();
-		}
+    if (parameterSourceBuilder == null) {
+      parameterSourceBuilder = new ParameterSourceBuilderBeanPropImpl<TDto>();
+    }
 
-		buildSqlQueries();
-	}
+    buildSqlQueries();
+  }
 
-	protected void buildSqlQueries() {
-		sqlFindById = String.format("SELECT %s FROM %s WHERE id = :id", buildFieldsForSelect(), tableName);
-		sqlDeleteById = String.format("DELETE FROM %s WHERE id = :id", tableName);
-		sqlDeleteByCustomQuery = String.format("DELETE FROM %s WHERE ", tableName);
-		sqlDeleteOptimisticById = String.format("DELETE FROM %s WHERE id = :id AND modified_at = :modifiedAt",
-				tableName);
-		sqlFindByCustomQuery = String.format("SELECT %s FROM %s ", buildFieldsForSelect(), tableName);
-		sqlFindByCustomQueryForCount = String.format("SELECT count(*) FROM %s ", tableName);
-		sqlPartPaginator = " LIMIT :max OFFSET :offset";
-	}
+  protected void buildSqlQueries() {
+    sqlFindById =
+        String.format("SELECT %s FROM %s WHERE id = :id", buildFieldsForSelect(), tableName);
+    sqlDeleteById = String.format("DELETE FROM %s WHERE id = :id", tableName);
+    sqlDeleteByCustomQuery = String.format("DELETE FROM %s WHERE ", tableName);
+    sqlDeleteOptimisticById =
+        String.format("DELETE FROM %s WHERE id = :id AND modified_at = :modifiedAt", tableName);
+    sqlFindByCustomQuery = String.format("SELECT %s FROM %s ", buildFieldsForSelect(), tableName);
+    sqlFindByCustomQueryForCount = String.format("SELECT count(*) FROM %s ", tableName);
+    sqlPartPaginator = " LIMIT :max OFFSET :offset";
+  }
 
-	protected String buildFieldsForSelect() {
-		return "*";
-	}
+  protected String buildFieldsForSelect() {
+    return "*";
+  }
 
-	protected SimpleJdbcInsert buildJdbcInsert() {
-		SimpleJdbcInsert ret = new SimpleJdbcInsert(getDataSource()).withTableName(tableName);
-		if (HasAutoincrementId.class.isAssignableFrom(rowClass)) {
-			ret = ret.usingGeneratedKeyColumns("id");
-		}
-		return ret;
-	}
+  protected SimpleJdbcInsert buildJdbcInsert() {
+    SimpleJdbcInsert ret = new SimpleJdbcInsert(getDataSource()).withTableName(tableName);
+    if (HasAutoincrementId.class.isAssignableFrom(rowClass)) {
+      ret = ret.usingGeneratedKeyColumns("id");
+    }
+    return ret;
+  }
 
-	protected SimpleJdbcUpdate initJdbcUpdate() {
-		SimpleJdbcUpdate ret = new SimpleJdbcUpdate(getDataSource()).withTableName(tableName);
+  protected SimpleJdbcUpdate initJdbcUpdate() {
+    SimpleJdbcUpdate ret = new SimpleJdbcUpdate(getDataSource()).withTableName(tableName);
 
-		// Configure identification columns - how do we find right record for
-		// update
-		List<String> restrictingColumns = new ArrayList<String>();
-		restrictingColumns.add(QueryToNativeSqlCompilerMySqlImpl.underscore(HasId.FN_ID));
-		if (HasTimestamps.class.isAssignableFrom(rowClass)) {
-			restrictingColumns.add(QueryToNativeSqlCompilerMySqlImpl.underscore(HasTimestamps.FN_MODIFIED_AT));
-		}
-		ret.setRestrictingColumns(restrictingColumns);
+    // Configure identification columns - how do we find right record for
+    // update
+    List<String> restrictingColumns = new ArrayList<String>();
+    restrictingColumns.add(QueryToNativeSqlCompilerMySqlImpl.underscore(HasId.FN_ID));
+    if (HasTimestamps.class.isAssignableFrom(rowClass)) {
+      restrictingColumns.add(
+          QueryToNativeSqlCompilerMySqlImpl.underscore(HasTimestamps.FN_MODIFIED_AT));
+    }
+    ret.setRestrictingColumns(restrictingColumns);
 
-		ret.setUpdateColumnsEnlisterStrategy(updateColumnsEnlisterStrategy);
-		return ret;
-	}
+    ret.setUpdateColumnsEnlisterStrategy(updateColumnsEnlisterStrategy);
+    return ret;
+  }
 
-	protected UpdateColumnsEnlisterStrategy updateColumnsEnlisterStrategy = new UpdateColumnsEnlisterStrategy() {
-		@Override
-		public Collection<? extends String> getColumnsForUpdate(TableMetaDataContext tableMetaDataContext) {
-			List<String> updatingColumns = new ArrayList<String>(tableMetaDataContext.createColumns());
-			remove("id", updatingColumns);
-			if (HasTimestamps.class.isAssignableFrom(rowClass)) {
-				remove(QueryToNativeSqlCompilerMySqlImpl.underscore(HasTimestamps.FN_CREATED_AT), updatingColumns);
-			}
-			if (HasAuthor.class.isAssignableFrom(rowClass)) {
-				remove(QueryToNativeSqlCompilerMySqlImpl.underscore(HasAuthor.FN_CREATED_BY), updatingColumns);
-			}
-			return updatingColumns;
-		}
+  protected UpdateColumnsEnlisterStrategy updateColumnsEnlisterStrategy =
+      new UpdateColumnsEnlisterStrategy() {
+        @Override
+        public Collection<? extends String> getColumnsForUpdate(
+            TableMetaDataContext tableMetaDataContext) {
+          List<String> updatingColumns =
+              new ArrayList<String>(tableMetaDataContext.createColumns());
+          remove("id", updatingColumns);
+          if (HasTimestamps.class.isAssignableFrom(rowClass)) {
+            remove(
+                QueryToNativeSqlCompilerMySqlImpl.underscore(HasTimestamps.FN_CREATED_AT),
+                updatingColumns);
+          }
+          if (HasAuthor.class.isAssignableFrom(rowClass)) {
+            remove(
+                QueryToNativeSqlCompilerMySqlImpl.underscore(HasAuthor.FN_CREATED_BY),
+                updatingColumns);
+          }
+          return updatingColumns;
+        }
 
-		private void remove(String str, Iterable<String> iterable) {
-			for (Iterator<String> iter = iterable.iterator(); iter.hasNext();) {
-				if (str.equalsIgnoreCase(iter.next())) {
-					iter.remove();
-				}
-			}
-		}
-	};
+        private void remove(String str, Iterable<String> iterable) {
+          for (Iterator<String> iter = iterable.iterator(); iter.hasNext(); ) {
+            if (str.equalsIgnoreCase(iter.next())) {
+              iter.remove();
+            }
+          }
+        }
+      };
 
-	@Override
-	public void create(TDto dto) throws ValidationException {
-		if (dto instanceof HasUuid) {
-			HasUuid hasUuid = (HasUuid) dto;
-			if (!stringIdGenerator.isValidId(hasUuid.getId())) {
-				hasUuid.setId(stringIdGenerator.generateNewId(dto));
-			}
-		}
+  @Override
+  public void create(TDto dto) throws ValidationException {
+    if (dto instanceof HasUuid) {
+      HasUuid hasUuid = (HasUuid) dto;
+      if (!stringIdGenerator.isValidId(hasUuid.getId())) {
+        hasUuid.setId(stringIdGenerator.generateNewId(dto));
+      }
+    }
 
-		if (dto instanceof HasTimestamps) {
-			HasTimestamps hasTimestamps = (HasTimestamps) dto;
-			long now = new Date().getTime();
-			hasTimestamps.setCreatedAt(now);
-			hasTimestamps.setModifiedAt(now);
-		}
+    if (dto instanceof HasTimestamps) {
+      HasTimestamps hasTimestamps = (HasTimestamps) dto;
+      long now = new Date().getTime();
+      hasTimestamps.setCreatedAt(now);
+      hasTimestamps.setModifiedAt(now);
+    }
 
-		SqlParameterSource params = parameterSourceBuilder.buildParameterSource(dto);
-		try {
-			if (dto instanceof HasAutoincrementId) {
-				Number id = jdbcInsert.executeAndReturnKey(params);
-				((HasAutoincrementId) dto).setId(id.longValue());
-			} else {
-				jdbcInsert.execute(params);
-			}
-		} catch (Throwable t) {
-			daoExceptionTranslator.translateAndThrowIfApplicable(t);
-			throw t;
-		}
-	}
+    SqlParameterSource params = parameterSourceBuilder.buildParameterSource(dto);
+    try {
+      if (dto instanceof HasAutoincrementId) {
+        Number id = jdbcInsert.executeAndReturnKey(params);
+        ((HasAutoincrementId) dto).setId(id.longValue());
+      } else {
+        jdbcInsert.execute(params);
+      }
+    } catch (Throwable t) {
+      daoExceptionTranslator.translateAndThrowIfApplicable(t);
+      throw t;
+    }
+  }
 
-	@Override
-	public int update(TDto dto) throws ValidationException {
-		MapSqlParameterSource restrictionParams = new MapSqlParameterSource();
-		restrictionParams.addValue(HasId.FN_ID, dto.getId());
-		if (dto instanceof HasTimestamps) {
-			HasTimestamps hasTimestamps = (HasTimestamps) dto;
-			long modifiedAt = hasTimestamps.getModifiedAt();
-			hasTimestamps.setModifiedAt(new Date().getTime());
-			restrictionParams.addValue(HasTimestamps.FN_MODIFIED_AT, modifiedAt);
-		}
+  @Override
+  public int update(TDto dto) throws ValidationException {
+    MapSqlParameterSource restrictionParams = new MapSqlParameterSource();
+    restrictionParams.addValue(HasId.FN_ID, dto.getId());
+    if (dto instanceof HasTimestamps) {
+      HasTimestamps hasTimestamps = (HasTimestamps) dto;
+      long modifiedAt = hasTimestamps.getModifiedAt();
+      hasTimestamps.setModifiedAt(new Date().getTime());
+      restrictionParams.addValue(HasTimestamps.FN_MODIFIED_AT, modifiedAt);
+    }
 
-		SqlParameterSource dtoParams = parameterSourceBuilder.buildParameterSource(dto);
+    SqlParameterSource dtoParams = parameterSourceBuilder.buildParameterSource(dto);
 
-		try {
-			return jdbcUpdate.execute(dtoParams, restrictionParams);
-		} catch (Throwable t) {
-			daoExceptionTranslator.translateAndThrowIfApplicable(t);
-			throw t;
-		}
-	}
+    try {
+      return jdbcUpdate.execute(dtoParams, restrictionParams);
+    } catch (Throwable t) {
+      daoExceptionTranslator.translateAndThrowIfApplicable(t);
+      throw t;
+    }
+  }
 
-	@Override
-	public TDto findById(TId id) {
-		MapSqlParameterSource params = new MapSqlParameterSource();
-		params.addValue("id", id);
+  @Override
+  public TDto findById(TId id) {
+    MapSqlParameterSource params = new MapSqlParameterSource();
+    params.addValue("id", id);
 
-		try {
-			return jdbc.queryForObject(sqlFindById, params, rowMapper);
-		} catch (EmptyResultDataAccessException e) {
-			return null;
-		}
-	}
+    try {
+      return jdbc.queryForObject(sqlFindById, params, rowMapper);
+    } catch (EmptyResultDataAccessException e) {
+      return null;
+    }
+  }
 
-	@Override
-	public int delete(TId id) {
-		MapSqlParameterSource params = new MapSqlParameterSource();
-		params.addValue("id", id);
-		return jdbc.update(sqlDeleteById, params);
-	}
+  @Override
+  public int delete(TId id) {
+    MapSqlParameterSource params = new MapSqlParameterSource();
+    params.addValue("id", id);
+    return jdbc.update(sqlDeleteById, params);
+  }
 
-	@Override
-	public int delete(TId id, long modifiedAt) {
-		MapSqlParameterSource params = new MapSqlParameterSource();
-		params.addValue("id", id);
-		params.addValue("modifiedAt", modifiedAt);
-		return jdbc.update(sqlDeleteOptimisticById, params);
-	}
+  @Override
+  public int delete(TId id, long modifiedAt) {
+    MapSqlParameterSource params = new MapSqlParameterSource();
+    params.addValue("id", id);
+    params.addValue("modifiedAt", modifiedAt);
+    return jdbc.update(sqlDeleteOptimisticById, params);
+  }
 
-	@Override
-	public TDto findOneByQuery(Query query) {
-		MapSqlParameterSource params = new MapSqlParameterSource();
-		String whereClause = queryToNativeSqlCompiler.buildWhereClauseAndPopulateParams(query, params);
+  @Override
+  public TDto findOneByQuery(Query query) {
+    MapSqlParameterSource params = new MapSqlParameterSource();
+    String whereClause = queryToNativeSqlCompiler.buildWhereClauseAndPopulateParams(query, params);
 
-		try {
-			return jdbc.queryForObject(sqlFindByCustomQuery + "WHERE " + whereClause, params, rowMapper);
-		} catch (EmptyResultDataAccessException e) {
-			return null;
-		}
-	}
+    try {
+      return jdbc.queryForObject(sqlFindByCustomQuery + "WHERE " + whereClause, params, rowMapper);
+    } catch (EmptyResultDataAccessException e) {
+      return null;
+    }
+  }
 
-	@Override
-	public int deleteByQuery(Query query) {
-		MapSqlParameterSource params = new MapSqlParameterSource();
-		String whereClause = queryToNativeSqlCompiler.buildWhereClauseAndPopulateParams(query, params);
-		return jdbc.update(sqlDeleteByCustomQuery + whereClause, params);
-	}
+  @Override
+  public int deleteByQuery(Query query) {
+    MapSqlParameterSource params = new MapSqlParameterSource();
+    String whereClause = queryToNativeSqlCompiler.buildWhereClauseAndPopulateParams(query, params);
+    return jdbc.update(sqlDeleteByCustomQuery + whereClause, params);
+  }
 
-	@Override
-	public PaginatedList<TDto> query(PagerParams pagerParams, Query optionalQuery, OrderBy... orderBy) {
-		MapSqlParameterSource params = new MapSqlParameterSource();
-		String whereClause = optionalQuery == null ? ""
-				: "WHERE " + queryToNativeSqlCompiler.buildWhereClauseAndPopulateParams(optionalQuery, params);
-		params.addValue("offset", pagerParams.getOffset());
-		params.addValue("max", pagerParams.getMax());
+  @Override
+  public PaginatedList<TDto> query(
+      PagerParams pagerParams, Query optionalQuery, OrderBy... orderBy) {
+    MapSqlParameterSource params = new MapSqlParameterSource();
+    String whereClause =
+        optionalQuery == null
+            ? ""
+            : "WHERE "
+                + queryToNativeSqlCompiler.buildWhereClauseAndPopulateParams(optionalQuery, params);
+    params.addValue("offset", pagerParams.getOffset());
+    params.addValue("max", pagerParams.getMax());
 
-		String query = sqlFindByCustomQuery + whereClause + buildOrderBySubclause(orderBy);
-		if (!PagerParams.ALL.equals(pagerParams)) {
-			query = query + sqlPartPaginator;
-		}
-		List<TDto> list = jdbc.query(query, params, rowMapper);
+    String query = sqlFindByCustomQuery + whereClause + buildOrderBySubclause(orderBy);
+    if (!PagerParams.ALL.equals(pagerParams)) {
+      query = query + sqlPartPaginator;
+    }
+    List<TDto> list = jdbc.query(query, params, rowMapper);
 
-		int totalResultsCount;
-		if (Top.is(pagerParams) || (PagerParams.ALL.equals(pagerParams)
-				|| (pagerParams.getOffset() == 0 && list.size() < pagerParams.getMax()))) {
-			totalResultsCount = list.size();
-		} else {
-			// TODO: For MySQL we can use combination of SQL_CALC_FOUND_ROWS and
-			// FOUND_ROWS() to improve performance -- ubt this is MySQL specific
-			// functionality
-			totalResultsCount = jdbc.queryForInt(sqlFindByCustomQueryForCount + whereClause, params);
-		}
+    int totalResultsCount;
+    if (Top.is(pagerParams)
+        || (PagerParams.ALL.equals(pagerParams)
+            || (pagerParams.getOffset() == 0 && list.size() < pagerParams.getMax()))) {
+      totalResultsCount = list.size();
+    } else {
+      // TODO: For MySQL we can use combination of SQL_CALC_FOUND_ROWS and
+      // FOUND_ROWS() to improve performance -- ubt this is MySQL specific
+      // functionality
+      totalResultsCount = jdbc.queryForInt(sqlFindByCustomQueryForCount + whereClause, params);
+    }
 
-		return new PaginatedList<TDto>(pagerParams, list, totalResultsCount);
-	}
+    return new PaginatedList<TDto>(pagerParams, list, totalResultsCount);
+  }
 
-	protected String buildOrderBySubclause(OrderBy[] orderByArr) {
-		if (orderByArr == null || orderByArr.length == 0) {
-			return "";
-		}
+  protected String buildOrderBySubclause(OrderBy[] orderByArr) {
+    if (orderByArr == null || orderByArr.length == 0) {
+      return "";
+    }
 
-		StringBuilder ret = new StringBuilder();
-		for (int i = 0; i < orderByArr.length; i++) {
-			if (ret.length() > 0) {
-				ret.append(", ");
-			}
+    StringBuilder ret = new StringBuilder();
+    for (int i = 0; i < orderByArr.length; i++) {
+      if (ret.length() > 0) {
+        ret.append(", ");
+      }
 
-			OrderBy orderBy = orderByArr[i];
-			if (orderBy == null || !StringUtils.hasText(orderBy.getDirection())
-					|| !StringUtils.hasText(orderBy.getFieldName())) {
-				continue;
-			}
+      OrderBy orderBy = orderByArr[i];
+      if (orderBy == null
+          || !StringUtils.hasText(orderBy.getDirection())
+          || !StringUtils.hasText(orderBy.getFieldName())) {
+        continue;
+      }
 
-			ret.append(underscore(orderBy.getFieldName()));
-			ret.append(" ");
-			Preconditions.checkArgument(allowedSortDirections.contains(orderBy.getDirection().toLowerCase()),
-					"OrderBy not allowed: %s", orderBy.getDirection());
-			ret.append(orderBy.getDirection());
-		}
-		return ret.length() == 0 ? "" : " ORDER BY " + ret.toString();
-	}
+      ret.append(underscore(orderBy.getFieldName()));
+      ret.append(" ");
+      Preconditions.checkArgument(
+          allowedSortDirections.contains(orderBy.getDirection().toLowerCase()),
+          "OrderBy not allowed: %s",
+          orderBy.getDirection());
+      ret.append(orderBy.getDirection());
+    }
+    return ret.length() == 0 ? "" : " ORDER BY " + ret.toString();
+  }
 
-	public String getTableName() {
-		return tableName;
-	}
+  public String getTableName() {
+    return tableName;
+  }
 
-	public void setTableName(String tableName) {
-		this.tableName = tableName;
-	}
+  public void setTableName(String tableName) {
+    this.tableName = tableName;
+  }
 
-	public Class<TDto> getRowClass() {
-		return rowClass;
-	}
+  public Class<TDto> getRowClass() {
+    return rowClass;
+  }
 
-	public void setRowClass(Class<TDto> rowClass) {
-		this.rowClass = rowClass;
-	}
+  public void setRowClass(Class<TDto> rowClass) {
+    this.rowClass = rowClass;
+  }
 
-	public RowMapper<TDto> getRowMapper() {
-		return rowMapper;
-	}
+  public RowMapper<TDto> getRowMapper() {
+    return rowMapper;
+  }
 
-	public void setRowMapper(RowMapper<TDto> rowMapper) {
-		this.rowMapper = rowMapper;
-	}
+  public void setRowMapper(RowMapper<TDto> rowMapper) {
+    this.rowMapper = rowMapper;
+  }
 
-	public ParameterSourceBuilder<TDto> getParameterSourceBuilder() {
-		return parameterSourceBuilder;
-	}
+  public ParameterSourceBuilder<TDto> getParameterSourceBuilder() {
+    return parameterSourceBuilder;
+  }
 
-	public void setParameterSourceBuilder(ParameterSourceBuilder<TDto> parameterSourceBuilder) {
-		this.parameterSourceBuilder = parameterSourceBuilder;
-	}
+  public void setParameterSourceBuilder(ParameterSourceBuilder<TDto> parameterSourceBuilder) {
+    this.parameterSourceBuilder = parameterSourceBuilder;
+  }
 
-	public QueryToNativeSqlCompiler getQueryToNativeSqlCompiler() {
-		return queryToNativeSqlCompiler;
-	}
+  public QueryToNativeSqlCompiler getQueryToNativeSqlCompiler() {
+    return queryToNativeSqlCompiler;
+  }
 
-	@Autowired(required = false)
-	public void setQueryToNativeSqlCompiler(QueryToNativeSqlCompiler queryToNativeSqlCompiler) {
-		this.queryToNativeSqlCompiler = queryToNativeSqlCompiler;
-	}
+  @Autowired(required = false)
+  public void setQueryToNativeSqlCompiler(QueryToNativeSqlCompiler queryToNativeSqlCompiler) {
+    this.queryToNativeSqlCompiler = queryToNativeSqlCompiler;
+  }
 
-	public ConversionService getConversionService() {
-		return conversionService;
-	}
+  public ConversionService getConversionService() {
+    return conversionService;
+  }
 
-	@Autowired(required = false)
-	public void setConversionService(ConversionService conversionService) {
-		this.conversionService = conversionService;
-	}
+  @Autowired(required = false)
+  public void setConversionService(ConversionService conversionService) {
+    this.conversionService = conversionService;
+  }
 
-	public StringIdGenerator getStringIdGenerator() {
-		return stringIdGenerator;
-	}
+  public StringIdGenerator getStringIdGenerator() {
+    return stringIdGenerator;
+  }
 
-	/**
-	 * @param stringIdGenerator Set it only if you want to customize default
-	 *                          behavior when Row has {@link HasUuid} interface.
-	 *                          Default is {@link StringIdGeneratorUuidImpl} and if.
-	 *                          This is NOT applicable for other cases.
-	 */
-	@Autowired(required = false)
-	public void setStringIdGenerator(StringIdGenerator stringIdGenerator) {
-		this.stringIdGenerator = stringIdGenerator;
-	}
+  /**
+   * @param stringIdGenerator Set it only if you want to customize default behavior when Row has
+   *     {@link HasUuid} interface. Default is {@link StringIdGeneratorUuidImpl} and if. This is NOT
+   *     applicable for other cases.
+   */
+  @Autowired(required = false)
+  public void setStringIdGenerator(StringIdGenerator stringIdGenerator) {
+    this.stringIdGenerator = stringIdGenerator;
+  }
 
-	public DaoExceptionTranslator getDuplicateEntryExceptionHandler() {
-		return daoExceptionTranslator;
-	}
+  public DaoExceptionTranslator getDuplicateEntryExceptionHandler() {
+    return daoExceptionTranslator;
+  }
 
-	@Autowired(required = false)
-	public void setDuplicateEntryExceptionHandler(DaoExceptionTranslator daoExceptionTranslator) {
-		this.daoExceptionTranslator = daoExceptionTranslator;
-	}
+  @Autowired(required = false)
+  public void setDuplicateEntryExceptionHandler(DaoExceptionTranslator daoExceptionTranslator) {
+    this.daoExceptionTranslator = daoExceptionTranslator;
+  }
 }

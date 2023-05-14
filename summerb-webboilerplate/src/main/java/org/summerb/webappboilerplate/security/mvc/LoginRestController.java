@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015-2023 Sergey Karpushin
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -33,51 +33,44 @@ import org.summerb.webappboilerplate.security.dto.PasswordChange;
 import org.summerb.webappboilerplate.security.dto.Registration;
 
 /**
- * This controller provides request/response-based actions for common
- * account-related operations
- * 
- * @author sergeyk
+ * This controller provides request/response-based actions for common account-related operations
  *
+ * @author sergeyk
  */
 @RestController
 @RequestMapping("/rest/login")
 public class LoginRestController extends ControllerBase {
-	@Autowired
-	private UsersServiceFacade usersServiceFacade;
-	@Autowired
-	private UserService userService;
-	@Autowired
-	private SecurityContextResolver<User> securityContextResolver;
+  @Autowired private UsersServiceFacade usersServiceFacade;
+  @Autowired private UserService userService;
+  @Autowired private SecurityContextResolver<User> securityContextResolver;
 
-	public LoginRestController() {
-	}
+  public LoginRestController() {}
 
-	@RequestMapping(method = RequestMethod.POST, value = "register")
-	public User register(@RequestBody Registration registration) throws ValidationException {
-		return usersServiceFacade.registerUser(registration);
-	}
+  @RequestMapping(method = RequestMethod.POST, value = "register")
+  public User register(@RequestBody Registration registration) throws ValidationException {
+    return usersServiceFacade.registerUser(registration);
+  }
 
-	@Secured({ "ROLE_USER" })
-	@RequestMapping(method = RequestMethod.POST, value = "change")
-	public User processPasswordChangeForm(@RequestBody PasswordChange passwordChange)
-			throws UserNotFoundException, ValidationException {
-		User user = securityContextResolver.getUser();
-		usersServiceFacade.changePassword(user.getEmail(), passwordChange);
-		return user;
-	}
+  @Secured({"ROLE_USER"})
+  @RequestMapping(method = RequestMethod.POST, value = "change")
+  public User processPasswordChangeForm(@RequestBody PasswordChange passwordChange)
+      throws UserNotFoundException, ValidationException {
+    User user = securityContextResolver.getUser();
+    usersServiceFacade.changePassword(user.getEmail(), passwordChange);
+    return user;
+  }
 
-	@Secured({ "ROLE_USER" })
-	@RequestMapping(method = RequestMethod.GET, value = "user")
-	public User getUser() throws UserNotFoundException, CurrentUserNotFoundException {
-		return userService.getUserByUuid(securityContextResolver.getUser().getUuid());
-	}
+  @Secured({"ROLE_USER"})
+  @RequestMapping(method = RequestMethod.GET, value = "user")
+  public User getUser() throws UserNotFoundException, CurrentUserNotFoundException {
+    return userService.getUserByUuid(securityContextResolver.getUser().getUuid());
+  }
 
-	@Secured({ "ROLE_USER" })
-	@RequestMapping(method = RequestMethod.POST, value = "user")
-	public User updateUser(@RequestBody User user)
-			throws UserNotFoundException, CurrentUserNotFoundException, ValidationException {
-		userService.updateUser(user);
-		return user;
-	}
-
+  @Secured({"ROLE_USER"})
+  @RequestMapping(method = RequestMethod.POST, value = "user")
+  public User updateUser(@RequestBody User user)
+      throws UserNotFoundException, CurrentUserNotFoundException, ValidationException {
+    userService.updateUser(user);
+    return user;
+  }
 }

@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015-2023 Sergey Karpushin
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -30,53 +30,52 @@ import org.summerb.users.api.exceptions.UserNotFoundException;
 import org.summerb.validation.ValidationException;
 
 /**
- * Proposed default impl for {@link UserDetailsService} that users
- * {@link UserService} and {@link PermissionService}
- * 
- * @author sergeyk
+ * Proposed default impl for {@link UserDetailsService} that users {@link UserService} and {@link
+ * PermissionService}
  *
+ * @author sergeyk
  */
 public class UserDetailsServiceDefaultImpl implements UserDetailsService {
-	private UserService userService;
-	private PermissionService permissionService;
+  private UserService userService;
+  private PermissionService permissionService;
 
-	@Override
-	public UserDetails loadUserByUsername(String userEmail) throws UsernameNotFoundException {
-		try {
-			User user = userService.getUserByEmail(userEmail);
+  @Override
+  public UserDetails loadUserByUsername(String userEmail) throws UsernameNotFoundException {
+    try {
+      User user = userService.getUserByEmail(userEmail);
 
-			List<String> permissions = permissionService.findUserPermissionsForSubject(SecurityConstants.DOMAIN,
-					user.getUuid(), null);
+      List<String> permissions =
+          permissionService.findUserPermissionsForSubject(
+              SecurityConstants.DOMAIN, user.getUuid(), null);
 
-			AuthToken authToken = null;
+      AuthToken authToken = null;
 
-			UserDetailsImpl ret = new UserDetailsImpl(user, null, permissions, authToken);
-			return ret;
-		} catch (UserNotFoundException e) {
-			throw new UsernameNotFoundException("User not found", e);
-		} catch (ValidationException e) {
-			throw new UsernameNotFoundException("Email provided in invalid format", e);
-		} catch (Throwable t) {
-			throw new UsernameNotFoundException("Failed to get user by email", t);
-		}
-	}
+      UserDetailsImpl ret = new UserDetailsImpl(user, null, permissions, authToken);
+      return ret;
+    } catch (UserNotFoundException e) {
+      throw new UsernameNotFoundException("User not found", e);
+    } catch (ValidationException e) {
+      throw new UsernameNotFoundException("Email provided in invalid format", e);
+    } catch (Throwable t) {
+      throw new UsernameNotFoundException("Failed to get user by email", t);
+    }
+  }
 
-	public UserService getUserService() {
-		return userService;
-	}
+  public UserService getUserService() {
+    return userService;
+  }
 
-	@Autowired
-	public void setUserService(UserService userService) {
-		this.userService = userService;
-	}
+  @Autowired
+  public void setUserService(UserService userService) {
+    this.userService = userService;
+  }
 
-	public PermissionService getPermissionService() {
-		return permissionService;
-	}
+  public PermissionService getPermissionService() {
+    return permissionService;
+  }
 
-	@Autowired
-	public void setPermissionService(PermissionService permissionService) {
-		this.permissionService = permissionService;
-	}
-
+  @Autowired
+  public void setPermissionService(PermissionService permissionService) {
+    this.permissionService = permissionService;
+  }
 }

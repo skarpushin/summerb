@@ -1,9 +1,6 @@
 package org.summerb.easycrud.gen2;
 
-import org.summerb.methodCapturers.MethodCapturerProxyClassFactory;
-import org.summerb.methodCapturers.PropertyNameObtainerCachedImpl;
 import org.summerb.methodCapturers.PropertyNameObtainerFactory;
-import org.summerb.methodCapturers.PropertyNameObtainerImpl;
 
 import com.google.common.base.Preconditions;
 

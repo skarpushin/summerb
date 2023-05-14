@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015-2023 Sergey Karpushin
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -19,34 +19,34 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.summerb.minicms.api.dto.Attachment;
 
 public class ArticleAttachmentVm {
-	private final Attachment articleAttachment;
-	private CommonsMultipartFile file;
+  private final Attachment articleAttachment;
+  private CommonsMultipartFile file;
 
-	public ArticleAttachmentVm(Attachment articleAttachment) {
-		this.articleAttachment = articleAttachment;
-	}
+  public ArticleAttachmentVm(Attachment articleAttachment) {
+    this.articleAttachment = articleAttachment;
+  }
 
-	public ArticleAttachmentVm() {
-		this.articleAttachment = new Attachment();
-	}
+  public ArticleAttachmentVm() {
+    this.articleAttachment = new Attachment();
+  }
 
-	public String getName() {
-		return articleAttachment.getName();
-	}
+  public String getName() {
+    return articleAttachment.getName();
+  }
 
-	public void setName(String fileName) {
-		articleAttachment.setName(fileName);
-	}
+  public void setName(String fileName) {
+    articleAttachment.setName(fileName);
+  }
 
-	public CommonsMultipartFile getFile() {
-		return file;
-	}
+  public CommonsMultipartFile getFile() {
+    return file;
+  }
 
-	public void setFile(CommonsMultipartFile file) {
-		this.file = file;
-	}
+  public void setFile(CommonsMultipartFile file) {
+    this.file = file;
+  }
 
-	public Attachment getAttachment() {
-		return articleAttachment;
-	}
+  public Attachment getAttachment() {
+    return articleAttachment;
+  }
 }

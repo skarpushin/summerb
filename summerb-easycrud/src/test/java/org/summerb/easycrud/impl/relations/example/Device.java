@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015-2023 Sergey Karpushin
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -16,18 +16,17 @@
 package org.summerb.easycrud.impl.relations.example;
 
 public class Device extends DeviceRow {
-	private static final long serialVersionUID = -8296540588721148743L;
+  private static final long serialVersionUID = -8296540588721148743L;
 
-	private Env env;
+  private Env env;
 
-	public Device() {
-	}
+  public Device() {}
 
-	public Env getEnv() {
-		return env;
-	}
+  public Env getEnv() {
+    return env;
+  }
 
-	public void setEnv(Env nev) {
-		this.env = nev;
-	}
+  public void setEnv(Env nev) {
+    this.env = nev;
+  }
 }

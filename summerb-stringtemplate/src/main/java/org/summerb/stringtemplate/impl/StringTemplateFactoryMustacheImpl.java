@@ -13,42 +13,41 @@ import com.github.mustachejava.MustacheFactory;
 
 /**
  * Mustache-based impl of the template.
- * 
- * IMPORTANT: You'll need to include mustache in your pom manually (groupId =
- * com.github.spullara.mustache.java, artifactId = compiler).
- * 
- * @author Sergey Karpushin
  *
+ * <p>IMPORTANT: You'll need to include mustache in your pom manually (groupId =
+ * com.github.spullara.mustache.java, artifactId = compiler).
+ *
+ * @author Sergey Karpushin
  */
 public class StringTemplateFactoryMustacheImpl implements StringTemplateFactory {
-	@Override
-	public StringTemplate build(String template) {
-		try {
-			if (!StringUtils.hasText(template)) {
-				return new StringTemplateStaticImpl("");
-			}
+  @Override
+  public StringTemplate build(String template) {
+    try {
+      if (!StringUtils.hasText(template)) {
+        return new StringTemplateStaticImpl("");
+      }
 
-			MustacheFactory factory = new DefaultMustacheFactory();
-			Mustache compiled = factory.compile(new StringReader(template), "template");
+      MustacheFactory factory = new DefaultMustacheFactory();
+      Mustache compiled = factory.compile(new StringReader(template), "template");
 
-			return new StringTemplateImpl(compiled);
-		} catch (Exception t) {
-			throw new IllegalArgumentException("Failed to compile template", t);
-		}
-	}
+      return new StringTemplateImpl(compiled);
+    } catch (Exception t) {
+      throw new IllegalArgumentException("Failed to compile template", t);
+    }
+  }
 
-	private static class StringTemplateImpl implements StringTemplate {
-		private Mustache compiled;
+  private static class StringTemplateImpl implements StringTemplate {
+    private Mustache compiled;
 
-		public StringTemplateImpl(Mustache compiled) {
-			this.compiled = compiled;
-		}
+    public StringTemplateImpl(Mustache compiled) {
+      this.compiled = compiled;
+    }
 
-		@Override
-		public String applyTo(Object templateParamsObjects) {
-			StringWriter writer = new StringWriter();
-			compiled.execute(writer, templateParamsObjects);
-			return writer.toString();
-		}
-	}
+    @Override
+    public String applyTo(Object templateParamsObjects) {
+      StringWriter writer = new StringWriter();
+      compiled.execute(writer, templateParamsObjects);
+      return writer.toString();
+    }
+  }
 }

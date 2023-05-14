@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015-2023 Sergey Karpushin
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -14,14 +14,12 @@
  * the License.
  ******************************************************************************/
 /**
- * This package contains plethora of quite opinionated classes which used to
- * glue different aspects of a final spring-based (jsp-like) web application
- * project together.
- * 
- * Although it has many components tailored for jsp-like application (Spring
- * MVC) it also contains number of classes designed for REST web-service
- * 
- * @author sergeyk
+ * This package contains plethora of quite opinionated classes which used to glue different aspects
+ * of a final spring-based (jsp-like) web application project together.
  *
+ * <p>Although it has many components tailored for jsp-like application (Spring MVC) it also
+ * contains number of classes designed for REST web-service
+ *
+ * @author sergeyk
  */
 package org.summerb.webappboilerplate;

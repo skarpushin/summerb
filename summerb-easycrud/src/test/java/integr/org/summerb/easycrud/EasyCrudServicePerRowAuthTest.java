@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015-2023 Sergey Karpushin
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -32,43 +32,42 @@ import org.summerb.security.api.exceptions.NotAuthorizedException;
 @ProfileValueSourceConfiguration(SystemProfileValueSource.class)
 @Transactional
 public class EasyCrudServicePerRowAuthTest extends GenericCrudServiceTestTemplate {
-	@Autowired
-	@Qualifier("testDto1ServiceBasicAuth")
-	private EasyCrudService<String, TestDto1> testDto1Service;
+  @Autowired
+  @Qualifier("testDto1ServiceBasicAuth")
+  private EasyCrudService<String, TestDto1> testDto1Service;
 
-	@Autowired
-	@Qualifier("testDto2ServiceBasicAuth")
-	private EasyCrudService<Long, TestDto2> testDto2ServiceBasicAuth;
+  @Autowired
+  @Qualifier("testDto2ServiceBasicAuth")
+  private EasyCrudService<Long, TestDto2> testDto2ServiceBasicAuth;
 
-	@Autowired
-	@Qualifier("testDto1ServiceBasicAuthEb")
-	private EasyCrudService<String, TestDto1> testDto1ServiceEb;
+  @Autowired
+  @Qualifier("testDto1ServiceBasicAuthEb")
+  private EasyCrudService<String, TestDto1> testDto1ServiceEb;
 
-	@Override
-	public EasyCrudService<String, TestDto1> getTestDto1Service() {
-		return testDto1Service;
-	}
+  @Override
+  public EasyCrudService<String, TestDto1> getTestDto1Service() {
+    return testDto1Service;
+  }
 
-	@Override
-	public EasyCrudService<Long, TestDto2> getTestDto2Service() {
-		return testDto2ServiceBasicAuth;
-	}
+  @Override
+  public EasyCrudService<Long, TestDto2> getTestDto2Service() {
+    return testDto2ServiceBasicAuth;
+  }
 
-	@Override
-	public EasyCrudService<String, TestDto1> getTestDto1ServiceEb() {
-		return testDto1ServiceEb;
-	}
+  @Override
+  public EasyCrudService<String, TestDto1> getTestDto1ServiceEb() {
+    return testDto1ServiceEb;
+  }
 
-	@Test(expected = NotAuthorizedException.class)
-	public void testCreateDto2ExpectNae() throws Exception {
-		TestDto2 dto = new TestDto2();
-		dto.setActive(true);
-		dto.setEnv("throwNaeOnCreate");
-		dto.setLinkToFullDonwload("link-to-full-download1");
-		dto.setMajorVersion(5);
-		dto.setMinorVersion(6);
+  @Test(expected = NotAuthorizedException.class)
+  public void testCreateDto2ExpectNae() throws Exception {
+    TestDto2 dto = new TestDto2();
+    dto.setActive(true);
+    dto.setEnv("throwNaeOnCreate");
+    dto.setLinkToFullDonwload("link-to-full-download1");
+    dto.setMajorVersion(5);
+    dto.setMinorVersion(6);
 
-		testDto2ServiceBasicAuth.create(dto);
-	}
-
+    testDto2ServiceBasicAuth.create(dto);
+  }
 }

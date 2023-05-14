@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015-2023 Sergey Karpushin
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -37,49 +37,54 @@ import org.summerb.dbupgrade.impl.mysql.SqlPackageParserMySqlImpl;
 import org.summerb.dbupgrade.impl.mysql.VersionTableDbDialectMySqlImpl;
 
 public abstract class DbUpgradeConfigAdapter {
-	@Bean
-	protected DbUpgrade dbUpgrade(UpgradePackageMetaResolver upgradePackageMetaResolver,
-			DbSchemaVersionResolver dbSchemaVersionResolver, UpgradePackageFactory upgradePackageFactory) {
-		return new DbUpgradeImpl(upgradePackageMetaResolver, dbSchemaVersionResolver, upgradePackageFactory);
-	}
+  @Bean
+  protected DbUpgrade dbUpgrade(
+      UpgradePackageMetaResolver upgradePackageMetaResolver,
+      DbSchemaVersionResolver dbSchemaVersionResolver,
+      UpgradePackageFactory upgradePackageFactory) {
+    return new DbUpgradeImpl(
+        upgradePackageMetaResolver, dbSchemaVersionResolver, upgradePackageFactory);
+  }
 
-	@Bean
-	protected abstract UpgradePackageMetaResolver upgradePackageMetaResolver() throws Exception;
+  @Bean
+  protected abstract UpgradePackageMetaResolver upgradePackageMetaResolver() throws Exception;
 
-	@Bean
-	protected VersionTableDbDialect versionTableDbDialect() {
-		return new VersionTableDbDialectMySqlImpl();
-	}
+  @Bean
+  protected VersionTableDbDialect versionTableDbDialect() {
+    return new VersionTableDbDialectMySqlImpl();
+  }
 
-	@Bean
-	protected DbSchemaVersionResolver dbSchemaVersionResolver(DataSource dataSource,
-			VersionTableDbDialect versionTableDbDialect) {
-		return new DbSchemaVersionResolverImpl(dataSource, versionTableDbDialect);
-	}
+  @Bean
+  protected DbSchemaVersionResolver dbSchemaVersionResolver(
+      DataSource dataSource, VersionTableDbDialect versionTableDbDialect) {
+    return new DbSchemaVersionResolverImpl(dataSource, versionTableDbDialect);
+  }
 
-	@Bean
-	protected UpgradePackageFactoryResolver upgradePackageFactoryResolver() {
-		return new UpgradePackageFactoryResolverSpringAutodiscoverImpl();
-	}
+  @Bean
+  protected UpgradePackageFactoryResolver upgradePackageFactoryResolver() {
+    return new UpgradePackageFactoryResolverSpringAutodiscoverImpl();
+  }
 
-	@Bean
-	@Primary
-	protected UpgradePackageFactory upgradePackageFactory(UpgradePackageFactoryResolver upgradePackageFactoryResolver) {
-		return new UpgradePackageFactoryDelegatingImpl(upgradePackageFactoryResolver);
-	}
+  @Bean
+  @Primary
+  protected UpgradePackageFactory upgradePackageFactory(
+      UpgradePackageFactoryResolver upgradePackageFactoryResolver) {
+    return new UpgradePackageFactoryDelegatingImpl(upgradePackageFactoryResolver);
+  }
 
-	@Bean
-	protected UpgradePackageFactory upgradePackageFactoryBean(ApplicationContext applicationContext) {
-		return new UpgradePackageFactoryBeanImpl(applicationContext);
-	}
+  @Bean
+  protected UpgradePackageFactory upgradePackageFactoryBean(ApplicationContext applicationContext) {
+    return new UpgradePackageFactoryBeanImpl(applicationContext);
+  }
 
-	@Bean
-	protected UpgradePackageFactory upgradePackageFactorySql(DataSource dataSource, SqlPackageParser sqlPackageParser) {
-		return new UpgradePackageFactorySqlImpl(new JdbcTemplate(dataSource), sqlPackageParser);
-	}
+  @Bean
+  protected UpgradePackageFactory upgradePackageFactorySql(
+      DataSource dataSource, SqlPackageParser sqlPackageParser) {
+    return new UpgradePackageFactorySqlImpl(new JdbcTemplate(dataSource), sqlPackageParser);
+  }
 
-	@Bean
-	protected SqlPackageParser sqlPackageParser() {
-		return new SqlPackageParserMySqlImpl();
-	}
+  @Bean
+  protected SqlPackageParser sqlPackageParser() {
+    return new SqlPackageParserMySqlImpl();
+  }
 }

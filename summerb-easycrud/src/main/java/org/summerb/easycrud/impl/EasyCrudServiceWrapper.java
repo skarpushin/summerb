@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015-2023 Sergey Karpushin
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -29,93 +29,94 @@ import org.summerb.validation.ValidationException;
 import com.google.common.base.Preconditions;
 
 public class EasyCrudServiceWrapper<TId, TRow, TActual extends EasyCrudService<TId, TRow>>
-		implements EasyCrudService<TId, TRow> {
-	protected TActual actual;
+    implements EasyCrudService<TId, TRow> {
+  protected TActual actual;
 
-	public EasyCrudServiceWrapper(TActual actual) {
-		Preconditions.checkArgument(actual != null);
-		this.actual = actual;
-	}
+  public EasyCrudServiceWrapper(TActual actual) {
+    Preconditions.checkArgument(actual != null);
+    this.actual = actual;
+  }
 
-	@Override
-	public TRow create(TRow row) throws ValidationException, NotAuthorizedException {
-		return actual.create(row);
-	}
+  @Override
+  public TRow create(TRow row) throws ValidationException, NotAuthorizedException {
+    return actual.create(row);
+  }
 
-	@Override
-	public TRow update(TRow row) throws ValidationException, NotAuthorizedException, EntityNotFoundException {
-		return actual.update(row);
-	}
+  @Override
+  public TRow update(TRow row)
+      throws ValidationException, NotAuthorizedException, EntityNotFoundException {
+    return actual.update(row);
+  }
 
-	@Override
-	public TRow findById(TId id) throws NotAuthorizedException {
-		return actual.findById(id);
-	}
+  @Override
+  public TRow findById(TId id) throws NotAuthorizedException {
+    return actual.findById(id);
+  }
 
-	@Override
-	public TRow findOneByQuery(Query query) throws NotAuthorizedException {
-		return actual.findOneByQuery(query);
-	}
+  @Override
+  public TRow findOneByQuery(Query query) throws NotAuthorizedException {
+    return actual.findOneByQuery(query);
+  }
 
-	@Override
-	public PaginatedList<TRow> find(PagerParams pagerParams, Query optionalQuery, OrderBy... orderBy)
-			throws NotAuthorizedException {
-		return actual.find(pagerParams, optionalQuery, orderBy);
-	}
+  @Override
+  public PaginatedList<TRow> find(PagerParams pagerParams, Query optionalQuery, OrderBy... orderBy)
+      throws NotAuthorizedException {
+    return actual.find(pagerParams, optionalQuery, orderBy);
+  }
 
-	@Override
-	public void deleteById(TId id) throws NotAuthorizedException, EntityNotFoundException {
-		actual.deleteById(id);
-	}
+  @Override
+  public void deleteById(TId id) throws NotAuthorizedException, EntityNotFoundException {
+    actual.deleteById(id);
+  }
 
-	@Override
-	public void deleteByIdOptimistic(TId id, long modifiedAt) throws NotAuthorizedException, EntityNotFoundException {
-		actual.deleteByIdOptimistic(id, modifiedAt);
-	}
+  @Override
+  public void deleteByIdOptimistic(TId id, long modifiedAt)
+      throws NotAuthorizedException, EntityNotFoundException {
+    actual.deleteByIdOptimistic(id, modifiedAt);
+  }
 
-	@Override
-	public int deleteByQuery(Query query) throws NotAuthorizedException {
-		return actual.deleteByQuery(query);
-	}
+  @Override
+  public int deleteByQuery(Query query) throws NotAuthorizedException {
+    return actual.deleteByQuery(query);
+  }
 
-	@Override
-	public Class<TRow> getRowClass() {
-		return actual.getRowClass();
-	}
+  @Override
+  public Class<TRow> getRowClass() {
+    return actual.getRowClass();
+  }
 
-	@Override
-	public String getRowMessageCode() {
-		return actual.getRowMessageCode();
-	}
+  @Override
+  public String getRowMessageCode() {
+    return actual.getRowMessageCode();
+  }
 
-	@Override
-	public TRow getById(TId id) {
-		return actual.getById(id);
-	}
+  @Override
+  public TRow getById(TId id) {
+    return actual.getById(id);
+  }
 
-	@Override
-	public TRow getFirstByQuery(Query query, OrderBy... orderBy) {
-		return actual.getFirstByQuery(query, orderBy);
-	}
+  @Override
+  public TRow getFirstByQuery(Query query, OrderBy... orderBy) {
+    return actual.getFirstByQuery(query, orderBy);
+  }
 
-	@Override
-	public TRow findFirstByQuery(Query query, OrderBy... orderBy) {
-		return actual.findFirstByQuery(query, orderBy);
-	}
+  @Override
+  public TRow findFirstByQuery(Query query, OrderBy... orderBy) {
+    return actual.findFirstByQuery(query, orderBy);
+  }
 
-	@Override
-	public List<TRow> findAll(Query optionalQuery, OrderBy... orderBy) {
-		return actual.findAll(optionalQuery, orderBy);
-	}
+  @Override
+  public List<TRow> findAll(Query optionalQuery, OrderBy... orderBy) {
+    return actual.findAll(optionalQuery, orderBy);
+  }
 
-	@Override
-	public List<TRow> findAll(OrderBy... orderBy) {
-		return actual.findAll(orderBy);
-	}
+  @Override
+  public List<TRow> findAll(OrderBy... orderBy) {
+    return actual.findAll(orderBy);
+  }
 
-	@Override
-	public void delete(TRow row) {
-		actual.delete(row);
-	}
-
+  @Override
+  public void delete(TRow row) {
+    actual.delete(row);
+  }
 }

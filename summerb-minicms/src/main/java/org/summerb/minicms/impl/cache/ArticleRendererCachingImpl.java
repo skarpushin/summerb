@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015-2023 Sergey Karpushin
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -44,112 +44,122 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 public class ArticleRendererCachingImpl implements ArticleRenderer, InitializingBean {
-	private ArticleRenderer articleRenderer;
-	private EventBus eventBus;
+  private ArticleRenderer articleRenderer;
+  private EventBus eventBus;
 
-	private LoadingCache<ArticleCacheKey, RenderedArticle> cache;
-	private ConcurrentHashMap<Long, ArticleCacheKey> articleIdToKeyCache;
+  private LoadingCache<ArticleCacheKey, RenderedArticle> cache;
+  private ConcurrentHashMap<Long, ArticleCacheKey> articleIdToKeyCache;
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		eventBus.register(this);
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    eventBus.register(this);
 
-		cache = new TransactionBoundCache<>("ArticleRendererCachingImpl", CacheBuilder.newBuilder()
-				.maximumWeight(2000000).removalListener(removalListener).weigher(weigher).recordStats(), loader);
+    cache =
+        new TransactionBoundCache<>(
+            "ArticleRendererCachingImpl",
+            CacheBuilder.newBuilder()
+                .maximumWeight(2000000)
+                .removalListener(removalListener)
+                .weigher(weigher)
+                .recordStats(),
+            loader);
 
-		articleIdToKeyCache = new ConcurrentHashMap<Long, ArticleCacheKey>();
-	}
+    articleIdToKeyCache = new ConcurrentHashMap<Long, ArticleCacheKey>();
+  }
 
-	private Weigher<ArticleCacheKey, RenderedArticle> weigher = new Weigher<ArticleCacheKey, RenderedArticle>() {
-		@Override
-		public int weigh(ArticleCacheKey k, RenderedArticle g) {
-			return g.getContent().length() * 2;
-		}
-	};
+  private Weigher<ArticleCacheKey, RenderedArticle> weigher =
+      new Weigher<ArticleCacheKey, RenderedArticle>() {
+        @Override
+        public int weigh(ArticleCacheKey k, RenderedArticle g) {
+          return g.getContent().length() * 2;
+        }
+      };
 
-	private CacheLoader<ArticleCacheKey, RenderedArticle> loader = new CacheLoader<ArticleCacheKey, RenderedArticle>() {
-		@Override
-		public RenderedArticle load(ArticleCacheKey key) {
-			RenderedArticle ret = articleRenderer.renderArticle(key.getArticleKey(), new Locale(key.getLang()));
-			if (ret != null) {
-				articleIdToKeyCache.put(ret.getId(), key);
-			}
-			return ret;
-		}
-	};
+  private CacheLoader<ArticleCacheKey, RenderedArticle> loader =
+      new CacheLoader<ArticleCacheKey, RenderedArticle>() {
+        @Override
+        public RenderedArticle load(ArticleCacheKey key) {
+          RenderedArticle ret =
+              articleRenderer.renderArticle(key.getArticleKey(), new Locale(key.getLang()));
+          if (ret != null) {
+            articleIdToKeyCache.put(ret.getId(), key);
+          }
+          return ret;
+        }
+      };
 
-	private RemovalListener<ArticleCacheKey, RenderedArticle> removalListener = new RemovalListener<ArticleCacheKey, RenderedArticle>() {
-		@Override
-		public void onRemoval(RemovalNotification<ArticleCacheKey, RenderedArticle> evt) {
-			long id = evt.getValue().getId();
-			articleIdToKeyCache.remove(id);
+  private RemovalListener<ArticleCacheKey, RenderedArticle> removalListener =
+      new RemovalListener<ArticleCacheKey, RenderedArticle>() {
+        @Override
+        public void onRemoval(RemovalNotification<ArticleCacheKey, RenderedArticle> evt) {
+          long id = evt.getValue().getId();
+          articleIdToKeyCache.remove(id);
 
-			for (Entry<ArticleCacheKey, RenderedArticle> e : cache.asMap().entrySet()) {
-				RenderedArticle dep = e.getValue();
-				List<Long> refs = dep.getArticleReferences();
-				if (refs != null && refs.contains(id)) {
-					cache.invalidate(e.getKey());
-				}
-			}
-		}
-	};
+          for (Entry<ArticleCacheKey, RenderedArticle> e : cache.asMap().entrySet()) {
+            RenderedArticle dep = e.getValue();
+            List<Long> refs = dep.getArticleReferences();
+            if (refs != null && refs.contains(id)) {
+              cache.invalidate(e.getKey());
+            }
+          }
+        }
+      };
 
-	@Subscribe
-	public void onArticleChanged(EntityChangedEvent<Article> evt) {
-		if (!evt.isTypeOf(Article.class)) {
-			return;
-		}
-		if (evt.getChangeType() != ChangeType.UPDATED && evt.getChangeType() != ChangeType.REMOVED) {
-			return;
-		}
+  @Subscribe
+  public void onArticleChanged(EntityChangedEvent<Article> evt) {
+    if (!evt.isTypeOf(Article.class)) {
+      return;
+    }
+    if (evt.getChangeType() != ChangeType.UPDATED && evt.getChangeType() != ChangeType.REMOVED) {
+      return;
+    }
 
-		ArticleCacheKey cacheKey = new ArticleCacheKey(evt.getValue());
-		cache.invalidate(cacheKey);
-	}
+    ArticleCacheKey cacheKey = new ArticleCacheKey(evt.getValue());
+    cache.invalidate(cacheKey);
+  }
 
-	@Subscribe
-	public void onArticleAttachmentChanged(EntityChangedEvent<Attachment> evt) {
-		if (!evt.isTypeOf(Attachment.class)) {
-			return;
-		}
+  @Subscribe
+  public void onArticleAttachmentChanged(EntityChangedEvent<Attachment> evt) {
+    if (!evt.isTypeOf(Attachment.class)) {
+      return;
+    }
 
-		ArticleCacheKey articleKey = articleIdToKeyCache.get(evt.getValue().getArticleId());
-		if (articleKey != null) {
-			cache.invalidate(articleKey);
-		}
-	}
+    ArticleCacheKey articleKey = articleIdToKeyCache.get(evt.getValue().getArticleId());
+    if (articleKey != null) {
+      cache.invalidate(articleKey);
+    }
+  }
 
-	@Subscribe
-	public void onCacheInvalidationRequest(CachesInvalidationNeeded evt) {
-		cache.invalidateAll();
-	}
+  @Subscribe
+  public void onCacheInvalidationRequest(CachesInvalidationNeeded evt) {
+    cache.invalidateAll();
+  }
 
-	@Override
-	public RenderedArticle renderArticle(String articleKey, Locale locale) {
-		Preconditions.checkArgument(StringUtils.hasText(articleKey));
-		Preconditions.checkArgument(locale != null);
+  @Override
+  public RenderedArticle renderArticle(String articleKey, Locale locale) {
+    Preconditions.checkArgument(StringUtils.hasText(articleKey));
+    Preconditions.checkArgument(locale != null);
 
-		ArticleCacheKey cacheKey = new ArticleCacheKey(articleKey, locale);
-		RenderedArticle ret = cache.getUnchecked(cacheKey);
-		return ret; // DeepCopy.copy(ret);
-	}
+    ArticleCacheKey cacheKey = new ArticleCacheKey(articleKey, locale);
+    RenderedArticle ret = cache.getUnchecked(cacheKey);
+    return ret; // DeepCopy.copy(ret);
+  }
 
-	public ArticleRenderer getArticleRenderer() {
-		return articleRenderer;
-	}
+  public ArticleRenderer getArticleRenderer() {
+    return articleRenderer;
+  }
 
-	@Required
-	public void setArticleRenderer(ArticleRenderer articleRenderer) {
-		this.articleRenderer = articleRenderer;
-	}
+  @Required
+  public void setArticleRenderer(ArticleRenderer articleRenderer) {
+    this.articleRenderer = articleRenderer;
+  }
 
-	public EventBus getEventBus() {
-		return eventBus;
-	}
+  public EventBus getEventBus() {
+    return eventBus;
+  }
 
-	@Autowired
-	public void setEventBus(EventBus eventBus) {
-		this.eventBus = eventBus;
-	}
-
+  @Autowired
+  public void setEventBus(EventBus eventBus) {
+    this.eventBus = eventBus;
+  }
 }

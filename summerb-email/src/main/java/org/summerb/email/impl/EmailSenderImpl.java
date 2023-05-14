@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015-2023 Sergey Karpushin
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -32,55 +32,58 @@ import com.google.common.base.Preconditions;
 
 /**
  * use this to send email
- * 
- * see: http://www.sql.ru/forum/actualthread.aspx?tid=244089 see:
+ *
+ * <p>see: http://www.sql.ru/forum/actualthread.aspx?tid=244089 see:
  * http://ru.wikipedia.org/wiki/JavaMail
  */
 public class EmailSenderImpl implements EmailSender {
-	private Logger log = LoggerFactory.getLogger(getClass());
+  private Logger log = LoggerFactory.getLogger(getClass());
 
-	private EmailChannelProperties emailChannelProperties;
+  private EmailChannelProperties emailChannelProperties;
 
-	private Session emailSession;
+  private Session emailSession;
 
-	@Override
-	public void sendEmail(EmailMessage emailMessage) {
-		Preconditions.checkArgument(emailMessage != null);
+  @Override
+  public void sendEmail(EmailMessage emailMessage) {
+    Preconditions.checkArgument(emailMessage != null);
 
-		try {
-			MimeMessage message = new MimeMessage(getEmailSession());
-			message.setHeader("Content-Type", "text/plain;charset=utf-8");
-			message.setHeader("Content-Transfer-Encoding", "base64");
-			message.setFrom(new InternetAddress(emailMessage.getFromAddress(), emailMessage.getFromName()));
-			message.addRecipient(Message.RecipientType.TO,
-					new InternetAddress(emailMessage.getToAddress(), emailMessage.getToName()));
-			message.setSubject(emailMessage.getSubject(), "UTF-8");
-			message.setText(emailMessage.getBody(), "UTF-8");
+    try {
+      MimeMessage message = new MimeMessage(getEmailSession());
+      message.setHeader("Content-Type", "text/plain;charset=utf-8");
+      message.setHeader("Content-Transfer-Encoding", "base64");
+      message.setFrom(
+          new InternetAddress(emailMessage.getFromAddress(), emailMessage.getFromName()));
+      message.addRecipient(
+          Message.RecipientType.TO,
+          new InternetAddress(emailMessage.getToAddress(), emailMessage.getToName()));
+      message.setSubject(emailMessage.getSubject(), "UTF-8");
+      message.setText(emailMessage.getBody(), "UTF-8");
 
-			Transport.send(message);
-		} catch (Exception e) {
-			log.error("Can't send email message", e);
-			throw new RuntimeException("Can't send email message", e);
-		}
-	}
+      Transport.send(message);
+    } catch (Exception e) {
+      log.error("Can't send email message", e);
+      throw new RuntimeException("Can't send email message", e);
+    }
+  }
 
-	protected Session getEmailSession() {
-		if (emailSession == null) {
-			Preconditions.checkState(getEmailChannelProperties() != null);
+  protected Session getEmailSession() {
+    if (emailSession == null) {
+      Preconditions.checkState(getEmailChannelProperties() != null);
 
-			emailSession = Session.getDefaultInstance(getEmailChannelProperties().getProperties(),
-					getEmailChannelProperties().getAuthenticator());
-		}
-		return emailSession;
-	}
+      emailSession =
+          Session.getDefaultInstance(
+              getEmailChannelProperties().getProperties(),
+              getEmailChannelProperties().getAuthenticator());
+    }
+    return emailSession;
+  }
 
-	public EmailChannelProperties getEmailChannelProperties() {
-		return emailChannelProperties;
-	}
+  public EmailChannelProperties getEmailChannelProperties() {
+    return emailChannelProperties;
+  }
 
-	@Required
-	public void setEmailChannelProperties(EmailChannelProperties emailChannelProperties) {
-		this.emailChannelProperties = emailChannelProperties;
-	}
-
+  @Required
+  public void setEmailChannelProperties(EmailChannelProperties emailChannelProperties) {
+    this.emailChannelProperties = emailChannelProperties;
+  }
 }

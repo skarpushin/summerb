@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015-2023 Sergey Karpushin
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -14,20 +14,17 @@
  * the License.
  ******************************************************************************/
 /**
- * This package contains core design and impl for i18n aspect of the
- * application.
- * 
- * The idea is that back-end will never (or almost never) deal with user-facing
- * text. Instead it will operate using messageCodes (constants) which then can
- * be translated to a human-readable form upon presentation/rendering OR used
- * for actual logic (since these are constants it's pretty reliable).
- * 
- * Also each message can have number of {@link org.summerb.i18n.HasMessageArgs}
- * array. This helps to transport machine-readable data (you don't need to parse
- * it) and again easily use it to translate whole message to human-readable
- * form.
- * 
- * @author sergeyk
+ * This package contains core design and impl for i18n aspect of the application.
  *
+ * <p>The idea is that back-end will never (or almost never) deal with user-facing text. Instead it
+ * will operate using messageCodes (constants) which then can be translated to a human-readable form
+ * upon presentation/rendering OR used for actual logic (since these are constants it's pretty
+ * reliable).
+ *
+ * <p>Also each message can have number of {@link org.summerb.i18n.HasMessageArgs} array. This helps
+ * to transport machine-readable data (you don't need to parse it) and again easily use it to
+ * translate whole message to human-readable form.
+ *
+ * @author sergeyk
  */
 package org.summerb.i18n;

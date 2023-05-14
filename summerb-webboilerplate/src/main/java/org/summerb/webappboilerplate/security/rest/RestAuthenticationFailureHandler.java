@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015-2023 Sergey Karpushin
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -31,45 +31,48 @@ import org.summerb.utils.exceptions.dto.GenericServerErrorResult;
 import org.summerb.utils.exceptions.translator.ExceptionTranslator;
 import org.summerb.utils.json.JsonResponseWriter;
 import org.summerb.utils.json.JsonResponseWriterGsonImpl;
-import org.summerb.validation.ValidationException;
 import org.summerb.validation.ValidationErrors;
+import org.summerb.validation.ValidationException;
 
 public class RestAuthenticationFailureHandler implements AuthenticationFailureHandler {
-	private JsonResponseWriter jsonResponseHelper;
-	private ExceptionTranslator exceptionTranslator;
+  private JsonResponseWriter jsonResponseHelper;
+  private ExceptionTranslator exceptionTranslator;
 
-	public RestAuthenticationFailureHandler() {
-		jsonResponseHelper = new JsonResponseWriterGsonImpl();
-	}
+  public RestAuthenticationFailureHandler() {
+    jsonResponseHelper = new JsonResponseWriterGsonImpl();
+  }
 
-	public RestAuthenticationFailureHandler(JsonResponseWriter jsonResponseHelper) {
-		this.jsonResponseHelper = jsonResponseHelper;
-	}
+  public RestAuthenticationFailureHandler(JsonResponseWriter jsonResponseHelper) {
+    this.jsonResponseHelper = jsonResponseHelper;
+  }
 
-	@Override
-	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
-			AuthenticationException exception) throws IOException, ServletException {
+  @Override
+  public void onAuthenticationFailure(
+      HttpServletRequest request, HttpServletResponse response, AuthenticationException exception)
+      throws IOException, ServletException {
 
-		ValidationException fve = ExceptionUtils.findExceptionOfType(exception, ValidationException.class);
-		if (fve != null) {
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			jsonResponseHelper.writeResponseBody(new ValidationErrors(fve.getErrors()), response);
-			return;
-		}
+    ValidationException fve =
+        ExceptionUtils.findExceptionOfType(exception, ValidationException.class);
+    if (fve != null) {
+      response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+      jsonResponseHelper.writeResponseBody(new ValidationErrors(fve.getErrors()), response);
+      return;
+    }
 
-		response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-		GenericServerErrorResult responseBody = new GenericServerErrorResult(
-				exceptionTranslator.buildUserMessage(exception, LocaleContextHolder.getLocale()),
-				new ExceptionInfo(exception));
-		jsonResponseHelper.writeResponseBody(responseBody, response);
-	}
+    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+    GenericServerErrorResult responseBody =
+        new GenericServerErrorResult(
+            exceptionTranslator.buildUserMessage(exception, LocaleContextHolder.getLocale()),
+            new ExceptionInfo(exception));
+    jsonResponseHelper.writeResponseBody(responseBody, response);
+  }
 
-	public ExceptionTranslator getExceptionTranslator() {
-		return exceptionTranslator;
-	}
+  public ExceptionTranslator getExceptionTranslator() {
+    return exceptionTranslator;
+  }
 
-	@Autowired
-	public void setExceptionTranslator(ExceptionTranslator exceptionTranslator) {
-		this.exceptionTranslator = exceptionTranslator;
-	}
+  @Autowired
+  public void setExceptionTranslator(ExceptionTranslator exceptionTranslator) {
+    this.exceptionTranslator = exceptionTranslator;
+  }
 }

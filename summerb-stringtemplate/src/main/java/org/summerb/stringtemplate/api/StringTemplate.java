@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015-2023 Sergey Karpushin
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -19,15 +19,14 @@ import org.summerb.stringtemplate.impl.StringTemplateStaticImpl;
 
 /**
  * Interface for evaluating string template and getting "rendered" result.
- * 
- * Instance of this interface must be thread-safe, because it might be cached
- * and used concurrently in several threads
- * 
+ *
+ * <p>Instance of this interface must be thread-safe, because it might be cached and used
+ * concurrently in several threads
+ *
  * @author skarpushin
- * 
  * @see StringTemplateStaticImpl
  * @see StringTemplateFactory
  */
 public interface StringTemplate {
-	String applyTo(Object rootObject);
+  String applyTo(Object rootObject);
 }

@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015-2023 Sergey Karpushin
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -18,90 +18,95 @@ package org.summerb.users.api.dto;
 import java.io.Serializable;
 
 public class AuthToken implements Serializable {
-	private static final long serialVersionUID = -1633738725204366881L;
+  private static final long serialVersionUID = -1633738725204366881L;
 
-	/**
-	 * Token identifier 1st part, never changes
-	 */
-	private String uuid;
+  /** Token identifier 1st part, never changes */
+  private String uuid;
 
-	/**
-	 * Token identifier 2nd part, expected to change after every token positive
-	 * usage
-	 */
-	private String tokenValue;
+  /** Token identifier 2nd part, expected to change after every token positive usage */
+  private String tokenValue;
 
-	private String userUuid;
-	private long createdAt;
-	private long expiresAt;
+  private String userUuid;
+  private long createdAt;
+  private long expiresAt;
 
-	/**
-	 * When token was last verified. Expected to change every token usage
-	 */
-	private long lastVerifiedAt;
-	private String clientIp;
+  /** When token was last verified. Expected to change every token usage */
+  private long lastVerifiedAt;
 
-	public String getUuid() {
-		return uuid;
-	}
+  private String clientIp;
 
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
-	}
+  public String getUuid() {
+    return uuid;
+  }
 
-	public String getUserUuid() {
-		return userUuid;
-	}
+  public void setUuid(String uuid) {
+    this.uuid = uuid;
+  }
 
-	public void setUserUuid(String userUuid) {
-		this.userUuid = userUuid;
-	}
+  public String getUserUuid() {
+    return userUuid;
+  }
 
-	public long getCreatedAt() {
-		return createdAt;
-	}
+  public void setUserUuid(String userUuid) {
+    this.userUuid = userUuid;
+  }
 
-	public void setCreatedAt(long createdAt) {
-		this.createdAt = createdAt;
-	}
+  public long getCreatedAt() {
+    return createdAt;
+  }
 
-	public long getExpiresAt() {
-		return expiresAt;
-	}
+  public void setCreatedAt(long createdAt) {
+    this.createdAt = createdAt;
+  }
 
-	public void setExpiresAt(long expiresAt) {
-		this.expiresAt = expiresAt;
-	}
+  public long getExpiresAt() {
+    return expiresAt;
+  }
 
-	public long getLastVerifiedAt() {
-		return lastVerifiedAt;
-	}
+  public void setExpiresAt(long expiresAt) {
+    this.expiresAt = expiresAt;
+  }
 
-	public void setLastVerifiedAt(long lastVerifiedAt) {
-		this.lastVerifiedAt = lastVerifiedAt;
-	}
+  public long getLastVerifiedAt() {
+    return lastVerifiedAt;
+  }
 
-	public String getClientIp() {
-		return clientIp;
-	}
+  public void setLastVerifiedAt(long lastVerifiedAt) {
+    this.lastVerifiedAt = lastVerifiedAt;
+  }
 
-	public void setClientIp(String clientIp) {
-		this.clientIp = clientIp;
-	}
+  public String getClientIp() {
+    return clientIp;
+  }
 
-	public String getTokenValue() {
-		return tokenValue;
-	}
+  public void setClientIp(String clientIp) {
+    this.clientIp = clientIp;
+  }
 
-	public void setTokenValue(String tokenValue) {
-		this.tokenValue = tokenValue;
-	}
+  public String getTokenValue() {
+    return tokenValue;
+  }
 
-	@Override
-	public String toString() {
-		return "AuthToken [uuid=" + uuid + ", tokenValue=" + tokenValue + ", userUuid=" + userUuid + ", createdAt="
-				+ createdAt + ", expiresAt=" + expiresAt + ", lastVerifiedAt=" + lastVerifiedAt + ", clientIp="
-				+ clientIp + "]";
-	}
+  public void setTokenValue(String tokenValue) {
+    this.tokenValue = tokenValue;
+  }
 
+  @Override
+  public String toString() {
+    return "AuthToken [uuid="
+        + uuid
+        + ", tokenValue="
+        + tokenValue
+        + ", userUuid="
+        + userUuid
+        + ", createdAt="
+        + createdAt
+        + ", expiresAt="
+        + expiresAt
+        + ", lastVerifiedAt="
+        + lastVerifiedAt
+        + ", clientIp="
+        + clientIp
+        + "]";
+  }
 }

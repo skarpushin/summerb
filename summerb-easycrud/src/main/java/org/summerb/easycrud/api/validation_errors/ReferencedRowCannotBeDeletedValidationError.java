@@ -4,10 +4,9 @@ import org.summerb.easycrud.api.dto.HasId;
 import org.summerb.validation.ValidationError;
 
 public class ReferencedRowCannotBeDeletedValidationError extends ValidationError {
-	private static final long serialVersionUID = 1187193329378440105L;
+  private static final long serialVersionUID = 1187193329378440105L;
 
-	public ReferencedRowCannotBeDeletedValidationError() {
-		super(HasId.FN_ID, "validation.referencedRowCannotBeDeleted");
-	}
-
+  public ReferencedRowCannotBeDeletedValidationError() {
+    super(HasId.FN_ID, "validation.referencedRowCannotBeDeleted");
+  }
 }
