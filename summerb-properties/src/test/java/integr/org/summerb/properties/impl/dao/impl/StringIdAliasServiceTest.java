@@ -32,10 +32,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
+import org.summerb.properties.PropertiesConfig;
 import org.summerb.properties.internal.StringIdAliasService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("classpath:test-properties-app-context.xml")
+@ContextConfiguration(classes = { EmbeddedMariaDbConfig.class, PropertiesConfig.class })
 @ProfileValueSourceConfiguration(SystemProfileValueSource.class)
 @Transactional
 public class StringIdAliasServiceTest {

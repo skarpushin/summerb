@@ -16,6 +16,7 @@
 package org.summerb.easycrud.impl.mysql;
 
 import java.sql.DataTruncation;
+import java.sql.SQLSyntaxErrorException;
 
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.support.JdbcUtils;
@@ -113,12 +114,15 @@ public class DaoExceptionToFveTranslatorMySqlImpl extends DaoExceptionTranslator
    * @param propertyName
    */
   private void throwIfTruncationError(Throwable t) {
-    String fieldName = findTruncatedFieldNameIfAny(t);
-
-    DataTruncation exc = ExceptionUtils.findExceptionOfType(t, DataTruncation.class);
+    Exception exc = ExceptionUtils.findExceptionOfType(t, DataTruncation.class);
     if (exc == null) {
-      return;
+      exc = ExceptionUtils.findExceptionOfType(t, SQLSyntaxErrorException.class);
+      if (exc == null) {
+        return;
+      }
     }
+
+    String fieldName = findTruncatedFieldNameIfAny(exc.getMessage());
 
     // throw new ValidationException(new
     // LengthMustBeLessOrEqual(currentSize?, allowedSize?, fieldName));
@@ -137,13 +141,7 @@ public class DaoExceptionToFveTranslatorMySqlImpl extends DaoExceptionTranslator
    * @param t exception received from Spring JDBC
    * @return field name if any, otherwize null
    */
-  private String findTruncatedFieldNameIfAny(Throwable t) {
-    DataTruncation exc = ExceptionUtils.findExceptionOfType(t, DataTruncation.class);
-    if (exc == null) {
-      return null;
-    }
-
-    String msg = exc.getMessage();
+  private String findTruncatedFieldNameIfAny(String msg) {
     if (!msg.contains("too long")) {
       return null;
     }

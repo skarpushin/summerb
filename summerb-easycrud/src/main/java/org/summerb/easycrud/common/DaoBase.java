@@ -16,6 +16,7 @@
 package org.summerb.easycrud.common;
 
 import java.util.LinkedList;
+import java.util.List;
 
 import javax.sql.DataSource;
 
@@ -37,7 +38,7 @@ public abstract class DaoBase {
     jdbc = new NamedParameterJdbcTemplateEx(dataSource);
   }
 
-  public static LinkedList<Long> convertArrayOfLongsToListOfLongs(long[] longs) {
+  public static List<Long> convertArrayOfLongsToListOfLongs(long[] longs) {
     LinkedList<Long> ids = new LinkedList<Long>();
     for (long l : longs) {
       ids.add(l);

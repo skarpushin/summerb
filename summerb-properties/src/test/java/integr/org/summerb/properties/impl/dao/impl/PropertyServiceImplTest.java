@@ -36,12 +36,13 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
 import org.summerb.easycrud.common.ServiceDataTruncationException;
+import org.summerb.properties.PropertiesConfig;
 import org.summerb.properties.api.PropertyService;
 import org.summerb.properties.api.dto.NamedProperty;
 import org.summerb.utils.exceptions.ExceptionUtils;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("classpath:test-properties-app-context.xml")
+@ContextConfiguration(classes = { EmbeddedMariaDbConfig.class, PropertiesConfig.class })
 @ProfileValueSourceConfiguration(SystemProfileValueSource.class)
 @Transactional
 public class PropertyServiceImplTest {
@@ -192,16 +193,18 @@ public class PropertyServiceImplTest {
     String propertyName = "some.property1";
 
     try {
-      String value = generateLongString(256, "прол");
+      String value = generateLongString(2048, "прол");
       propertyService.putSubjectProperty("test", "test.domain", "AAA", propertyName, value);
-      fail("Should throw exception");
     } catch (Throwable t) {
       ServiceDataTruncationException exc =
           ExceptionUtils.findExceptionOfType(t, ServiceDataTruncationException.class);
 
       assertNotNull(exc);
       assertEquals(propertyName, exc.getFieldTokenBeingTruncated());
+      return;
     }
+    
+    fail("Should throw exception");
   }
 
   @Test

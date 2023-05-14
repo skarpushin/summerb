@@ -46,6 +46,8 @@ public class StringIdAliasDaoImpl extends DaoBase implements StringIdAliasDao, I
   protected String sqlLastStatementCount;
   protected String sqlFindNameByAlias;
 
+  public StringIdAliasDaoImpl() {}
+
   @Override
   public void afterPropertiesSet() throws Exception {
     Assert.hasText(tableName, "Table name must be provided");

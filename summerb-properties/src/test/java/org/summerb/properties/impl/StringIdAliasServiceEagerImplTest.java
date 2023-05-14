@@ -16,22 +16,25 @@
 package org.summerb.properties.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.summerb.easycrud.api.dto.PagerParams;
 import org.summerb.properties.impl.dao.StringIdAliasDao;
+import org.summerb.utils.exceptions.ExceptionUtils;
 
 public class StringIdAliasServiceEagerImplTest {
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void testInitialization_defensive_expectExceptionIfDaoIsNotSet() throws Exception {
     StringIdAliasServiceEagerImpl fixture = new StringIdAliasServiceEagerImpl();
-    fixture.afterPropertiesSet();
+    assertThrows(IllegalStateException.class, () -> fixture.afterPropertiesSet());
   }
 
   @Test
@@ -59,25 +62,29 @@ public class StringIdAliasServiceEagerImplTest {
     assertEquals(5, result);
   }
 
-  @Test(expected = RuntimeException.class)
+  @Test
   public void testLoadAllAliases_whitebox_expectExceptionOnException() {
     StringIdAliasServiceEagerImpl fixture = new StringIdAliasServiceEagerImpl();
+    
     StringIdAliasDao stringIdAliasDao = Mockito.mock(StringIdAliasDao.class);
-    when(stringIdAliasDao.loadAllAliases(any(PagerParams.class)))
-        .thenThrow(new IllegalStateException("test exception"));
+    doThrow(new IllegalStateException("INTENTIONAL FAILURE FOR TEST PURPOSES"))
+        .when(stringIdAliasDao)
+        .loadAllAliases(any(PagerParams.class));
+    fixture.setStringIdAliasDao(stringIdAliasDao);
 
-    fixture.loadAllAliases();
-    fail();
+    RuntimeException ex = assertThrows(RuntimeException.class, () -> fixture.loadAllAliases());
+    IllegalStateException ise = ExceptionUtils.findExceptionOfType(ex, IllegalStateException.class);
+    assertNotNull(ise);
+    assertEquals("INTENTIONAL FAILURE FOR TEST PURPOSES", ise.getMessage());
   }
 
-  @Test(expected = RuntimeException.class)
+  @Test
   public void testGetAliases_whitebox_expectExceptionOnException() {
     StringIdAliasServiceEagerImpl fixture = new StringIdAliasServiceEagerImpl();
     StringIdAliasDao stringIdAliasDao = Mockito.mock(StringIdAliasDao.class);
     when(stringIdAliasDao.loadAllAliases(any(PagerParams.class)))
         .thenThrow(new IllegalStateException("test exception"));
 
-    fixture.getAliases();
-    fail();
+    assertThrows(RuntimeException.class, () -> fixture.getAliases());
   }
 }

@@ -32,12 +32,9 @@ import org.summerb.validation.jakarta.JakartaValidatorImpl;
 /**
  * Validations beans config template.
  *
- * <p>It is not marked with {@link Configuration} annotation intentionally to avoid automatic
- * registration in case you don't need it, or you'd like to setup {@link ValidationContextFactory}
- * without {@link JakartaValidator}
- *
  * @author Sergey Karpushin
  */
+@Configuration
 public class ValidationBeansConfig {
 
   @Bean
