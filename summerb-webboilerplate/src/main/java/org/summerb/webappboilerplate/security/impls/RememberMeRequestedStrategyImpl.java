@@ -18,7 +18,6 @@ package org.summerb.webappboilerplate.security.impls;
 import javax.servlet.http.HttpServletRequest;
 
 import org.summerb.webappboilerplate.security.apis.RememberMeRequestedStrategy;
-import org.summerb.webappboilerplate.security.dto.LoginParams;
 
 /**
  * Our way - how to determine if remember me is requested
@@ -26,6 +25,8 @@ import org.summerb.webappboilerplate.security.dto.LoginParams;
  * @author sergeyk
  */
 public class RememberMeRequestedStrategyImpl implements RememberMeRequestedStrategy {
+  public static final String HEADER_REMEMBER_ME = "rememberMe";
+
   private String rememberMeParameter = "_spring_security_remember_me";
 
   @Override
@@ -33,7 +34,7 @@ public class RememberMeRequestedStrategyImpl implements RememberMeRequestedStrat
     boolean isJson =
         request.getContentType() != null && request.getContentType().contains("application/json");
     if (isJson) {
-      return Boolean.TRUE.toString().equals(request.getHeader(LoginParams.HEADER_REMEMBER_ME));
+      return Boolean.TRUE.toString().equals(request.getHeader(HEADER_REMEMBER_ME));
     }
 
     return isFormAuthRequestForRememberMe(request);

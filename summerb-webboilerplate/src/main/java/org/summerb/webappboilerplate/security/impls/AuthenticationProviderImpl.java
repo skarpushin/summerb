@@ -41,7 +41,6 @@ import org.summerb.users.api.dto.User;
 import org.summerb.users.api.exceptions.InvalidPasswordException;
 import org.summerb.users.api.exceptions.UserNotFoundException;
 import org.summerb.validation.ValidationException;
-import org.summerb.webappboilerplate.security.apis.LoginEligibilityVerifier;
 import org.summerb.webappboilerplate.security.ve.PasswordInvalidValidationError;
 import org.summerb.webappboilerplate.security.ve.UserNotFoundValidationError;
 import org.summerb.webappboilerplate.utils.CurrentRequestUtils;
@@ -60,7 +59,6 @@ public class AuthenticationProviderImpl
   private ApplicationContext applicationContext;
   private PermissionService permissionService;
   private UserService userService;
-  private LoginEligibilityVerifier loginEligibilityVerifier;
 
   @Override
   public void afterPropertiesSet() throws Exception {}
@@ -88,10 +86,6 @@ public class AuthenticationProviderImpl
     String presentedPlainPassword = authentication.getCredentials().toString();
 
     try {
-      if (loginEligibilityVerifier != null) {
-        loginEligibilityVerifier.validateUserAllowedToLogin(username);
-      }
-
       // Proceed with authentication
       // get user
       User user = userService.getUserByEmail(username);
@@ -178,14 +172,5 @@ public class AuthenticationProviderImpl
   @Autowired
   public void setPasswordService(PasswordService passwordService) {
     this.passwordService = passwordService;
-  }
-
-  public LoginEligibilityVerifier getLoginEligibilityVerifier() {
-    return loginEligibilityVerifier;
-  }
-
-  @Autowired(required = false)
-  public void setLoginEligibilityVerifier(LoginEligibilityVerifier loginEligibilityVerifier) {
-    this.loginEligibilityVerifier = loginEligibilityVerifier;
   }
 }

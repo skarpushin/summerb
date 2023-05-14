@@ -13,6 +13,7 @@ A super-simple tool to embed you DB upgrade process into your application.
  * Keeps track of DB version in dedicated table
  * It can resolve scripts from external folder or from embedded resources
  * It is very extendible
+ * It does not impose requirements on DB version (like Flyway, i.e.)
 
 ## How it works
  1. When started, it scans resources for upgrade scripts

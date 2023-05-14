@@ -21,6 +21,8 @@ import org.summerb.users.api.dto.User;
 import org.summerb.users.api.exceptions.UserNotFoundException;
 import org.summerb.validation.ValidationException;
 
+// TODO: Re-do to use EasyCrud
+
 /**
  * Service for managing user accounts. That is. This is just a user registry.
  *

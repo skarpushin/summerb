@@ -22,6 +22,7 @@ import org.summerb.users.api.dto.User;
 
 import com.google.common.base.Preconditions;
 
+// TODO: Add template parameter
 public class SecurityContextResolverImpl extends SecurityContextResolverAbstract<User> {
 
   @Override

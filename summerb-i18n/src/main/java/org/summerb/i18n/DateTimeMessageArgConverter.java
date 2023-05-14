@@ -25,7 +25,7 @@ import com.google.common.base.Preconditions;
 
 /**
  * This convert will treat arg long value as a time offset from epoch and format it to time-date
- * format using corrent locale
+ * format using current locale
  *
  * @author skarpushin
  */

@@ -58,7 +58,7 @@ public class PersistentTokenBasedRememberMeServicesEx
       log.warn(
           "Instead of throwing CookieTheftException, will convert it to RememberMeAuthenticationException",
           cte);
-      // NOTE: It will not prevent all user cookies delition, but still
+      // NOTE: It will not prevent all user cookies deletion, but still
       // will not show ugly exception to the user, instead it will ask for
       // login
       throw new RememberMeAuthenticationException(

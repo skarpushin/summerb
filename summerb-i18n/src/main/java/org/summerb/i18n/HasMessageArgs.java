@@ -15,6 +15,12 @@
  ******************************************************************************/
 package org.summerb.i18n;
 
+/**
+ * This interface indicates that class has message args. Usually meaningfull when {@link
+ * HasMessageCode} implemented
+ *
+ * @author Sergey Karpushin
+ */
 public interface HasMessageArgs {
   Object[] getMessageArgs();
 }

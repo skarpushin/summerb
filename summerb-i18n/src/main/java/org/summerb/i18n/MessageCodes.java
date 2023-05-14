@@ -13,14 +13,12 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package org.summerb.email.api;
+package org.summerb.i18n;
 
-import java.util.Properties;
+public abstract class MessageCodes {
 
-import javax.mail.Authenticator;
+  public static final String ERROR_UNEXPECTED = "error.unexpected";
 
-public interface EmailChannelProperties {
-  Properties getProperties();
-
-  Authenticator getAuthenticator();
+  // TODO: Add known message code here
 }
+

@@ -13,13 +13,27 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
+
+// TODO: Replace Spring XML config with Spring Java config
+
+// TODO: Switch to constructor dependencies injection - as opposite of @Autowired and @Required
+
+// TODO: Remove redundant exceptions throws (like NAE and FVE)
+
+// TODO: Make all private fields protected for increased extensibility
+
 /**
- * This package contains plethora of quite opinionated classes which used to glue different aspects
- * of a final spring-based (jsp-like) web application project together.
+ * SummerB offers an ready-to-use and easily extensible/customizable design and impl for working
+ * with simple CRUD repositories.
  *
- * <p>Although it has many components tailored for jsp-like application (Spring MVC) it also
- * contains number of classes designed for REST web-service
+ * <p>It's called EasyCrud.
+ *
+ * <p>It provides building blocks to quickly bootstrap backend aspect of CRUD repository. It takes
+ * into account many things including i18n, pagination, validation, security
+ *
+ * <p>Extensive description of this package is given here:
+ * https://github.com/skarpushin/summerb/wiki/Easy-CRUD
  *
  * @author sergeyk
  */
-package org.summerb.webappboilerplate;
+package org.summerb;

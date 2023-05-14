@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +33,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
 import org.summerb.utils.spring.AllMessagesProvider;
-import org.summerb.webappboilerplate.controllers.ControllerBase;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -45,15 +45,28 @@ import com.google.gson.Gson;
  * @author sergeyk
  */
 @Controller
-public class AllMessagesController extends ControllerBase implements InitializingBean {
-  private static final long MILLIS_PER_DAY = 86400000;
+public class AllMessagesController implements InitializingBean {
+  protected static final long MILLIS_PER_DAY = 86400000;
 
-  private AllMessagesProvider allMessagesProvider;
-  private LoadingCache<Locale, Properties> messagesCache;
-  private Gson gson = new Gson();
+  @Autowired protected AllMessagesProvider allMessagesProvider;
+
+  protected LoadingCache<Locale, Properties> messagesCache;
+  protected Gson gson;
 
   // TBD: Do not hardcode this, check when messages were actually reloaded
-  private long lastModified = System.currentTimeMillis();
+  protected long lastModified = System.currentTimeMillis();
+
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    messagesCache =
+        CacheBuilder.newBuilder()
+            .maximumSize(1000)
+            .expireAfterAccess(allMessagesProvider.getReloadIntervalSeconds(), TimeUnit.SECONDS)
+            .recordStats()
+            .build(messagesLoader);
+
+    gson = new Gson();
+  }
 
   @RequestMapping(method = RequestMethod.GET, value = "/rest/msgs")
   public @ResponseBody Properties getMessageBundle() throws ExecutionException {
@@ -82,26 +95,11 @@ public class AllMessagesController extends ControllerBase implements Initializin
         "var msgs = " + gson.toJson(msgs), responseHeaders, HttpStatus.OK);
   }
 
-  private CacheLoader<Locale, Properties> messagesLoader =
+  protected CacheLoader<Locale, Properties> messagesLoader =
       new CacheLoader<Locale, Properties>() {
         @Override
         public Properties load(Locale key) throws Exception {
           return allMessagesProvider.getAllMessages(key);
         }
       };
-
-  @Override
-  public void afterPropertiesSet() throws Exception {
-    super.afterPropertiesSet();
-
-    // TBD: Explain why not just Autowire it ??!?!!?!?!?!?!
-    allMessagesProvider = applicationContext.getBean(AllMessagesProvider.class);
-
-    messagesCache =
-        CacheBuilder.newBuilder()
-            .maximumSize(1000)
-            .expireAfterAccess(allMessagesProvider.getReloadIntervalSeconds(), TimeUnit.SECONDS)
-            .recordStats()
-            .build(messagesLoader);
-  }
 }

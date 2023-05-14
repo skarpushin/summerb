@@ -23,6 +23,6 @@ public class PasswordInvalidValidationError extends ValidationError {
   private static final long serialVersionUID = 5184851404690565907L;
 
   public PasswordInvalidValidationError() {
-    super(InvalidPasswordException.ERROR_LOGIN_INVALID_PASSWORD, LoginParams.FN_PASSWORD);
+    super(LoginParams.FN_PASSWORD, InvalidPasswordException.ERROR_LOGIN_INVALID_PASSWORD);
   }
 }
