@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -15,10 +15,10 @@
  ******************************************************************************/
 package org.summerb.webappboilerplate.security.apis;
 
-import org.summerb.validation.FieldValidationException;
+import org.summerb.validation.ValidationException;
 
 public interface LoginEligibilityVerifier {
 
-	void validateUserAllowedToLogin(String username) throws FieldValidationException;
+	void validateUserAllowedToLogin(String username) throws ValidationException;
 
 }

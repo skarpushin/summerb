@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -23,7 +23,7 @@ import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.api.dto.HasId;
 import org.summerb.easycrud.api.dto.relations.ManyToManyDto;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
-import org.summerb.validation.FieldValidationException;
+import org.summerb.validation.ValidationException;
 
 /**
  * Service for m2m references. It's based on {@link EasyCrudService}, but it's
@@ -52,7 +52,7 @@ public interface EasyCrudM2mService<T1Id, T1Dto extends HasId<T1Id>, T2Id, T2Dto
 	Map<T1Id, List<T2Dto>> findReferenceeByReferencers(Set<T1Id> referencerIds);
 
 	ManyToManyDto<T1Id, T2Id> addReferencee(T1Id referencerId, T2Id referenceeId)
-			throws FieldValidationException, NotAuthorizedException;
+			throws ValidationException, NotAuthorizedException;
 
 	void removeReferencee(T1Id referencerId, T2Id referenceeId) throws NotAuthorizedException;
 }

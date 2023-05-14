@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -24,7 +24,7 @@ import org.summerb.easycrud.api.exceptions.EntityNotFoundException;
 import org.summerb.easycrud.api.query.OrderBy;
 import org.summerb.easycrud.api.query.Query;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
-import org.summerb.validation.FieldValidationException;
+import org.summerb.validation.ValidationException;
 
 import com.google.common.base.Preconditions;
 
@@ -38,12 +38,12 @@ public class EasyCrudServiceWrapper<TId, TRow, TActual extends EasyCrudService<T
 	}
 
 	@Override
-	public TRow create(TRow row) throws FieldValidationException, NotAuthorizedException {
+	public TRow create(TRow row) throws ValidationException, NotAuthorizedException {
 		return actual.create(row);
 	}
 
 	@Override
-	public TRow update(TRow row) throws FieldValidationException, NotAuthorizedException, EntityNotFoundException {
+	public TRow update(TRow row) throws ValidationException, NotAuthorizedException, EntityNotFoundException {
 		return actual.update(row);
 	}
 

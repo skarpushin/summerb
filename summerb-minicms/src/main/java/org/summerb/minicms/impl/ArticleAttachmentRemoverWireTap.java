@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -22,7 +22,7 @@ import org.summerb.minicms.api.AttachmentService;
 import org.summerb.minicms.api.dto.Article;
 import org.summerb.minicms.api.dto.Attachment;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
-import org.summerb.validation.FieldValidationException;
+import org.summerb.validation.ValidationException;
 
 /**
  * This WireTap is usefull when we either need to monitor cascade attachment
@@ -42,7 +42,7 @@ public class ArticleAttachmentRemoverWireTap extends EasyCrudWireTapNoOpImpl<Lon
 	private AttachmentService attachmentService;
 
 	@Override
-	public boolean requiresOnDelete() throws FieldValidationException, NotAuthorizedException {
+	public boolean requiresOnDelete() throws ValidationException, NotAuthorizedException {
 		return true;
 	}
 
@@ -52,7 +52,7 @@ public class ArticleAttachmentRemoverWireTap extends EasyCrudWireTapNoOpImpl<Lon
 	}
 
 	@Override
-	public void beforeDelete(Article dto) throws FieldValidationException, NotAuthorizedException {
+	public void beforeDelete(Article dto) throws ValidationException, NotAuthorizedException {
 		attachmentService.deleteByQuery(Query.n().eq(Attachment.FN_ARTICLE_ID, dto.getId()));
 	}
 }

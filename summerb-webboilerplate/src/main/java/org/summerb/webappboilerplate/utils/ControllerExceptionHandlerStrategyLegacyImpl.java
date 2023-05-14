@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -42,7 +42,7 @@ import org.summerb.spring.security.api.SecurityContextResolver;
 import org.summerb.utils.exceptions.ExceptionUtils;
 import org.summerb.utils.exceptions.translator.ExceptionTranslator;
 import org.summerb.utils.exceptions.translator.ExceptionTranslatorLegacyImpl;
-import org.summerb.validation.FieldValidationException;
+import org.summerb.validation.ValidationException;
 import org.summerb.webappboilerplate.Views;
 import org.summerb.webappboilerplate.controllers.ControllerBase;
 import org.summerb.webappboilerplate.model.MessageSeverity;
@@ -142,7 +142,7 @@ public class ControllerExceptionHandlerStrategyLegacyImpl
 		String msg = exceptionTranslator.buildUserMessage(ex, LocaleContextHolder.getLocale());
 
 		NotAuthorizedException nae;
-		FieldValidationException fve;
+		ValidationException fve;
 		// AccessDeniedException ade;
 		boolean translateAuthExc = Boolean.TRUE
 				.equals(Boolean.valueOf(req.getHeader(RestExceptionTranslator.X_TRANSLATE_AUTHORIZATION_ERRORS)));
@@ -163,7 +163,7 @@ public class ControllerExceptionHandlerStrategyLegacyImpl
 				respondWithJson(new NotAuthorizedResult(getCurrentUser(), SecurityMessageCodes.ACCESS_DENIED), res);
 				return null;
 			}
-		} else if ((fve = ExceptionUtils.findExceptionOfType(ex, FieldValidationException.class)) != null) {
+		} else if ((fve = ExceptionUtils.findExceptionOfType(ex, ValidationException.class)) != null) {
 			res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			ValidationErrorsVm vepm = new ValidationErrorsVm(fve.getErrors());
 			return new ModelAndView(jsonView, ControllerBase.ATTR_VALIDATION_ERRORS, vepm.getMsg());

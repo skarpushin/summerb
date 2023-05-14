@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -26,7 +26,7 @@ import org.summerb.minicms.api.ArticleDao;
 import org.summerb.minicms.api.AttachmentDao;
 import org.summerb.minicms.api.dto.Article;
 import org.summerb.minicms.api.dto.Attachment;
-import org.summerb.validation.FieldValidationException;
+import org.summerb.validation.ValidationException;
 
 /**
  * This simple impl is used to enforce attachments deletion before article will
@@ -46,7 +46,7 @@ public class ArticleDaoAttachmentRemoverWrapper implements ArticleDao {
 	private AttachmentDao attachmentDao;
 
 	@Override
-	public void create(Article dto) throws FieldValidationException {
+	public void create(Article dto) throws ValidationException {
 		articleDao.create(dto);
 	}
 
@@ -77,7 +77,7 @@ public class ArticleDaoAttachmentRemoverWrapper implements ArticleDao {
 	}
 
 	@Override
-	public int update(Article dto) throws FieldValidationException {
+	public int update(Article dto) throws ValidationException {
 		return articleDao.update(dto);
 	}
 

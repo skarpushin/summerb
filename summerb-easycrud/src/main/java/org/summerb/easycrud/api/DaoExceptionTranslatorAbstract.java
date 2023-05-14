@@ -1,6 +1,6 @@
 package org.summerb.easycrud.api;
 
-import org.summerb.validation.FieldValidationException;
+import org.summerb.validation.ValidationException;
 
 public abstract class DaoExceptionTranslatorAbstract implements DaoExceptionTranslator {
 
@@ -8,8 +8,8 @@ public abstract class DaoExceptionTranslatorAbstract implements DaoExceptionTran
 	public void translateAndThrowIfApplicableUnchecked(Exception e) {
 		try {
 			translateAndThrowIfApplicable(e);
-		} catch (FieldValidationException e1) {
-			throw new RuntimeException("FieldValidationException", e1);
+		} catch (ValidationException e1) {
+			throw new RuntimeException("ValidationException", e1);
 		}
 	}
 

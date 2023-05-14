@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -26,7 +26,7 @@ import org.summerb.spring.security.api.SecurityContextResolver;
 import org.summerb.users.api.UserService;
 import org.summerb.users.api.dto.User;
 import org.summerb.users.api.exceptions.UserNotFoundException;
-import org.summerb.validation.FieldValidationException;
+import org.summerb.validation.ValidationException;
 import org.summerb.webappboilerplate.controllers.ControllerBase;
 import org.summerb.webappboilerplate.security.apis.UsersServiceFacade;
 import org.summerb.webappboilerplate.security.dto.PasswordChange;
@@ -53,14 +53,14 @@ public class LoginRestController extends ControllerBase {
 	}
 
 	@RequestMapping(method = RequestMethod.POST, value = "register")
-	public User register(@RequestBody Registration registration) throws FieldValidationException {
+	public User register(@RequestBody Registration registration) throws ValidationException {
 		return usersServiceFacade.registerUser(registration);
 	}
 
 	@Secured({ "ROLE_USER" })
 	@RequestMapping(method = RequestMethod.POST, value = "change")
 	public User processPasswordChangeForm(@RequestBody PasswordChange passwordChange)
-			throws UserNotFoundException, FieldValidationException {
+			throws UserNotFoundException, ValidationException {
 		User user = securityContextResolver.getUser();
 		usersServiceFacade.changePassword(user.getEmail(), passwordChange);
 		return user;
@@ -75,7 +75,7 @@ public class LoginRestController extends ControllerBase {
 	@Secured({ "ROLE_USER" })
 	@RequestMapping(method = RequestMethod.POST, value = "user")
 	public User updateUser(@RequestBody User user)
-			throws UserNotFoundException, CurrentUserNotFoundException, FieldValidationException {
+			throws UserNotFoundException, CurrentUserNotFoundException, ValidationException {
 		userService.updateUser(user);
 		return user;
 	}

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -33,7 +33,7 @@ import org.summerb.users.api.exceptions.AuthTokenNotFoundException;
 import org.summerb.users.api.exceptions.InvalidPasswordException;
 import org.summerb.users.api.exceptions.UserNotFoundException;
 import org.summerb.users.api.exceptions.UserServiceUnexpectedException;
-import org.summerb.validation.FieldValidationException;
+import org.summerb.validation.ValidationException;
 
 public class AuthTokenServiceDbImplTest {
 
@@ -65,7 +65,7 @@ public class AuthTokenServiceDbImplTest {
 		fail();
 	}
 
-	@Test(expected = FieldValidationException.class)
+	@Test(expected = ValidationException.class)
 	public void testCreateAuthToken_blackbox_expectFieldValidationException() throws Exception {
 		AuthTokenService fixture = AuthTokenServiceDbImplFactory.createAuthTokenServiceDbImpl();
 		fixture.authenticate("abra cadabra", "", "");

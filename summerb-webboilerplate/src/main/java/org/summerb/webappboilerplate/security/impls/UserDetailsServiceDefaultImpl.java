@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -27,7 +27,7 @@ import org.summerb.users.api.UserService;
 import org.summerb.users.api.dto.AuthToken;
 import org.summerb.users.api.dto.User;
 import org.summerb.users.api.exceptions.UserNotFoundException;
-import org.summerb.validation.FieldValidationException;
+import org.summerb.validation.ValidationException;
 
 /**
  * Proposed default impl for {@link UserDetailsService} that users
@@ -54,7 +54,7 @@ public class UserDetailsServiceDefaultImpl implements UserDetailsService {
 			return ret;
 		} catch (UserNotFoundException e) {
 			throw new UsernameNotFoundException("User not found", e);
-		} catch (FieldValidationException e) {
+		} catch (ValidationException e) {
 			throw new UsernameNotFoundException("Email provided in invalid format", e);
 		} catch (Throwable t) {
 			throw new UsernameNotFoundException("Failed to get user by email", t);

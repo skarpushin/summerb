@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -28,8 +28,8 @@ import org.summerb.users.api.exceptions.UserNotFoundException;
 import org.summerb.users.api.exceptions.UserServiceUnexpectedException;
 import org.summerb.users.impl.dao.PasswordDao;
 import org.summerb.users.impl.dom.Password;
-import org.summerb.validation.FieldValidationException;
-import org.summerb.validation.errors.FieldRequiredValidationError;
+import org.summerb.validation.ValidationException;
+import org.summerb.validation.errors.MustNotBeNull;
 
 import com.google.common.base.Preconditions;
 
@@ -76,13 +76,13 @@ public class PasswordServiceImpl implements PasswordService {
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void setUserPassword(String userUuid, String newPasswordPlain)
-			throws UserNotFoundException, FieldValidationException {
+			throws UserNotFoundException, ValidationException {
 		Preconditions.checkArgument(userUuid != null);
 		Preconditions.checkArgument(newPasswordPlain != null);
 		assertUserExists(userUuid);
 
 		if (!StringUtils.hasText(newPasswordPlain)) {
-			throw new FieldValidationException(new FieldRequiredValidationError(FN_PASSWORD));
+			throw new ValidationException(new MustNotBeNull(FN_PASSWORD));
 		}
 
 		String newPasswordHash = null;

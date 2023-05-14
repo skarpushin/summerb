@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -21,7 +21,7 @@ import org.summerb.easycrud.api.dto.PaginatedList;
 import org.summerb.easycrud.api.query.OrderBy;
 import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.impl.mysql.EasyCrudDaoMySqlImpl;
-import org.summerb.validation.FieldValidationException;
+import org.summerb.validation.ValidationException;
 
 /**
  * Abstraction for DAO layer. Intended to be used by impl of
@@ -34,7 +34,7 @@ import org.summerb.validation.FieldValidationException;
  *
  */
 public interface EasyCrudDao<TId, TDto extends HasId<TId>> {
-	void create(TDto dto) throws FieldValidationException;
+	void create(TDto dto) throws ValidationException;
 
 	TDto findById(TId id);
 
@@ -44,7 +44,7 @@ public interface EasyCrudDao<TId, TDto extends HasId<TId>> {
 
 	int delete(TId id, long modifiedAt);
 
-	int update(TDto dto) throws FieldValidationException;
+	int update(TDto dto) throws ValidationException;
 
 	int deleteByQuery(Query query);
 

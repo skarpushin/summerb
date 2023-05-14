@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -18,7 +18,7 @@ package org.summerb.easycrud.api;
 import org.summerb.easycrud.api.exceptions.EntityNotFoundException;
 import org.summerb.easycrud.impl.EasyCrudExceptionStrategyDefaultImpl;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
-import org.summerb.validation.FieldValidationException;
+import org.summerb.validation.ValidationException;
 
 /**
  * Exception handlign strategy. Rarely but you might need to override how
@@ -32,7 +32,7 @@ import org.summerb.validation.FieldValidationException;
  */
 public interface EasyCrudExceptionStrategy<TId> {
 
-	RuntimeException handleExceptionAtCreate(Throwable t) throws FieldValidationException, NotAuthorizedException;
+	RuntimeException handleExceptionAtCreate(Throwable t) throws ValidationException, NotAuthorizedException;
 
 	EntityNotFoundException buildNotFoundException(String subjectTypeMessageCode, TId identity);
 
@@ -41,7 +41,7 @@ public interface EasyCrudExceptionStrategy<TId> {
 	RuntimeException buildOptimisticLockException();
 
 	RuntimeException handleExceptionAtUpdate(Throwable t)
-			throws FieldValidationException, NotAuthorizedException, EntityNotFoundException;
+			throws ValidationException, NotAuthorizedException, EntityNotFoundException;
 
 	RuntimeException handleExceptionAtFind(Throwable t) throws NotAuthorizedException;
 

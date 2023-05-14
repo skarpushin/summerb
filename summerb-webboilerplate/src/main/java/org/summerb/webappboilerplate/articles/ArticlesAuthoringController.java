@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -49,7 +49,7 @@ import org.summerb.minicms.api.dto.Article;
 import org.summerb.minicms.api.dto.Attachment;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
 import org.summerb.utils.exceptions.translator.ExceptionTranslator;
-import org.summerb.validation.FieldValidationException;
+import org.summerb.validation.ValidationException;
 import org.summerb.webappboilerplate.Views;
 import org.summerb.webappboilerplate.articles.vm.ArticleAttachmentVm;
 import org.summerb.webappboilerplate.articles.vm.ArticleVm;
@@ -115,7 +115,7 @@ public class ArticlesAuthoringController extends ControllerBase {
 		}
 	}
 
-	private void putTbds(Article dto, Locale locale) throws FieldValidationException {
+	private void putTbds(Article dto, Locale locale) throws ValidationException {
 		// NOTE: That is BAD !!! Strategy to convert LOcal to string suppose to
 		// be incapsulated into service!
 		dto.setLang(locale.getLanguage());

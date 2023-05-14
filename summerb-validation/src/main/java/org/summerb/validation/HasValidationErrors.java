@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -17,12 +17,14 @@ package org.summerb.validation;
 
 import java.util.List;
 
-/** @author sergey.karpushin */
-public interface HasValidationErrors {
-  List<? extends ValidationError> getValidationErrors();
+import javax.annotation.Nonnull;
 
-  /**
-   * Handy method to check if there are any errors the same as ifcheck for the size of of collection
-   */
-  boolean getHasErrors();
+public interface HasValidationErrors {
+
+  /** @return list of validation errors, could be empty, never null */
+  @Nonnull
+  List<ValidationError> getList();
+
+  /** @return true if there is at least 1 error */
+  boolean isHasErrors();
 }

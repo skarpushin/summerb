@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -20,7 +20,7 @@ import java.util.List;
 import org.summerb.easycrud.api.EasyCrudWireTap;
 import org.summerb.easycrud.api.dto.HasId;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
-import org.summerb.validation.FieldValidationException;
+import org.summerb.validation.ValidationException;
 
 import com.google.common.base.Preconditions;
 
@@ -48,7 +48,7 @@ public class EasyCrudWireTapDelegatingImpl<TId, TDto extends HasId<TId>> impleme
 	}
 
 	@Override
-	public boolean requiresOnCreate() throws FieldValidationException, NotAuthorizedException {
+	public boolean requiresOnCreate() throws ValidationException, NotAuthorizedException {
 		for (EasyCrudWireTap<TId, TDto> tap : chain) {
 			if (tap.requiresOnCreate()) {
 				return true;
@@ -58,21 +58,21 @@ public class EasyCrudWireTapDelegatingImpl<TId, TDto extends HasId<TId>> impleme
 	}
 
 	@Override
-	public void beforeCreate(TDto dto) throws NotAuthorizedException, FieldValidationException {
+	public void beforeCreate(TDto dto) throws NotAuthorizedException, ValidationException {
 		for (EasyCrudWireTap<TId, TDto> tap : chain) {
 			tap.beforeCreate(dto);
 		}
 	}
 
 	@Override
-	public void afterCreate(TDto dto) throws FieldValidationException, NotAuthorizedException {
+	public void afterCreate(TDto dto) throws ValidationException, NotAuthorizedException {
 		for (EasyCrudWireTap<TId, TDto> tap : chain) {
 			tap.afterCreate(dto);
 		}
 	}
 
 	@Override
-	public boolean requiresOnUpdate() throws NotAuthorizedException, FieldValidationException {
+	public boolean requiresOnUpdate() throws NotAuthorizedException, ValidationException {
 		for (EasyCrudWireTap<TId, TDto> tap : chain) {
 			if (tap.requiresOnUpdate()) {
 				return true;
@@ -82,21 +82,21 @@ public class EasyCrudWireTapDelegatingImpl<TId, TDto extends HasId<TId>> impleme
 	}
 
 	@Override
-	public void beforeUpdate(TDto from, TDto to) throws FieldValidationException, NotAuthorizedException {
+	public void beforeUpdate(TDto from, TDto to) throws ValidationException, NotAuthorizedException {
 		for (EasyCrudWireTap<TId, TDto> tap : chain) {
 			tap.beforeUpdate(from, to);
 		}
 	}
 
 	@Override
-	public void afterUpdate(TDto from, TDto to) throws NotAuthorizedException, FieldValidationException {
+	public void afterUpdate(TDto from, TDto to) throws NotAuthorizedException, ValidationException {
 		for (EasyCrudWireTap<TId, TDto> tap : chain) {
 			tap.afterUpdate(from, to);
 		}
 	}
 
 	@Override
-	public boolean requiresOnDelete() throws FieldValidationException, NotAuthorizedException {
+	public boolean requiresOnDelete() throws ValidationException, NotAuthorizedException {
 		for (EasyCrudWireTap<TId, TDto> tap : chain) {
 			if (tap.requiresOnDelete()) {
 				return true;
@@ -106,21 +106,21 @@ public class EasyCrudWireTapDelegatingImpl<TId, TDto extends HasId<TId>> impleme
 	}
 
 	@Override
-	public void beforeDelete(TDto dto) throws NotAuthorizedException, FieldValidationException {
+	public void beforeDelete(TDto dto) throws NotAuthorizedException, ValidationException {
 		for (EasyCrudWireTap<TId, TDto> tap : chain) {
 			tap.beforeDelete(dto);
 		}
 	}
 
 	@Override
-	public void afterDelete(TDto dto) throws FieldValidationException, NotAuthorizedException {
+	public void afterDelete(TDto dto) throws ValidationException, NotAuthorizedException {
 		for (EasyCrudWireTap<TId, TDto> tap : chain) {
 			tap.afterDelete(dto);
 		}
 	}
 
 	@Override
-	public boolean requiresOnRead() throws NotAuthorizedException, FieldValidationException {
+	public boolean requiresOnRead() throws NotAuthorizedException, ValidationException {
 		for (EasyCrudWireTap<TId, TDto> tap : chain) {
 			if (tap.requiresOnRead()) {
 				return true;
@@ -130,7 +130,7 @@ public class EasyCrudWireTapDelegatingImpl<TId, TDto extends HasId<TId>> impleme
 	}
 
 	@Override
-	public void afterRead(TDto dto) throws FieldValidationException, NotAuthorizedException {
+	public void afterRead(TDto dto) throws ValidationException, NotAuthorizedException {
 		for (EasyCrudWireTap<TId, TDto> tap : chain) {
 			tap.afterRead(dto);
 		}

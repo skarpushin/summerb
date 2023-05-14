@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -32,7 +32,7 @@ public class StringTemplateValidationError extends ValidationError {
 	}
 
 	public StringTemplateValidationError(String fieldToken, Throwable cause) {
-		super(VALIDATION_MESSAGE_CODE_COMPILATION_ERROR, fieldToken);
+		super(fieldToken, VALIDATION_MESSAGE_CODE_COMPILATION_ERROR);
 		this.cause = cause;
 
 		// TBD: Probably add more sophisticated analysis of error, to be able

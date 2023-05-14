@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -55,7 +55,7 @@ import org.summerb.easycrud.impl.StringIdGeneratorUuidImpl;
 import org.summerb.easycrud.impl.SimpleJdbcUpdate.SimpleJdbcUpdate;
 import org.summerb.easycrud.impl.SimpleJdbcUpdate.TableMetaDataContext;
 import org.summerb.easycrud.impl.SimpleJdbcUpdate.UpdateColumnsEnlisterStrategy;
-import org.summerb.validation.FieldValidationException;
+import org.summerb.validation.ValidationException;
 
 import com.google.common.base.Preconditions;
 
@@ -178,7 +178,7 @@ public class EasyCrudDaoMySqlImpl<TId, TDto extends HasId<TId>> extends DaoBase
 	};
 
 	@Override
-	public void create(TDto dto) throws FieldValidationException {
+	public void create(TDto dto) throws ValidationException {
 		if (dto instanceof HasUuid) {
 			HasUuid hasUuid = (HasUuid) dto;
 			if (!stringIdGenerator.isValidId(hasUuid.getId())) {
@@ -208,7 +208,7 @@ public class EasyCrudDaoMySqlImpl<TId, TDto extends HasId<TId>> extends DaoBase
 	}
 
 	@Override
-	public int update(TDto dto) throws FieldValidationException {
+	public int update(TDto dto) throws ValidationException {
 		MapSqlParameterSource restrictionParams = new MapSqlParameterSource();
 		restrictionParams.addValue(HasId.FN_ID, dto.getId());
 		if (dto instanceof HasTimestamps) {

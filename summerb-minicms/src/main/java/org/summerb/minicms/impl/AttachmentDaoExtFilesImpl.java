@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -41,7 +41,7 @@ import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.impl.mysql.EasyCrudDaoMySqlImpl;
 import org.summerb.minicms.api.AttachmentDao;
 import org.summerb.minicms.api.dto.Attachment;
-import org.summerb.validation.FieldValidationException;
+import org.summerb.validation.ValidationException;
 
 /**
  * Alternative impl which stores files externally. Not in database! That is
@@ -133,7 +133,7 @@ public class AttachmentDaoExtFilesImpl extends EasyCrudDaoMySqlImpl<Long, Attach
 	};
 
 	@Override
-	public void create(Attachment dto) throws FieldValidationException {
+	public void create(Attachment dto) throws ValidationException {
 		super.create(dto);
 		putContentInputStream(dto.getId(), dto.getContents());
 	}

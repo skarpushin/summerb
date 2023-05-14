@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -17,7 +17,7 @@ package org.summerb.easycrud.api;
 
 import org.summerb.easycrud.impl.EasyCrudServicePluggableImpl;
 import org.summerb.easycrud.impl.EasyCrudValidationStrategyAbstract;
-import org.summerb.validation.FieldValidationException;
+import org.summerb.validation.ValidationException;
 
 /**
  * Strategy interface that has method for validating DTO before it will be
@@ -40,7 +40,7 @@ import org.summerb.validation.FieldValidationException;
  *
  */
 public interface EasyCrudValidationStrategy<TDto> {
-	void validateForCreate(TDto dto) throws FieldValidationException;
+	void validateForCreate(TDto dto) throws ValidationException;
 
-	void validateForUpdate(TDto existingVersion, TDto newVersion) throws FieldValidationException;
+	void validateForUpdate(TDto existingVersion, TDto newVersion) throws ValidationException;
 }

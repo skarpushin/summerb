@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -27,7 +27,7 @@ import org.summerb.easycrud.api.query.OrderBy;
 import org.summerb.easycrud.api.query.Query;
 import org.summerb.i18n.HasMessageCode;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
-import org.summerb.validation.FieldValidationException;
+import org.summerb.validation.ValidationException;
 
 /**
  * This service is intended for use with relatively simple Rows (DTO's). It
@@ -60,7 +60,7 @@ public interface EasyCrudService<TId, TRow> {
 	 *         set and other modifications set by {@link EasyCrudWireTap} injected
 	 *         into this service
 	 * 
-	 * @throws FieldValidationException in case of field validation errors. Some
+	 * @throws ValidationException in case of field validation errors. Some
 	 *                                  data access exceptions might be translated
 	 *                                  into field validatnion errors as well
 	 * @throws NotAuthorizedException   if user is not authorized o perform this
@@ -77,7 +77,7 @@ public interface EasyCrudService<TId, TRow> {
 	 * @return updated row. It is possible that fields will differ due to ID set and
 	 *         other modifications set by {@link EasyCrudWireTap} injected into this
 	 *         service
-	 * @throws FieldValidationException in case of field validation errors. Some
+	 * @throws ValidationException in case of field validation errors. Some
 	 *                                  data access exceptions might be translated
 	 *                                  into field validatnion errors as well
 	 * @throws NotAuthorizedException   if user is not authorized o perform this

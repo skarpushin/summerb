@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -15,11 +15,11 @@
  ******************************************************************************/
 package org.summerb.easycrud.api;
 
-import org.summerb.validation.FieldValidationException;
+import org.summerb.validation.ValidationException;
 
 /**
  * Strategy to translate known DAO-level exception into
- * {@link FieldValidationException} upon create and update operations
+ * {@link ValidationException} upon create and update operations
  * 
  * NOTE: Name was shortened from
  * DaoExceptionToFieldValidationExceptionTranslator, which seems to be quite
@@ -33,12 +33,12 @@ public interface DaoExceptionTranslator {
 	/**
 	 * This method meant to be called from catch clause. If exception cannot be
 	 * handled by this impl it should just do nothing. Otherwise it should throw
-	 * {@link FieldValidationException} (will be wrapped in unchecked) or any other
+	 * {@link ValidationException} (will be wrapped in unchecked) or any other
 	 * exception that is applicable
 	 * 
 	 * @param t exception
 	 */
-	void translateAndThrowIfApplicable(Throwable t) throws FieldValidationException;
+	void translateAndThrowIfApplicable(Throwable t) throws ValidationException;
 
 	/**
 	 * Same as {@link #translateAndThrowIfApplicable(Throwable)} but will wrap

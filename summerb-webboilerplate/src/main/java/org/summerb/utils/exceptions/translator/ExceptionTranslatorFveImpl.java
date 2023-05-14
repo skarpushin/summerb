@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -21,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.summerb.i18n.I18nUtils;
-import org.summerb.validation.FieldValidationException;
+import org.summerb.validation.ValidationException;
 import org.summerb.validation.ValidationError;
 
 public class ExceptionTranslatorFveImpl implements ExceptionTranslator {
@@ -34,10 +34,10 @@ public class ExceptionTranslatorFveImpl implements ExceptionTranslator {
 
 	@Override
 	public String buildUserMessage(Throwable t, Locale locale) {
-		if (!FieldValidationException.class.equals(t.getClass())) {
+		if (!ValidationException.class.equals(t.getClass())) {
 			return null;
 		}
-		FieldValidationException fve = (FieldValidationException) t;
+		ValidationException fve = (ValidationException) t;
 
 		StringBuilder ret = new StringBuilder();
 		ret.append(I18nUtils.buildMessage(fve, messageSource, locale));
@@ -47,7 +47,7 @@ public class ExceptionTranslatorFveImpl implements ExceptionTranslator {
 			if (!first) {
 				ret.append(", ");
 			}
-			ret.append(translateFieldName(ve.getFieldToken(), messageSource, locale));
+			ret.append(translateFieldName(ve.getPropertyName(), messageSource, locale));
 			ret.append(" - ");
 			ret.append(I18nUtils.buildMessage(ve, messageSource, locale));
 			first = false;

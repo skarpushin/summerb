@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -21,7 +21,7 @@ import org.summerb.users.api.dto.AuthToken;
 import org.summerb.users.api.exceptions.AuthTokenNotFoundException;
 import org.summerb.users.api.exceptions.InvalidPasswordException;
 import org.summerb.users.api.exceptions.UserNotFoundException;
-import org.summerb.validation.FieldValidationException;
+import org.summerb.validation.ValidationException;
 
 /**
  * This service is for managing user authentication tokens.
@@ -38,11 +38,11 @@ public interface AuthTokenService {
 	 * 
 	 * @return created auth token
 	 * @throws UserNotFoundException    if such user not found
-	 * @throws FieldValidationException if email has wrong format
+	 * @throws ValidationException if email has wrong format
 	 * @throws InvalidPasswordException if unable to verify password validity
 	 */
 	AuthToken authenticate(String userEmail, String passwordPlain, String clientIp)
-			throws UserNotFoundException, FieldValidationException, InvalidPasswordException;
+			throws UserNotFoundException, ValidationException, InvalidPasswordException;
 
 	/**
 	 * Low-level method which will just create auth token without any
@@ -50,10 +50,10 @@ public interface AuthTokenService {
 	 * 
 	 * @return created auth token
 	 * @throws UserNotFoundException    if such user not found
-	 * @throws FieldValidationException if email has wrong format
+	 * @throws ValidationException if email has wrong format
 	 */
 	AuthToken createAuthToken(String userEmail, String clientIp, String tokenUuid, String tokenValueUuid)
-			throws UserNotFoundException, FieldValidationException;
+			throws UserNotFoundException, ValidationException;
 
 	AuthToken getAuthTokenByUuid(String authTokenUuid) throws AuthTokenNotFoundException;
 
@@ -83,11 +83,11 @@ public interface AuthTokenService {
 	 * @param newTokenValue  new value for tokenValue field. It MUST NOT be equal to
 	 *                       previous value
 	 * @throws AuthTokenNotFoundException if auth token is not found
-	 * @throws FieldValidationException   if newTokenValue = current tokenValue for
+	 * @throws ValidationException   if newTokenValue = current tokenValue for
 	 *                                    that token
 	 */
 	void updateToken(String authTokenUuid, long lastVerifiedAt, String newTokenValue)
-			throws AuthTokenNotFoundException, FieldValidationException;
+			throws AuthTokenNotFoundException, ValidationException;
 
 	void deleteAuthToken(String authTokenUuid) throws AuthTokenNotFoundException;
 

@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
- * 
+ * Copyright 2015-2023 Sergey Karpushin
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -20,117 +20,124 @@ import java.io.Serializable;
 import org.summerb.easycrud.api.dto.HasAuthor;
 import org.summerb.easycrud.api.dto.HasTimestamps;
 import org.summerb.easycrud.api.dto.HasUuid;
+import org.summerb.easycrud.gen2.QueryEx;
+import org.summerb.easycrud.gen2.QueryExFactory;
 
 public class TestDto1 implements HasUuid, HasAuthor, HasTimestamps, Serializable {
-	private static final long serialVersionUID = -2954623750074589334L;
+  private static final long serialVersionUID = -2954623750074589334L;
 
-	private String id;
-	private String env;
-	private boolean active;
-	private int majorVersion;
-	private int minorVersion;
-	private long createdAt;
-	private long modifiedAt;
-	private String createdBy;
-	private String modifiedBy;
-	private String linkToFullDonwload;
-	private String linkToPatchToNextVersion;
+  /** @return shortcut for building {@link QueryEx} for this DTO */
+  public static QueryEx<TestDto1> Q() {
+    return QueryExFactory.FACTORY.buildFor(TestDto1.class);
+  }
 
-	@Override
-	public String getId() {
-		return id;
-	}
+  private String id;
+  private String env;
+  private boolean active;
+  private int majorVersion;
+  private int minorVersion;
+  private long createdAt;
+  private long modifiedAt;
+  private String createdBy;
+  private String modifiedBy;
+  private String linkToFullDonwload;
+  private String linkToPatchToNextVersion;
 
-	@Override
-	public void setId(String id) {
-		this.id = id;
-	}
+  @Override
+  public String getId() {
+    return id;
+  }
 
-	public String getEnv() {
-		return env;
-	}
+  @Override
+  public void setId(String id) {
+    this.id = id;
+  }
 
-	public void setEnv(String env) {
-		this.env = env;
-	}
+  public String getEnv() {
+    return env;
+  }
 
-	public boolean isActive() {
-		return active;
-	}
+  public void setEnv(String env) {
+    this.env = env;
+  }
 
-	public void setActive(boolean active) {
-		this.active = active;
-	}
+  public boolean isActive() {
+    return active;
+  }
 
-	public int getMajorVersion() {
-		return majorVersion;
-	}
+  public void setActive(boolean active) {
+    this.active = active;
+  }
 
-	public void setMajorVersion(int majorVersion) {
-		this.majorVersion = majorVersion;
-	}
+  public int getMajorVersion() {
+    return majorVersion;
+  }
 
-	public int getMinorVersion() {
-		return minorVersion;
-	}
+  public void setMajorVersion(int majorVersion) {
+    this.majorVersion = majorVersion;
+  }
 
-	public void setMinorVersion(int minorVersion) {
-		this.minorVersion = minorVersion;
-	}
+  public int getMinorVersion() {
+    return minorVersion;
+  }
 
-	@Override
-	public long getCreatedAt() {
-		return createdAt;
-	}
+  public void setMinorVersion(int minorVersion) {
+    this.minorVersion = minorVersion;
+  }
 
-	@Override
-	public void setCreatedAt(long createdAt) {
-		this.createdAt = createdAt;
-	}
+  @Override
+  public long getCreatedAt() {
+    return createdAt;
+  }
 
-	@Override
-	public long getModifiedAt() {
-		return modifiedAt;
-	}
+  @Override
+  public void setCreatedAt(long createdAt) {
+    this.createdAt = createdAt;
+  }
 
-	@Override
-	public void setModifiedAt(long modifiedAt) {
-		this.modifiedAt = modifiedAt;
-	}
+  @Override
+  public long getModifiedAt() {
+    return modifiedAt;
+  }
 
-	@Override
-	public String getCreatedBy() {
-		return createdBy;
-	}
+  @Override
+  public void setModifiedAt(long modifiedAt) {
+    this.modifiedAt = modifiedAt;
+  }
 
-	@Override
-	public void setCreatedBy(String createdBy) {
-		this.createdBy = createdBy;
-	}
+  @Override
+  public String getCreatedBy() {
+    return createdBy;
+  }
 
-	@Override
-	public String getModifiedBy() {
-		return modifiedBy;
-	}
+  @Override
+  public void setCreatedBy(String createdBy) {
+    this.createdBy = createdBy;
+  }
 
-	@Override
-	public void setModifiedBy(String modifiedBy) {
-		this.modifiedBy = modifiedBy;
-	}
+  @Override
+  public String getModifiedBy() {
+    return modifiedBy;
+  }
 
-	public String getLinkToFullDonwload() {
-		return linkToFullDonwload;
-	}
+  @Override
+  public void setModifiedBy(String modifiedBy) {
+    this.modifiedBy = modifiedBy;
+  }
 
-	public void setLinkToFullDonwload(String linkToFullDonwload) {
-		this.linkToFullDonwload = linkToFullDonwload;
-	}
+  public String getLinkToFullDonwload() {
+    return linkToFullDonwload;
+  }
 
-	public String getLinkToPatchToNextVersion() {
-		return linkToPatchToNextVersion;
-	}
+  public void setLinkToFullDonwload(String linkToFullDonwload) {
+    this.linkToFullDonwload = linkToFullDonwload;
+  }
 
-	public void setLinkToPatchToNextVersion(String linkToPatchToNextVersion) {
-		this.linkToPatchToNextVersion = linkToPatchToNextVersion;
-	}
+  public String getLinkToPatchToNextVersion() {
+    return linkToPatchToNextVersion;
+  }
+
+  public void setLinkToPatchToNextVersion(String linkToPatchToNextVersion) {
+    this.linkToPatchToNextVersion = linkToPatchToNextVersion;
+  }
 }

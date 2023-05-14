@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -23,7 +23,7 @@ public class PasswordChange {
 	/**
 	 * IMPORTANT: This is a little hack, but thi field is intentionally called
 	 * password, but not newPassword, in order to avoid the need of
-	 * FieldValidationException mapping comed from User service
+	 * ValidationException mapping comed from User service
 	 */
 	private String password;
 	private String newPasswordAgain;

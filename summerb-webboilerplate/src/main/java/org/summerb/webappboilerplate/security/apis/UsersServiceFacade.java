@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -18,7 +18,7 @@ package org.summerb.webappboilerplate.security.apis;
 import org.summerb.users.api.dto.User;
 import org.summerb.users.api.exceptions.UserNotFoundException;
 import org.summerb.utils.exceptions.GenericException;
-import org.summerb.validation.FieldValidationException;
+import org.summerb.validation.ValidationException;
 import org.summerb.webappboilerplate.security.dto.PasswordChange;
 import org.summerb.webappboilerplate.security.dto.PasswordReset;
 import org.summerb.webappboilerplate.security.dto.Registration;
@@ -31,22 +31,22 @@ import org.summerb.webappboilerplate.security.dto.UserStatus;
  *
  */
 public interface UsersServiceFacade {
-	User registerUser(Registration registration) throws FieldValidationException;
+	User registerUser(Registration registration) throws ValidationException;
 
 	void activateRegistration(String userUuid) throws GenericException;
 
-	UserStatus getUserStatusByEmail(String email) throws FieldValidationException;
+	UserStatus getUserStatusByEmail(String email) throws ValidationException;
 
-	String getNewPasswordResetToken(String email) throws FieldValidationException;
+	String getNewPasswordResetToken(String email) throws ValidationException;
 
-	User getUserByEmail(String email) throws UserNotFoundException, FieldValidationException;
+	User getUserByEmail(String email) throws UserNotFoundException, ValidationException;
 
 	boolean isPasswordResetTokenValid(String userEmail, String passwordResetToken)
-			throws UserNotFoundException, FieldValidationException;
+			throws UserNotFoundException, ValidationException;
 
 	void resetPassword(String email, String passwordResetToken, PasswordReset resetPasswordRequest)
-			throws UserNotFoundException, FieldValidationException;
+			throws UserNotFoundException, ValidationException;
 
 	void changePassword(String email, PasswordChange passwordChange)
-			throws UserNotFoundException, FieldValidationException;
+			throws UserNotFoundException, ValidationException;
 }

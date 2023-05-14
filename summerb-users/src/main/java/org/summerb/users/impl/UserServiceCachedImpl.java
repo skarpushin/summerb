@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -29,7 +29,7 @@ import org.summerb.users.api.dto.User;
 import org.summerb.users.api.exceptions.UserNotFoundException;
 import org.summerb.utils.cache.CachesInvalidationNeeded;
 import org.summerb.utils.tx.TransactionBoundCache;
-import org.summerb.validation.FieldValidationException;
+import org.summerb.validation.ValidationException;
 
 import com.google.common.base.Throwables;
 import com.google.common.cache.CacheBuilder;
@@ -99,7 +99,7 @@ public class UserServiceCachedImpl implements UserService, InitializingBean {
 	};
 
 	@Override
-	public User createUser(User user) throws FieldValidationException {
+	public User createUser(User user) throws ValidationException {
 		return userService.createUser(user);
 	}
 
@@ -115,12 +115,12 @@ public class UserServiceCachedImpl implements UserService, InitializingBean {
 	}
 
 	@Override
-	public User getUserByEmail(String userEmail) throws FieldValidationException, UserNotFoundException {
+	public User getUserByEmail(String userEmail) throws ValidationException, UserNotFoundException {
 		try {
 			return cacheByEmail.get(userEmail);
 		} catch (ExecutionException e) {
 			Throwables.throwIfInstanceOf(e.getCause(), UserNotFoundException.class);
-			Throwables.throwIfInstanceOf(e.getCause(), FieldValidationException.class);
+			Throwables.throwIfInstanceOf(e.getCause(), ValidationException.class);
 			Throwables.throwIfInstanceOf(e.getCause(), RuntimeException.class);
 			throw new RuntimeException("Unexpected failure during requesting user by email", e);
 		}
@@ -128,12 +128,12 @@ public class UserServiceCachedImpl implements UserService, InitializingBean {
 
 	@Override
 	public PaginatedList<User> findUsersByDisplayNamePartial(String displayNamePartial, PagerParams pagerParams)
-			throws FieldValidationException {
+			throws ValidationException {
 		return userService.findUsersByDisplayNamePartial(displayNamePartial, pagerParams);
 	}
 
 	@Override
-	public void updateUser(User user) throws FieldValidationException, UserNotFoundException {
+	public void updateUser(User user) throws ValidationException, UserNotFoundException {
 		userService.updateUser(user);
 	}
 

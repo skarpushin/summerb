@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -15,13 +15,21 @@
  ******************************************************************************/
 package org.summerb.validation;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import com.google.common.base.Preconditions;
 
-public class ValidationErrorsUtils {
-  public static boolean hasErrorOfType(Class<?> clazz, List<ValidationError> errors) {
+public abstract class ValidationErrorsUtils {
+
+  private ValidationErrorsUtils() {}
+
+  public static boolean hasErrorOfType(
+      @Nonnull Class<?> clazz, @Nonnull List<? extends ValidationError> errors) {
     for (ValidationError validationError : errors) {
       if (validationError.getClass().equals(clazz)) {
         return true;
@@ -32,7 +40,8 @@ public class ValidationErrorsUtils {
   }
 
   @SuppressWarnings("unchecked")
-  public static <T> T findErrorOfType(Class<T> clazz, List<ValidationError> errors) {
+  public static <T> @Nullable T findErrorOfType(
+      @Nonnull Class<T> clazz, @Nonnull List<? extends ValidationError> errors) {
     for (ValidationError validationError : errors) {
       if (validationError.getClass().equals(clazz)) {
         return (T) validationError;
@@ -42,26 +51,29 @@ public class ValidationErrorsUtils {
     return null;
   }
 
-  public static List<ValidationError> findErrorsForField(
-      String fieldToken, List<ValidationError> errors) {
-    Preconditions.checkArgument(fieldToken != null, "Field token must not be null");
+  public static @Nonnull List<ValidationError> findErrorsForField(
+      String propertyName, List<? extends ValidationError> errors) {
+    Preconditions.checkArgument(propertyName != null, "Field token must not be null");
 
-    List<ValidationError> ret = new LinkedList<ValidationError>();
+    List<ValidationError> ret = null;
 
     for (ValidationError ve : errors) {
-      if (fieldToken.equals(ve.getFieldToken())) {
+      if (propertyName.equals(ve.getPropertyName())) {
+        if (ret == null) {
+          ret = new LinkedList<ValidationError>();
+        }
         ret.add(ve);
       }
     }
 
-    return ret;
+    return ret != null ? ret : Collections.emptyList();
   }
 
   @SuppressWarnings("unchecked")
-  public static <T> T findErrorOfTypeForField(
-      Class<T> clazz, String fieldToken, List<ValidationError> errors) {
+  public static <T> @Nullable T findErrorOfTypeForField(
+      Class<T> clazz, String propertyName, List<? extends ValidationError> errors) {
     for (ValidationError validationError : errors) {
-      if (!fieldToken.equals(validationError.getFieldToken())) {
+      if (!propertyName.equals(validationError.getPropertyName())) {
         continue;
       }
       if (validationError.getClass().equals(clazz)) {
@@ -70,5 +82,15 @@ public class ValidationErrorsUtils {
     }
 
     return null;
+  }
+
+  public static @Nullable ValidationErrors findAggregatedErrorsAtIndex(
+      int i, @Nonnull List<ValidationError> list) {
+    String idx = Integer.toString(i);
+    return (ValidationErrors)
+        list.stream()
+            .filter(x -> x instanceof ValidationErrors && idx.equals(x.propertyName))
+            .findFirst()
+            .orElse(null);
   }
 }

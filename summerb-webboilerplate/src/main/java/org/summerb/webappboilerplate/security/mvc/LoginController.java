@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -47,7 +47,7 @@ import org.summerb.users.api.exceptions.UserNotFoundException;
 import org.summerb.utils.exceptions.ExceptionUtils;
 import org.summerb.utils.exceptions.GenericException;
 import org.summerb.utils.exceptions.translator.ExceptionTranslatorSimplified;
-import org.summerb.validation.FieldValidationException;
+import org.summerb.validation.ValidationException;
 import org.summerb.validation.ValidationError;
 import org.summerb.webappboilerplate.controllers.ControllerBase;
 import org.summerb.webappboilerplate.model.ValidationErrorsVm;
@@ -145,11 +145,11 @@ public class LoginController extends ControllerBase {
 		model.addAttribute("loginError", true);
 
 		// Add validation errors
-		FieldValidationException validationErrors = ExceptionUtils.findExceptionOfType(lastException,
-				FieldValidationException.class);
+		ValidationException validationErrors = ExceptionUtils.findExceptionOfType(lastException,
+				ValidationException.class);
 		if (validationErrors != null) {
 			for (ValidationError error : validationErrors.getErrors()) {
-				model.addAttribute("ve_" + error.getFieldToken(), msg(error.getMessageCode(), error.getMessageArgs()));
+				model.addAttribute("ve_" + error.getPropertyName(), msg(error.getMessageCode(), error.getMessageArgs()));
 			}
 		}
 
@@ -188,7 +188,7 @@ public class LoginController extends ControllerBase {
 						.buildExternalUrl(securityActionsUrlsProvider.buildRegistrationActivationPath(user, null));
 				model.addAttribute(UserAccountChangeHadlersDefaultImpl.ATTR_ACTIVATION_LINK, activationAbsoluteLink);
 			}
-		} catch (FieldValidationException fve) {
+		} catch (ValidationException fve) {
 			model.addAttribute(ControllerBase.ATTR_VALIDATION_ERRORS, new ValidationErrorsVm(fve.getErrors()));
 		}
 		return views.registerForm();
@@ -232,7 +232,7 @@ public class LoginController extends ControllerBase {
 				model.addAttribute(UserAccountChangeHadlersDefaultImpl.ATTR_PASSWORD_RESET_LINK,
 						passwordResetAbsoluteLink);
 			}
-		} catch (FieldValidationException fve) {
+		} catch (ValidationException fve) {
 			model.addAttribute(ControllerBase.ATTR_VALIDATION_ERRORS, new ValidationErrorsVm(fve.getErrors()));
 		}
 
@@ -242,7 +242,7 @@ public class LoginController extends ControllerBase {
 	@RequestMapping(method = RequestMethod.GET, value = SecurityActionsUrlsProviderDefaultImpl.RESET_PASSWORD)
 	public String getPasswordResetForm(@PathVariable(ATTR_PASSWORD_RESET_TOKEN) String passwordResetToken,
 			@RequestParam(User.FN_EMAIL) String email, Model model, HttpServletRequest request)
-			throws UserNotFoundException, FieldValidationException, GenericException {
+			throws UserNotFoundException, ValidationException, GenericException {
 
 		// Check if token valid
 		if (!usersServiceFacade.isPasswordResetTokenValid(email, passwordResetToken)) {
@@ -272,7 +272,7 @@ public class LoginController extends ControllerBase {
 		try {
 			usersServiceFacade.resetPassword(email, passwordResetToken, resetPasswordRequest);
 			model.addAttribute(ATTR_RESET_OK, true);
-		} catch (FieldValidationException fve) {
+		} catch (ValidationException fve) {
 			model.addAttribute(ControllerBase.ATTR_VALIDATION_ERRORS, new ValidationErrorsVm(fve.getErrors()));
 		}
 
@@ -295,7 +295,7 @@ public class LoginController extends ControllerBase {
 			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 			usersServiceFacade.changePassword(auth.getName(), passwordChange);
 			model.addAttribute(ATTR_PASSWORD_CHANGED, true);
-		} catch (FieldValidationException fve) {
+		} catch (ValidationException fve) {
 			model.addAttribute(ControllerBase.ATTR_VALIDATION_ERRORS, new ValidationErrorsVm(fve.getErrors()));
 		}
 		return views.changePassword();

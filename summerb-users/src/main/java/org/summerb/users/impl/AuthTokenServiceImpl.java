@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -31,7 +31,7 @@ import org.summerb.users.api.exceptions.InvalidPasswordException;
 import org.summerb.users.api.exceptions.UserNotFoundException;
 import org.summerb.users.api.exceptions.UserServiceUnexpectedException;
 import org.summerb.users.impl.dao.AuthTokenDao;
-import org.summerb.validation.FieldValidationException;
+import org.summerb.validation.ValidationException;
 import org.summerb.validation.ValidationError;
 
 import com.google.common.base.Preconditions;
@@ -55,7 +55,7 @@ public class AuthTokenServiceImpl implements AuthTokenService {
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public AuthToken authenticate(String userEmail, String passwordPlain, String clientIp)
-			throws UserNotFoundException, FieldValidationException, InvalidPasswordException {
+			throws UserNotFoundException, ValidationException, InvalidPasswordException {
 		Preconditions.checkArgument(userEmail != null);
 		Preconditions.checkArgument(passwordPlain != null);
 		Preconditions.checkArgument(clientIp != null);
@@ -66,7 +66,7 @@ public class AuthTokenServiceImpl implements AuthTokenService {
 					UUID.randomUUID().toString());
 		} catch (Throwable t) {
 			Throwables.throwIfInstanceOf(t, UserNotFoundException.class);
-			Throwables.throwIfInstanceOf(t, FieldValidationException.class);
+			Throwables.throwIfInstanceOf(t, ValidationException.class);
 			Throwables.throwIfInstanceOf(t, InvalidPasswordException.class);
 
 			String msg = String.format("Failed to create auth otken for user '%s'", userEmail);
@@ -75,7 +75,7 @@ public class AuthTokenServiceImpl implements AuthTokenService {
 	}
 
 	private User validateAndGetUser(String userEmail, String passwordPlain)
-			throws UserNotFoundException, FieldValidationException, InvalidPasswordException {
+			throws UserNotFoundException, ValidationException, InvalidPasswordException {
 		try {
 			User user = userService.getUserByEmail(userEmail);
 
@@ -87,7 +87,7 @@ public class AuthTokenServiceImpl implements AuthTokenService {
 			return user;
 		} catch (Throwable t) {
 			Throwables.throwIfInstanceOf(t, UserNotFoundException.class);
-			Throwables.throwIfInstanceOf(t, FieldValidationException.class);
+			Throwables.throwIfInstanceOf(t, ValidationException.class);
 			Throwables.throwIfInstanceOf(t, InvalidPasswordException.class);
 
 			String msg = String.format("Failed to validate user '%s' and password '%s'", userEmail, passwordPlain);
@@ -98,7 +98,7 @@ public class AuthTokenServiceImpl implements AuthTokenService {
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public AuthToken createAuthToken(String userEmail, String clientIp, String tokenUuid, String tokenValueUuid)
-			throws UserNotFoundException, FieldValidationException {
+			throws UserNotFoundException, ValidationException {
 		Preconditions.checkArgument(userEmail != null);
 		Preconditions.checkArgument(clientIp != null);
 		Preconditions.checkArgument(StringUtils.hasText(tokenUuid));
@@ -111,7 +111,7 @@ public class AuthTokenServiceImpl implements AuthTokenService {
 			return authToken;
 		} catch (Throwable t) {
 			Throwables.throwIfInstanceOf(t, UserNotFoundException.class);
-			Throwables.throwIfInstanceOf(t, FieldValidationException.class);
+			Throwables.throwIfInstanceOf(t, ValidationException.class);
 
 			String msg = String.format("Failed to create auth otken for user '%s'", userEmail);
 			throw new UserServiceUnexpectedException(msg, t);
@@ -203,7 +203,7 @@ public class AuthTokenServiceImpl implements AuthTokenService {
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void updateToken(String authTokenUuid, long lastVerifiedAt, String newTokenValue)
-			throws AuthTokenNotFoundException, FieldValidationException {
+			throws AuthTokenNotFoundException, ValidationException {
 		Preconditions.checkArgument(authTokenUuid != null);
 		Preconditions.checkArgument(StringUtils.hasText(newTokenValue), "TokenValue is mandatory");
 
@@ -211,13 +211,13 @@ public class AuthTokenServiceImpl implements AuthTokenService {
 			// First - check token itself
 			AuthToken authToken = getAuthTokenByUuid(authTokenUuid);
 			if (newTokenValue.equals(authToken.getTokenValue())) {
-				throw new FieldValidationException(new ValidationError("validation.newValueExpected", "newTokenValue"));
+				throw new ValidationException(new ValidationError("newTokenValue", "validation.newValueExpected"));
 			}
 
 			// Now we need to update time when token was checked
 			authTokenDao.updateToken(authTokenUuid, lastVerifiedAt, newTokenValue);
 		} catch (Throwable t) {
-			Throwables.throwIfInstanceOf(t, FieldValidationException.class);
+			Throwables.throwIfInstanceOf(t, ValidationException.class);
 			Throwables.throwIfInstanceOf(t, AuthTokenNotFoundException.class);
 
 			String msg = String.format("Failed to update token '%s'", authTokenUuid);

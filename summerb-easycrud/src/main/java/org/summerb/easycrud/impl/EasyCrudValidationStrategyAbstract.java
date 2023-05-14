@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -16,7 +16,7 @@
 package org.summerb.easycrud.impl;
 
 import org.summerb.easycrud.api.EasyCrudValidationStrategy;
-import org.summerb.validation.FieldValidationException;
+import org.summerb.validation.ValidationException;
 import org.summerb.validation.ValidationContext;
 
 /**
@@ -30,26 +30,26 @@ import org.summerb.validation.ValidationContext;
  */
 public abstract class EasyCrudValidationStrategyAbstract<TRow> implements EasyCrudValidationStrategy<TRow> {
 	@Override
-	public void validateForCreate(TRow dto) throws FieldValidationException {
+	public void validateForCreate(TRow dto) throws ValidationException {
 		ValidationContext ctx = new ValidationContext();
 
 		doValidateForCreate(dto, ctx);
 
-		if (ctx.getHasErrors()) {
-			throw new FieldValidationException(ctx.getErrors());
+		if (ctx.isHasErrors()) {
+			throw new ValidationException(ctx.getErrors());
 		}
 	}
 
 	protected abstract void doValidateForCreate(TRow dto, ValidationContext ctx);
 
 	@Override
-	public void validateForUpdate(TRow existingVersion, TRow newVersion) throws FieldValidationException {
+	public void validateForUpdate(TRow existingVersion, TRow newVersion) throws ValidationException {
 		ValidationContext ctx = new ValidationContext();
 
 		doValidateForUpdate(existingVersion, newVersion, ctx);
 
-		if (ctx.getHasErrors()) {
-			throw new FieldValidationException(ctx.getErrors());
+		if (ctx.isHasErrors()) {
+			throw new ValidationException(ctx.getErrors());
 		}
 	}
 

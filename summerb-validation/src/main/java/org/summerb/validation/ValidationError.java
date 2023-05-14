@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -16,27 +16,50 @@
 package org.summerb.validation;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import org.springframework.util.StringUtils;
 import org.summerb.i18n.HasMessageArgs;
 import org.summerb.i18n.HasMessageCode;
+import org.summerb.validation.gson.ValidationErrorGsonTypeAdapter;
+
+import com.google.common.base.Preconditions;
+import com.google.gson.Gson;
 
 /**
- * This class describes validation error. It could be subclassed to provide more details on error.
+ * This is a base class for ValidationError. Most important idea here is to use {@link #messageCode}
+ * and {@link #messageArgs} which are language-agnostic, instead of user-facing text baked in into
+ * backend. Then facade layer or front-end would translate these into user facing text for user
+ * language.
  *
- * <p>General idea is to not use here localized messages, only codes and typed subclasses if needed
+ * <p>For security reasons we allow only primitive types as message args. Map {@link
+ * #ALLOWED_ARGS_CLASSES} contains mapping of allowed class names to allowed classes. This is used
+ * in instantiation to validate arg types as well as during deserialization
+ *
+ * <p>In case you're planning to serialize and deserialize these objects using {@link Gson}, make
+ * sure to register {@link ValidationErrorGsonTypeAdapter} so that subclasses of {@link
+ * ValidationError} will be correctly serialized and deserialized
  *
  * @author sergey.karpushin
- *     <p>TBD: Make this class abstract
  */
 public class ValidationError implements Serializable, HasMessageCode, HasMessageArgs {
   private static final long serialVersionUID = 2414529436328740490L;
 
+  public static final Map<String, Class<?>> ALLOWED_ARGS_CLASSES;
+
   /** Field token. Actually name of object field */
-  private String fieldToken;
+  protected String propertyName;
 
   /** Message about this field */
-  private String messageCode;
+  protected String messageCode;
 
   /** Message messageArgs */
   private Object[] messageArgs;
@@ -45,51 +68,100 @@ public class ValidationError implements Serializable, HasMessageCode, HasMessage
   @Deprecated
   public ValidationError() {}
 
-  public ValidationError(String userMessageCode, String fieldToken) {
-    if (userMessageCode == null || fieldToken == null) {
-      throw new IllegalArgumentException("Message and field name token cannot be null.");
-    }
-    this.messageCode = userMessageCode;
-    this.fieldToken = fieldToken;
+  public ValidationError(@Nonnull String propertyName, @Nonnull String messageCode) {
+    setMessageCode(messageCode);
+    setPropertyName(propertyName);
   }
 
-  public ValidationError(String userMessageCode, String fieldToken, Object... args) {
-    this(userMessageCode, fieldToken);
-    this.messageArgs = args;
+  public ValidationError(
+      @Nonnull String propertyName, @Nonnull String messageCode, @Nullable Object... args) {
+    this(propertyName, messageCode);
+    setMessageArgs(args);
+  }
+
+  static {
+    HashMap<String, Class<?>> allowed = new HashMap<>();
+    allow(BigDecimal.class, allowed);
+    allow(BigInteger.class, allowed);
+    allow(Boolean.class, allowed);
+    allow(Byte.class, allowed);
+    allow(Double.class, allowed);
+    allow(Float.class, allowed);
+    allow(Integer.class, allowed);
+    allow(Long.class, allowed);
+    allow(Short.class, allowed);
+    allow(String.class, allowed);
+    ALLOWED_ARGS_CLASSES = Collections.unmodifiableMap(allowed);
+  }
+
+  protected void assertMessageArgs(Object[] args) {
+    for (int i = 0; i < args.length; i++) {
+      Object arg = args[i];
+      if (arg == null) {
+        continue;
+      }
+      Preconditions.checkArgument(
+          ALLOWED_ARGS_CLASSES.values().contains(arg.getClass()),
+          "Argument %s is of an unacceptable type %s. Only types listed in ValidationError::ALLOWED_ARGS_CLASSES are allowed: %s",
+          i,
+          arg.getClass(),
+          ALLOWED_ARGS_CLASSES.values());
+    }
   }
 
   @Override
-  public String getMessageCode() {
+  public @Nonnull String getMessageCode() {
     return messageCode;
   }
 
-  public String getFieldToken() {
-    return fieldToken;
+  public @Nonnull String getPropertyName() {
+    return propertyName;
   }
 
-  public void setMessageCode(String userMessage) {
-    this.messageCode = userMessage;
+  public void setMessageCode(@Nonnull String messageCode) {
+    Preconditions.checkArgument(StringUtils.hasText(messageCode), "messageCode required");
+    this.messageCode = messageCode;
   }
 
-  public void setFieldToken(String fieldToken) {
-    this.fieldToken = fieldToken;
+  public void setPropertyName(@Nonnull String propertyName) {
+    Preconditions.checkArgument(StringUtils.hasText(propertyName), "propertyName required");
+    this.propertyName = propertyName;
   }
 
   @Override
-  public Object[] getMessageArgs() {
-    return messageArgs;
+  public @Nullable Object[] getMessageArgs() {
+    if (messageArgs == null) {
+      return null;
+    }
+    // NOTE: We clone array to make sure that consumer will not be able to modify it
+    return messageArgs.clone();
+  }
+
+  public void setMessageArgs(@Nullable Object[] messageArgs) {
+    if (messageArgs == null) {
+      this.messageArgs = null;
+      return;
+    }
+
+    assertMessageArgs(messageArgs);
+    // NOTE: We clone array to make sure that consumer will not be able to modify it
+    this.messageArgs = messageArgs.clone();
   }
 
   @Override
   public String toString() {
-    return ""
-        + getClass().getSimpleName()
-        + " (field = '"
-        + getFieldToken()
-        + "', msgCode = '"
-        + getMessageCode()
-        + "', msgArgs = '"
-        + Arrays.toString(getMessageArgs())
-        + "')";
+    if (messageArgs == null || messageArgs.length == 0) {
+      return getPropertyName() + ": code = '" + getMessageCode() + "'";
+    } else {
+      return getPropertyName()
+          + ": code = '"
+          + getMessageCode()
+          + "', args = "
+          + Arrays.toString(messageArgs);
+    }
+  }
+
+  private static void allow(Class<?> clazz, Map<String, Class<?>> to) {
+    to.put(clazz.getCanonicalName(), clazz);
   }
 }

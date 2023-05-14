@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -23,8 +23,8 @@ import org.summerb.easycrud.api.DaoExceptionTranslatorAbstract;
 import org.summerb.easycrud.api.dto.HasId;
 import org.summerb.easycrud.common.ServiceDataTruncationException;
 import org.summerb.utils.exceptions.ExceptionUtils;
-import org.summerb.validation.FieldValidationException;
-import org.summerb.validation.errors.DuplicateRecordValidationError;
+import org.summerb.validation.ValidationException;
+import org.summerb.validation.errors.DuplicateRecord;
 
 /**
  * MySQL-specific impl
@@ -37,12 +37,12 @@ public class DaoExceptionToFveTranslatorMySqlImpl extends DaoExceptionTranslator
 	public static final String MYSQL_CONSTRAINT_UNIQUE = "_UNIQUE";
 
 	@Override
-	public void translateAndThrowIfApplicable(Throwable t) throws FieldValidationException {
+	public void translateAndThrowIfApplicable(Throwable t) throws ValidationException {
 		throwIfDuplicate(t);
 		throwIfTruncationError(t);
 	}
 
-	protected void throwIfDuplicate(Throwable t) throws FieldValidationException {
+	protected void throwIfDuplicate(Throwable t) throws ValidationException {
 		DuplicateKeyException dke = ExceptionUtils.findExceptionOfType(t, DuplicateKeyException.class);
 		if (dke == null) {
 			return;
@@ -57,7 +57,7 @@ public class DaoExceptionToFveTranslatorMySqlImpl extends DaoExceptionTranslator
 
 		// Handle case when uuid is duplicated
 		if (DaoExceptionToFveTranslatorMySqlImpl.MYSQL_CONSTRAINT_PRIMARY.equals(constraint)) {
-			throw new FieldValidationException(new DuplicateRecordValidationError(HasId.FN_ID));
+			throw new ValidationException(new DuplicateRecord(HasId.FN_ID));
 		}
 
 		if (!constraint.contains(DaoExceptionToFveTranslatorMySqlImpl.MYSQL_CONSTRAINT_UNIQUE)) {
@@ -70,7 +70,7 @@ public class DaoExceptionToFveTranslatorMySqlImpl extends DaoExceptionTranslator
 			fieldName = JdbcUtils.convertUnderscoreNameToPropertyName(fieldName);
 		}
 
-		throw new FieldValidationException(new DuplicateRecordValidationError(fieldName));
+		throw new ValidationException(new DuplicateRecord(fieldName));
 	}
 
 	/**
@@ -121,11 +121,11 @@ public class DaoExceptionToFveTranslatorMySqlImpl extends DaoExceptionTranslator
 			return;
 		}
 
-		// throw new FieldValidationException(new
-		// DataTooLongValidationError(currentSize?, allowedSize?, fieldName));
+		// throw new ValidationException(new
+		// LengthMustBeLessOrEqual(currentSize?, allowedSize?, fieldName));
 
 		// NOTE: We're throwing ServiceDataTruncationException instead of
-		// FieldValidationException because it feels right (there is commonly known
+		// ValidationException because it feels right (there is commonly known
 		// exception DataTruncation) and because we do not know currentSize and
 		// allowedSize here
 		throw ServiceDataTruncationException.envelopeFor(JdbcUtils.convertUnderscoreNameToPropertyName(fieldName), t);

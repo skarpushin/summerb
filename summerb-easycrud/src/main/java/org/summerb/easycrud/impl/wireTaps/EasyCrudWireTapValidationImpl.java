@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -18,7 +18,7 @@ package org.summerb.easycrud.impl.wireTaps;
 import org.summerb.easycrud.api.EasyCrudValidationStrategy;
 import org.summerb.easycrud.api.dto.HasId;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
-import org.summerb.validation.FieldValidationException;
+import org.summerb.validation.ValidationException;
 
 import com.google.common.base.Preconditions;
 
@@ -37,22 +37,22 @@ public class EasyCrudWireTapValidationImpl<TId, TDto extends HasId<TId>> extends
 	}
 
 	@Override
-	public boolean requiresOnCreate() throws FieldValidationException, NotAuthorizedException {
+	public boolean requiresOnCreate() throws ValidationException, NotAuthorizedException {
 		return true;
 	}
 
 	@Override
-	public void beforeCreate(TDto dto) throws NotAuthorizedException, FieldValidationException {
+	public void beforeCreate(TDto dto) throws NotAuthorizedException, ValidationException {
 		strategy.validateForCreate(dto);
 	}
 
 	@Override
-	public boolean requiresOnUpdate() throws NotAuthorizedException, FieldValidationException {
+	public boolean requiresOnUpdate() throws NotAuthorizedException, ValidationException {
 		return true;
 	}
 
 	@Override
-	public void beforeUpdate(TDto from, TDto to) throws FieldValidationException, NotAuthorizedException {
+	public void beforeUpdate(TDto from, TDto to) throws ValidationException, NotAuthorizedException {
 		strategy.validateForUpdate(from, to);
 	}
 

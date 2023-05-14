@@ -11,7 +11,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.github.skarpushin</groupId>
-	<version>6.1.1</version>
+	<version>7.0.0</version>
 	<artifactId>summerb-parent</artifactId>
 	<packaging>pom</packaging>
 	<name>summerb-parent</name>
@@ -39,17 +39,18 @@
 	</licenses>
 
 	<properties>
+		<java.version>11</java.version>
+
 		<modular-name>parent</modular-name>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.debug>true</maven.compiler.debug>
 		<maven.compiler.debuglevel>lines,vars,source</maven.compiler.debuglevel>
 
 		<skip.unit.tests>false</skip.unit.tests>
 
 		<junit.version>4.13.2</junit.version>
+		<junit-jupiter.version>5.9.3</junit-jupiter.version>
 		<mockito-all.version>1.9.5</mockito-all.version>
 		<dumbster.version>1.6</dumbster.version>
 
@@ -67,6 +68,9 @@
 		<mail.version>1.4.7</mail.version>
 		<encoder.version>1.2.3</encoder.version> <!-- OWASP encoder -->
 		<commons-fileupload.version>1.5</commons-fileupload.version>
+		<byte-buddy.version>1.14.4</byte-buddy.version>
+		<hibernate-validator.version>8.0.0.Final</hibernate-validator.version>
+
 	</properties>
 
 	<scm>
@@ -90,6 +94,18 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-params</artifactId>
+			<version>${junit-jupiter.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+			<version>${junit-jupiter.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -137,8 +153,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.6.1</version>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
+					<source>11</source>
+					<target>11</target>
 				</configuration>
 			</plugin>
 			<plugin>

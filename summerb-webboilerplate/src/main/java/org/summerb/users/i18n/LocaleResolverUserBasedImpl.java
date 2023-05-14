@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -30,7 +30,7 @@ import org.summerb.spring.security.api.SecurityContextResolver;
 import org.summerb.users.api.UserService;
 import org.summerb.users.api.dto.User;
 import org.summerb.users.api.exceptions.UserNotFoundException;
-import org.summerb.validation.FieldValidationException;
+import org.summerb.validation.ValidationException;
 
 public class LocaleResolverUserBasedImpl extends CookieLocaleResolver {
 	private Logger log = LoggerFactory.getLogger(getClass());
@@ -75,7 +75,7 @@ public class LocaleResolverUserBasedImpl extends CookieLocaleResolver {
 	}
 
 	private void updateUserProfileWithNewLocale(String newLocale)
-			throws UserNotFoundException, FieldValidationException {
+			throws UserNotFoundException, ValidationException {
 		User user = securityContextResolver.getUser();
 		if (user.getLocale().equalsIgnoreCase(newLocale)) {
 			return;

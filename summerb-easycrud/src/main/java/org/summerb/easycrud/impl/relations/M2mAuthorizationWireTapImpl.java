@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -24,7 +24,7 @@ import org.summerb.easycrud.api.dto.HasId;
 import org.summerb.easycrud.api.dto.relations.ManyToManyDto;
 import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapNoOpImpl;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
-import org.summerb.validation.FieldValidationException;
+import org.summerb.validation.ValidationException;
 
 import com.google.common.base.Preconditions;
 
@@ -61,12 +61,12 @@ public class M2mAuthorizationWireTapImpl<TId1, TId2> extends EasyCrudWireTapNoOp
 	}
 
 	@Override
-	public boolean requiresOnCreate() throws FieldValidationException, NotAuthorizedException {
+	public boolean requiresOnCreate() throws ValidationException, NotAuthorizedException {
 		return referencerAuthorizationWireTap.requiresOnUpdate();
 	}
 
 	@Override
-	public void beforeCreate(ManyToManyDto<TId1, TId2> dto) throws NotAuthorizedException, FieldValidationException {
+	public void beforeCreate(ManyToManyDto<TId1, TId2> dto) throws NotAuthorizedException, ValidationException {
 		HasId<TId1> referencer;
 		if (referencerAuthRequiresFullDto) {
 			referencer = referencerService.findById(dto.getSrc());
@@ -89,13 +89,13 @@ public class M2mAuthorizationWireTapImpl<TId1, TId2> extends EasyCrudWireTapNoOp
 	}
 
 	@Override
-	public boolean requiresOnUpdate() throws NotAuthorizedException, FieldValidationException {
+	public boolean requiresOnUpdate() throws NotAuthorizedException, ValidationException {
 		return referencerAuthorizationWireTap.requiresOnUpdate();
 	}
 
 	@Override
 	public void beforeUpdate(ManyToManyDto<TId1, TId2> from, ManyToManyDto<TId1, TId2> to)
-			throws FieldValidationException, NotAuthorizedException {
+			throws ValidationException, NotAuthorizedException {
 		Preconditions.checkArgument(ObjectUtils.nullSafeEquals(from.getSrc(), to.getSrc()),
 				"Referencer is not supposed to be changed");
 		HasId<TId1> referencer;
@@ -110,12 +110,12 @@ public class M2mAuthorizationWireTapImpl<TId1, TId2> extends EasyCrudWireTapNoOp
 	}
 
 	@Override
-	public boolean requiresOnDelete() throws FieldValidationException, NotAuthorizedException {
+	public boolean requiresOnDelete() throws ValidationException, NotAuthorizedException {
 		return referencerAuthorizationWireTap.requiresOnUpdate();
 	}
 
 	@Override
-	public void beforeDelete(ManyToManyDto<TId1, TId2> dto) throws NotAuthorizedException, FieldValidationException {
+	public void beforeDelete(ManyToManyDto<TId1, TId2> dto) throws NotAuthorizedException, ValidationException {
 		HasId<TId1> referencer;
 		if (referencerAuthRequiresFullDto) {
 			referencer = referencerService.findById(dto.getSrc());
@@ -128,12 +128,12 @@ public class M2mAuthorizationWireTapImpl<TId1, TId2> extends EasyCrudWireTapNoOp
 	}
 
 	@Override
-	public boolean requiresOnRead() throws NotAuthorizedException, FieldValidationException {
+	public boolean requiresOnRead() throws NotAuthorizedException, ValidationException {
 		return referencerAuthorizationWireTap.requiresOnRead();
 	}
 
 	@Override
-	public void afterRead(ManyToManyDto<TId1, TId2> dto) throws FieldValidationException, NotAuthorizedException {
+	public void afterRead(ManyToManyDto<TId1, TId2> dto) throws ValidationException, NotAuthorizedException {
 		HasId<TId1> referencer;
 		if (referencerAuthRequiresFullDto) {
 			referencer = referencerService.findById(dto.getSrc());

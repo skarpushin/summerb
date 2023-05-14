@@ -25,13 +25,13 @@
  * <p>Also, it supports validation of hierarchical structures.
  *
  * <p>Start with an empty instance of {@link org.summerb.validation.ValidationContext}, call out-of
- * the box methods or add validation errors manually using {@link
+ * the box methods or add to validation errors manually using {@link
  * org.summerb.validation.ValidationContext#add(ValidationError)}. And then call {@link
  * org.summerb.validation.ValidationContext#throwIfHasErrors()} to throw well-structured exception
- * containing all errors collected.
+ * containing all list collected.
  *
  * <p>In case needed to return to REST client, use {@link
- * org.summerb.validation.FieldValidationException#getErrorDescriptionObject()}
+ * org.summerb.validation.ValidationException#getErrorDescriptionObject()}
  *
  * @author sergeyk
  */

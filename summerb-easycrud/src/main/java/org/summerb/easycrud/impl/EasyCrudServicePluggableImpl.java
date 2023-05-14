@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -43,7 +43,7 @@ import org.summerb.security.api.CurrentUserResolver;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
 import org.summerb.utils.objectcopy.Clonnable;
 import org.summerb.utils.objectcopy.DeepCopy;
-import org.summerb.validation.FieldValidationException;
+import org.summerb.validation.ValidationException;
 
 import com.google.common.base.Preconditions;
 
@@ -102,7 +102,7 @@ public class EasyCrudServicePluggableImpl<TId, TDto extends HasId<TId>, TDao ext
 	}
 
 	@Override
-	public TDto create(TDto row) throws FieldValidationException, NotAuthorizedException {
+	public TDto create(TDto row) throws ValidationException, NotAuthorizedException {
 		try {
 			Preconditions.checkArgument(row != null);
 
@@ -158,7 +158,7 @@ public class EasyCrudServicePluggableImpl<TId, TDto extends HasId<TId>, TDao ext
 
 	@Override
 	public TDto update(TDto newVersion)
-			throws FieldValidationException, NotAuthorizedException, EntityNotFoundException {
+			throws ValidationException, NotAuthorizedException, EntityNotFoundException {
 		try {
 			Preconditions.checkArgument(newVersion != null);
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -18,7 +18,7 @@ package org.summerb.stringtemplate.api.validation;
 import static org.junit.Assert.assertArrayEquals;
 
 import org.junit.Test;
-import org.summerb.validation.errors.MustBeEqualsValidationError;
+import org.summerb.validation.errors.MustBeEquals;
 
 public class ValidationErrorsTest {
 
@@ -28,7 +28,7 @@ public class ValidationErrorsTest {
 	 */
 	@Test
 	public void testMustBeEqualsValidationError_expextCorrectArgumentsRetention() throws Exception {
-		MustBeEqualsValidationError ve = new MustBeEqualsValidationError("a", "b", "ft");
+		MustBeEquals ve = new MustBeEquals("ft", "a", "b");
 		assertArrayEquals(new Object[] { "a", "b" }, ve.getMessageArgs());
 	}
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -18,7 +18,7 @@ package org.summerb.easycrud.impl.wireTaps;
 import org.summerb.easycrud.api.EasyCrudWireTap;
 import org.summerb.easycrud.api.dto.HasId;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
-import org.summerb.validation.FieldValidationException;
+import org.summerb.validation.ValidationException;
 
 public class EasyCrudWireTapNoOpImpl<TId, TDto extends HasId<TId>> implements EasyCrudWireTap<TId, TDto> {
 
@@ -28,51 +28,51 @@ public class EasyCrudWireTapNoOpImpl<TId, TDto extends HasId<TId>> implements Ea
 	}
 
 	@Override
-	public boolean requiresOnCreate() throws FieldValidationException, NotAuthorizedException {
+	public boolean requiresOnCreate() throws ValidationException, NotAuthorizedException {
 		return false;
 	}
 
 	@Override
-	public void beforeCreate(TDto dto) throws NotAuthorizedException, FieldValidationException {
+	public void beforeCreate(TDto dto) throws NotAuthorizedException, ValidationException {
 	}
 
 	@Override
-	public void afterCreate(TDto dto) throws FieldValidationException, NotAuthorizedException {
+	public void afterCreate(TDto dto) throws ValidationException, NotAuthorizedException {
 	}
 
 	@Override
-	public boolean requiresOnUpdate() throws NotAuthorizedException, FieldValidationException {
+	public boolean requiresOnUpdate() throws NotAuthorizedException, ValidationException {
 		return false;
 	}
 
 	@Override
-	public void beforeUpdate(TDto from, TDto to) throws FieldValidationException, NotAuthorizedException {
+	public void beforeUpdate(TDto from, TDto to) throws ValidationException, NotAuthorizedException {
 	}
 
 	@Override
-	public void afterUpdate(TDto from, TDto to) throws NotAuthorizedException, FieldValidationException {
+	public void afterUpdate(TDto from, TDto to) throws NotAuthorizedException, ValidationException {
 	}
 
 	@Override
-	public boolean requiresOnDelete() throws FieldValidationException, NotAuthorizedException {
+	public boolean requiresOnDelete() throws ValidationException, NotAuthorizedException {
 		return false;
 	}
 
 	@Override
-	public void beforeDelete(TDto dto) throws NotAuthorizedException, FieldValidationException {
+	public void beforeDelete(TDto dto) throws NotAuthorizedException, ValidationException {
 	}
 
 	@Override
-	public void afterDelete(TDto dto) throws FieldValidationException, NotAuthorizedException {
+	public void afterDelete(TDto dto) throws ValidationException, NotAuthorizedException {
 	}
 
 	@Override
-	public boolean requiresOnRead() throws NotAuthorizedException, FieldValidationException {
+	public boolean requiresOnRead() throws NotAuthorizedException, ValidationException {
 		return false;
 	}
 
 	@Override
-	public void afterRead(TDto dto) throws FieldValidationException, NotAuthorizedException {
+	public void afterRead(TDto dto) throws ValidationException, NotAuthorizedException {
 	}
 
 }

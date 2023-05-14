@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -34,7 +34,7 @@ import org.summerb.users.api.dto.User;
 import org.summerb.users.api.dto.UserFactory;
 import org.summerb.users.api.exceptions.UserNotFoundException;
 import org.summerb.users.api.exceptions.UserServiceUnexpectedException;
-import org.summerb.validation.FieldValidationException;
+import org.summerb.validation.ValidationException;
 
 /**
  * NOTE: These tests does not follow test names convention
@@ -96,7 +96,7 @@ public class UserServiceImplTest {
 		assertNotSame(template, result);
 	}
 
-	@Test(expected = FieldValidationException.class)
+	@Test(expected = ValidationException.class)
 	public void testCreateUser_blackbox_expectValidationExceptionOnInvalidEmail() throws Exception {
 		UserServiceImpl fixture = UserServiceImplFactory.createUsersServiceImpl();
 
@@ -108,7 +108,7 @@ public class UserServiceImplTest {
 		fail();
 	}
 
-	@Test(expected = FieldValidationException.class)
+	@Test(expected = ValidationException.class)
 	public void testCreateUser_blackbox_expectValidationExceptionOnInvalidEmail1() throws Exception {
 		UserServiceImpl fixture = UserServiceImplFactory.createUsersServiceImpl();
 
@@ -120,7 +120,7 @@ public class UserServiceImplTest {
 		fail();
 	}
 
-	@Test(expected = FieldValidationException.class)
+	@Test(expected = ValidationException.class)
 	public void testCreateUser_whitebox_expectDuplicateUserException() throws Exception {
 		UserServiceImpl fixture = UserServiceImplFactory.createUsersServiceImpl();
 
@@ -206,14 +206,14 @@ public class UserServiceImplTest {
 		fail();
 	}
 
-	@Test(expected = FieldValidationException.class)
+	@Test(expected = ValidationException.class)
 	public void testGetUserByEmail_blackbox_expectFieldValidationExceptionOnEmptyString() throws Exception {
 		UserServiceImpl fixture = UserServiceImplFactory.createUsersServiceImpl();
 		fixture.getUserByEmail("");
 		fail();
 	}
 
-	@Test(expected = FieldValidationException.class)
+	@Test(expected = ValidationException.class)
 	public void testGetUserByEmail_blackbox_expectFieldValidationExceptionOnWrongFormat() throws Exception {
 		UserServiceImpl fixture = UserServiceImplFactory.createUsersServiceImpl();
 		fixture.getUserByEmail("abara-cadabara");
@@ -302,7 +302,7 @@ public class UserServiceImplTest {
 		fail();
 	}
 
-	@Test(expected = FieldValidationException.class)
+	@Test(expected = ValidationException.class)
 	public void testUpdateUser_blackbox_fveOnFailedValidation() throws Exception {
 		UserServiceImpl fixture = UserServiceImplFactory.createUsersServiceImpl();
 		User user = UserFactory.createExistingUser();
@@ -312,7 +312,7 @@ public class UserServiceImplTest {
 		fail();
 	}
 
-	@Test(expected = FieldValidationException.class)
+	@Test(expected = ValidationException.class)
 	public void testUpdateUser_blackbox_expectFieldValidationExceptionOnDuplicateUser() throws Exception {
 		UserServiceImpl fixture = UserServiceImplFactory.createUsersServiceImpl();
 		fixture.updateUser(UserFactory.createDuplicateUser());

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -29,9 +29,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 import org.summerb.minicms.api.ArticleService;
 import org.summerb.minicms.api.dto.Article;
-import org.summerb.validation.FieldValidationException;
-import org.summerb.validation.errors.DataTooLongValidationError;
-import org.summerb.validation.errors.DuplicateRecordValidationError;
+import org.summerb.validation.ValidationException;
+import org.summerb.validation.errors.LengthMustBeLessOrEqual;
+import org.summerb.validation.errors.DuplicateRecord;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:test-articles-app-context.xml")
@@ -66,8 +66,8 @@ public class ArticleServiceImplTest {
 		try {
 			articleService.create(buildTestDto());
 			fail("FVE expected");
-		} catch (FieldValidationException fve) {
-			assertNotNull(fve.findErrorOfTypeForField(DuplicateRecordValidationError.class, Article.FN_KEY));
+		} catch (ValidationException fve) {
+			assertNotNull(fve.findErrorOfTypeForField(DuplicateRecord.class, Article.FN_KEY));
 		}
 	}
 
@@ -93,13 +93,13 @@ public class ArticleServiceImplTest {
 			a.setArticleGroup(generateLongString(Article.FN_GROUP_SIZE + 1, "Z"));
 			articleService.create(a);
 			fail("FVE expected");
-		} catch (FieldValidationException fve) {
+		} catch (ValidationException fve) {
 			assertEquals(5, fve.getErrors().size());
-			assertNotNull(fve.findErrorOfTypeForField(DataTooLongValidationError.class, Article.FN_KEY));
-			assertNotNull(fve.findErrorOfTypeForField(DataTooLongValidationError.class, Article.FN_LANG));
-			assertNotNull(fve.findErrorOfTypeForField(DataTooLongValidationError.class, Article.FN_TITLE));
-			assertNotNull(fve.findErrorOfTypeForField(DataTooLongValidationError.class, Article.FN_ANNOTATION));
-			assertNotNull(fve.findErrorOfTypeForField(DataTooLongValidationError.class, Article.FN_GROUP));
+			assertNotNull(fve.findErrorOfTypeForField(LengthMustBeLessOrEqual.class, Article.FN_KEY));
+			assertNotNull(fve.findErrorOfTypeForField(LengthMustBeLessOrEqual.class, Article.FN_LANG));
+			assertNotNull(fve.findErrorOfTypeForField(LengthMustBeLessOrEqual.class, Article.FN_TITLE));
+			assertNotNull(fve.findErrorOfTypeForField(LengthMustBeLessOrEqual.class, Article.FN_ANNOTATION));
+			assertNotNull(fve.findErrorOfTypeForField(LengthMustBeLessOrEqual.class, Article.FN_GROUP));
 		}
 	}
 

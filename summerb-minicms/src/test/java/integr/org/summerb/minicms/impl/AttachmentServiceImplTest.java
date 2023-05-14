@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -39,7 +39,7 @@ import org.summerb.minicms.api.AttachmentService;
 import org.summerb.minicms.api.dto.Article;
 import org.summerb.minicms.api.dto.Attachment;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
-import org.summerb.validation.FieldValidationException;
+import org.summerb.validation.ValidationException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:test-articles-app-context.xml")
@@ -82,7 +82,7 @@ public class AttachmentServiceImplTest {
 		assertStreamsEquals(createValidContentsReader(), b);
 	}
 
-	private long createTestArticle() throws FieldValidationException, NotAuthorizedException {
+	private long createTestArticle() throws ValidationException, NotAuthorizedException {
 		Article dto = new Article();
 		dto.setArticleKey("key");
 		dto.setLang("en");

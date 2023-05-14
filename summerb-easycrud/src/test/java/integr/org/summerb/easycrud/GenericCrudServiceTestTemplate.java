@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -38,7 +38,7 @@ import org.summerb.easycrud.api.dto.PaginatedList;
 import org.summerb.easycrud.api.query.OrderBy;
 import org.summerb.easycrud.api.query.Query;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
-import org.summerb.validation.FieldValidationException;
+import org.summerb.validation.ValidationException;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -588,7 +588,7 @@ public abstract class GenericCrudServiceTestTemplate {
 		assertEquals(initialCreatedBy, dto.getCreatedBy());
 	}
 
-	private void createTestData() throws FieldValidationException, NotAuthorizedException {
+	private void createTestData() throws ValidationException, NotAuthorizedException {
 		TestDto1 dto = new TestDto1();
 		dto.setActive(true);
 		dto.setEnv("env-uat");

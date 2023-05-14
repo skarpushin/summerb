@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -16,7 +16,7 @@
 package org.summerb.users.api;
 
 import org.summerb.users.api.exceptions.UserNotFoundException;
-import org.summerb.validation.FieldValidationException;
+import org.summerb.validation.ValidationException;
 
 /**
  * This service manages user passwords and restoration tokens.
@@ -33,7 +33,7 @@ public interface PasswordService {
 	boolean isUserPasswordValid(String userUuid, String passwordPlain) throws UserNotFoundException;
 
 	void setUserPassword(String userUuid, String newPasswordPlain)
-			throws UserNotFoundException, FieldValidationException;
+			throws UserNotFoundException, ValidationException;
 
 	String getNewRestorationTokenForUser(String userUuid) throws UserNotFoundException;
 

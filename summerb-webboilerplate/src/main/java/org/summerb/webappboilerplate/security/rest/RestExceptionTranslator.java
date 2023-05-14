@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -47,7 +47,7 @@ import org.summerb.utils.exceptions.dto.GenericServerErrorResult;
 import org.summerb.utils.exceptions.translator.ExceptionTranslator;
 import org.summerb.utils.json.JsonResponseWriter;
 import org.summerb.utils.json.JsonResponseWriterGsonImpl;
-import org.summerb.validation.FieldValidationException;
+import org.summerb.validation.ValidationException;
 
 /**
  * Request filter that helps to format and gracefully communicate server errors
@@ -113,7 +113,7 @@ public class RestExceptionTranslator extends GenericFilterBean {
 
 	protected DtoBase determineFailureResult(Exception ex, HttpServletRequest request, HttpServletResponse response) {
 		// first see if it is FVE
-		FieldValidationException fve = ExceptionUtils.findExceptionOfType(ex, FieldValidationException.class);
+		ValidationException fve = ExceptionUtils.findExceptionOfType(ex, ValidationException.class);
 		if (fve != null) {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return fve.getErrorDescriptionObject();

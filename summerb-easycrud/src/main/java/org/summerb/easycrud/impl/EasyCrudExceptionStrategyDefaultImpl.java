@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -27,7 +27,7 @@ import org.summerb.easycrud.api.exceptions.GenericEntityNotFoundException;
 import org.summerb.easycrud.api.validation_errors.ReferencedRowCannotBeDeletedValidationError;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
 import org.summerb.utils.exceptions.ExceptionUtils;
-import org.summerb.validation.FieldValidationException;
+import org.summerb.validation.ValidationException;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
@@ -47,14 +47,14 @@ public class EasyCrudExceptionStrategyDefaultImpl<TId> implements EasyCrudExcept
 
 	@Override
 	public RuntimeException handleExceptionAtCreate(Throwable t)
-			throws FieldValidationException, NotAuthorizedException {
-		Throwables.throwIfInstanceOf(t, FieldValidationException.class);
+			throws ValidationException, NotAuthorizedException {
+		Throwables.throwIfInstanceOf(t, ValidationException.class);
 		Throwables.throwIfInstanceOf(t, NotAuthorizedException.class);
 
 		return buildUnexpectedAtCreate(t);
 	}
 
-	protected RuntimeException buildUnexpectedAtCreate(Throwable t) throws FieldValidationException {
+	protected RuntimeException buildUnexpectedAtCreate(Throwable t) throws ValidationException {
 		return new EasyCrudUnexpectedException(EasyCrudMessageCodes.UNEXPECTED_FAILED_TO_CREATE, entityCode, t);
 	}
 
@@ -69,7 +69,7 @@ public class EasyCrudExceptionStrategyDefaultImpl<TId> implements EasyCrudExcept
 		Throwables.throwIfInstanceOf(t, NotAuthorizedException.class);
 		Throwables.throwIfInstanceOf(t, EntityNotFoundException.class);
 
-		FieldValidationException fve = tryExtractConstraintViolation(t);
+		ValidationException fve = tryExtractConstraintViolation(t);
 		if (fve != null) {
 			return new RuntimeException("Constraint violation", fve);
 		}
@@ -83,7 +83,7 @@ public class EasyCrudExceptionStrategyDefaultImpl<TId> implements EasyCrudExcept
 	 * `badges_FK_care_team_members` FOREIGN KEY (`care_team_member_id`) REFERENCES
 	 * `care_team_members` (`id`))"
 	 */
-	private FieldValidationException tryExtractConstraintViolation(Throwable t) {
+	private ValidationException tryExtractConstraintViolation(Throwable t) {
 		SQLIntegrityConstraintViolationException sqlExc = ExceptionUtils.findExceptionOfType(t,
 				SQLIntegrityConstraintViolationException.class);
 		if (sqlExc == null) {
@@ -91,7 +91,7 @@ public class EasyCrudExceptionStrategyDefaultImpl<TId> implements EasyCrudExcept
 		}
 
 		if (sqlExc.getErrorCode() == 1451 && "23000".equals(sqlExc.getSQLState())) {
-			return new FieldValidationException(new ReferencedRowCannotBeDeletedValidationError());
+			return new ValidationException(new ReferencedRowCannotBeDeletedValidationError());
 		}
 
 		return null;
@@ -114,8 +114,8 @@ public class EasyCrudExceptionStrategyDefaultImpl<TId> implements EasyCrudExcept
 
 	@Override
 	public RuntimeException handleExceptionAtUpdate(Throwable t)
-			throws FieldValidationException, NotAuthorizedException, EntityNotFoundException {
-		Throwables.throwIfInstanceOf(t, FieldValidationException.class);
+			throws ValidationException, NotAuthorizedException, EntityNotFoundException {
+		Throwables.throwIfInstanceOf(t, ValidationException.class);
 		Throwables.throwIfInstanceOf(t, NotAuthorizedException.class);
 		Throwables.throwIfInstanceOf(t, EntityNotFoundException.class);
 		return buildUnexpectedAtUpdate(t);

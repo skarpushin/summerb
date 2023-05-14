@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -29,7 +29,7 @@ import org.summerb.minicms.api.AttachmentDao;
 import org.summerb.minicms.api.AttachmentService;
 import org.summerb.minicms.api.dto.Attachment;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
-import org.summerb.validation.FieldValidationException;
+import org.summerb.validation.ValidationException;
 
 public class AttachmentServiceImpl extends EasyCrudServicePluggableImpl<Long, Attachment, AttachmentDao>
 		implements AttachmentService {
@@ -45,7 +45,7 @@ public class AttachmentServiceImpl extends EasyCrudServicePluggableImpl<Long, At
 
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public Attachment create(Attachment row) throws FieldValidationException, NotAuthorizedException {
+	public Attachment create(Attachment row) throws ValidationException, NotAuthorizedException {
 		try {
 			return super.create(row);
 		} finally {

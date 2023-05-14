@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -49,7 +49,7 @@ import org.summerb.easycrud.api.relations.ReferencesRegistry;
 import org.summerb.easycrud.impl.relations.DataSetLoaderImpl;
 import org.summerb.easycrud.impl.relations.ReferencesRegistryPredefinedImpl;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
-import org.summerb.validation.FieldValidationException;
+import org.summerb.validation.ValidationException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:summerb-integr-test-context.xml")
@@ -78,7 +78,7 @@ public class DataSetLoaderTest {
 
 	@Test
 	public void testLoadObjectsByIds_ExpectCoupleOneLevelObjectsLoadedOK()
-			throws EntityNotFoundException, NotAuthorizedException, FieldValidationException {
+			throws EntityNotFoundException, NotAuthorizedException, ValidationException {
 		DataSetLoader loader = buildLoaderCase1();
 
 		TestDto2 d2i1 = new TestDto2();
@@ -103,7 +103,7 @@ public class DataSetLoaderTest {
 
 	@Test
 	public void testLoadObjectsByIds_ExpectTwoObjsOfSameTypeLoadedOk()
-			throws EntityNotFoundException, NotAuthorizedException, FieldValidationException {
+			throws EntityNotFoundException, NotAuthorizedException, ValidationException {
 		DataSetLoader loader = buildLoaderCase1();
 
 		TestDto2 d2i1 = new TestDto2();
@@ -123,7 +123,7 @@ public class DataSetLoaderTest {
 
 	@Test
 	public void testLoadObjectsByIds_ExpectOneLoadedOk()
-			throws EntityNotFoundException, NotAuthorizedException, FieldValidationException {
+			throws EntityNotFoundException, NotAuthorizedException, ValidationException {
 		DataSetLoader loader = buildLoaderCase1();
 
 		TestDto2 d2i1 = new TestDto2();
@@ -138,7 +138,7 @@ public class DataSetLoaderTest {
 
 	@Test
 	public void testResolveReferencedObjects_ExpectWillNotTryToLoadNullReferences()
-			throws EntityNotFoundException, NotAuthorizedException, FieldValidationException {
+			throws EntityNotFoundException, NotAuthorizedException, ValidationException {
 		DataSetLoader loader = buildLoaderCase1();
 
 		TestDto2 d2i1 = new TestDto2();
@@ -162,7 +162,7 @@ public class DataSetLoaderTest {
 
 	@Test
 	public void testResolveReferencedObjects_ExpectDirectReferencesLoadedOk()
-			throws EntityNotFoundException, NotAuthorizedException, FieldValidationException {
+			throws EntityNotFoundException, NotAuthorizedException, ValidationException {
 		DataSetLoader loader = buildLoaderCase1();
 
 		TestDto1 d1i1 = new TestDto1();
@@ -192,7 +192,7 @@ public class DataSetLoaderTest {
 
 	@Test
 	public void testResolveReferencedObjects_ExpectOneToManyDirectsLoadedOk()
-			throws EntityNotFoundException, NotAuthorizedException, FieldValidationException {
+			throws EntityNotFoundException, NotAuthorizedException, ValidationException {
 		DataSetLoader loader = buildLoaderCase1();
 
 		TestDto2 d2i1 = new TestDto2();
@@ -219,7 +219,7 @@ public class DataSetLoaderTest {
 
 	@Test
 	public void testResolveReferencedObjects_ExpectOneToManyRecoursiveLoadedOk()
-			throws EntityNotFoundException, NotAuthorizedException, FieldValidationException {
+			throws EntityNotFoundException, NotAuthorizedException, ValidationException {
 		DataSetLoader loader = buildLoaderCase1();
 
 		TestDto2 d2i1 = new TestDto2();
@@ -253,7 +253,7 @@ public class DataSetLoaderTest {
 
 	@Test
 	public void testResolveReferencedObjects_ExpectOneToManyTwoParentsOneChildLoadedOk()
-			throws EntityNotFoundException, NotAuthorizedException, FieldValidationException {
+			throws EntityNotFoundException, NotAuthorizedException, ValidationException {
 		DataSetLoader loader = buildLoaderCase1();
 
 		TestDto2 d2i1 = new TestDto2();
@@ -287,7 +287,7 @@ public class DataSetLoaderTest {
 
 	@Test
 	public void testResolveReferencedObjects_ExpectBackReferencesLoadedOk()
-			throws EntityNotFoundException, NotAuthorizedException, FieldValidationException {
+			throws EntityNotFoundException, NotAuthorizedException, ValidationException {
 		DataSetLoader loader = buildLoaderCase1();
 
 		TestDto2 d2i1 = new TestDto2();
@@ -328,7 +328,7 @@ public class DataSetLoaderTest {
 
 	@Test
 	public void testResolveReferencedObjects_ExpectM2mLoadedOkOk()
-			throws EntityNotFoundException, NotAuthorizedException, FieldValidationException {
+			throws EntityNotFoundException, NotAuthorizedException, ValidationException {
 		DataSetLoader loader = buildLoaderCase1();
 
 		TestDto3 d3i1 = new TestDto3();

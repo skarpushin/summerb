@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -33,7 +33,7 @@ public class StringTemplateValidationUtilsTest {
 
 		StringTemplateValidationUtils.validateStringTemplate(stringTemplateFactory, stringTemplate, ctx, fieldToken);
 
-		assertEquals(false, ctx.getHasErrors());
+		assertEquals(false, ctx.isHasErrors());
 	}
 
 	@Test
@@ -45,7 +45,7 @@ public class StringTemplateValidationUtilsTest {
 
 		StringTemplateValidationUtils.validateStringTemplate(stringTemplateFactory, stringTemplate, ctx, fieldToken);
 
-		assertEquals(false, ctx.getHasErrors());
+		assertEquals(false, ctx.isHasErrors());
 	}
 
 	@Test
@@ -57,7 +57,7 @@ public class StringTemplateValidationUtilsTest {
 
 		StringTemplateValidationUtils.validateStringTemplate(stringTemplateFactory, stringTemplate, ctx, fieldToken);
 
-		assertEquals(true, ctx.getHasErrors());
+		assertEquals(true, ctx.isHasErrors());
 	}
 
 }

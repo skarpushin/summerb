@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -40,7 +40,7 @@ import org.summerb.users.api.UserService;
 import org.summerb.users.api.dto.User;
 import org.summerb.users.api.exceptions.InvalidPasswordException;
 import org.summerb.users.api.exceptions.UserNotFoundException;
-import org.summerb.validation.FieldValidationException;
+import org.summerb.validation.ValidationException;
 import org.summerb.webappboilerplate.security.apis.LoginEligibilityVerifier;
 import org.summerb.webappboilerplate.security.ve.PasswordInvalidValidationError;
 import org.summerb.webappboilerplate.security.ve.UserNotFoundValidationError;
@@ -106,19 +106,19 @@ public class AuthenticationProviderImpl implements AuthenticationProvider, Initi
 					authentication.getCredentials(), userDetails.getAuthorities());
 			ret.setDetails(authentication.getDetails());
 			return ret;
-		} catch (FieldValidationException e) {
+		} catch (ValidationException e) {
 			throw buildBadCredentialsExc(e);
 		} catch (UserNotFoundException e) {
-			throw buildBadCredentialsExc(new FieldValidationException(new UserNotFoundValidationError()));
+			throw buildBadCredentialsExc(new ValidationException(new UserNotFoundValidationError()));
 		} catch (InvalidPasswordException e) {
-			throw buildBadCredentialsExc(new FieldValidationException(new PasswordInvalidValidationError()));
+			throw buildBadCredentialsExc(new ValidationException(new PasswordInvalidValidationError()));
 		} catch (Throwable t) {
 			throw new AuthenticationServiceException(
 					getMessage(SecurityMessageCodes.AUTH_FATAL, "Fatal authentication exception"), t);
 		}
 	}
 
-	protected BadCredentialsException buildBadCredentialsExc(FieldValidationException e) {
+	protected BadCredentialsException buildBadCredentialsExc(ValidationException e) {
 		return new BadCredentialsException(getMessage(SecurityMessageCodes.BAD_CREDENTIALS, "Bad credentials"), e);
 	}
 

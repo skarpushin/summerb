@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -25,7 +25,7 @@ import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapNoOpImpl;
 import org.summerb.minicms.api.dto.Attachment;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
 import org.summerb.utils.objectcopy.DeepCopy;
-import org.summerb.validation.FieldValidationException;
+import org.summerb.validation.ValidationException;
 
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.EventBus;
@@ -48,12 +48,12 @@ public class AttachmentEventBusWireTapImpl extends EasyCrudWireTapNoOpImpl<Long,
 	}
 
 	@Override
-	public boolean requiresOnCreate() throws FieldValidationException, NotAuthorizedException {
+	public boolean requiresOnCreate() throws ValidationException, NotAuthorizedException {
 		return true;
 	}
 
 	@Override
-	public void afterCreate(Attachment dto) throws FieldValidationException, NotAuthorizedException {
+	public void afterCreate(Attachment dto) throws ValidationException, NotAuthorizedException {
 		eventBus.post(EntityChangedEvent.added(getDtoSafeForEventBus(dto)));
 	}
 
@@ -74,27 +74,27 @@ public class AttachmentEventBusWireTapImpl extends EasyCrudWireTapNoOpImpl<Long,
 	}
 
 	@Override
-	public boolean requiresOnUpdate() throws NotAuthorizedException, FieldValidationException {
+	public boolean requiresOnUpdate() throws NotAuthorizedException, ValidationException {
 		return true;
 	}
 
 	@Override
-	public void afterUpdate(Attachment from, Attachment to) throws NotAuthorizedException, FieldValidationException {
+	public void afterUpdate(Attachment from, Attachment to) throws NotAuthorizedException, ValidationException {
 		eventBus.post(EntityChangedEvent.updated(getDtoSafeForEventBus(to)));
 	}
 
 	@Override
-	public boolean requiresOnDelete() throws FieldValidationException, NotAuthorizedException {
+	public boolean requiresOnDelete() throws ValidationException, NotAuthorizedException {
 		return true;
 	}
 
 	@Override
-	public void afterDelete(Attachment dto) throws FieldValidationException, NotAuthorizedException {
+	public void afterDelete(Attachment dto) throws ValidationException, NotAuthorizedException {
 		eventBus.post(EntityChangedEvent.removedObject(getDtoSafeForEventBus(dto)));
 	}
 
 	@Override
-	public boolean requiresOnRead() throws NotAuthorizedException, FieldValidationException {
+	public boolean requiresOnRead() throws NotAuthorizedException, ValidationException {
 		return false;
 	}
 }

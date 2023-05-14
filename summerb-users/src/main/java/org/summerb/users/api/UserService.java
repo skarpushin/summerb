@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -19,7 +19,7 @@ import org.summerb.easycrud.api.dto.PagerParams;
 import org.summerb.easycrud.api.dto.PaginatedList;
 import org.summerb.users.api.dto.User;
 import org.summerb.users.api.exceptions.UserNotFoundException;
-import org.summerb.validation.FieldValidationException;
+import org.summerb.validation.ValidationException;
 
 /**
  * Service for managing user accounts. That is. This is just a user registry.
@@ -32,16 +32,16 @@ import org.summerb.validation.FieldValidationException;
  *         TBD: Unify tables naming to have common prefix, like "users_"
  */
 public interface UserService {
-	User createUser(User user) throws FieldValidationException;
+	User createUser(User user) throws ValidationException;
 
 	User getUserByUuid(String userUuid) throws UserNotFoundException;
 
-	User getUserByEmail(String userEmail) throws FieldValidationException, UserNotFoundException;
+	User getUserByEmail(String userEmail) throws ValidationException, UserNotFoundException;
 
 	PaginatedList<User> findUsersByDisplayNamePartial(String displayNamePartial, PagerParams pagerParams)
-			throws FieldValidationException;
+			throws ValidationException;
 
-	void updateUser(User user) throws FieldValidationException, UserNotFoundException;
+	void updateUser(User user) throws ValidationException, UserNotFoundException;
 
 	void deleteUserByUuid(String userUuid) throws UserNotFoundException;
 }

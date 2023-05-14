@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2021 Sergey Karpushin
+ * Copyright 2015-2023 Sergey Karpushin
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -31,7 +31,7 @@ public class DuplicateUserValidationError extends ValidationError {
 	}
 
 	public DuplicateUserValidationError(String fieldToken) {
-		super(VALIDATION_MESSAGE_CODE_DUPLICATE_USER, fieldToken);
+		super(fieldToken, VALIDATION_MESSAGE_CODE_DUPLICATE_USER);
 	}
 
 }
