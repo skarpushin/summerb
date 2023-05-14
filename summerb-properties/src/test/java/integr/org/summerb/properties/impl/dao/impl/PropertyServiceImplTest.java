@@ -45,7 +45,7 @@ import org.summerb.utils.exceptions.ExceptionUtils;
 @ProfileValueSourceConfiguration(SystemProfileValueSource.class)
 @Transactional
 public class PropertyServiceImplTest {
-  @Autowired private PropertyService propertyService;
+  @Autowired protected PropertyService propertyService;
 
   @BeforeTransaction
   public void verifyInitialDatabaseState() {
@@ -224,7 +224,7 @@ public class PropertyServiceImplTest {
     }
   }
 
-  private String generateLongString(int desiredStringLength, String exampleChars) {
+  protected String generateLongString(int desiredStringLength, String exampleChars) {
     StringBuilder ret = new StringBuilder(desiredStringLength + exampleChars.length());
 
     while (ret.length() < desiredStringLength) {

@@ -29,9 +29,9 @@ import org.summerb.properties.api.dto.NamedProperty;
  * @author skarpushin
  */
 public class PropertyServiceWrapper implements SimplifiedPropertyService {
-  private final PropertyService propertyService;
-  private final String appName;
-  private final String domainName;
+  protected final PropertyService propertyService;
+  protected final String appName;
+  protected final String domainName;
 
   public PropertyServiceWrapper(
       PropertyService propertyService, String appName, String domainName) {

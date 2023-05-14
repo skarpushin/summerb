@@ -37,10 +37,10 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 public class SimplePropertyServiceCachedImpl implements SimplePropertyService, InitializingBean {
-  private SimplePropertyService simplePropertyService;
-  private EventBus eventBus;
+  protected SimplePropertyService simplePropertyService;
+  protected EventBus eventBus;
 
-  private LoadingCache<String, Map<String, String>> cache;
+  protected LoadingCache<String, Map<String, String>> cache;
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   @Override
@@ -55,7 +55,7 @@ public class SimplePropertyServiceCachedImpl implements SimplePropertyService, I
     eventBus.register(this);
   }
 
-  private CacheLoader<String, Map<String, String>> loader =
+  protected CacheLoader<String, Map<String, String>> loader =
       new CacheLoader<String, Map<String, String>>() {
         @Override
         public Map<String, String> load(String key) {
@@ -78,7 +78,7 @@ public class SimplePropertyServiceCachedImpl implements SimplePropertyService, I
     cache.invalidate(subjectId);
   }
 
-  private boolean isSameDomain(SimplePropertiesSubject value) {
+  protected boolean isSameDomain(SimplePropertiesSubject value) {
     return simplePropertyService.getAppName().equals(value.getAppName())
         && simplePropertyService.getDomainName().equals(value.getDomainName());
   }

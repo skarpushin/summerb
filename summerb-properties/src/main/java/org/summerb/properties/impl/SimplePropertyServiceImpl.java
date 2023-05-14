@@ -33,11 +33,11 @@ import com.google.common.base.Preconditions;
 import com.google.common.eventbus.EventBus;
 
 public class SimplePropertyServiceImpl implements SimplePropertyService, InitializingBean {
-  private PropertyService propertyService;
-  private String appName;
-  private String domainName;
+  protected PropertyService propertyService;
+  protected String appName;
+  protected String domainName;
 
-  private EventBus eventBus;
+  protected EventBus eventBus;
 
   @Override
   public void afterPropertiesSet() throws Exception {
@@ -63,7 +63,7 @@ public class SimplePropertyServiceImpl implements SimplePropertyService, Initial
     fireSubjectPropertiesChanged(subjectId);
   }
 
-  private void fireSubjectPropertiesChanged(String subjectId) {
+  protected void fireSubjectPropertiesChanged(String subjectId) {
     if (eventBus != null) {
       eventBus.post(
           EntityChangedEvent.updated(new SimplePropertiesSubject(appName, domainName, subjectId)));

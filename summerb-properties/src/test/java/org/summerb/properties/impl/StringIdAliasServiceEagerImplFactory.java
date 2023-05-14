@@ -52,7 +52,7 @@ public class StringIdAliasServiceEagerImplFactory {
     return ret;
   }
 
-  private static StringIdAliasDao createDaoMock() {
+  protected static StringIdAliasDao createDaoMock() {
     StringIdAliasDao ret = Mockito.mock(StringIdAliasDao.class);
 
     when(ret.createAliasFor(NAME)).thenReturn(NAME_ALIAS);

@@ -34,17 +34,17 @@ import org.summerb.properties.impl.dao.AliasEntry;
 import org.summerb.properties.impl.dao.StringIdAliasDao;
 
 public class StringIdAliasDaoImpl extends DaoBase implements StringIdAliasDao, InitializingBean {
-  private static final String PARAM_ALIAS = "alias";
-  private static final String PARAM_ALIAS_NAME = "alias_name";
-  private static final String PARAM_MAX = "max";
-  private static final String PARAM_OFFSET = "offset";
+  protected static final String PARAM_ALIAS = "alias";
+  protected static final String PARAM_ALIAS_NAME = "alias_name";
+  protected static final String PARAM_MAX = "max";
+  protected static final String PARAM_OFFSET = "offset";
 
-  private String tableName;
-  private SimpleJdbcInsert jdbcInsert;
-  private String sqlFindAliasByName;
-  private String sqlFindAllAliases;
-  private String sqlLastStatementCount;
-  private String sqlFindNameByAlias;
+  protected String tableName;
+  protected SimpleJdbcInsert jdbcInsert;
+  protected String sqlFindAliasByName;
+  protected String sqlFindAllAliases;
+  protected String sqlLastStatementCount;
+  protected String sqlFindNameByAlias;
 
   @Override
   public void afterPropertiesSet() throws Exception {
@@ -87,7 +87,7 @@ public class StringIdAliasDaoImpl extends DaoBase implements StringIdAliasDao, I
     return results.get(0);
   }
 
-  private RowMapper<AliasEntry> rowMapper =
+  protected RowMapper<AliasEntry> rowMapper =
       new RowMapper<AliasEntry>() {
         @Override
         public AliasEntry mapRow(ResultSet rs, int rowNum) throws SQLException {

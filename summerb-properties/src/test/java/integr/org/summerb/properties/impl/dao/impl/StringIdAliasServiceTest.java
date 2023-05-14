@@ -39,7 +39,7 @@ import org.summerb.properties.internal.StringIdAliasService;
 @ProfileValueSourceConfiguration(SystemProfileValueSource.class)
 @Transactional
 public class StringIdAliasServiceTest {
-  @Autowired private StringIdAliasService appAliasService;
+  @Autowired protected StringIdAliasService appAliasService;
 
   @BeforeTransaction
   public void verifyInitialDatabaseState() {

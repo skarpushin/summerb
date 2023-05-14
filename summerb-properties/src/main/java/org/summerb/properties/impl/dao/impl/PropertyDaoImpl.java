@@ -31,16 +31,16 @@ import org.summerb.properties.impl.dao.PropertyDao;
 import org.summerb.properties.impl.dto.NamedIdProperty;
 
 public class PropertyDaoImpl extends DaoBase implements PropertyDao, InitializingBean {
-  private String tableName = "props_values";
-  private String sqlPutProperty;
-  private String sqlFindSingleSubjectProperty;
-  private String sqlFindAllSubjectProperty;
-  private String sqlDeleAllSubjectProperties;
+  protected String tableName = "props_values";
+  protected String sqlPutProperty;
+  protected String sqlFindSingleSubjectProperty;
+  protected String sqlFindAllSubjectProperty;
+  protected String sqlDeleAllSubjectProperties;
 
-  private DaoExceptionTranslator daoExceptionTranslator =
+  protected DaoExceptionTranslator daoExceptionTranslator =
       new DaoExceptionToFveTranslatorMySqlImpl();
 
-  private RowMapper<String> propertyValueRowMapper =
+  protected RowMapper<String> propertyValueRowMapper =
       new RowMapper<String>() {
         @Override
         public String mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -50,7 +50,7 @@ public class PropertyDaoImpl extends DaoBase implements PropertyDao, Initializin
         }
       };
 
-  private RowMapper<NamedIdProperty> namedPropertyRowMapper =
+  protected RowMapper<NamedIdProperty> namedPropertyRowMapper =
       new RowMapper<NamedIdProperty>() {
         @Override
         public NamedIdProperty mapRow(ResultSet rs, int rowNum) throws SQLException {

@@ -48,14 +48,14 @@ import com.google.common.collect.HashBiMap;
  * @author skarpushin
  */
 public class StringIdAliasServiceEagerImpl implements StringIdAliasService, InitializingBean {
-  private static final int EAGER_LOAD_BATCH_SIZE = 100;
-  private static Logger log = LoggerFactory.getLogger(StringIdAliasServiceEagerImpl.class);
+  protected static final int EAGER_LOAD_BATCH_SIZE = 100;
+  protected static Logger log = LoggerFactory.getLogger(StringIdAliasServiceEagerImpl.class);
 
-  private StringIdAliasDao stringIdAliasDao;
-  private ExecutorService executorService;
+  protected StringIdAliasDao stringIdAliasDao;
+  protected ExecutorService executorService;
 
-  private BiMap<String, Long> aliases;
-  private Future<BiMap<String, Long>> aliasesFuture;
+  protected BiMap<String, Long> aliases;
+  protected Future<BiMap<String, Long>> aliasesFuture;
 
   @Override
   public void afterPropertiesSet() throws Exception {
@@ -183,7 +183,7 @@ public class StringIdAliasServiceEagerImpl implements StringIdAliasService, Init
     }
   }
 
-  private class CreateAliasTask implements Callable<Long> {
+  protected class CreateAliasTask implements Callable<Long> {
     String name;
 
     public CreateAliasTask(String name) {

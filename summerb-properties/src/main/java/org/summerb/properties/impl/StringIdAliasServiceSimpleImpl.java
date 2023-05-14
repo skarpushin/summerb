@@ -35,9 +35,9 @@ import com.google.common.base.Preconditions;
  * @author skarpushin
  */
 public class StringIdAliasServiceSimpleImpl implements StringIdAliasService, InitializingBean {
-  private static Logger log = LoggerFactory.getLogger(StringIdAliasServiceSimpleImpl.class);
+  protected static Logger log = LoggerFactory.getLogger(StringIdAliasServiceSimpleImpl.class);
 
-  private StringIdAliasDao stringIdAliasDao;
+  protected StringIdAliasDao stringIdAliasDao;
 
   @Override
   public void afterPropertiesSet() throws Exception {

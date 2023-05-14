@@ -16,7 +16,7 @@
 package org.summerb.properties.api.exceptions;
 
 public class PropertyServiceUnexpectedException extends RuntimeException {
-  private static final long serialVersionUID = -755441433588285795L;
+  protected static final long serialVersionUID = -755441433588285795L;
 
   public PropertyServiceUnexpectedException() {}
 

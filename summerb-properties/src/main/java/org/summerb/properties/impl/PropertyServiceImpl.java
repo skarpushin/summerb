@@ -34,13 +34,13 @@ import org.summerb.utils.exceptions.ExceptionUtils;
 import com.google.common.base.Preconditions;
 
 public class PropertyServiceImpl implements PropertyService {
-  // private Logger log = LoggerFactory.getLogger(PropertyServiceImpl.class);
+  // protected Logger log = LoggerFactory.getLogger(PropertyServiceImpl.class);
 
-  private StringIdAliasService appNameAlias;
-  private StringIdAliasService domainNameAlias;
-  private StringIdAliasService propertyNameAlias;
+  protected StringIdAliasService appNameAlias;
+  protected StringIdAliasService domainNameAlias;
+  protected StringIdAliasService propertyNameAlias;
 
-  private PropertyDao propertyDao;
+  protected PropertyDao propertyDao;
 
   @Override
   @Transactional(rollbackFor = Throwable.class)
@@ -60,7 +60,7 @@ public class PropertyServiceImpl implements PropertyService {
     }
   }
 
-  private void translateServiceDataTruncationExceptionIfAny(String name, Throwable t) {
+  protected void translateServiceDataTruncationExceptionIfAny(String name, Throwable t) {
     ServiceDataTruncationException exc =
         ExceptionUtils.findExceptionOfType(t, ServiceDataTruncationException.class);
     if (exc != null && "value".equals(exc.getFieldTokenBeingTruncated())) {
@@ -260,7 +260,7 @@ public class PropertyServiceImpl implements PropertyService {
    *
    * @param strings
    */
-  private void checkArgumentsHaveText(String... strings) {
+  protected void checkArgumentsHaveText(String... strings) {
     for (String str : strings) {
       Preconditions.checkArgument(StringUtils.hasText(str));
     }
