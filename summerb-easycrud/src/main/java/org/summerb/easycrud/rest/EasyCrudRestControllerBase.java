@@ -17,6 +17,7 @@ package org.summerb.easycrud.rest;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -27,6 +28,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.http.MediaType;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -67,6 +69,8 @@ import org.summerb.security.api.exceptions.NotAuthorizedException;
 
 import com.google.common.base.Preconditions;
 
+import io.swagger.v3.oas.annotations.Parameter;
+
 /**
  * Base class for EasyCrud REST API controllers which main responsibility is to serve CRUD requests
  * for entities managed by {@link EasyCrudService}.
@@ -99,7 +103,7 @@ public class EasyCrudRestControllerBase<
   protected PermissionsResolverStrategy<TId, TRow> permissionsResolverStrategy;
   protected FilteringParamsToQueryConverter filteringParamsToQueryConverter =
       new FilteringParamsToQueryConverterImpl();
-  protected OrderBy defaultOrderBy;
+  protected OrderBy[] defaultOrderBy;
   protected PagerParams defaultPagerParams = new PagerParams();
 
   protected ApplicationContext applicationContext;
@@ -167,39 +171,97 @@ public class EasyCrudRestControllerBase<
    */
   @GetMapping
   public MultipleItemsResult<TId, TRow> getList(
-      @RequestParam(value = "pagerParams", required = false) PagerParams pagerParams,
-      @RequestParam(value = "orderBy", required = false) OrderBy orderBy,
+      @RequestParam(value = "pagerParams", required = false) PagerParams optionalPagerParams,
+      @RequestParam(value = "orderBy", required = false) OrderBy optionalOrderBy,
       @RequestParam(value = "needPerms", required = false) boolean needPerms,
       @RequestParam(value = "referencesToResolve", required = false)
           List<String> referencesToResolve,
-      /* @ApiIgnore */ PathVariablesMap pathVariables)
+      @Parameter(hidden = true) PathVariablesMap pathVariables)
       throws Exception {
-    if (orderBy != null && (orderBy.getDirection() == null || orderBy.getFieldName() == null)) {
-      orderBy = defaultOrderBy;
-    }
-    if (pagerParams == null) {
-      pagerParams = defaultPagerParams;
-    }
 
-    PaginatedList<TRow> rows;
-    if (orderBy == null) {
-      rows = service.find(pagerParams, queryNarrowerStrategy.narrow(null, pathVariables));
-    } else {
-      rows = service.find(pagerParams, queryNarrowerStrategy.narrow(null, pathVariables), orderBy);
-    }
-    MultipleItemsResult<TId, TRow> ret =
-        new MultipleItemsResult<>(service.getRowMessageCode(), rows);
+    OrderBy[] orderBy = clarifyOrderBy(optionalOrderBy);
+    PagerParams pagerParams = clarifyPagerParams(optionalPagerParams);
 
+    Query query = narrowQuery(null, pathVariables);
+    PaginatedList<TRow> rows = queryRows(orderBy, pagerParams, query);
+
+    MultipleItemsResult<TId, TRow> ret = buildMultipleItemsResult(rows);
+    fillMultipleItemsResultWithPermissionsInfo(ret, needPerms, pathVariables);
+    resolveMultipleItemsResultReferences(ret, referencesToResolve, rows);
+
+    return convert(ret);
+  }
+
+  protected MultipleItemsResult<TId, TRow> convert(MultipleItemsResult<TId, TRow> ret) {
+    return convertBeforeReturnStrategy.convert(ret);
+  }
+
+  protected void resolveMultipleItemsResultReferences(
+      MultipleItemsResult<TId, TRow> ret,
+      List<String> referencesToResolve,
+      PaginatedList<TRow> rows)
+      throws EntityNotFoundException, NotAuthorizedException {
+    if (rows.getHasItems() && !CollectionUtils.isEmpty(referencesToResolve)) {
+      resolveReferences(referencesToResolve, ret, rows.getItems());
+    }
+  }
+
+  protected void fillMultipleItemsResultWithPermissionsInfo(
+      MultipleItemsResult<TId, TRow> ret, boolean needPerms, PathVariablesMap pathVariables) {
     if (needPerms) {
       Preconditions.checkArgument(permissionsResolverStrategy != null, PERM_RESOLVER_REQ);
       permissionsResolverStrategy.resolvePermissions(ret, pathVariables);
     }
+  }
 
-    if (rows.getHasItems() && !CollectionUtils.isEmpty(referencesToResolve)) {
-      resolveReferences(referencesToResolve, ret, rows.getItems());
+  protected MultipleItemsResult<TId, TRow> buildMultipleItemsResult(PaginatedList<TRow> rows) {
+    return new MultipleItemsResult<>(service.getRowMessageCode(), rows);
+  }
+
+  protected PagerParams clarifyPagerParams(PagerParams optionalPagerParams) {
+    if (optionalPagerParams == null || optionalPagerParams.getMax() == 0) {
+      return defaultPagerParams;
+    }
+    return optionalPagerParams;
+  }
+
+  protected OrderBy[] clarifyOrderBy(OrderBy... optionalOrderBy) {
+    if (optionalOrderBy == null || optionalOrderBy.length == 0) {
+      return getDefaultOrderBy();
     }
 
-    return convertBeforeReturnStrategy.convert(ret);
+    List<OrderBy> list =
+        Arrays.stream(optionalOrderBy)
+            .filter(Objects::nonNull)
+            .filter(
+                x -> StringUtils.hasText(x.getDirection()) && StringUtils.hasText(x.getFieldName()))
+            .collect(Collectors.toList());
+    if (list.isEmpty()) {
+      return getDefaultOrderBy();
+    }
+
+    return optionalOrderBy;
+  }
+
+  protected OrderBy[] getDefaultOrderBy() {
+    return defaultOrderBy;
+  }
+
+  protected PaginatedList<TRow> queryRows(OrderBy[] orderBy, PagerParams pagerParams, Query query)
+      throws NotAuthorizedException {
+    return service.find(pagerParams, query, orderBy);
+  }
+
+  protected Query buildQuery(EasyCrudQueryParams filteringParams, PathVariablesMap pathVariables) {
+    Query query =
+        filteringParamsToQueryConverter.convert(
+            filteringParams.getFilterParams(), service.getRowClass());
+    query = narrowQuery(query, pathVariables);
+    return query;
+  }
+
+  protected Query narrowQuery(Query query, PathVariablesMap pathVariables) {
+    return queryNarrowerStrategy.narrow(query, pathVariables);
   }
 
   protected void resolveReferences(
@@ -231,46 +293,26 @@ public class EasyCrudRestControllerBase<
     ret.setRefs(ds);
   }
 
-  @PostMapping(
-      path = "/query",
-      produces = MediaType.APPLICATION_JSON_VALUE,
-      consumes = MediaType.APPLICATION_JSON_VALUE)
+  @PostMapping(path = "/query")
   public MultipleItemsResult<TId, TRow> getListWithQuery(
       @RequestBody EasyCrudQueryParams filteringParams,
       @RequestParam(value = "needPerms", required = false) boolean needPerms,
       @RequestParam(value = "referencesToResolve", required = false)
           List<String> referencesToResolve,
-      /* @ApiIgnore */ PathVariablesMap pathVariables)
+      @Parameter(hidden = true) PathVariablesMap pathVariables)
       throws Exception {
 
-    if ((filteringParams.getOrderBy() == null || filteringParams.getOrderBy().length == 0)
-        && defaultOrderBy != null) {
-      filteringParams.setOrderBy(new OrderBy[] {defaultOrderBy});
-    }
-    if (filteringParams.getPagerParams() == null) {
-      filteringParams.setPagerParams(defaultPagerParams);
-    }
+    OrderBy[] orderBy = clarifyOrderBy(filteringParams.getOrderBy());
+    PagerParams pagerParams = clarifyPagerParams(filteringParams.getPagerParams());
 
-    Query query =
-        filteringParamsToQueryConverter.convert(
-            filteringParams.getFilterParams(), service.getRowClass());
-    query = queryNarrowerStrategy.narrow(query, pathVariables);
+    Query query = buildQuery(filteringParams, pathVariables);
+    PaginatedList<TRow> rows = queryRows(orderBy, pagerParams, query);
 
-    PaginatedList<TRow> rows =
-        service.find(filteringParams.getPagerParams(), query, filteringParams.getOrderBy());
-    MultipleItemsResult<TId, TRow> ret =
-        new MultipleItemsResult<>(service.getRowMessageCode(), rows);
+    MultipleItemsResult<TId, TRow> ret = buildMultipleItemsResult(rows);
+    fillMultipleItemsResultWithPermissionsInfo(ret, needPerms, pathVariables);
+    resolveMultipleItemsResultReferences(ret, referencesToResolve, rows);
 
-    if (needPerms) {
-      Preconditions.checkArgument(permissionsResolverStrategy != null, PERM_RESOLVER_REQ);
-      permissionsResolverStrategy.resolvePermissions(ret, pathVariables);
-    }
-
-    if (rows.getHasItems() && !CollectionUtils.isEmpty(referencesToResolve)) {
-      resolveReferences(referencesToResolve, ret, rows.getItems());
-    }
-
-    return convertBeforeReturnStrategy.convert(ret);
+    return convert(ret);
   }
 
   @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

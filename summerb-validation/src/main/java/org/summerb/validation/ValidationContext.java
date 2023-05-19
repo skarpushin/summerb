@@ -375,7 +375,7 @@ public class ValidationContext<T> {
     }
   }
 
-  protected String getPropertyName(Function<T, ?> getter) {
+  public String getPropertyName(Function<T, ?> getter) {
     Preconditions.checkState(propertyNameObtainer != null, "propertyNameObtainer is not provided");
     Preconditions.checkArgument(getter != null, "getPropertyName: getter required");
     return propertyNameObtainer.obtainFrom(getter);
