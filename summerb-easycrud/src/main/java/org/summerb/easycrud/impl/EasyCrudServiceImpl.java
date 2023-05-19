@@ -18,8 +18,6 @@ package org.summerb.easycrud.impl;
 import java.io.NotSerializableException;
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -29,9 +27,6 @@ import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.api.EasyCrudWireTap;
 import org.summerb.easycrud.api.EasyCrudWireTapMode;
 import org.summerb.easycrud.api.StringIdGenerator;
-import org.summerb.easycrud.api.dto.PagerParams;
-import org.summerb.easycrud.api.dto.PaginatedList;
-import org.summerb.easycrud.api.dto.Top;
 import org.summerb.easycrud.api.exceptions.EntityNotFoundException;
 import org.summerb.easycrud.api.exceptions.GenericEntityNotFoundException;
 import org.summerb.easycrud.api.query.OrderBy;
@@ -44,9 +39,11 @@ import org.summerb.easycrud.api.row.HasUuid;
 import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapNoOpImpl;
 import org.summerb.security.api.CurrentUserUuidResolver;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
+import org.summerb.utils.easycrud.api.dto.PagerParams;
+import org.summerb.utils.easycrud.api.dto.PaginatedList;
+import org.summerb.utils.easycrud.api.dto.Top;
 import org.summerb.utils.objectcopy.Clonnable;
 import org.summerb.utils.objectcopy.DeepCopy;
-import org.summerb.validation.ValidationException;
 
 import com.google.common.base.Preconditions;
 
@@ -154,7 +151,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
    * @param currentUserUuidResolver currentUserUuidResolver
    */
   @Autowired(required = false)
-  public void setCurrentUserResolver(@Nonnull CurrentUserUuidResolver currentUserUuidResolver) {
+  public void setCurrentUserResolver(CurrentUserUuidResolver currentUserUuidResolver) {
     Preconditions.checkState(rowClass != null, "please set rowClass before callign this method");
     Preconditions.checkArgument(
         !HasAuthor.class.isAssignableFrom(rowClass) || currentUserUuidResolver != null,
@@ -175,10 +172,10 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
    * Set {@link EasyCrudExceptionStrategy}. If nothing set, then {@link
    * EasyCrudExceptionStrategyDefaultImpl} will be used
    *
-   * @param easyCrudExceptionStrategy easyCrudExceptionStrategy
+   * @param exceptionStrategy exceptionStrategy
    */
   @Autowired(required = false)
-  public void setExceptionStrategy(@Nonnull EasyCrudExceptionStrategy<TId> exceptionStrategy) {
+  public void setExceptionStrategy(EasyCrudExceptionStrategy<TId> exceptionStrategy) {
     Preconditions.checkArgument(exceptionStrategy != null, "exceptionStrategy required");
     this.exceptionStrategy = exceptionStrategy;
   }
@@ -203,7 +200,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
    *
    * @param wireTap wireTap
    */
-  public void setWireTap(@Nonnull EasyCrudWireTap<TRow> wireTap) {
+  public void setWireTap(EasyCrudWireTap<TRow> wireTap) {
     Preconditions.checkArgument(wireTap != null, "wireTap required");
     this.wireTap = wireTap;
   }
@@ -216,9 +213,9 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
    * Set {@link StringIdGenerator}. This is mandatory only when Row class implements {@link
    * HasUuid}. If not set, then {@link StringIdGeneratorUuidImpl} will be used by default.
    *
-   * @param wireTap wireTap
+   * @param stringIdGenerator stringIdGenerator
    */
-  public void setStringIdGenerator(@Nonnull StringIdGenerator stringIdGenerator) {
+  public void setStringIdGenerator(StringIdGenerator stringIdGenerator) {
     Preconditions.checkState(rowClass != null, "please set rowClass before callign this method");
     Preconditions.checkArgument(
         !HasUuid.class.isAssignableFrom(rowClass) || stringIdGenerator != null,
@@ -283,8 +280,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
   }
 
   @Override
-  public TRow update(TRow newVersion)
-      {
+  public TRow update(TRow newVersion) {
     try {
       Preconditions.checkArgument(newVersion != null);
 

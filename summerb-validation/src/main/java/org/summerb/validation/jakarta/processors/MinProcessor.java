@@ -17,16 +17,14 @@ package org.summerb.validation.jakarta.processors;
 
 import java.math.BigDecimal;
 
-import javax.annotation.Nonnull;
+import javax.validation.constraints.Min;
 
 import org.summerb.validation.ValidationContext;
 import org.summerb.validation.jakarta.processors.abstracts.DecimalProcessorNullableAbstract;
 
-import javax.validation.constraints.Min;
-
 public class MinProcessor extends DecimalProcessorNullableAbstract<Min> {
 
-  public MinProcessor(@Nonnull Min annotation, @Nonnull String propertyName) {
+  public MinProcessor(Min annotation, String propertyName) {
     super(annotation, propertyName);
   }
 

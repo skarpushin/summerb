@@ -15,8 +15,6 @@
  ******************************************************************************/
 package org.summerb.validation.errors;
 
-import javax.annotation.Nonnull;
-
 import org.summerb.validation.ValidationContext;
 import org.summerb.validation.ValidationError;
 
@@ -34,7 +32,7 @@ public class MustNotHaveDuplicateName extends ValidationError {
   /** @deprecated used only for serialization */
   public MustNotHaveDuplicateName() {}
 
-  public MustNotHaveDuplicateName(@Nonnull String propertyName) {
+  public MustNotHaveDuplicateName(String propertyName) {
     super(propertyName, MESSAGE_CODE);
   }
 }

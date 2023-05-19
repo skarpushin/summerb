@@ -19,17 +19,13 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.google.common.base.Preconditions;
 
 public abstract class ValidationErrorsUtils {
 
   private ValidationErrorsUtils() {}
 
-  public static boolean hasErrorOfType(
-      @Nonnull Class<?> clazz, @Nonnull List<? extends ValidationError> errors) {
+  public static boolean hasErrorOfType(Class<?> clazz, List<? extends ValidationError> errors) {
     for (ValidationError validationError : errors) {
       if (validationError.getClass().equals(clazz)) {
         return true;
@@ -40,8 +36,7 @@ public abstract class ValidationErrorsUtils {
   }
 
   @SuppressWarnings("unchecked")
-  public static <T> @Nullable T findErrorOfType(
-      @Nonnull Class<T> clazz, @Nonnull List<? extends ValidationError> errors) {
+  public static <T> T findErrorOfType(Class<T> clazz, List<? extends ValidationError> errors) {
     for (ValidationError validationError : errors) {
       if (validationError.getClass().equals(clazz)) {
         return (T) validationError;
@@ -51,7 +46,7 @@ public abstract class ValidationErrorsUtils {
     return null;
   }
 
-  public static @Nonnull List<ValidationError> findErrorsForField(
+  public static List<ValidationError> findErrorsForField(
       String propertyName, List<? extends ValidationError> errors) {
     Preconditions.checkArgument(propertyName != null, "Field token must not be null");
 
@@ -70,7 +65,7 @@ public abstract class ValidationErrorsUtils {
   }
 
   @SuppressWarnings("unchecked")
-  public static <T> @Nullable T findErrorOfTypeForField(
+  public static <T> T findErrorOfTypeForField(
       Class<T> clazz, String propertyName, List<? extends ValidationError> errors) {
     for (ValidationError validationError : errors) {
       if (!propertyName.equals(validationError.getPropertyName())) {
@@ -84,8 +79,7 @@ public abstract class ValidationErrorsUtils {
     return null;
   }
 
-  public static @Nullable ValidationErrors findAggregatedErrorsAtIndex(
-      int i, @Nonnull List<ValidationError> list) {
+  public static ValidationErrors findAggregatedErrorsAtIndex(int i, List<ValidationError> list) {
     String idx = Integer.toString(i);
     return (ValidationErrors)
         list.stream()

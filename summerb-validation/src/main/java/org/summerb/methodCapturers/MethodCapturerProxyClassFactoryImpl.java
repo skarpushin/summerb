@@ -20,8 +20,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 
@@ -40,7 +38,7 @@ public class MethodCapturerProxyClassFactoryImpl implements MethodCapturerProxyC
 
   @SuppressWarnings("deprecation")
   @Override
-  public @Nonnull MethodCapturer buildProxyFor(@Nonnull Class<?> clazz) {
+  public MethodCapturer buildProxyFor(Class<?> clazz) {
     try {
       return (MethodCapturer) getProxyType(clazz).newInstance();
     } catch (Exception e) {

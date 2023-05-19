@@ -29,13 +29,13 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.savedrequest.NullRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
-import org.summerb.utils.json.JsonResponseWriter;
-import org.summerb.utils.json.JsonResponseWriterGsonImpl;
 import org.summerb.webappboilerplate.security.dto.LoginResult;
 import org.summerb.webappboilerplate.security.impls.UserDetailsImpl;
+import org.summerb.webappboilerplate.utils.json.JsonResponseWriter;
+import org.summerb.webappboilerplate.utils.json.JsonResponseWriterGsonImpl;
 
 public class RestAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
-  private JsonResponseWriter jsonResponseHelper;
+  protected JsonResponseWriter jsonResponseHelper;
 
   /**
    * Should be the same one as used by {@link
@@ -43,7 +43,7 @@ public class RestAuthenticationSuccessHandler implements AuthenticationSuccessHa
    *
    * <p>And {@link org.springframework.security.web.savedrequest.RequestCacheAwareFilter} if used
    */
-  private RequestCache requestCache = new NullRequestCache();
+  protected RequestCache requestCache = new NullRequestCache();
 
   public RestAuthenticationSuccessHandler() {
     jsonResponseHelper = new JsonResponseWriterGsonImpl();

@@ -35,13 +35,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.api.EasyCrudServiceResolver;
-import org.summerb.easycrud.api.dto.PagerParams;
-import org.summerb.easycrud.api.dto.PaginatedList;
 import org.summerb.easycrud.api.exceptions.GenericEntityNotFoundException;
 import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.api.relations.ReferencesRegistry;
 import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.api.row.datapackage.DataSet;
+import org.summerb.utils.easycrud.api.dto.PagerParams;
+import org.summerb.utils.easycrud.api.dto.PaginatedList;
 
 import integr.org.summerb.easycrud.dtos.TestDto1;
 import integr.org.summerb.easycrud.dtos.TestDto2;

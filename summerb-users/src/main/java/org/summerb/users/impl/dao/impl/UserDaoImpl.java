@@ -28,11 +28,11 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.summerb.easycrud.api.dto.PagerParams;
-import org.summerb.easycrud.api.dto.PaginatedList;
 import org.summerb.easycrud.impl.dao.TableDaoBase;
 import org.summerb.users.api.dto.User;
 import org.summerb.users.impl.dao.UserDao;
+import org.summerb.utils.easycrud.api.dto.PagerParams;
+import org.summerb.utils.easycrud.api.dto.PaginatedList;
 
 /**
  * Expects following indexes: uuid (unique), email (unique), displayName

@@ -15,11 +15,11 @@
  ******************************************************************************/
 package org.summerb.easycrud.impl.validation;
 
+import javax.validation.constraints.AssertTrue;
+
 import org.summerb.validation.ValidationContext;
 import org.summerb.validation.ValidationContextConfig;
 import org.summerb.validation.jakarta.processors.AssertTrueProcessor;
-
-import javax.validation.constraints.AssertTrue;
 
 /**
  * This impl will just delegate validation to Jakarta Annotations (i.e. {@link AssertTrue}). But (!)

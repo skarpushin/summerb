@@ -37,12 +37,12 @@ public class DaoExceptionTranslatorMySqlImpl extends DaoExceptionTranslatorAbstr
   public static final String MYSQL_CONSTRAINT_UNIQUE = "_UNIQUE";
 
   @Override
-  public void translateAndThrowIfApplicable(Throwable t){
+  public void translateAndThrowIfApplicable(Throwable t) {
     throwIfDuplicate(t);
     throwIfTruncationError(t);
   }
 
-  protected void throwIfDuplicate(Throwable t){
+  protected void throwIfDuplicate(Throwable t) {
     DuplicateKeyException dke = ExceptionUtils.findExceptionOfType(t, DuplicateKeyException.class);
     if (dke == null) {
       return;
@@ -110,8 +110,7 @@ public class DaoExceptionTranslatorMySqlImpl extends DaoExceptionTranslatorAbstr
   /**
    * Will detect truncation error and substitute value field name with property name
    *
-   * @param t
-   * @param propertyName
+   * @param t potential chain with {@link DataTruncation}
    */
   protected void throwIfTruncationError(Throwable t) {
     Exception exc = ExceptionUtils.findExceptionOfType(t, DataTruncation.class);
@@ -138,8 +137,8 @@ public class DaoExceptionTranslatorMySqlImpl extends DaoExceptionTranslatorAbstr
   /**
    * Find a name of the field which was truncated
    *
-   * @param t exception received from Spring JDBC
-   * @return field name if any, otherwize null
+   * @param msg exception message received from Spring JDBC
+   * @return field name if any, otherwise null
    */
   protected String findTruncatedFieldNameIfAny(String msg) {
     if (!msg.contains("too long")) {

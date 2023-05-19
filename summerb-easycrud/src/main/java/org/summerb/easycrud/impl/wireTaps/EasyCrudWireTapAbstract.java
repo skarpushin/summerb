@@ -22,7 +22,6 @@ import org.summerb.easycrud.api.EasyCrudWireTapMode;
  * Use this is a base class for {@link EasyCrudWireTap}
  *
  * @author Sergey Karpushin
- * @param <TId> type of row id
  * @param <T> type of row
  */
 public class EasyCrudWireTapAbstract<T> implements EasyCrudWireTap<T> {

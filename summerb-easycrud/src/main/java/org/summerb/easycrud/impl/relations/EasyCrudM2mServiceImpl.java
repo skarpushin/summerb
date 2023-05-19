@@ -26,7 +26,6 @@ import java.util.Set;
 
 import org.springframework.util.CollectionUtils;
 import org.summerb.easycrud.api.EasyCrudService;
-import org.summerb.easycrud.api.dto.PagerParams;
 import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.api.relations.EasyCrudM2mService;
 import org.summerb.easycrud.api.row.HasId;
@@ -35,7 +34,7 @@ import org.summerb.easycrud.api.row.relations.Ref;
 import org.summerb.easycrud.api.row.tools.EasyCrudDtoUtils;
 import org.summerb.easycrud.impl.EasyCrudServiceImpl;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
-import org.summerb.validation.ValidationException;
+import org.summerb.utils.easycrud.api.dto.PagerParams;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;

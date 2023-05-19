@@ -1,9 +1,9 @@
 package org.summerb.validation.testDtos;
 
-import javax.annotation.Nullable;
-
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class JakartaBean extends JakartaBeanBase {
 
@@ -28,7 +28,7 @@ public class JakartaBean extends JakartaBeanBase {
   private String string5;
 
   /** Field with irrelevant annotations */
-  @Nullable private String string6;
+  private String string6;
 
   public String getString3() {
     return string3;
@@ -39,7 +39,7 @@ public class JakartaBean extends JakartaBeanBase {
     this.string3 = string3;
   }
 
-  @Nullable
+  @Autowired
   public String getString4() {
     return string4;
   }

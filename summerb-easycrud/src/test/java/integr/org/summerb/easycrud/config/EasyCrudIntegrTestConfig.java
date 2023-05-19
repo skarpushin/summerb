@@ -200,21 +200,20 @@ public class EasyCrudIntegrTestConfig {
   }
 
   @Bean
-  public TestDto1Service testDto1ServiceScaffolded(EasyCrudScaffold easyCrudScaffold) {
+  TestDto1Service testDto1ServiceScaffolded(EasyCrudScaffold easyCrudScaffold) {
     return easyCrudScaffold.fromService(
         TestDto1Service.class, TestDto1.class.getCanonicalName(), "forms_test_1");
   }
 
   @Bean
-  public EasyCrudService<String, TestDto1> testDto1ServiceEbScaffolded(
+  EasyCrudService<String, TestDto1> testDto1ServiceEbScaffolded(
       EasyCrudScaffold easyCrudScaffold, EasyCrudWireTapEventBusImpl<?> easyCrudWireTapEventBus) {
     return easyCrudScaffold.fromRowClass(
         TestDto1.class, TestDto1.class.getCanonicalName(), "forms_test_1", easyCrudWireTapEventBus);
   }
 
   @Bean
-  public EasyCrudService<Long, TestDto2> testDto2ServiceScaffolded(
-      EasyCrudScaffold easyCrudScaffold) {
+  EasyCrudService<Long, TestDto2> testDto2ServiceScaffolded(EasyCrudScaffold easyCrudScaffold) {
     return easyCrudScaffold.fromRowClass(
         TestDto2.class, TestDto2.class.getCanonicalName(), "forms_test_2");
   }

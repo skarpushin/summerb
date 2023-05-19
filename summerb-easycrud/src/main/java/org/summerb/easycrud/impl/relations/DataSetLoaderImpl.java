@@ -31,8 +31,6 @@ import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.util.CollectionUtils;
 import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.api.EasyCrudServiceResolver;
-import org.summerb.easycrud.api.dto.PagerParams;
-import org.summerb.easycrud.api.dto.PaginatedList;
 import org.summerb.easycrud.api.exceptions.EntityNotFoundException;
 import org.summerb.easycrud.api.exceptions.GenericEntityNotFoundException;
 import org.summerb.easycrud.api.query.Query;
@@ -47,6 +45,8 @@ import org.summerb.easycrud.api.row.datapackage.DataTable.RowIdToBackReferencesM
 import org.summerb.easycrud.api.row.relations.Ref;
 import org.summerb.easycrud.api.row.tools.EasyCrudDtoUtils;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
+import org.summerb.utils.easycrud.api.dto.PagerParams;
+import org.summerb.utils.easycrud.api.dto.PaginatedList;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultimap;
@@ -187,7 +187,7 @@ public class DataSetLoaderImpl implements DataSetLoader {
     DataSet nextDataSet = dataSet;
     while (nextDataSet != null) {
       DataSet curDataSet = nextDataSet;
-      nextDataSet = null; 
+      nextDataSet = null;
 
       DataSet newDataSet = new DataSet();
       Map<String, Set<Object>> idsToLoad =
@@ -222,7 +222,7 @@ public class DataSetLoaderImpl implements DataSetLoader {
 
       // next iteration
       if (!newDataSet.isEmpty()) {
-        nextDataSet =  newDataSet;
+        nextDataSet = newDataSet;
       }
     }
   }
@@ -377,7 +377,7 @@ public class DataSetLoaderImpl implements DataSetLoader {
   }
 
   /**
-   * @param scanForReferences dataSet to scan for Many2one & One2one referenced objects
+   * @param scanForReferences dataSet to scan for Many2one and One2one referenced objects
    * @param checkForExistence data set that contains already loaded objects so that we can skip
    *     loading these objects again
    * @param references references to use

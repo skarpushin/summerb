@@ -15,8 +15,6 @@
  ******************************************************************************/
 package org.summerb.validation.errors;
 
-import javax.annotation.Nonnull;
-
 import org.summerb.validation.ValidationError;
 
 /**
@@ -31,7 +29,7 @@ public class DuplicateRecord extends ValidationError {
   /** @deprecated used only for serialization */
   public DuplicateRecord() {}
 
-  public DuplicateRecord(@Nonnull String propertyName) {
+  public DuplicateRecord(String propertyName) {
     super(propertyName, MESSAGE_CODE);
   }
 }

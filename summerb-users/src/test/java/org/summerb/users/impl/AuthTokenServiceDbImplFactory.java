@@ -21,10 +21,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.mockito.Mockito;
-import org.summerb.easycrud.api.dto.PagerParams;
 import org.summerb.users.api.dto.AuthToken;
 import org.summerb.users.api.dto.AuthTokenFactory;
 import org.summerb.users.impl.dao.AuthTokenDao;
+import org.summerb.utils.easycrud.api.dto.PagerParams;
 
 public class AuthTokenServiceDbImplFactory {
 

@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.support.JdbcTransactionManager;
 import org.springframework.transaction.TransactionManager;
 import org.summerb.utils.exceptions.ExceptionUtils;
@@ -22,6 +23,7 @@ import ch.vorburger.mariadb4j.springframework.MariaDB4jSpringService;
  *
  * @author Sergey Karpushin
  */
+@Configuration
 public class EmbeddedMariaDbConfig {
   public static final String DB_NAME = "summerb_tests";
 
@@ -32,7 +34,7 @@ public class EmbeddedMariaDbConfig {
    * manually
    */
   @Bean
-  public MariaDB4jSpringService inMemoryMariaDb() throws ManagedProcessException {
+  MariaDB4jSpringService inMemoryMariaDb() throws ManagedProcessException {
     try {
       MariaDB4jSpringService ret = new MariaDB4jSpringService();
       ret.setDefaultPort(-1); // TZD: next time you want to change it -- externalize into properties
@@ -66,7 +68,7 @@ public class EmbeddedMariaDbConfig {
   }
 
   @Bean
-  public DataSource dataSource(
+  DataSource dataSource(
       MariaDB4jSpringService inMemoryMariaDb,
       @Value("${spring.datasource.url}") String url,
       @Value("${spring.datasource.username}") String username,

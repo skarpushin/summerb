@@ -17,8 +17,6 @@ package org.summerb.methodCapturers;
 
 import java.util.function.Function;
 
-import javax.annotation.Nonnull;
-
 /**
  * Impl of this interface will be capable of the obtaining method name from method reference for
  * some <b>particular</b> POJO. If you need to obtain field names from different POJO classes, then
@@ -35,6 +33,5 @@ public interface PropertyNameObtainer<T> {
    * @param methodReference method reference, i.e. SomePojo::getName
    * @return name of the method which is used for method reference
    */
-  @Nonnull
-  String obtainFrom(@Nonnull Function<T, ?> methodReference);
+  String obtainFrom(Function<T, ?> methodReference);
 }

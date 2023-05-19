@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.AsyncHandlerInterceptor;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.support.RequestContextUtils;
-import org.summerb.users.i18n.LocaleResolverUserBasedImpl;
+import org.summerb.webappboilerplate.users.i18n.LocaleResolverUserBasedImpl;
 
 /**
  * Will force to save locale in cookie. We need this in order to fix bug with IE. Because it will

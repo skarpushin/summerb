@@ -17,9 +17,6 @@ package org.summerb.validation.jakarta.processors.abstracts;
 
 import java.lang.annotation.Annotation;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.summerb.validation.ValidationContext;
 
 import com.google.common.base.Preconditions;
@@ -33,12 +30,12 @@ import com.google.common.base.Preconditions;
 public abstract class AnnotationProcessorNullableAbstract<T extends Annotation>
     extends AnnotationProcessorAbstract<T> {
 
-  public AnnotationProcessorNullableAbstract(@Nonnull T annotation, @Nonnull String propertyName) {
+  public AnnotationProcessorNullableAbstract(T annotation, String propertyName) {
     super(annotation, propertyName);
   }
 
   @Override
-  public void validate(@Nullable Object value, @Nonnull ValidationContext<?> ctx) {
+  public void validate(Object value, ValidationContext<?> ctx) {
     Preconditions.checkArgument(ctx != null, CTX_REQUIRED);
 
     if (value == null) {

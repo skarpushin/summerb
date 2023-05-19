@@ -15,14 +15,21 @@
  ******************************************************************************/
 package org.summerb.properties.impl;
 
+import org.mockito.Mockito;
+import org.summerb.properties.impl.dao.PropertyDao;
+import org.summerb.properties.internal.StringIdAliasService;
+
 public class PropertyServiceImplFactory {
 
   public static PropertyServiceImpl createInstance() {
-    PropertyServiceImpl ret = new PropertyServiceImpl();
-
+    PropertyServiceImpl ret =
+        new PropertyServiceImpl(
+            Mockito.mock(PropertyDao.class),
+            Mockito.mock(StringIdAliasService.class),
+            Mockito.mock(StringIdAliasService.class),
+            Mockito.mock(StringIdAliasService.class));
     // PropertyDao propertyDao = new PropertyStoreDaoMySqlImpl();
     // ret.setPropertyDao(propertyDao);
-
     return ret;
   }
 }

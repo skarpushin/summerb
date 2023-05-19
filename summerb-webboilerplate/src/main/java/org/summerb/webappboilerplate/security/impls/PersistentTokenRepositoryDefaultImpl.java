@@ -35,10 +35,10 @@ import org.summerb.webappboilerplate.utils.CurrentRequestUtils;
  * @author skarpushin
  */
 public class PersistentTokenRepositoryDefaultImpl implements PersistentTokenRepository {
-  private Logger log = LoggerFactory.getLogger(getClass());
+  protected Logger log = LoggerFactory.getLogger(getClass());
 
-  private AuthTokenService authTokenService;
-  private UserService userService;
+  protected AuthTokenService authTokenService;
+  protected UserService userService;
 
   @Override
   public void createNewToken(PersistentRememberMeToken token) {

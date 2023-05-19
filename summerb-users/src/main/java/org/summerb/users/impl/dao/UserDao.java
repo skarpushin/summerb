@@ -16,9 +16,9 @@
 package org.summerb.users.impl.dao;
 
 import org.springframework.dao.DuplicateKeyException;
-import org.summerb.easycrud.api.dto.PagerParams;
-import org.summerb.easycrud.api.dto.PaginatedList;
 import org.summerb.users.api.dto.User;
+import org.summerb.utils.easycrud.api.dto.PagerParams;
+import org.summerb.utils.easycrud.api.dto.PaginatedList;
 
 public interface UserDao {
   void createUser(User user) throws DuplicateKeyException;

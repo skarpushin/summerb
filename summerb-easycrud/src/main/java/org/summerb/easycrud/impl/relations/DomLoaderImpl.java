@@ -132,7 +132,7 @@ public class DomLoaderImpl implements DomLoader {
    * @param <TDomClass> dom type
    * @return mapper which can translate from ROW to DOM
    */
-  @SuppressWarnings({"unchecked", "rawtypes"})
+  @SuppressWarnings({"unchecked", "rawtypes", "deprecation"})
   protected <TId, TRowClass extends HasId<TId>, TDomClass extends TRowClass>
       Function<TRowClass, TDomClass> mapDtoToDom(
           String dtoMessageCode,

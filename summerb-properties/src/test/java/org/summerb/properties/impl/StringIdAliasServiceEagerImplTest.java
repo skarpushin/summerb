@@ -25,8 +25,8 @@ import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.summerb.easycrud.api.dto.PagerParams;
 import org.summerb.properties.impl.dao.StringIdAliasDao;
+import org.summerb.utils.easycrud.api.dto.PagerParams;
 import org.summerb.utils.exceptions.ExceptionUtils;
 
 public class StringIdAliasServiceEagerImplTest {

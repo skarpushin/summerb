@@ -16,8 +16,8 @@
 package org.summerb.easycrud.impl.wireTaps;
 
 import org.summerb.easycrud.api.EasyCrudWireTapMode;
-import org.summerb.easycrud.api.dto.EntityChangedEvent;
 import org.summerb.utils.DtoBase;
+import org.summerb.utils.easycrud.api.dto.EntityChangedEvent;
 import org.summerb.utils.tx.AfterCommitExecutorThreadLocalImpl;
 
 import com.google.common.base.Preconditions;

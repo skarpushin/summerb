@@ -1,7 +1,5 @@
 package org.summerb.validation.errors;
 
-import javax.annotation.Nonnull;
-
 import org.summerb.validation.ValidationError;
 
 public class MustNotStartWith extends ValidationError {
@@ -12,7 +10,7 @@ public class MustNotStartWith extends ValidationError {
   /** @deprecated used only for serialization */
   public MustNotStartWith() {}
 
-  public MustNotStartWith(@Nonnull String propertyName, @Nonnull String subString) {
+  public MustNotStartWith(String propertyName, String subString) {
     super(propertyName, MESSAGE_CODE, subString);
   }
 }

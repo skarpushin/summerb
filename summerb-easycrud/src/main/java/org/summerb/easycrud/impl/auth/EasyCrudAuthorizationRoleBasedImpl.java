@@ -25,12 +25,6 @@ import org.summerb.security.api.dto.NotAuthorizedResult;
 /**
  * Simple authorization logic which allows access based on user roles.
  *
- * <p>You can instantiate it via {@link #EasyCrudAuthorizationRoleBasedImpl(Collection, Collection)}
- * and specify to set of roles - for Reading and for Modification
- *
- * <p>You also can do simpler option -- provide one set of roles which both will be used for
- * checking permission for all 4 CRUD operations
- *
  * @author Sergey Karpushin
  */
 public class EasyCrudAuthorizationRoleBasedImpl extends EascyCrudAuthorizationPerTableStrategy
@@ -40,6 +34,7 @@ public class EasyCrudAuthorizationRoleBasedImpl extends EascyCrudAuthorizationPe
   private Set<String> rolesAuthorizedToModify;
 
   /**
+   * @param entityName entity name to be included in {@link NotAuthorizedResult}
    * @param rolesAuthorizedToRead which Roles are allowed to Read data from this service
    * @param rolesAuthorizedToModify which Roles are allowed to Modify (Create, Update, Delete) data
    *     from this service
@@ -55,7 +50,10 @@ public class EasyCrudAuthorizationRoleBasedImpl extends EascyCrudAuthorizationPe
         rolesAuthorizedToModify == null ? null : new HashSet<>(rolesAuthorizedToModify);
   }
 
-  /** @param authorizedRoles which Roles are allowed to Read and Update data from this service */
+  /**
+   * @param entityName entity name to be included in {@link NotAuthorizedResult}
+   * @param authorizedRoles which Roles are allowed to Read and Update data from this service
+   */
   public EasyCrudAuthorizationRoleBasedImpl(String entityName, Collection<String> authorizedRoles) {
     super(entityName);
     this.rolesAuthorizedToRead = authorizedRoles == null ? null : new HashSet<>(authorizedRoles);

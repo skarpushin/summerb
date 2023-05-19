@@ -1,9 +1,9 @@
 package org.summerb.validation.jakarta.test_data;
 
+import javax.validation.constraints.NotNull;
+
 import org.summerb.i18n.HasMessageCode;
 import org.summerb.validation.ValidationContext;
-
-import javax.validation.constraints.NotNull;
 
 public class ValidViaAbstractImpl extends AbstractImpl implements HasMessageCode {
 

@@ -32,13 +32,11 @@ import com.google.common.base.Preconditions;
  * This is abstract class for implementing Per-row authorization logic. Per-row means that
  * authorization is performed based on Row data.
  *
- * <p>All you need to do is implement abstract methods {@link #isAuthorizedToRead(HasId)} and {@link
- * #isAuthorizedToUpdate(HasId, HasId)}. If you need to customize this logic, override other
- * methods.
+ * <p>You need to provide impl for getForUpdate and getForRead. If you need to customize this logic,
+ * override other methods.
  *
  * <p>If your authorization logic for Deletion and Creation is different from Update, please
- * override respective methods {@link #isAuthorizedToCreate(HasId)} and {@link
- * #isAuthorizedToDelete(HasId)}
+ * override respective methods getForCreate and getForDelete
  *
  * <p>If you do not need authorization to be performed for some of the CRUD operations you can
  * optimize performance by overriding following methods and disabling calls to this authorization
@@ -51,9 +49,7 @@ import com.google.common.base.Preconditions;
  *   <li>{@link #requiresOnDelete()}
  * </ul>
  *
- * @see {@link EascyCrudAuthorizationPerRowStrategy}
  * @author Sergey Karpushin
- * @param <TId> type of id
  * @param <TRow> type of row
  */
 public abstract class EascyCrudAuthorizationPerRowStrategy<TRow>

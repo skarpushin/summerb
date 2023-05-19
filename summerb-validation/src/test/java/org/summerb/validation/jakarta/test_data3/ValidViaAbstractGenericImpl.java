@@ -1,10 +1,11 @@
 package org.summerb.validation.jakarta.test_data3;
 
+import javax.validation.constraints.Min;
+
 import org.summerb.i18n.HasMessageCode;
 import org.summerb.validation.ValidationContext;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import javax.validation.constraints.Min;
 
 public class ValidViaAbstractGenericImpl extends AbstractGenericImpl<Boolean>
     implements HasMessageCode {

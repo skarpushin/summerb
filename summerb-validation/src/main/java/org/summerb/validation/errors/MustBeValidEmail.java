@@ -15,8 +15,6 @@
  ******************************************************************************/
 package org.summerb.validation.errors;
 
-import javax.annotation.Nonnull;
-
 import org.summerb.validation.ValidationError;
 
 public class MustBeValidEmail extends ValidationError {
@@ -27,7 +25,7 @@ public class MustBeValidEmail extends ValidationError {
   /** @deprecated used only for serialization */
   public MustBeValidEmail() {}
 
-  public MustBeValidEmail(@Nonnull String propertyName) {
+  public MustBeValidEmail(String propertyName) {
     super(propertyName, MESSAGE_CODE);
   }
 }

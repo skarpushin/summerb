@@ -1,12 +1,12 @@
 package org.summerb.validation.jakarta.test_data;
 
+import javax.validation.constraints.AssertFalse;
+
 import org.summerb.i18n.HasMessageCode;
 import org.summerb.validation.ValidationContext;
 import org.summerb.validation.jakarta.processors.abstracts.AnnotationProcessorNullableAbstract;
 
 import com.google.common.base.Preconditions;
-
-import javax.validation.constraints.AssertFalse;
 
 public class ValidProcessorThatExtends extends AnnotationProcessorNullableAbstract<AssertFalse>
     implements HasMessageCode {

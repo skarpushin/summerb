@@ -17,18 +17,16 @@ package org.summerb.validation.jakarta.processors;
 
 import java.math.BigDecimal;
 
-import javax.annotation.Nonnull;
+import javax.validation.constraints.DecimalMin;
 
 import org.summerb.validation.ValidationContext;
 import org.summerb.validation.jakarta.processors.abstracts.DecimalProcessorNullableAbstract;
-
-import javax.validation.constraints.DecimalMin;
 
 public class DecimalMinProcessor extends DecimalProcessorNullableAbstract<DecimalMin> {
 
   private BigDecimal boundary;
 
-  public DecimalMinProcessor(@Nonnull DecimalMin annotation, @Nonnull String propertyName) {
+  public DecimalMinProcessor(DecimalMin annotation, String propertyName) {
     super(annotation, propertyName);
     boundary = new BigDecimal(annotation.value());
   }

@@ -19,8 +19,6 @@ import java.util.List;
 
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.transaction.annotation.Transactional;
-import org.summerb.easycrud.api.dto.PagerParams;
-import org.summerb.easycrud.api.dto.PaginatedList;
 import org.summerb.easycrud.api.exceptions.EntityNotFoundException;
 import org.summerb.easycrud.api.query.OrderBy;
 import org.summerb.easycrud.api.query.Query;
@@ -28,6 +26,8 @@ import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.api.row.HasTimestamps;
 import org.summerb.i18n.HasMessageCode;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
+import org.summerb.utils.easycrud.api.dto.PagerParams;
+import org.summerb.utils.easycrud.api.dto.PaginatedList;
 import org.summerb.validation.ValidationException;
 
 /**
@@ -126,11 +126,10 @@ public interface EasyCrudService<TId, TRow extends HasId<TId>> {
   PaginatedList<TRow> find(PagerParams pagerParams, Query optionalQuery, OrderBy... orderBy);
 
   /**
-   * @param optionalQuery optional Query, might be null
-   * @param orderBy optional orderBy, might be missing/null
-   * @return results, might be empty, but never null
    * @param optionalQuery - optional {@link Query}. If null, then this call is same as {@link
    *     #findAll(OrderBy...)}
+   * @param orderBy optional orderBy, might be missing/null
+   * @return results, might be empty, but never null
    * @throws NotAuthorizedException if user is not authorized o perform this operation
    */
   List<TRow> findAll(Query optionalQuery, OrderBy... orderBy);

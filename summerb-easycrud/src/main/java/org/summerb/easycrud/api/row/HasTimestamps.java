@@ -21,10 +21,8 @@ import org.summerb.easycrud.api.EasyCrudService;
  * Let your DTO impl this interface. {@link EasyCrudService} then will set createdAt field upon
  * creation and update updatedAt on update.
  *
- * <p>Also it will make it possible to easily use optimistic locking technique. See {@link
- * EasyCrudService#deleteByIdOptimistic(Object, long)}. Also {@link EasyCrudService#update(Object)}
- * will verify value of this field before updating row. Only if value of modifiedAt matches row will
- * be modified, otherwise operation will be considered a failure.
+ * <p>Also it will make it possible to easily use optimistic locking technique when updating and
+ * deleting rows via {@link EasyCrudService}
  *
  * @author sergey.karpushin
  */

@@ -27,8 +27,8 @@ import org.summerb.users.api.dto.User;
 import org.summerb.webappboilerplate.security.impls.UserDetailsImpl;
 
 public class ElevationStrategyRunAsUserImpl<TUser extends User> implements ElevationStrategy {
-  private TUser user;
-  private List<String> userGlobalPermissions;
+  protected TUser user;
+  protected List<String> userGlobalPermissions;
 
   public ElevationStrategyRunAsUserImpl(TUser user, List<String> userGlobalPermissions) {
     this.user = user;
@@ -51,7 +51,7 @@ public class ElevationStrategyRunAsUserImpl<TUser extends User> implements Eleva
     return ret;
   }
 
-  private Authentication buildAuthForUser() {
+  protected Authentication buildAuthForUser() {
     UserDetailsImpl userDetails = new UserDetailsImpl(user, "", userGlobalPermissions, null);
     UsernamePasswordAuthenticationToken ret =
         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());

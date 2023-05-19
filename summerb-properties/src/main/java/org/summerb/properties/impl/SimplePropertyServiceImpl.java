@@ -20,14 +20,13 @@ import java.util.Map;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import org.summerb.easycrud.api.dto.EntityChangedEvent;
 import org.summerb.properties.api.PropertyService;
 import org.summerb.properties.api.SimplePropertyService;
 import org.summerb.properties.api.dto.NamedProperty;
 import org.summerb.properties.api.dto.SimplePropertiesSubject;
+import org.summerb.utils.easycrud.api.dto.EntityChangedEvent;
 
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.EventBus;
@@ -38,6 +37,13 @@ public class SimplePropertyServiceImpl implements SimplePropertyService, Initial
   protected String domainName;
 
   protected EventBus eventBus;
+
+  public SimplePropertyServiceImpl(
+      PropertyService propertyService, String appName, String domainName) {
+    this.propertyService = propertyService;
+    this.appName = appName;
+    this.domainName = domainName;
+  }
 
   @Override
   public void afterPropertiesSet() throws Exception {
@@ -88,29 +94,14 @@ public class SimplePropertyServiceImpl implements SimplePropertyService, Initial
     return propertyService;
   }
 
-  @Required
-  public void setPropertyService(PropertyService propertyService) {
-    this.propertyService = propertyService;
-  }
-
   @Override
   public String getAppName() {
     return appName;
   }
 
-  @Required
-  public void setAppName(String appName) {
-    this.appName = appName;
-  }
-
   @Override
   public String getDomainName() {
     return domainName;
-  }
-
-  @Required
-  public void setDomainName(String domainName) {
-    this.domainName = domainName;
   }
 
   public EventBus getEventBus() {

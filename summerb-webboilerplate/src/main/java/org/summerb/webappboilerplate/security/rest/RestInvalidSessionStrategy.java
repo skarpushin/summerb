@@ -24,11 +24,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.web.session.InvalidSessionStrategy;
 import org.summerb.security.api.dto.NotAuthorizedResult;
 import org.summerb.spring.security.SecurityMessageCodes;
-import org.summerb.utils.json.JsonResponseWriter;
-import org.summerb.utils.json.JsonResponseWriterGsonImpl;
+import org.summerb.webappboilerplate.utils.json.JsonResponseWriter;
+import org.summerb.webappboilerplate.utils.json.JsonResponseWriterGsonImpl;
 
 public class RestInvalidSessionStrategy implements InvalidSessionStrategy {
-  private JsonResponseWriter jsonResponseHelper;
+  protected JsonResponseWriter jsonResponseHelper;
 
   public RestInvalidSessionStrategy() {
     jsonResponseHelper = new JsonResponseWriterGsonImpl();

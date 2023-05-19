@@ -15,8 +15,8 @@
  ******************************************************************************/
 package org.summerb.properties.impl.dao;
 
-import org.summerb.easycrud.api.dto.PagerParams;
-import org.summerb.easycrud.api.dto.PaginatedList;
+import org.summerb.utils.easycrud.api.dto.PagerParams;
+import org.summerb.utils.easycrud.api.dto.PaginatedList;
 
 public interface StringIdAliasDao {
 

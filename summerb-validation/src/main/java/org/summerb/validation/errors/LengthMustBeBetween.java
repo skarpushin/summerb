@@ -1,7 +1,5 @@
 package org.summerb.validation.errors;
 
-import javax.annotation.Nonnull;
-
 import org.summerb.validation.ValidationError;
 
 public class LengthMustBeBetween extends ValidationError {
@@ -12,7 +10,7 @@ public class LengthMustBeBetween extends ValidationError {
   /** @deprecated used only for serialization */
   public LengthMustBeBetween() {}
 
-  public LengthMustBeBetween(@Nonnull String propertyName, int lowerBoundary, int upperBoundary) {
+  public LengthMustBeBetween(String propertyName, int lowerBoundary, int upperBoundary) {
     super(propertyName, MESSAGE_CODE, lowerBoundary, upperBoundary);
   }
 }

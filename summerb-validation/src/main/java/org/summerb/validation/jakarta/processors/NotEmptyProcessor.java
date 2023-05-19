@@ -18,8 +18,7 @@ package org.summerb.validation.jakarta.processors;
 import java.util.Collection;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import javax.validation.constraints.NotEmpty;
 
 import org.summerb.validation.ValidationContext;
 import org.summerb.validation.errors.MustNotBeEmpty;
@@ -27,16 +26,14 @@ import org.summerb.validation.jakarta.processors.abstracts.AnnotationProcessorAb
 
 import com.google.common.base.Preconditions;
 
-import javax.validation.constraints.NotEmpty;
-
 public class NotEmptyProcessor extends AnnotationProcessorAbstract<NotEmpty> {
 
-  public NotEmptyProcessor(@Nonnull NotEmpty annotation, @Nonnull String propertyName) {
+  public NotEmptyProcessor(NotEmpty annotation, String propertyName) {
     super(annotation, propertyName);
   }
 
   @Override
-  public void validate(@Nullable Object value, @Nonnull ValidationContext<?> ctx) {
+  public void validate(Object value, ValidationContext<?> ctx) {
     Preconditions.checkArgument(ctx != null, CTX_REQUIRED);
 
     if (value == null) {

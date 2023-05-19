@@ -29,9 +29,9 @@ import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
 
 public class MimeTypeResolverImpl implements MimeTypeResolver {
-  private static Logger log = LoggerFactory.getLogger(MimeTypeResolverImpl.class);
+  protected static Logger log = LoggerFactory.getLogger(MimeTypeResolverImpl.class);
 
-  private FileTypeMap fileTypeMap;
+  protected FileTypeMap fileTypeMap;
 
   @Override
   public String resolveContentTypeByFileName(String fileName) {
@@ -66,7 +66,7 @@ public class MimeTypeResolverImpl implements MimeTypeResolver {
     return fileTypeMap;
   }
 
-  private FileTypeMap loadFileTypeMapFromContextSupportModule() {
+  protected FileTypeMap loadFileTypeMapFromContextSupportModule() {
     // see if we can find the extended mime.types from the context-support
     // module
     Resource mappingLocation =

@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nonnull;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.InitializingBean;
@@ -124,7 +123,7 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
    *
    * @param scaffoldedMethodFactory scaffoldedMethodFactory
    */
-  public void setScaffoldedMethodFactory(@Nonnull ScaffoldedMethodFactory scaffoldedMethodFactory) {
+  public void setScaffoldedMethodFactory(ScaffoldedMethodFactory scaffoldedMethodFactory) {
     Preconditions.checkArgument(
         scaffoldedMethodFactory != null, "scaffoldedMethodFactory required");
     this.scaffoldedMethodFactory = scaffoldedMethodFactory;

@@ -23,8 +23,7 @@ import org.summerb.easycrud.impl.EasyCrudServiceImpl;
  * This is just stub impl of {@link EasyCrudWireTap} to simplify {@link EasyCrudServiceImpl} logic
  *
  * @author Sergey Karpushin
- * @param <TId>
- * @param <TRow>
+ * @param <TRow> type of row
  */
 public final class EasyCrudWireTapNoOpImpl<TRow> implements EasyCrudWireTap<TRow> {
 

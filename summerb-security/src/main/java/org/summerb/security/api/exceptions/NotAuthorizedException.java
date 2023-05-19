@@ -19,8 +19,8 @@ import org.summerb.i18n.HasMessageArgs;
 import org.summerb.i18n.HasMessageArgsConverters;
 import org.summerb.i18n.HasMessageCode;
 import org.summerb.i18n.MessageArgConverter;
+import org.summerb.i18n.exceptions.HasErrorDescriptionObject;
 import org.summerb.security.api.dto.NotAuthorizedResult;
-import org.summerb.utils.exceptions.HasErrorDescriptionObject;
 
 import com.google.common.base.Preconditions;
 

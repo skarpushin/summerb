@@ -17,18 +17,16 @@ package org.summerb.validation.jakarta.processors;
 
 import java.math.BigDecimal;
 
-import javax.annotation.Nonnull;
+import javax.validation.constraints.DecimalMax;
 
 import org.summerb.validation.ValidationContext;
 import org.summerb.validation.jakarta.processors.abstracts.DecimalProcessorNullableAbstract;
-
-import javax.validation.constraints.DecimalMax;
 
 public class DecimalMaxProcessor extends DecimalProcessorNullableAbstract<DecimalMax> {
 
   private BigDecimal boundary;
 
-  public DecimalMaxProcessor(@Nonnull DecimalMax annotation, @Nonnull String propertyName) {
+  public DecimalMaxProcessor(DecimalMax annotation, String propertyName) {
     super(annotation, propertyName);
     boundary = new BigDecimal(annotation.value());
   }

@@ -1,10 +1,10 @@
 package org.summerb.validation.jakarta.test_data;
 
+import javax.validation.constraints.AssertTrue;
+
 import org.summerb.i18n.HasMessageCode;
 import org.summerb.validation.ValidationContext;
 import org.summerb.validation.jakarta.AnnotationProcessor;
-
-import javax.validation.constraints.AssertTrue;
 
 public class ValidProcessorThatImplements
     implements AnnotationProcessor<AssertTrue>, HasMessageCode {

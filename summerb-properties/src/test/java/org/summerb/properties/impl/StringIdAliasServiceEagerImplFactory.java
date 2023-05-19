@@ -26,10 +26,10 @@ import java.util.concurrent.Executors;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.summerb.easycrud.api.dto.PagerParams;
-import org.summerb.easycrud.api.dto.PaginatedList;
 import org.summerb.properties.impl.dao.AliasEntry;
 import org.summerb.properties.impl.dao.StringIdAliasDao;
+import org.summerb.utils.easycrud.api.dto.PagerParams;
+import org.summerb.utils.easycrud.api.dto.PaginatedList;
 
 public class StringIdAliasServiceEagerImplFactory {
   public static final String NAME = "NAME";

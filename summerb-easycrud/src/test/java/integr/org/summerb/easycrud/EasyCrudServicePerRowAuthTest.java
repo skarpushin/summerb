@@ -40,14 +40,14 @@ import integr.org.summerb.easycrud.dtos.TestDto2;
 @Transactional
 public class EasyCrudServicePerRowAuthTest extends GenericCrudServiceTestTemplate {
 
-//  @BeforeAll
-//  static void setup(@Autowired DataSource dataSource) throws SQLException {
-//    try (Connection conn = dataSource.getConnection()) {
-//      // you'll have to make sure conn.autoCommit = true (default for e.g. H2)
-//      // e.g. url=jdbc:h2:mem:myDb;DB_CLOSE_DELAY=-1;MODE=MySQL
-//      ScriptUtils.executeSqlScript(conn, new ClassPathResource("mysql_init.sql"));
-//    }
-//  }
+  //  @BeforeAll
+  //  static void setup(@Autowired DataSource dataSource) throws SQLException {
+  //    try (Connection conn = dataSource.getConnection()) {
+  //      // you'll have to make sure conn.autoCommit = true (default for e.g. H2)
+  //      // e.g. url=jdbc:h2:mem:myDb;DB_CLOSE_DELAY=-1;MODE=MySQL
+  //      ScriptUtils.executeSqlScript(conn, new ClassPathResource("mysql_init.sql"));
+  //    }
+  //  }
 
   @Autowired
   @Qualifier("testDto1ServiceBasicAuth")

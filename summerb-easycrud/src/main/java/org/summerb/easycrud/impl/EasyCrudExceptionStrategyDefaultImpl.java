@@ -42,15 +42,14 @@ public class EasyCrudExceptionStrategyDefaultImpl<TId> implements EasyCrudExcept
   }
 
   @Override
-  public RuntimeException handleExceptionAtCreate(Throwable t)
-     {
+  public RuntimeException handleExceptionAtCreate(Throwable t) {
     Throwables.throwIfInstanceOf(t, ValidationException.class);
     Throwables.throwIfInstanceOf(t, NotAuthorizedException.class);
 
     return buildUnexpectedAtCreate(t);
   }
 
-  protected RuntimeException buildUnexpectedAtCreate(Throwable t){
+  protected RuntimeException buildUnexpectedAtCreate(Throwable t) {
     return new EasyCrudUnexpectedException(
         EasyCrudMessageCodes.UNEXPECTED_FAILED_TO_CREATE, entityCode, t);
   }
@@ -79,6 +78,9 @@ public class EasyCrudExceptionStrategyDefaultImpl<TId> implements EasyCrudExcept
    * This is special case to handle errors like: "Cannot delete or update a parent row: a foreign
    * key constraint fails (`cdb`.`badges`, CONSTRAINT `badges_FK_care_team_members` FOREIGN KEY
    * (`care_team_member_id`) REFERENCES `care_team_members` (`id`))"
+   *
+   * @param t throwable that potentially might contain such information
+   * @return {@link ValidationException} if such error found, or null otherwise
    */
   protected ValidationException tryExtractConstraintViolation(Throwable t) {
     SQLIntegrityConstraintViolationException sqlExc =
@@ -112,8 +114,7 @@ public class EasyCrudExceptionStrategyDefaultImpl<TId> implements EasyCrudExcept
   }
 
   @Override
-  public RuntimeException handleExceptionAtUpdate(Throwable t)
-      {
+  public RuntimeException handleExceptionAtUpdate(Throwable t) {
     Throwables.throwIfInstanceOf(t, ValidationException.class);
     Throwables.throwIfInstanceOf(t, NotAuthorizedException.class);
     Throwables.throwIfInstanceOf(t, EntityNotFoundException.class);

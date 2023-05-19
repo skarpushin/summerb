@@ -1,7 +1,5 @@
 package org.summerb.validation.errors;
 
-import javax.annotation.Nonnull;
-
 import org.summerb.validation.ValidationError;
 
 public class MustNotBeEqualTo extends ValidationError {
@@ -12,7 +10,7 @@ public class MustNotBeEqualTo extends ValidationError {
   /** @deprecated used only for serialization */
   public MustNotBeEqualTo() {}
 
-  public MustNotBeEqualTo(@Nonnull String propertyName, @Nonnull Object value) {
+  public MustNotBeEqualTo(String propertyName, Object value) {
     super(propertyName, MESSAGE_CODE, value);
   }
 }

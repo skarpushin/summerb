@@ -36,8 +36,8 @@ import org.summerb.validation.ValidationException;
  * @author sergeyk
  */
 public class UserDetailsServiceDefaultImpl implements UserDetailsService {
-  private UserService userService;
-  private PermissionService permissionService;
+  protected UserService userService;
+  protected PermissionService permissionService;
 
   @Override
   public UserDetails loadUserByUsername(String userEmail) throws UsernameNotFoundException {

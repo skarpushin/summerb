@@ -17,7 +17,7 @@ package org.summerb.validation.jakarta.processors;
 
 import java.util.function.Predicate;
 
-import javax.annotation.Nonnull;
+import javax.validation.constraints.Email;
 
 import org.summerb.validation.ValidationContext;
 import org.summerb.validation.errors.MustMatchPattern;
@@ -25,12 +25,10 @@ import org.summerb.validation.jakarta.processors.abstracts.AnnotationProcessorNu
 
 import com.google.common.base.Preconditions;
 
-import javax.validation.constraints.Email;
-
 public class EmailProcessor extends AnnotationProcessorNullableAbstract<Email> {
   private Predicate<String> predicate;
 
-  public EmailProcessor(@Nonnull Email annotation, @Nonnull String propertyName) {
+  public EmailProcessor(Email annotation, String propertyName) {
     super(annotation, propertyName);
     predicate = PatternProcessor.buildPredicate(annotation.regexp(), annotation.flags());
   }

@@ -19,19 +19,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.summerb.easycrud.api.dto.PagerParams;
-import org.summerb.easycrud.api.dto.PaginatedList;
 import org.summerb.easycrud.api.row.HasId;
+import org.summerb.utils.easycrud.api.dto.PagerParams;
+import org.summerb.utils.easycrud.api.dto.PaginatedList;
 
 public class MultipleItemsResult<TId, TDto extends HasId<TId>> extends CrudQueryResult<TId, TDto> {
   protected List<TDto> rows;
   protected PagerParams pagerParams;
   protected long totalResults;
 
-  /** RowId -> [permissionName -> isAllowed] */
+  /** RowId to [permissionName to isAllowed] */
   protected Map<TId, Map<String, Boolean>> rowPermissions;
 
-  /** permissionName -> isAllowed */
+  /** permissionName to isAllowed */
   protected Map<String, Boolean> tablePermissions;
 
   public MultipleItemsResult() {}

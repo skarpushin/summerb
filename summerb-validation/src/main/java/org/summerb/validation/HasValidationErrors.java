@@ -17,12 +17,9 @@ package org.summerb.validation;
 
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
 public interface HasValidationErrors {
 
   /** @return list of validation errors, could be empty, never null */
-  @Nonnull
   List<ValidationError> getList();
 
   /** @return true if there is at least 1 error */

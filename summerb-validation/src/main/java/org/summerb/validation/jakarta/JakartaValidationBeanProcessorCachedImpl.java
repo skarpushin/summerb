@@ -17,8 +17,6 @@ package org.summerb.validation.jakarta;
 
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
 import com.google.common.base.Preconditions;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -29,7 +27,7 @@ public class JakartaValidationBeanProcessorCachedImpl implements JakartaValidati
 
   protected LoadingCache<Class<?>, List<JakartaValidatorItem>> cache;
 
-  public JakartaValidationBeanProcessorCachedImpl(@Nonnull JakartaValidationBeanProcessor actual) {
+  public JakartaValidationBeanProcessorCachedImpl(JakartaValidationBeanProcessor actual) {
     Preconditions.checkArgument(actual != null, "actual required");
     this.actual = actual;
 
@@ -45,7 +43,7 @@ public class JakartaValidationBeanProcessorCachedImpl implements JakartaValidati
       };
 
   @Override
-  public @Nonnull List<JakartaValidatorItem> getValidationsFor(Class<?> clazz) {
+  public List<JakartaValidatorItem> getValidationsFor(Class<?> clazz) {
     try {
       return cache.get(clazz);
     } catch (Exception e) {

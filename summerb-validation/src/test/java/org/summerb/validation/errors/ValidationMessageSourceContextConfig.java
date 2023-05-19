@@ -8,7 +8,7 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 @Configuration
 public class ValidationMessageSourceContextConfig {
   @Bean(name = "messageSource")
-  public MessageSource messageSource() {
+  MessageSource messageSource() {
     ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
     messageSource.setDefaultEncoding("UTF-8");
     messageSource.setBasenames("summerb-validation-messages");

@@ -32,6 +32,6 @@ public class PropertyServiceImplTest {
   public void testPutSubjectProperty_defensive_emptyApp() {
     PropertyService fixture = PropertyServiceImplFactory.createInstance();
     assertThrows(
-            IllegalArgumentException.class, () -> fixture.putSubjectProperty(null, "", "", "", ""));
+        IllegalArgumentException.class, () -> fixture.putSubjectProperty(null, "", "", "", ""));
   }
 }

@@ -39,7 +39,7 @@ public class PersistentTokenBasedRememberMeServicesEx
     extends PersistentTokenBasedRememberMeServices {
   protected Logger log = LoggerFactory.getLogger(getClass());
 
-  private RememberMeRequestedStrategy rememberMeRequestedStrategy =
+  protected RememberMeRequestedStrategy rememberMeRequestedStrategy =
       new RememberMeRequestedStrategyImpl();
 
   public PersistentTokenBasedRememberMeServicesEx(

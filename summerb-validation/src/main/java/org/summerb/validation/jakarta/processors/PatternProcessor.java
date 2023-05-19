@@ -17,7 +17,8 @@ package org.summerb.validation.jakarta.processors;
 
 import java.util.function.Predicate;
 
-import javax.annotation.Nonnull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Pattern.Flag;
 
 import org.summerb.validation.ValidationContext;
 import org.summerb.validation.errors.MustMatchPattern;
@@ -25,14 +26,11 @@ import org.summerb.validation.jakarta.processors.abstracts.AnnotationProcessorNu
 
 import com.google.common.base.Preconditions;
 
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Pattern.Flag;
-
 public class PatternProcessor extends AnnotationProcessorNullableAbstract<Pattern> {
 
   private Predicate<String> predicate;
 
-  public PatternProcessor(@Nonnull Pattern annotation, @Nonnull String propertyName) {
+  public PatternProcessor(Pattern annotation, String propertyName) {
     super(annotation, propertyName);
     predicate = buildPredicate(annotation.regexp(), annotation.flags());
   }
@@ -46,12 +44,11 @@ public class PatternProcessor extends AnnotationProcessorNullableAbstract<Patter
     ctx.matches(valueStr, predicate, MustMatchPattern.MESSAGE_CODE, propertyName);
   }
 
-  public static @Nonnull Predicate<String> buildPredicate(
-      @Nonnull String regexp, @Nonnull Flag[] flags) {
+  public static Predicate<String> buildPredicate(String regexp, Flag[] flags) {
     return java.util.regex.Pattern.compile(regexp, combineFlags(flags)).asMatchPredicate();
   }
 
-  public static int combineFlags(@Nonnull Flag[] flags) {
+  public static int combineFlags(Flag[] flags) {
     int ret = 0;
     for (Flag flag : flags) {
       ret |= flag.getValue();

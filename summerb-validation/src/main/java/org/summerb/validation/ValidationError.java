@@ -23,9 +23,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.springframework.util.StringUtils;
 import org.summerb.i18n.HasMessageArgs;
 import org.summerb.i18n.HasMessageCode;
@@ -68,13 +65,12 @@ public class ValidationError implements Serializable, HasMessageCode, HasMessage
   @Deprecated
   public ValidationError() {}
 
-  public ValidationError(@Nonnull String propertyName, @Nonnull String messageCode) {
+  public ValidationError(String propertyName, String messageCode) {
     setMessageCode(messageCode);
     setPropertyName(propertyName);
   }
 
-  public ValidationError(
-      @Nonnull String propertyName, @Nonnull String messageCode, @Nullable Object... args) {
+  public ValidationError(String propertyName, String messageCode, Object... args) {
     this(propertyName, messageCode);
     setMessageArgs(args);
   }
@@ -110,26 +106,26 @@ public class ValidationError implements Serializable, HasMessageCode, HasMessage
   }
 
   @Override
-  public @Nonnull String getMessageCode() {
+  public String getMessageCode() {
     return messageCode;
   }
 
-  public @Nonnull String getPropertyName() {
+  public String getPropertyName() {
     return propertyName;
   }
 
-  public void setMessageCode(@Nonnull String messageCode) {
+  public void setMessageCode(String messageCode) {
     Preconditions.checkArgument(StringUtils.hasText(messageCode), "messageCode required");
     this.messageCode = messageCode;
   }
 
-  public void setPropertyName(@Nonnull String propertyName) {
+  public void setPropertyName(String propertyName) {
     Preconditions.checkArgument(StringUtils.hasText(propertyName), "propertyName required");
     this.propertyName = propertyName;
   }
 
   @Override
-  public @Nullable Object[] getMessageArgs() {
+  public Object[] getMessageArgs() {
     if (messageArgs == null) {
       return null;
     }
@@ -137,7 +133,7 @@ public class ValidationError implements Serializable, HasMessageCode, HasMessage
     return messageArgs.clone();
   }
 
-  public void setMessageArgs(@Nullable Object[] messageArgs) {
+  public void setMessageArgs(Object[] messageArgs) {
     if (messageArgs == null) {
       this.messageArgs = null;
       return;

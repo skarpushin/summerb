@@ -26,11 +26,11 @@ import javax.sql.DataSource;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.util.CollectionUtils;
-import org.summerb.easycrud.api.dto.PagerParams;
-import org.summerb.easycrud.api.dto.PaginatedList;
 import org.summerb.easycrud.impl.dao.TableDaoBase;
 import org.summerb.properties.impl.dao.AliasEntry;
 import org.summerb.properties.impl.dao.StringIdAliasDao;
+import org.summerb.utils.easycrud.api.dto.PagerParams;
+import org.summerb.utils.easycrud.api.dto.PaginatedList;
 
 public class StringIdAliasDaoImpl extends TableDaoBase implements StringIdAliasDao {
   protected static final String PARAM_ALIAS = "alias";

@@ -39,8 +39,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.filter.GenericFilterBean;
 import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.api.EasyCrudWireTap;
-import org.summerb.easycrud.api.dto.PagerParams;
-import org.summerb.easycrud.api.dto.PaginatedList;
 import org.summerb.easycrud.api.exceptions.EntityNotFoundException;
 import org.summerb.easycrud.api.query.OrderBy;
 import org.summerb.easycrud.api.query.Query;
@@ -66,6 +64,8 @@ import org.summerb.easycrud.rest.permissions.PermissionsResolverStrategyPerRow;
 import org.summerb.easycrud.rest.permissions.PermissionsResolverStrategyPerTable;
 import org.summerb.easycrud.rest.querynarrower.QueryNarrowerStrategy;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
+import org.summerb.utils.easycrud.api.dto.PagerParams;
+import org.summerb.utils.easycrud.api.dto.PaginatedList;
 
 import com.google.common.base.Preconditions;
 
@@ -162,12 +162,13 @@ public class EasyCrudRestControllerBase<
    * <p>In order for this method to work properly (including orderBy and pagerParams) make sure to
    * register PojoFieldsArgumentResolver within spring mvc.
    *
-   * @param pagerParams pagerParams
-   * @param orderBy orderBy
+   * @param optionalPagerParams pagerParams
+   * @param optionalOrderBy orderBy, might be empty
    * @param needPerms provide true if needed to know permissions
    * @param referencesToResolve references to resolve
    * @param pathVariables path variables
    * @return list of items
+   * @throws Exception in case something goes wrong. It supposed to be handled by Advice or Filter
    */
   @GetMapping
   public MultipleItemsResult<TId, TRow> getList(

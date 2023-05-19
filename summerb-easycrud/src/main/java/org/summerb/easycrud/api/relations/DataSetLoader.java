@@ -55,8 +55,8 @@ public interface DataSetLoader {
   /**
    * Loads all objects specified in ids param into provided dataSet (it might be empty).
    *
-   * <p>It will NOT load referenced objects. Use {@link #loadReferencedObjects(DataSet, Ref...)}
-   * if needed
+   * <p>It will NOT load referenced objects. Use {@link #loadReferencedObjects(DataSet, Ref...)} if
+   * needed
    *
    * @param ids map of ids to load. Entitype is mapped to list of ids
    * @param dataSet target for loaded data.

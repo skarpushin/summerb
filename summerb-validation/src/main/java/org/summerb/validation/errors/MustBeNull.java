@@ -1,7 +1,5 @@
 package org.summerb.validation.errors;
 
-import javax.annotation.Nonnull;
-
 import org.summerb.validation.ValidationError;
 
 public class MustBeNull extends ValidationError {
@@ -12,7 +10,7 @@ public class MustBeNull extends ValidationError {
   /** @deprecated used only for serialization */
   public MustBeNull() {}
 
-  public MustBeNull(@Nonnull String propertyName) {
+  public MustBeNull(String propertyName) {
     super(propertyName, MESSAGE_CODE);
   }
 }

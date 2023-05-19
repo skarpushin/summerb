@@ -30,8 +30,6 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.BeanUtils;
 import org.summerb.easycrud.api.EasyCrudServiceResolver;
-import org.summerb.easycrud.api.dto.PagerParams;
-import org.summerb.easycrud.api.dto.PaginatedList;
 import org.summerb.easycrud.api.relations.DataSetLoader;
 import org.summerb.easycrud.api.relations.ReferencesRegistry;
 import org.summerb.easycrud.api.row.HasId;
@@ -44,6 +42,8 @@ import org.summerb.easycrud.impl.relations.example.EnvService;
 import org.summerb.easycrud.impl.relations.example.EnvironmentRow;
 import org.summerb.easycrud.impl.relations.example.Refs;
 import org.summerb.utils.Pair;
+import org.summerb.utils.easycrud.api.dto.PagerParams;
+import org.summerb.utils.easycrud.api.dto.PaginatedList;
 
 public class DomLoaderDeviceGatewayTest {
 

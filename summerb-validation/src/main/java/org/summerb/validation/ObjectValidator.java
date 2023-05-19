@@ -17,9 +17,6 @@ package org.summerb.validation;
 
 import java.util.Collection;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 /**
  * This interface was created to facilitate validation of aggregated objects and aggregated object
  * collections through {@link ValidationContext#validateObject(java.util.function.Function,
@@ -44,9 +41,9 @@ public interface ObjectValidator<T> {
    *     will reference parent {@link ValidationContext}
    */
   void validate(
-      @Nonnull T subject,
-      @Nonnull String propertyName,
-      @Nonnull ValidationContext<T> ctx,
-      @Nullable Collection<T> optionalSubjectCollection,
-      @Nullable ValidationContext<?> parentCtx);
+      T subject,
+      String propertyName,
+      ValidationContext<T> ctx,
+      Collection<T> optionalSubjectCollection,
+      ValidationContext<?> parentCtx);
 }

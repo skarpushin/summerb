@@ -1,7 +1,5 @@
 package org.summerb.validation.errors;
 
-import javax.annotation.Nonnull;
-
 import org.summerb.validation.ValidationError;
 
 public class MustNotContain extends ValidationError {
@@ -12,7 +10,7 @@ public class MustNotContain extends ValidationError {
   /** @deprecated used only for serialization */
   public MustNotContain() {}
 
-  public MustNotContain(@Nonnull String propertyName, @Nonnull String subString) {
+  public MustNotContain(String propertyName, String subString) {
     super(propertyName, MESSAGE_CODE, subString);
   }
 }

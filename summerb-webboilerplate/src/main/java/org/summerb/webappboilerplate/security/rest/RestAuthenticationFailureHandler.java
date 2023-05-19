@@ -25,18 +25,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.summerb.i18n.exceptions.dto.ExceptionInfo;
+import org.summerb.i18n.exceptions.dto.GenericServerErrorResult;
 import org.summerb.utils.exceptions.ExceptionUtils;
-import org.summerb.utils.exceptions.dto.ExceptionInfo;
-import org.summerb.utils.exceptions.dto.GenericServerErrorResult;
-import org.summerb.utils.exceptions.translator.ExceptionTranslator;
-import org.summerb.utils.json.JsonResponseWriter;
-import org.summerb.utils.json.JsonResponseWriterGsonImpl;
 import org.summerb.validation.ValidationErrors;
 import org.summerb.validation.ValidationException;
+import org.summerb.webappboilerplate.utils.exceptions.translator.ExceptionTranslator;
+import org.summerb.webappboilerplate.utils.json.JsonResponseWriter;
+import org.summerb.webappboilerplate.utils.json.JsonResponseWriterGsonImpl;
 
 public class RestAuthenticationFailureHandler implements AuthenticationFailureHandler {
-  private JsonResponseWriter jsonResponseHelper;
-  private ExceptionTranslator exceptionTranslator;
+  protected JsonResponseWriter jsonResponseHelper;
+  protected ExceptionTranslator exceptionTranslator;
 
   public RestAuthenticationFailureHandler() {
     jsonResponseHelper = new JsonResponseWriterGsonImpl();

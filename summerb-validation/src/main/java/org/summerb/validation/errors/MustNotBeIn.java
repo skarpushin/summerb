@@ -3,8 +3,6 @@ package org.summerb.validation.errors;
 import java.util.Arrays;
 import java.util.Collection;
 
-import javax.annotation.Nonnull;
-
 import org.summerb.validation.ValidationError;
 
 public class MustNotBeIn extends ValidationError {
@@ -15,7 +13,7 @@ public class MustNotBeIn extends ValidationError {
   /** @deprecated used only for serialization */
   public MustNotBeIn() {}
 
-  public MustNotBeIn(@Nonnull String propertyName, @Nonnull Collection<?> values) {
+  public MustNotBeIn(String propertyName, Collection<?> values) {
     super(propertyName, MESSAGE_CODE, Arrays.toString(values.toArray()));
   }
 }

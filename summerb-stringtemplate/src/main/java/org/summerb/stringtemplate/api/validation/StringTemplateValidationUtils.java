@@ -39,7 +39,7 @@ public class StringTemplateValidationUtils {
   public static void validateStringTemplate(
       StringTemplateFactory stringTemplateFactory,
       String stringTemplate,
-      ValidationContext ctx,
+      ValidationContext<?> ctx,
       String fieldToken) {
 
     Preconditions.checkArgument(stringTemplateFactory != null);

@@ -15,16 +15,14 @@
  ******************************************************************************/
 package org.summerb.validation.jakarta.processors;
 
-import javax.annotation.Nonnull;
+import javax.validation.constraints.Positive;
 
 import org.summerb.validation.ValidationContext;
 import org.summerb.validation.errors.MustBeGreater;
 import org.summerb.validation.jakarta.processors.abstracts.NumberProcessorNullableAbstract;
 
-import javax.validation.constraints.Positive;
-
 public class PositiveProcessor extends NumberProcessorNullableAbstract<Positive> {
-  public PositiveProcessor(@Nonnull Positive annotation, @Nonnull String propertyName) {
+  public PositiveProcessor(Positive annotation, String propertyName) {
     super(annotation, propertyName);
   }
 

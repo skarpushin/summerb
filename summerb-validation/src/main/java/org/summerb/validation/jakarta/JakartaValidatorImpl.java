@@ -15,9 +15,6 @@
  ******************************************************************************/
 package org.summerb.validation.jakarta;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.summerb.validation.ValidationContext;
 
 import com.google.common.base.Preconditions;
@@ -25,8 +22,7 @@ import com.google.common.base.Preconditions;
 public class JakartaValidatorImpl implements JakartaValidator {
   protected final JakartaValidationBeanProcessor jakartaValidationBeanProcessor;
 
-  public JakartaValidatorImpl(
-      @Nonnull JakartaValidationBeanProcessor jakartaValidationBeanProcessor) {
+  public JakartaValidatorImpl(JakartaValidationBeanProcessor jakartaValidationBeanProcessor) {
     Preconditions.checkArgument(
         jakartaValidationBeanProcessor != null, "jakartaValidationBeanProcessor required");
 
@@ -35,7 +31,7 @@ public class JakartaValidatorImpl implements JakartaValidator {
 
   @Override
   public <TBeanClass> void findValidationErrors(
-      @Nullable TBeanClass subject, @Nonnull ValidationContext<TBeanClass> validationContext) {
+      TBeanClass subject, ValidationContext<TBeanClass> validationContext) {
     if (subject == null) {
       return;
     }

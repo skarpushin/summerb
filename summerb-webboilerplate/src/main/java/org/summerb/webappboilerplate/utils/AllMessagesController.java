@@ -28,8 +28,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
 import org.summerb.utils.spring.AllMessagesProvider;
@@ -68,12 +67,12 @@ public class AllMessagesController implements InitializingBean {
     gson = new Gson();
   }
 
-  @RequestMapping(method = RequestMethod.GET, value = "/rest/msgs")
+  @GetMapping("/rest/msgs")
   public @ResponseBody Properties getMessageBundle() throws ExecutionException {
     return messagesCache.get(CurrentRequestUtils.getLocale());
   }
 
-  @RequestMapping(method = RequestMethod.GET, value = "/msgs.js")
+  @GetMapping("/msgs.js")
   public ResponseEntity<String> getMessageBundleJs(WebRequest request, HttpServletResponse response)
       throws ExecutionException {
     // see if not modified

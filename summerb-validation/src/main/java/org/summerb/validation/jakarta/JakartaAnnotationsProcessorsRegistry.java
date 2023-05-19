@@ -18,8 +18,6 @@ package org.summerb.validation.jakarta;
 import java.lang.annotation.Annotation;
 import java.util.Set;
 
-import javax.annotation.Nonnull;
-
 /**
  * Registry of {@link AnnotationProcessor}.
  *
@@ -29,10 +27,8 @@ import javax.annotation.Nonnull;
  */
 public interface JakartaAnnotationsProcessorsRegistry {
 
-  @Nonnull
   Set<Class<? extends Annotation>> getSupportedAnnotations();
 
-  @Nonnull
   <T extends Annotation> AnnotationProcessor<T> buildAnnotationProcessor(
-      @Nonnull T annotation, @Nonnull String propertyName);
+      T annotation, String propertyName);
 }

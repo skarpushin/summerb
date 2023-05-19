@@ -25,7 +25,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.http.HttpHeaders;
@@ -46,22 +45,42 @@ import org.springframework.security.web.authentication.session.NullAuthenticated
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.web.filter.GenericFilterBean;
 
+import com.google.common.base.Preconditions;
+
 public class RestLoginFilter extends GenericFilterBean implements ApplicationEventPublisherAware {
-  private static final String AUTHORIZATION_PREFIX = "Basic ";
+  protected static final String AUTHORIZATION_PREFIX = "Basic ";
 
-  private ApplicationEventPublisher eventPublisher;
-  private AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource =
+  // required deps
+  protected AuthenticationManager authenticationManager;
+  protected AuthenticationSuccessHandler authenticationSuccessHandler;
+  protected AuthenticationFailureHandler authenticationFailureHandler;
+
+  // optional deps
+  protected ApplicationEventPublisher eventPublisher;
+  protected AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource =
       new WebAuthenticationDetailsSource();
-  private AuthenticationManager authenticationManager;
-  private RememberMeServices rememberMeServices = new NullRememberMeServices();
-  private SessionAuthenticationStrategy sessionAuthenticationStrategy =
+  protected RememberMeServices rememberMeServices = new NullRememberMeServices();
+  protected SessionAuthenticationStrategy sessionAuthenticationStrategy =
       new NullAuthenticatedSessionStrategy();
-  private AuthenticationSuccessHandler authenticationSuccessHandler;
-  private AuthenticationFailureHandler authenticationFailureHandler;
 
-  private String triggerPath = "/rest/login";
-  private String authorizationHeaderName = "X-" + HttpHeaders.AUTHORIZATION;
-  private String credentialsCharset = "UTF-8";
+  protected String triggerPath = "/rest/login";
+  protected String authorizationHeaderName = "X-" + HttpHeaders.AUTHORIZATION;
+  protected String credentialsCharset = "UTF-8";
+
+  public RestLoginFilter(
+      AuthenticationManager authenticationManager,
+      AuthenticationSuccessHandler authenticationSuccessHandler,
+      AuthenticationFailureHandler authenticationFailureHandler) {
+    Preconditions.checkArgument(authenticationManager != null, "authenticationManager required");
+    Preconditions.checkArgument(
+        authenticationSuccessHandler != null, "authenticationSuccessHandler required");
+    Preconditions.checkArgument(
+        authenticationFailureHandler != null, "authenticationFailureHandler required");
+
+    this.authenticationManager = authenticationManager;
+    this.authenticationSuccessHandler = authenticationSuccessHandler;
+    this.authenticationFailureHandler = authenticationFailureHandler;
+  }
 
   @Override
   public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
@@ -113,7 +132,7 @@ public class RestLoginFilter extends GenericFilterBean implements ApplicationEve
     authenticationSuccessHandler.onAuthenticationSuccess(request, response, authResult);
   }
 
-  private Authentication attemptAuthentication(
+  protected Authentication attemptAuthentication(
       HttpServletRequest request, HttpServletResponse response) {
     String authorizationHeader = request.getHeader(authorizationHeaderName);
     String[] tokens = extractAndDecodeHeader(authorizationHeader, request);
@@ -139,7 +158,7 @@ public class RestLoginFilter extends GenericFilterBean implements ApplicationEve
     authenticationFailureHandler.onAuthenticationFailure(request, response, failed);
   }
 
-  private boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
+  protected boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
     String header = request.getHeader(authorizationHeaderName);
     if (header == null || !header.startsWith(AUTHORIZATION_PREFIX)) {
       return false;
@@ -155,7 +174,7 @@ public class RestLoginFilter extends GenericFilterBean implements ApplicationEve
    *
    * @throws BadCredentialsException if the Basic header is not present or is not valid Base64
    */
-  private String[] extractAndDecodeHeader(String header, HttpServletRequest request) {
+  protected String[] extractAndDecodeHeader(String header, HttpServletRequest request) {
     try {
       byte[] base64Token = header.substring(AUTHORIZATION_PREFIX.length()).getBytes("UTF-8");
       byte[] decoded;
@@ -204,11 +223,6 @@ public class RestLoginFilter extends GenericFilterBean implements ApplicationEve
     return authenticationManager;
   }
 
-  @Required
-  public void setAuthenticationManager(AuthenticationManager authenticationManager) {
-    this.authenticationManager = authenticationManager;
-  }
-
   public RememberMeServices getRememberMeServices() {
     return rememberMeServices;
   }
@@ -229,16 +243,8 @@ public class RestLoginFilter extends GenericFilterBean implements ApplicationEve
     return authenticationSuccessHandler;
   }
 
-  public void setAuthenticationSuccessHandler(AuthenticationSuccessHandler successHandler) {
-    this.authenticationSuccessHandler = successHandler;
-  }
-
   public AuthenticationFailureHandler getAuthenticationFailureHandler() {
     return authenticationFailureHandler;
-  }
-
-  public void setAuthenticationFailureHandler(AuthenticationFailureHandler failureHandler) {
-    this.authenticationFailureHandler = failureHandler;
   }
 
   public String getTriggerPath() {

@@ -28,8 +28,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nonnull;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,7 +68,7 @@ public class JakartaAnnotationsProcessorsRegistryPackageScanImpl
     this("org.summerb.validation.jakarta.processors");
   }
 
-  public JakartaAnnotationsProcessorsRegistryPackageScanImpl(@Nonnull String packageName) {
+  public JakartaAnnotationsProcessorsRegistryPackageScanImpl(String packageName) {
     try {
       Set<Class<? extends AnnotationProcessor<? extends Annotation>>> annotationProcessorClasses =
           Collections.unmodifiableSet(findAnnotationProcessorsClasses(packageName));
@@ -195,7 +193,7 @@ public class JakartaAnnotationsProcessorsRegistryPackageScanImpl
   }
 
   @Override
-  public @Nonnull Set<Class<? extends Annotation>> getSupportedAnnotations() {
+  public Set<Class<? extends Annotation>> getSupportedAnnotations() {
     return mapping.keySet();
   }
 
@@ -204,8 +202,8 @@ public class JakartaAnnotationsProcessorsRegistryPackageScanImpl
       value = {"NP_NULL_ON_SOME_PATH", "NP_NULL_PARAM_DEREF"},
       justification = "Preconditions.checkArgument checks for null")
   @Override
-  public @Nonnull <T extends Annotation> AnnotationProcessor<T> buildAnnotationProcessor(
-      @Nonnull T annotation, @Nonnull String propertyName) {
+  public <T extends Annotation> AnnotationProcessor<T> buildAnnotationProcessor(
+      T annotation, String propertyName) {
 
     Class<? extends AnnotationProcessor<? extends Annotation>> processorClass =
         mapping.get(annotation.annotationType());

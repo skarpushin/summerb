@@ -21,8 +21,6 @@ import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.annotation.Nonnull;
-
 import org.summerb.validation.ValidationContext;
 
 import com.google.common.base.Preconditions;
@@ -44,7 +42,7 @@ public abstract class DecimalProcessorNullableAbstract<T extends Annotation>
     ALLOWED_TYPES = allowed;
   }
 
-  public DecimalProcessorNullableAbstract(@Nonnull T annotation, @Nonnull String propertyName) {
+  public DecimalProcessorNullableAbstract(T annotation, String propertyName) {
     super(annotation, propertyName);
   }
 

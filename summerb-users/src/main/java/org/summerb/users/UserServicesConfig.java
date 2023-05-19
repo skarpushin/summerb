@@ -22,18 +22,18 @@ import com.google.common.eventbus.EventBus;
 public class UserServicesConfig {
 
   @Bean
-  public UserDao userDao(DataSource dataSource) {
+  UserDao userDao(DataSource dataSource) {
     return new UserDaoImpl(dataSource, "users");
   }
 
   @Bean
-  protected UserService userServiceNoncached(
+  UserService userServiceNoncached(
       UserDao userDao, EventBus eventBus, ValidationContextFactory validationContextFactory) {
     return new UserServiceImpl(userDao, eventBus, validationContextFactory);
   }
 
   @Bean
-  public UserService userService(
+  UserService userService(
       DataSource dataSource,
       EventBus eventBus,
       UserDao userDao,
@@ -42,12 +42,12 @@ public class UserServicesConfig {
   }
 
   @Bean
-  public PermissionDao permissionDao(DataSource dataSource) {
+  PermissionDao permissionDao(DataSource dataSource) {
     return new PermissionDaoImpl(dataSource, "users_permissions");
   }
 
   @Bean
-  public PermissionService permissionService(PermissionDao permissionDao) {
+  PermissionService permissionService(PermissionDao permissionDao) {
     return new PermissionServiceImpl(permissionDao);
   }
 }

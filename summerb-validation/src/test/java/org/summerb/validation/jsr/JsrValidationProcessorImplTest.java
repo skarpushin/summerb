@@ -5,9 +5,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Field;
 
-import org.junit.jupiter.api.Test;
-
 import javax.validation.constraints.AssertTrue;
+
+import org.junit.jupiter.api.Test;
 
 class JsrValidationProcessorImplTest {
 

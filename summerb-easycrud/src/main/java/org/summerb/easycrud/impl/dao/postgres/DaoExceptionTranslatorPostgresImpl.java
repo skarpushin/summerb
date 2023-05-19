@@ -22,7 +22,6 @@ import org.springframework.util.StringUtils;
 import org.summerb.easycrud.api.DaoExceptionTranslatorAbstract;
 import org.summerb.utils.exceptions.ExceptionUtils;
 import org.summerb.validation.ValidationContext;
-import org.summerb.validation.ValidationException;
 import org.summerb.validation.errors.DuplicateRecord;
 
 /**
@@ -32,7 +31,7 @@ import org.summerb.validation.errors.DuplicateRecord;
  */
 public class DaoExceptionTranslatorPostgresImpl extends DaoExceptionTranslatorAbstract {
   @Override
-  public void translateAndThrowIfApplicable(Throwable t){
+  public void translateAndThrowIfApplicable(Throwable t) {
     throwIfDuplicate(t);
 
     /**
@@ -41,7 +40,7 @@ public class DaoExceptionTranslatorPostgresImpl extends DaoExceptionTranslatorAb
      */
   }
 
-  protected void throwIfDuplicate(Throwable t){
+  protected void throwIfDuplicate(Throwable t) {
     DuplicateKeyException dke = ExceptionUtils.findExceptionOfType(t, DuplicateKeyException.class);
     if (dke == null) {
       return;

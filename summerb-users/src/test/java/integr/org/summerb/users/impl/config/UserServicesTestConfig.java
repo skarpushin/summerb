@@ -41,18 +41,18 @@ public class UserServicesTestConfig {
   }
 
   @Bean
-  public UserDao userDao(DataSource dataSource) {
+  UserDao userDao(DataSource dataSource) {
     return new UserDaoImpl(dataSource, "users");
   }
 
   @Bean
-  protected UserService userServiceNoncached(
+  UserService userServiceNoncached(
       UserDao userDao, EventBus eventBus, ValidationContextFactory validationContextFactory) {
     return new UserServiceImpl(userDao, eventBus, validationContextFactory);
   }
 
   @Bean
-  public UserService userService(
+  UserService userService(
       DataSource dataSource,
       EventBus eventBus,
       UserDao userDao,
@@ -61,39 +61,39 @@ public class UserServicesTestConfig {
   }
 
   @Bean
-  public PasswordDao passwordDao(DataSource dataSource) {
+  PasswordDao passwordDao(DataSource dataSource) {
     return new PasswordDaoImpl(dataSource, "users_passwords");
   }
 
   @Bean
-  public PasswordEncoder passwordEncoder() {
+  PasswordEncoder passwordEncoder() {
     return new StandardPasswordEncoder("test");
   }
 
   @Bean
-  public PasswordService passwordService(
+  PasswordService passwordService(
       PasswordDao passwordDao, PasswordEncoder passwordEncoder, UserService userService) {
     return new PasswordServiceImpl(passwordDao, passwordEncoder, userService);
   }
 
   @Bean
-  public AuthTokenDao authTokenDao(DataSource dataSource) {
+  AuthTokenDao authTokenDao(DataSource dataSource) {
     return new AuthTokenDaoImpl(dataSource, "users_auth_tokens");
   }
 
   @Bean
-  public AuthTokenService authTokenService(
+  AuthTokenService authTokenService(
       AuthTokenDao authTokenDao, UserService userService, PasswordService passwordService) {
     return new AuthTokenServiceImpl(authTokenDao, userService, passwordService);
   }
 
   @Bean
-  public PermissionDao permissionDao(DataSource dataSource) {
+  PermissionDao permissionDao(DataSource dataSource) {
     return new PermissionDaoImpl(dataSource, "users_permissions");
   }
 
   @Bean
-  public PermissionService permissionService(PermissionDao permissionDao) {
+  PermissionService permissionService(PermissionDao permissionDao) {
     return new PermissionServiceImpl(permissionDao);
   }
 }

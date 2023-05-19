@@ -1,8 +1,8 @@
 package org.summerb.validation.jakarta.test_data2;
 
-import org.summerb.validation.ValidationContext;
-
 import javax.validation.constraints.Max;
+
+import org.summerb.validation.ValidationContext;
 
 public class ValidViaAbstractInterfaceGeneric implements AbstractInterfaceGeneric<Boolean> {
   private String propertyName;

@@ -15,8 +15,6 @@
  ******************************************************************************/
 package org.summerb.validation.errors;
 
-import javax.annotation.Nonnull;
-
 import org.summerb.i18n.HasMessageArgsConverters;
 import org.summerb.i18n.MessageArgConverter;
 import org.summerb.i18n.MessageCodeMessageArgConverter;
@@ -31,8 +29,7 @@ public class MustBeEquals extends ValidationError implements HasMessageArgsConve
   @Deprecated
   public MustBeEquals() {}
 
-  public MustBeEquals(
-      @Nonnull String propertyName, @Nonnull String aMessageCode, @Nonnull String bMessageCode) {
+  public MustBeEquals(String propertyName, String aMessageCode, String bMessageCode) {
     super(propertyName, MESSAGE_CODE, aMessageCode, bMessageCode);
   }
 

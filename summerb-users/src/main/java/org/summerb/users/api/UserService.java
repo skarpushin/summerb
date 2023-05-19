@@ -15,10 +15,10 @@
  ******************************************************************************/
 package org.summerb.users.api;
 
-import org.summerb.easycrud.api.dto.PagerParams;
-import org.summerb.easycrud.api.dto.PaginatedList;
 import org.summerb.users.api.dto.User;
 import org.summerb.users.api.exceptions.UserNotFoundException;
+import org.summerb.utils.easycrud.api.dto.PagerParams;
+import org.summerb.utils.easycrud.api.dto.PaginatedList;
 import org.summerb.validation.ValidationException;
 
 // TODO: Re-do to use EasyCrud

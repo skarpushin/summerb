@@ -9,5 +9,4 @@ public interface CurrentUserRolesResolver {
   boolean hasAnyRole(String... roles);
 
   boolean hasAnyRole(Set<String> roles);
-  
 }

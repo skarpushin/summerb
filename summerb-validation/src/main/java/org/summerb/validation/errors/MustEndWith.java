@@ -1,7 +1,5 @@
 package org.summerb.validation.errors;
 
-import javax.annotation.Nonnull;
-
 import org.summerb.validation.ValidationError;
 
 public class MustEndWith extends ValidationError {
@@ -12,7 +10,7 @@ public class MustEndWith extends ValidationError {
   /** @deprecated used only for serialization */
   public MustEndWith() {}
 
-  public MustEndWith(@Nonnull String propertyName, @Nonnull String subString) {
+  public MustEndWith(String propertyName, String subString) {
     super(propertyName, MESSAGE_CODE, subString);
   }
 }

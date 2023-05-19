@@ -46,11 +46,8 @@ public class AuthTokenDaoInMemoryImpl implements AuthTokenDao, InitializingBean,
   protected String pathNameToPersistedTokens;
 
   protected Map<String, AuthToken> tokens = new HashMap<String, AuthToken>();
-
-  @SuppressWarnings("unused")
-  protected MapSizeMXBean mxBean;
-
   protected Multimap<String, AuthToken> idxByUser = HashMultimap.create();
+  protected MapSizeMXBean mxBean;
 
   @Override
   public synchronized void createAuthToken(AuthToken authToken) {

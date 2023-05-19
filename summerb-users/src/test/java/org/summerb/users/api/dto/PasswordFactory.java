@@ -21,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.password.StandardPasswordEncoder;
 import org.summerb.users.impl.dom.Password;
 
+@SuppressWarnings("deprecation")
 public class PasswordFactory {
   public static PasswordEncoder passwordEncoder = new StandardPasswordEncoder("test");
   public static final String RIGHT_PASSWORD_FOR_EXISTENT_USER = "passwordRight";

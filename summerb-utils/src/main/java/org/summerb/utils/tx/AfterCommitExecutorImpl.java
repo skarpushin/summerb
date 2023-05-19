@@ -22,9 +22,10 @@ import java.util.concurrent.ExecutorService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+
+import com.google.common.base.Preconditions;
 
 /**
  * This impl is intended to be scoped for each request. It will NOT work properly if instantiated as
@@ -36,8 +37,12 @@ public class AfterCommitExecutorImpl implements TransactionSynchronization, Exec
   private static Logger log = LoggerFactory.getLogger(AfterCommitExecutorImpl.class);
 
   private ExecutorService executorService;
-
   private Queue<Runnable> threadRunnables;
+
+  public AfterCommitExecutorImpl(ExecutorService executorService) {
+    Preconditions.checkArgument(executorService != null, "executorService required");
+    this.executorService = executorService;
+  }
 
   @Override
   public void execute(Runnable runnable) {
@@ -122,10 +127,5 @@ public class AfterCommitExecutorImpl implements TransactionSynchronization, Exec
 
   public ExecutorService getExecutorService() {
     return executorService;
-  }
-
-  @Required
-  public void setExecutorService(ExecutorService executorService) {
-    this.executorService = executorService;
   }
 }

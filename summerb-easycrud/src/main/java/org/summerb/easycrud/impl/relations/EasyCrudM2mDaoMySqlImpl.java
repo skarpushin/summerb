@@ -21,7 +21,8 @@ import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.api.row.relations.ManyToManyRow;
 import org.summerb.easycrud.impl.dao.mysql.EasyCrudDaoMySqlImpl;
 
-public class EasyCrudM2mDaoMySqlImpl<T1Id, T1Dto extends HasId<T1Id>, T2Id, T2Dto extends HasId<T2Id>>
+public class EasyCrudM2mDaoMySqlImpl<
+        T1Id, T1Dto extends HasId<T1Id>, T2Id, T2Dto extends HasId<T2Id>>
     extends EasyCrudDaoMySqlImpl<Long, ManyToManyRow<T1Id, T2Id>> {
 
   @SuppressWarnings("deprecation")

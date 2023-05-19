@@ -17,16 +17,14 @@ package org.summerb.validation.jakarta.processors;
 
 import java.math.BigDecimal;
 
-import javax.annotation.Nonnull;
+import javax.validation.constraints.Max;
 
 import org.summerb.validation.ValidationContext;
 import org.summerb.validation.jakarta.processors.abstracts.DecimalProcessorNullableAbstract;
 
-import javax.validation.constraints.Max;
-
 public class MaxProcessor extends DecimalProcessorNullableAbstract<Max> {
 
-  public MaxProcessor(@Nonnull Max annotation, @Nonnull String propertyName) {
+  public MaxProcessor(Max annotation, String propertyName) {
     super(annotation, propertyName);
   }
 

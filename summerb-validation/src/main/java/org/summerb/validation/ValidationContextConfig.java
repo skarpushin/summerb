@@ -38,7 +38,7 @@ import org.summerb.validation.jakarta.JakartaValidatorImpl;
 public class ValidationContextConfig {
 
   @Bean
-  public MethodCapturerProxyClassFactory methodCapturerProxyClassFactory() {
+  MethodCapturerProxyClassFactory methodCapturerProxyClassFactory() {
     // NOTE: Pitest will incorrectly report that this is not properly covered. But if you replace
     // return value with null tests will fail. I guess this is because this is Spring Config that is
     // not being mutated properly by pitest
@@ -46,31 +46,30 @@ public class ValidationContextConfig {
   }
 
   @Bean
-  public JakartaAnnotationsProcessorsRegistry jakartaAnnotationsProcessorsRegistry() {
+  JakartaAnnotationsProcessorsRegistry jakartaAnnotationsProcessorsRegistry() {
     return new JakartaAnnotationsProcessorsRegistryPackageScanImpl();
   }
 
   @Bean
-  public JakartaValidationBeanProcessor jakartaValidationBeanProcessor(
+  JakartaValidationBeanProcessor jakartaValidationBeanProcessor(
       JakartaAnnotationsProcessorsRegistry jakartaAnnotationsProcessorsRegistry) {
     return new JakartaValidationBeanProcessorCachedImpl(
         new JakartaValidationBeanProcessorImpl(jakartaAnnotationsProcessorsRegistry));
   }
 
   @Bean
-  public JakartaValidator jakartaValidator(
-      JakartaValidationBeanProcessor jakartaValidationBeanProcessor) {
+  JakartaValidator jakartaValidator(JakartaValidationBeanProcessor jakartaValidationBeanProcessor) {
     return new JakartaValidatorImpl(jakartaValidationBeanProcessor);
   }
 
   @Bean
-  public PropertyNameObtainerFactory propertyNameObtainerFactory(
+  PropertyNameObtainerFactory propertyNameObtainerFactory(
       MethodCapturerProxyClassFactory methodCapturerProxyClassFactory) {
     return new PropertyNameObtainerFactoryImpl(methodCapturerProxyClassFactory);
   }
 
   @Bean
-  public ValidationContextFactory validationContextFactory(
+  ValidationContextFactory validationContextFactory(
       JakartaValidator jakartaValidator, PropertyNameObtainerFactory propertyNameObtainerFactory) {
     return new ValidationContextFactoryImpl(propertyNameObtainerFactory, jakartaValidator);
   }

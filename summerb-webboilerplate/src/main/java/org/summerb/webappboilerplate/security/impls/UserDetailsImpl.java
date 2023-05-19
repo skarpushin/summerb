@@ -26,13 +26,13 @@ import org.summerb.users.api.dto.AuthToken;
 import org.summerb.users.api.dto.User;
 
 public class UserDetailsImpl implements UserDetails {
-  private static final long serialVersionUID = -1939360452604292858L;
+  protected static final long serialVersionUID = -1939360452604292858L;
 
-  private final User user;
-  private final String passwordHash;
-  private final AuthToken authToken;
+  protected final User user;
+  protected final String passwordHash;
+  protected final AuthToken authToken;
 
-  private List<GrantedAuthority> userAuthorities;
+  protected List<GrantedAuthority> userAuthorities;
 
   public UserDetailsImpl(
       User user, String passwordHash, List<String> permissions, AuthToken authToken) {

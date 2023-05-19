@@ -27,8 +27,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
-import javax.annotation.Nonnull;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -43,7 +41,7 @@ public class JakartaValidationBeanProcessorImpl implements JakartaValidationBean
   protected JakartaAnnotationsProcessorsRegistry jakartaAnnotationsProcessorsRegistry;
 
   public JakartaValidationBeanProcessorImpl(
-      @Nonnull JakartaAnnotationsProcessorsRegistry jakartaAnnotationsProcessorsRegistry) {
+      JakartaAnnotationsProcessorsRegistry jakartaAnnotationsProcessorsRegistry) {
 
     Preconditions.checkArgument(
         jakartaAnnotationsProcessorsRegistry != null,
@@ -53,7 +51,7 @@ public class JakartaValidationBeanProcessorImpl implements JakartaValidationBean
   }
 
   @Override
-  public @Nonnull List<JakartaValidatorItem> getValidationsFor(Class<?> clazz) {
+  public List<JakartaValidatorItem> getValidationsFor(Class<?> clazz) {
     Set<Class<? extends Annotation>> supportedAnnotations =
         jakartaAnnotationsProcessorsRegistry.getSupportedAnnotations();
 
@@ -108,8 +106,7 @@ public class JakartaValidationBeanProcessorImpl implements JakartaValidationBean
     return BeanUtils.getPropertyDescriptors(clazz);
   }
 
-  public static @Nonnull List<Field> getAllFields(
-      @Nonnull List<Field> fields, @Nonnull Class<?> type) {
+  public static List<Field> getAllFields(List<Field> fields, Class<?> type) {
     fields.addAll(Arrays.asList(type.getDeclaredFields()));
     Class<?> superclass = type.getSuperclass();
     if (!Object.class.equals(superclass)) {

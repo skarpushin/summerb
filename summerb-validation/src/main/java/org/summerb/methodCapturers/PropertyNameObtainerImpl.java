@@ -19,8 +19,6 @@ import java.lang.reflect.Method;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import javax.annotation.Nonnull;
-
 import com.google.common.base.Preconditions;
 
 import net.bytebuddy.ByteBuddy;
@@ -44,14 +42,14 @@ public class PropertyNameObtainerImpl<T> implements PropertyNameObtainer<T> {
    *     to enable caching logic as instantiation of MethodCapturer is somewhat expensive operation
    *     and in some cases we don't even need it
    */
-  public PropertyNameObtainerImpl(@Nonnull Supplier<MethodCapturer> methodCapturerSupplier) {
+  public PropertyNameObtainerImpl(Supplier<MethodCapturer> methodCapturerSupplier) {
     Preconditions.checkArgument(methodCapturerSupplier != null);
     this.methodCapturerSupplier = methodCapturerSupplier;
   }
 
   @Override
   @SuppressWarnings("unchecked")
-  public @Nonnull String obtainFrom(@Nonnull Function<T, ?> methodReference) {
+  public String obtainFrom(Function<T, ?> methodReference) {
     Preconditions.checkArgument(methodReference != null, "methodReference required");
 
     // NOTE: Caching is not possible because even for the same field we get different instance of
@@ -76,7 +74,7 @@ public class PropertyNameObtainerImpl<T> implements PropertyNameObtainer<T> {
     return getPropertyNameFromGetterName(method);
   }
 
-  public static @Nonnull String getPropertyNameFromGetterName(@Nonnull Method method) {
+  public static String getPropertyNameFromGetterName(Method method) {
     Preconditions.checkArgument(method != null, "Method required");
     String name = method.getName();
     if (name.startsWith("get")) {

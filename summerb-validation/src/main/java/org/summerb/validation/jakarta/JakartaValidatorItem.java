@@ -18,8 +18,6 @@ package org.summerb.validation.jakarta;
 import java.lang.annotation.Annotation;
 import java.util.function.Function;
 
-import javax.annotation.Nonnull;
-
 import org.springframework.util.StringUtils;
 import org.summerb.validation.ValidationContext;
 
@@ -32,10 +30,10 @@ public class JakartaValidatorItem {
   private final Function<Object, Object> valueGetter;
 
   public JakartaValidatorItem(
-      @Nonnull String propertyName,
-      @Nonnull Annotation annotation,
-      @Nonnull AnnotationProcessor<Annotation> processor,
-      @Nonnull Function<Object, Object> valueGetter) {
+      String propertyName,
+      Annotation annotation,
+      AnnotationProcessor<Annotation> processor,
+      Function<Object, Object> valueGetter) {
     super();
 
     Preconditions.checkArgument(StringUtils.hasText(propertyName));
@@ -49,23 +47,23 @@ public class JakartaValidatorItem {
     this.valueGetter = valueGetter;
   }
 
-  public void process(@Nonnull Object bean, @Nonnull ValidationContext<?> ctx) {
+  public void process(Object bean, ValidationContext<?> ctx) {
     processor.validate(valueGetter.apply(bean), ctx);
   }
 
-  public @Nonnull AnnotationProcessor<Annotation> getProcessor() {
+  public AnnotationProcessor<Annotation> getProcessor() {
     return processor;
   }
 
-  public @Nonnull Function<Object, Object> getValueGetter() {
+  public Function<Object, Object> getValueGetter() {
     return valueGetter;
   }
 
-  public @Nonnull String getPropertyName() {
+  public String getPropertyName() {
     return propertyName;
   }
 
-  public @Nonnull Annotation getAnnotation() {
+  public Annotation getAnnotation() {
     return annotation;
   }
 }

@@ -18,17 +18,15 @@ package org.summerb.validation.jakarta.processors;
 import java.util.Collection;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
+import javax.validation.constraints.Size;
 
 import org.summerb.validation.ValidationContext;
 import org.summerb.validation.errors.LengthMustBeBetween;
 import org.summerb.validation.jakarta.processors.abstracts.AnnotationProcessorNullableAbstract;
 
-import javax.validation.constraints.Size;
-
 public class SizeProcessor extends AnnotationProcessorNullableAbstract<Size> {
 
-  public SizeProcessor(@Nonnull Size annotation, @Nonnull String propertyName) {
+  public SizeProcessor(Size annotation, String propertyName) {
     super(annotation, propertyName);
   }
 

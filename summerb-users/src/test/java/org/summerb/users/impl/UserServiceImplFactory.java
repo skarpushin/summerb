@@ -21,7 +21,6 @@ import static org.mockito.Mockito.when;
 
 import org.mockito.Mockito;
 import org.springframework.dao.DuplicateKeyException;
-import org.summerb.easycrud.api.dto.PagerParams;
 import org.summerb.methodCapturers.MethodCapturerProxyClassFactory;
 import org.summerb.methodCapturers.MethodCapturerProxyClassFactoryImpl;
 import org.summerb.methodCapturers.PropertyNameObtainerFactory;
@@ -29,6 +28,7 @@ import org.summerb.methodCapturers.PropertyNameObtainerFactoryImpl;
 import org.summerb.users.api.dto.User;
 import org.summerb.users.api.dto.UserFactory;
 import org.summerb.users.impl.dao.UserDao;
+import org.summerb.utils.easycrud.api.dto.PagerParams;
 import org.summerb.validation.ValidationContextFactory;
 import org.summerb.validation.ValidationContextFactoryImpl;
 

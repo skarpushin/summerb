@@ -15,8 +15,6 @@
  ******************************************************************************/
 package org.summerb.validation.errors;
 
-import javax.annotation.Nonnull;
-
 import org.summerb.validation.ValidationError;
 
 import com.google.common.collect.BoundType;
@@ -30,12 +28,11 @@ public class MustBeBetween extends ValidationError {
   /** @deprecated used only for serialization */
   public MustBeBetween() {}
 
-  public <V> MustBeBetween(
-      @Nonnull String propertyName, @Nonnull V lowerBorder, @Nonnull V upperBorder) {
+  public <V> MustBeBetween(String propertyName, V lowerBorder, V upperBorder) {
     super(propertyName, MESSAGE_CODE, "[", lowerBorder, upperBorder, "]");
   }
 
-  public MustBeBetween(@Nonnull String propertyName, @Nonnull Range<?> range) {
+  public MustBeBetween(String propertyName, Range<?> range) {
     super(
         propertyName,
         MESSAGE_CODE,

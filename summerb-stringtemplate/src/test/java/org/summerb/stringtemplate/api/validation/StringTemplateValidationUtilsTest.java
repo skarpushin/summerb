@@ -28,7 +28,7 @@ public class StringTemplateValidationUtilsTest {
   public void testValidateStringTemplate_blackbox_expectOkForConstant() throws Exception {
     StringTemplateFactory stringTemplateFactory = new StringTemplateFactorySpElImpl();
     String stringTemplate = "Constant text";
-    ValidationContext ctx = new ValidationContext();
+    ValidationContext<?> ctx = new ValidationContext<>();
     String fieldToken = "fieldToken";
 
     StringTemplateValidationUtils.validateStringTemplate(
@@ -41,7 +41,7 @@ public class StringTemplateValidationUtilsTest {
   public void testValidateStringTemplate_blackbox_expectOkForValidExpression() throws Exception {
     StringTemplateFactory stringTemplateFactory = new StringTemplateFactorySpElImpl();
     String stringTemplate = "Constant text plus ${vars['4444']}";
-    ValidationContext ctx = new ValidationContext();
+    ValidationContext<?> ctx = new ValidationContext<>();
     String fieldToken = "fieldToken";
 
     StringTemplateValidationUtils.validateStringTemplate(
@@ -55,7 +55,7 @@ public class StringTemplateValidationUtilsTest {
       throws Exception {
     StringTemplateFactory stringTemplateFactory = new StringTemplateFactorySpElImpl();
     String stringTemplate = "Constant text plus ${vars['4444";
-    ValidationContext ctx = new ValidationContext();
+    ValidationContext<?> ctx = new ValidationContext<>();
     String fieldToken = "fieldToken";
 
     StringTemplateValidationUtils.validateStringTemplate(

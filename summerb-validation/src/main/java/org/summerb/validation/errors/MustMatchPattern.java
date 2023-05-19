@@ -1,7 +1,5 @@
 package org.summerb.validation.errors;
 
-import javax.annotation.Nonnull;
-
 import org.summerb.validation.ValidationError;
 
 public class MustMatchPattern extends ValidationError {
@@ -12,7 +10,7 @@ public class MustMatchPattern extends ValidationError {
   /** @deprecated used only for serialization */
   public MustMatchPattern() {}
 
-  public MustMatchPattern(@Nonnull String propertyName, @Nonnull String messageCode) {
+  public MustMatchPattern(String propertyName, String messageCode) {
     super(propertyName, messageCode);
   }
 }

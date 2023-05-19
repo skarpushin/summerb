@@ -15,8 +15,6 @@
  ******************************************************************************/
 package org.summerb.validation.errors;
 
-import javax.annotation.Nonnull;
-
 import org.summerb.validation.ValidationError;
 
 public class MustBeGreaterOrEqual extends ValidationError {
@@ -28,7 +26,7 @@ public class MustBeGreaterOrEqual extends ValidationError {
   @Deprecated
   public MustBeGreaterOrEqual() {}
 
-  public MustBeGreaterOrEqual(@Nonnull String propertyName, @Nonnull Object border) {
+  public MustBeGreaterOrEqual(String propertyName, Object border) {
     super(propertyName, MESSAGE_CODE, border);
   }
 }

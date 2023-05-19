@@ -1,7 +1,5 @@
 package org.summerb.validation.errors;
 
-import javax.annotation.Nonnull;
-
 import org.summerb.validation.ValidationError;
 
 public class MustBeInFutureOrPresent extends ValidationError {
@@ -12,7 +10,7 @@ public class MustBeInFutureOrPresent extends ValidationError {
   /** @deprecated used only for serialization */
   public MustBeInFutureOrPresent() {}
 
-  public MustBeInFutureOrPresent(@Nonnull String propertyName) {
+  public MustBeInFutureOrPresent(String propertyName) {
     super(propertyName, MESSAGE_CODE);
   }
 }

@@ -34,8 +34,8 @@ import org.springframework.web.servlet.support.RequestContextUtils;
  * @author sergey.karpushin
  */
 public class CurrentRequestUtils {
-  private static Logger log = LoggerFactory.getLogger(CurrentRequestUtils.class);
-  private static Locale defaultLocale = new Locale("en", "US");
+  protected static Logger log = LoggerFactory.getLogger(CurrentRequestUtils.class);
+  protected static Locale defaultLocale = new Locale("en", "US");
 
   /**
    * Get current request

@@ -15,18 +15,16 @@
  ******************************************************************************/
 package org.summerb.validation.jakarta.processors;
 
-import javax.annotation.Nonnull;
+import javax.validation.constraints.Null;
 
 import org.summerb.validation.ValidationContext;
 import org.summerb.validation.jakarta.processors.abstracts.AnnotationProcessorAbstract;
 
 import com.google.common.base.Preconditions;
 
-import javax.validation.constraints.Null;
-
 public class NullProcessor extends AnnotationProcessorAbstract<Null> {
 
-  public NullProcessor(@Nonnull Null annotation, @Nonnull String propertyName) {
+  public NullProcessor(Null annotation, String propertyName) {
     super(annotation, propertyName);
   }
 

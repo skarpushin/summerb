@@ -39,12 +39,13 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
@@ -94,8 +95,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Range;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 
 /**
  * Validation context provides you with convenience methods to validate Bean instance (DTOs, DOMs,
@@ -205,10 +204,10 @@ public class ValidationContext<T> {
    *     #validateObject(Function, ObjectValidator)}
    */
   public ValidationContext(
-      @Nonnull T bean,
-      @Nonnull PropertyNameObtainer<T> propertyNameObtainer,
-      @Nullable JakartaValidator jakartaValidator,
-      @Nullable ValidationContextFactory validationContextFactory) {
+      T bean,
+      PropertyNameObtainer<T> propertyNameObtainer,
+      JakartaValidator jakartaValidator,
+      ValidationContextFactory validationContextFactory) {
     Preconditions.checkArgument(bean != null, "bean required");
     Preconditions.checkArgument(propertyNameObtainer != null, "propertyNameObtainer required");
 
@@ -230,8 +229,7 @@ public class ValidationContext<T> {
    *     #validateObject(Function, ObjectValidator)}
    */
   public ValidationContext(
-      @Nullable JakartaValidator jakartaValidator,
-      @Nullable ValidationContextFactory validationContextFactory) {
+      JakartaValidator jakartaValidator, ValidationContextFactory validationContextFactory) {
     this.bean = null;
     this.jakartaValidator = jakartaValidator;
     this.validationContextFactory = validationContextFactory;
@@ -258,13 +256,13 @@ public class ValidationContext<T> {
     ALLOWED_TEMPORAL_TYPES = Collections.unmodifiableMap(allowed);
   }
 
-  public @Nonnull NowResolver getNowResolver() {
+  public NowResolver getNowResolver() {
     return nowResolver;
   }
 
   /** @param nowResolver custom time resolver, usually needed for testing purposes */
   @VisibleForTesting
-  public void setNowResolver(@Nonnull NowResolver nowResolver) {
+  public void setNowResolver(NowResolver nowResolver) {
     Preconditions.checkArgument(nowResolver != null);
     this.nowResolver = nowResolver;
   }
@@ -284,7 +282,7 @@ public class ValidationContext<T> {
     jakartaValidator.findValidationErrors(bean, this);
   }
 
-  public @Nonnull List<ValidationError> getErrors() {
+  public List<ValidationError> getErrors() {
     return errors;
   }
 
@@ -296,7 +294,7 @@ public class ValidationContext<T> {
    * @param clazz type of validation error
    * @return true if error of such type present
    */
-  public boolean hasErrorOfType(@Nonnull Class<? extends ValidationError> clazz) {
+  public boolean hasErrorOfType(Class<? extends ValidationError> clazz) {
     return ValidationErrorsUtils.hasErrorOfType(clazz, errors);
   }
 
@@ -305,7 +303,7 @@ public class ValidationContext<T> {
    * @param clazz type of error
    * @return first encountered instance of such error, or null if not found
    */
-  public <E extends ValidationError> @Nullable E findErrorOfType(@Nonnull Class<E> clazz) {
+  public <E extends ValidationError> E findErrorOfType(Class<E> clazz) {
     return ValidationErrorsUtils.findErrorOfType(clazz, errors);
   }
 
@@ -313,7 +311,7 @@ public class ValidationContext<T> {
    * @param getter method reference used to obtain property name for which to find errors
    * @return list of errors for specified field, maybe empty, never null
    */
-  public @Nonnull List<ValidationError> findErrorsForField(@Nonnull Function<T, Object> getter) {
+  public List<ValidationError> findErrorsForField(Function<T, Object> getter) {
     return ValidationErrorsUtils.findErrorsForField(getPropertyName(getter), errors);
   }
 
@@ -321,7 +319,7 @@ public class ValidationContext<T> {
    * @param propertyName property name
    * @return list of errors for specified field, maybe empty, never null
    */
-  public @Nonnull List<ValidationError> findErrorsForField(@Nonnull String propertyName) {
+  public List<ValidationError> findErrorsForField(String propertyName) {
     return ValidationErrorsUtils.findErrorsForField(propertyName, errors);
   }
 
@@ -331,8 +329,7 @@ public class ValidationContext<T> {
    * @param getter method reference used to obtain property name for which to find such error
    * @return instance of found error, or null if not found
    */
-  public <E> @Nullable E findErrorOfTypeForField(
-      @Nonnull Class<E> clazz, @Nonnull Function<T, Object> getter) {
+  public <E> E findErrorOfTypeForField(Class<E> clazz, Function<T, Object> getter) {
     return ValidationErrorsUtils.findErrorOfTypeForField(clazz, getPropertyName(getter), errors);
   }
 
@@ -342,12 +339,11 @@ public class ValidationContext<T> {
    * @param propertyName property name for which to find such error
    * @return instance of found error, or null if not found
    */
-  public <E> @Nullable E findErrorOfTypeForField(
-      @Nonnull Class<E> clazz, @Nonnull String propertyName) {
+  public <E> E findErrorOfTypeForField(Class<E> clazz, String propertyName) {
     return ValidationErrorsUtils.findErrorOfTypeForField(clazz, propertyName, errors);
   }
 
-  public void add(@Nonnull ValidationError error) {
+  public void add(ValidationError error) {
     Preconditions.checkArgument(error != null);
     Preconditions.checkArgument(
         StringUtils.hasText(error.getMessageCode()), "messageCode required");
@@ -360,7 +356,7 @@ public class ValidationContext<T> {
     errors.add(error);
   }
 
-  public boolean isAlreadyHasSameErrorForSameField(@Nonnull ValidationError error) {
+  public boolean isAlreadyHasSameErrorForSameField(ValidationError error) {
     Preconditions.checkArgument(error != null);
     return errors.stream()
         .anyMatch(
@@ -390,22 +386,19 @@ public class ValidationContext<T> {
   /**
    * Method for invoking validation on an aggregated object.
    *
-   * @param validationSubject instance of the aggregated object to validate
-   * @param objectValidator validation that can validate that aggregated object
-   * @param propertyName name of the property that holds aggregated object
-   * @return Instance of {@link ValidationErrors} if has list. Or <code>
-   *     null</code> if no list (or field is null)
+   * @param <V> type of aggregated object
+   * @param aggregatedObjectGetter a getter that can be used to retrieve aggregated object instance
+   * @param objectValidator validator logic
+   * @return ValidationErrors if errors found, or null if no errors
    */
-  public @Nullable <V> ValidationErrors validateObject(
-      @Nonnull Function<T, V> aggregatedObjectGetter, @Nonnull ObjectValidator<V> objectValidator) {
+  public <V> ValidationErrors validateObject(
+      Function<T, V> aggregatedObjectGetter, ObjectValidator<V> objectValidator) {
     return validateObject(
         getValue(aggregatedObjectGetter), objectValidator, getPropertyName(aggregatedObjectGetter));
   }
 
-  public <V> @Nullable ValidationErrors validateObject(
-      @Nullable V validationSubject,
-      @Nonnull ObjectValidator<V> objectValidator,
-      @Nonnull String propertyName) {
+  public <V> ValidationErrors validateObject(
+      V validationSubject, ObjectValidator<V> objectValidator, String propertyName) {
     Preconditions.checkArgument(objectValidator != null, "objectValidator required");
     if (validationSubject == null) {
       return null;
@@ -434,19 +427,16 @@ public class ValidationContext<T> {
    * @param objectValidator validator that will be used to validate each item in this collection
    * @return {@link ValidationErrors} or null if no list
    */
-  public @Nullable <V> ValidationErrors validateCollection(
-      @Nonnull Function<T, List<V>> aggregatedObjectsGetter,
-      @Nonnull ObjectValidator<V> objectValidator) {
+  public <V> ValidationErrors validateCollection(
+      Function<T, List<V>> aggregatedObjectsGetter, ObjectValidator<V> objectValidator) {
     return validateCollection(
         getValue(aggregatedObjectsGetter),
         objectValidator,
         getPropertyName(aggregatedObjectsGetter));
   }
 
-  public @Nullable <V> ValidationErrors validateCollection(
-      @Nullable List<V> validationSubjects,
-      @Nonnull ObjectValidator<V> objectValidator,
-      @Nonnull String propertyName) {
+  public <V> ValidationErrors validateCollection(
+      List<V> validationSubjects, ObjectValidator<V> objectValidator, String propertyName) {
     Preconditions.checkArgument(objectValidator != null, "objectValidator required");
     if (validationSubjects == null) {
       return null;
@@ -477,11 +467,11 @@ public class ValidationContext<T> {
     return null;
   }
 
-  public boolean isNull(@Nonnull Function<T, Object> getter) {
+  public boolean isNull(Function<T, Object> getter) {
     return isNull(getValue(getter), getPropertyName(getter));
   }
 
-  public boolean isNull(@Nullable Object value, @Nonnull String propertyName) {
+  public boolean isNull(Object value, String propertyName) {
     if (value == null) {
       return true;
     }
@@ -490,11 +480,11 @@ public class ValidationContext<T> {
     return false;
   }
 
-  public boolean notNull(@Nonnull Function<T, Object> getter) {
+  public boolean notNull(Function<T, Object> getter) {
     return notNull(getValue(getter), getPropertyName(getter));
   }
 
-  public boolean notNull(@Nullable Object value, @Nonnull String propertyName) {
+  public boolean notNull(Object value, String propertyName) {
     if (value != null) {
       return true;
     }
@@ -503,11 +493,11 @@ public class ValidationContext<T> {
     return false;
   }
 
-  public boolean isTrue(@Nonnull Function<T, Boolean> getter) {
+  public boolean isTrue(Function<T, Boolean> getter) {
     return isTrue(getValue(getter), getPropertyName(getter));
   }
 
-  public boolean isTrue(@Nullable Boolean value, @Nonnull String propertyName) {
+  public boolean isTrue(Boolean value, String propertyName) {
     if (Boolean.TRUE.equals(value)) {
       return true;
     }
@@ -516,11 +506,11 @@ public class ValidationContext<T> {
     return false;
   }
 
-  public boolean isFalse(@Nonnull Function<T, Boolean> getter) {
+  public boolean isFalse(Function<T, Boolean> getter) {
     return isFalse(getValue(getter), getPropertyName(getter));
   }
 
-  public boolean isFalse(@Nullable Boolean value, @Nonnull String propertyName) {
+  public boolean isFalse(Boolean value, String propertyName) {
     if (Boolean.FALSE.equals(value)) {
       return true;
     }
@@ -529,12 +519,11 @@ public class ValidationContext<T> {
     return false;
   }
 
-  public <V> boolean eq(@Nonnull Function<T, V> getter, @Nullable V value) {
+  public <V> boolean eq(Function<T, V> getter, V value) {
     return eq(getValue(getter), value, getPropertyName(getter));
   }
 
-  public <V> boolean eq(
-      @Nullable V value, @Nullable V expectedValue, @Nonnull String propertyName) {
+  public <V> boolean eq(V value, V expectedValue, String propertyName) {
     if (ObjectUtils.nullSafeEquals(expectedValue, value)) {
       return true;
     }
@@ -543,12 +532,11 @@ public class ValidationContext<T> {
     return false;
   }
 
-  public <V> boolean ne(@Nonnull Function<T, V> getter, @Nullable V value) {
+  public <V> boolean ne(Function<T, V> getter, V value) {
     return ne(getValue(getter), value, getPropertyName(getter));
   }
 
-  public <V> boolean ne(
-      @Nullable V value, @Nullable V expectedValue, @Nonnull String propertyName) {
+  public <V> boolean ne(V value, V expectedValue, String propertyName) {
     if (!ObjectUtils.nullSafeEquals(expectedValue, value)) {
       return true;
     }
@@ -557,13 +545,11 @@ public class ValidationContext<T> {
     return false;
   }
 
-  public <V extends Comparable<V>> boolean less(
-      @Nonnull Function<T, V> getter, @Nonnull V boundary) {
+  public <V extends Comparable<V>> boolean less(Function<T, V> getter, V boundary) {
     return less(getValue(getter), boundary, getPropertyName(getter));
   }
 
-  public <V extends Comparable<V>> boolean less(
-      @Nullable V value, @Nonnull V boundary, @Nonnull String propertyName) {
+  public <V extends Comparable<V>> boolean less(V value, V boundary, String propertyName) {
     Preconditions.checkArgument(boundary != null, "boundary required");
     if (!notNull(value, propertyName)) {
       return false;
@@ -577,12 +563,11 @@ public class ValidationContext<T> {
     return false;
   }
 
-  public <V extends Comparable<V>> boolean le(@Nonnull Function<T, V> getter, @Nonnull V boundary) {
+  public <V extends Comparable<V>> boolean le(Function<T, V> getter, V boundary) {
     return le(getValue(getter), boundary, getPropertyName(getter));
   }
 
-  public <V extends Comparable<V>> boolean le(
-      @Nullable V value, @Nonnull V boundary, @Nonnull String propertyName) {
+  public <V extends Comparable<V>> boolean le(V value, V boundary, String propertyName) {
     Preconditions.checkArgument(boundary != null, "boundary required");
     if (!notNull(value, propertyName)) {
       return false;
@@ -596,13 +581,11 @@ public class ValidationContext<T> {
     return false;
   }
 
-  public <V extends Comparable<V>> boolean greater(
-      @Nonnull Function<T, V> getter, @Nonnull V boundary) {
+  public <V extends Comparable<V>> boolean greater(Function<T, V> getter, V boundary) {
     return greater(getValue(getter), boundary, getPropertyName(getter));
   }
 
-  public <V extends Comparable<V>> boolean greater(
-      @Nullable V value, @Nonnull V boundary, @Nonnull String propertyName) {
+  public <V extends Comparable<V>> boolean greater(V value, V boundary, String propertyName) {
     Preconditions.checkArgument(boundary != null, "boundary required");
     if (!notNull(value, propertyName)) {
       return false;
@@ -616,12 +599,11 @@ public class ValidationContext<T> {
     return false;
   }
 
-  public <V extends Comparable<V>> boolean ge(@Nonnull Function<T, V> getter, @Nonnull V boundary) {
+  public <V extends Comparable<V>> boolean ge(Function<T, V> getter, V boundary) {
     return ge(getValue(getter), boundary, getPropertyName(getter));
   }
 
-  public <V extends Comparable<V>> boolean ge(
-      @Nullable V value, @Nonnull V boundary, @Nonnull String propertyName) {
+  public <V extends Comparable<V>> boolean ge(V value, V boundary, String propertyName) {
     Preconditions.checkArgument(boundary != null, "boundary required");
     if (!notNull(value, propertyName)) {
       return false;
@@ -635,12 +617,11 @@ public class ValidationContext<T> {
     return false;
   }
 
-  public <V> boolean in(@Nonnull Function<T, V> getter, @Nonnull Collection<V> values) {
+  public <V> boolean in(Function<T, V> getter, Collection<V> values) {
     return in(getValue(getter), values, getPropertyName(getter));
   }
 
-  public <V> boolean in(
-      @Nullable V value, @Nonnull Collection<V> values, @Nonnull String propertyName) {
+  public <V> boolean in(V value, Collection<V> values, String propertyName) {
     Preconditions.checkArgument(
         !CollectionUtils.isEmpty(values), "values collection must not be empty");
 
@@ -652,12 +633,11 @@ public class ValidationContext<T> {
     return false;
   }
 
-  public <V> boolean notIn(@Nonnull Function<T, V> getter, @Nonnull Collection<V> values) {
+  public <V> boolean notIn(Function<T, V> getter, Collection<V> values) {
     return notIn(getValue(getter), values, getPropertyName(getter));
   }
 
-  public <V> boolean notIn(
-      @Nullable V value, @Nonnull Collection<V> values, @Nonnull String propertyName) {
+  public <V> boolean notIn(V value, Collection<V> values, String propertyName) {
     Preconditions.checkArgument(
         !CollectionUtils.isEmpty(values), "values collection must not be empty");
 
@@ -670,15 +650,12 @@ public class ValidationContext<T> {
   }
 
   public <V extends Comparable<V>> boolean between(
-      @Nonnull Function<T, V> getter, @Nonnull V lowerBoundary, @Nonnull V upperBoundary) {
+      Function<T, V> getter, V lowerBoundary, V upperBoundary) {
     return between(getValue(getter), lowerBoundary, upperBoundary, getPropertyName(getter));
   }
 
   public <V extends Comparable<V>> boolean between(
-      @Nullable V value,
-      @Nonnull V lowerBoundary,
-      @Nonnull V upperBoundary,
-      @Nonnull String propertyName) {
+      V value, V lowerBoundary, V upperBoundary, String propertyName) {
     assertRangeBoundaryParams(lowerBoundary, upperBoundary);
 
     if (!notNull(value, propertyName)) {
@@ -694,7 +671,7 @@ public class ValidationContext<T> {
   }
 
   protected <V extends Comparable<V>> void assertRangeBoundaryParams(
-      @Nonnull V lowerBoundary, @Nonnull V upperBoundary) {
+      V lowerBoundary, V upperBoundary) {
     Preconditions.checkArgument(lowerBoundary != null, "lowerBoundary required");
     Preconditions.checkArgument(upperBoundary != null, "upperBoundary required");
     Preconditions.checkArgument(
@@ -702,13 +679,11 @@ public class ValidationContext<T> {
         "lowerBoundary must be smaller than upperBoundary");
   }
 
-  public <V extends Comparable<V>> boolean between(
-      @Nonnull Function<T, V> getter, @Nonnull Range<V> range) {
+  public <V extends Comparable<V>> boolean between(Function<T, V> getter, Range<V> range) {
     return between(getValue(getter), range, getPropertyName(getter));
   }
 
-  public <V extends Comparable<V>> boolean between(
-      @Nullable V value, @Nonnull Range<V> range, @Nonnull String propertyName) {
+  public <V extends Comparable<V>> boolean between(V value, Range<V> range, String propertyName) {
     assertRangeParam(range);
 
     if (!notNull(value, propertyName)) {
@@ -730,15 +705,12 @@ public class ValidationContext<T> {
   }
 
   public <V extends Comparable<V>> boolean notBetween(
-      @Nonnull Function<T, V> getter, @Nonnull V lowerBoundary, @Nonnull V upperBoundary) {
+      Function<T, V> getter, V lowerBoundary, V upperBoundary) {
     return notBetween(getValue(getter), lowerBoundary, upperBoundary, getPropertyName(getter));
   }
 
   public <V extends Comparable<V>> boolean notBetween(
-      @Nullable V value,
-      @Nonnull V lowerBoundary,
-      @Nonnull V upperBoundary,
-      @Nonnull String propertyName) {
+      V value, V lowerBoundary, V upperBoundary, String propertyName) {
     assertRangeBoundaryParams(lowerBoundary, upperBoundary);
 
     if (!notNull(value, propertyName)) {
@@ -753,13 +725,12 @@ public class ValidationContext<T> {
     return false;
   }
 
-  public <V extends Comparable<V>> boolean notBetween(
-      @Nonnull Function<T, V> getter, @Nonnull Range<V> range) {
+  public <V extends Comparable<V>> boolean notBetween(Function<T, V> getter, Range<V> range) {
     return notBetween(getValue(getter), range, getPropertyName(getter));
   }
 
   public <V extends Comparable<V>> boolean notBetween(
-      @Nullable V value, @Nonnull Range<V> range, @Nonnull String propertyName) {
+      V value, Range<V> range, String propertyName) {
     assertRangeParam(range);
 
     if (!notNull(value, propertyName)) {
@@ -774,13 +745,12 @@ public class ValidationContext<T> {
     return false;
   }
 
-  public boolean lengthBetween(
-      @Nonnull Function<T, String> getter, int lowerBoundary, int upperBoundary) {
+  public boolean lengthBetween(Function<T, String> getter, int lowerBoundary, int upperBoundary) {
     return lengthBetween(getValue(getter), lowerBoundary, upperBoundary, getPropertyName(getter));
   }
 
   public boolean lengthBetween(
-      @Nullable String value, int lowerBoundary, int upperBoundary, @Nonnull String propertyName) {
+      String value, int lowerBoundary, int upperBoundary, String propertyName) {
     assertLengthBetweenBoundaries(lowerBoundary, upperBoundary);
 
     int length = value == null ? 0 : value.length();
@@ -799,13 +769,13 @@ public class ValidationContext<T> {
   }
 
   public boolean lengthNotBetween(
-      @Nonnull Function<T, String> getter, int lowerBoundary, int upperBoundary) {
+      Function<T, String> getter, int lowerBoundary, int upperBoundary) {
     return lengthNotBetween(
         getValue(getter), lowerBoundary, upperBoundary, getPropertyName(getter));
   }
 
   public boolean lengthNotBetween(
-      @Nullable String value, int lowerBoundary, int upperBoundary, @Nonnull String propertyName) {
+      String value, int lowerBoundary, int upperBoundary, String propertyName) {
     assertLengthBetweenBoundaries(lowerBoundary, upperBoundary);
 
     int length = value == null ? 0 : value.length();
@@ -817,12 +787,11 @@ public class ValidationContext<T> {
     return false;
   }
 
-  public boolean contains(@Nonnull Function<T, String> getter, @Nonnull String subString) {
+  public boolean contains(Function<T, String> getter, String subString) {
     return contains(getValue(getter), subString, getPropertyName(getter));
   }
 
-  public boolean contains(
-      @Nullable String value, @Nonnull String subString, @Nonnull String propertyName) {
+  public boolean contains(String value, String subString, String propertyName) {
     Preconditions.checkArgument(subString != null && subString.length() > 0, "subString required");
 
     if (!notNull(value, propertyName)) {
@@ -837,12 +806,11 @@ public class ValidationContext<T> {
     return false;
   }
 
-  public boolean notContains(@Nonnull Function<T, String> getter, @Nonnull String subString) {
+  public boolean notContains(Function<T, String> getter, String subString) {
     return notContains(getValue(getter), subString, getPropertyName(getter));
   }
 
-  public boolean notContains(
-      @Nullable String value, @Nonnull String subString, @Nonnull String propertyName) {
+  public boolean notContains(String value, String subString, String propertyName) {
     Preconditions.checkArgument(subString != null && subString.length() > 0, "subString required");
 
     if (!notNull(value, propertyName)) {
@@ -857,12 +825,11 @@ public class ValidationContext<T> {
     return false;
   }
 
-  public boolean startsWith(@Nonnull Function<T, String> getter, @Nonnull String subString) {
+  public boolean startsWith(Function<T, String> getter, String subString) {
     return startsWith(getValue(getter), subString, getPropertyName(getter));
   }
 
-  public boolean startsWith(
-      @Nullable String value, @Nonnull String subString, @Nonnull String propertyName) {
+  public boolean startsWith(String value, String subString, String propertyName) {
     Preconditions.checkArgument(subString != null && subString.length() > 0, "subString required");
 
     if (!notNull(value, propertyName)) {
@@ -877,12 +844,11 @@ public class ValidationContext<T> {
     return false;
   }
 
-  public boolean notStartsWith(@Nonnull Function<T, String> getter, @Nonnull String subString) {
+  public boolean notStartsWith(Function<T, String> getter, String subString) {
     return notStartsWith(getValue(getter), subString, getPropertyName(getter));
   }
 
-  public boolean notStartsWith(
-      @Nullable String value, @Nonnull String subString, @Nonnull String propertyName) {
+  public boolean notStartsWith(String value, String subString, String propertyName) {
     Preconditions.checkArgument(subString != null && subString.length() > 0, "subString required");
 
     if (!notNull(value, propertyName)) {
@@ -897,12 +863,11 @@ public class ValidationContext<T> {
     return false;
   }
 
-  public boolean endsWith(@Nonnull Function<T, String> getter, @Nonnull String subString) {
+  public boolean endsWith(Function<T, String> getter, String subString) {
     return endsWith(getValue(getter), subString, getPropertyName(getter));
   }
 
-  public boolean endsWith(
-      @Nullable String value, @Nonnull String subString, @Nonnull String propertyName) {
+  public boolean endsWith(String value, String subString, String propertyName) {
     Preconditions.checkArgument(subString != null && subString.length() > 0, "subString required");
 
     if (!notNull(value, propertyName)) {
@@ -917,12 +882,11 @@ public class ValidationContext<T> {
     return false;
   }
 
-  public boolean notEndsWith(@Nonnull Function<T, String> getter, @Nonnull String subString) {
+  public boolean notEndsWith(Function<T, String> getter, String subString) {
     return notEndsWith(getValue(getter), subString, getPropertyName(getter));
   }
 
-  public boolean notEndsWith(
-      @Nullable String value, @Nonnull String subString, @Nonnull String propertyName) {
+  public boolean notEndsWith(String value, String subString, String propertyName) {
     Preconditions.checkArgument(subString != null && subString.length() > 0, "subString required");
 
     if (!notNull(value, propertyName)) {
@@ -937,11 +901,11 @@ public class ValidationContext<T> {
     return false;
   }
 
-  public boolean hasText(@Nonnull Function<T, String> getter) {
+  public boolean hasText(Function<T, String> getter) {
     return hasText(getValue(getter), getPropertyName(getter));
   }
 
-  public boolean hasText(@Nullable String value, @Nonnull String propertyName) {
+  public boolean hasText(String value, String propertyName) {
     if (StringUtils.hasText(value)) {
       return true;
     }
@@ -950,11 +914,11 @@ public class ValidationContext<T> {
     return false;
   }
 
-  public boolean lengthLe(@Nonnull Function<T, String> getter, int boundary) {
+  public boolean lengthLe(Function<T, String> getter, int boundary) {
     return lengthLe(getValue(getter), boundary, getPropertyName(getter));
   }
 
-  public boolean lengthLe(@Nullable String value, int boundary, @Nonnull String propertyName) {
+  public boolean lengthLe(String value, int boundary, String propertyName) {
     Preconditions.checkArgument(boundary >= 0, "boundary must be non-negative");
     int length = value == null ? 0 : value.length();
     if (length <= boundary) {
@@ -965,11 +929,11 @@ public class ValidationContext<T> {
     return false;
   }
 
-  public boolean lengthLess(@Nonnull Function<T, String> getter, int boundary) {
+  public boolean lengthLess(Function<T, String> getter, int boundary) {
     return lengthLess(getValue(getter), boundary, getPropertyName(getter));
   }
 
-  public boolean lengthLess(@Nullable String value, int boundary, @Nonnull String propertyName) {
+  public boolean lengthLess(String value, int boundary, String propertyName) {
     Preconditions.checkArgument(boundary > 0, "boundary must be positive");
     int length = value == null ? 0 : value.length();
     if (length < boundary) {
@@ -980,11 +944,11 @@ public class ValidationContext<T> {
     return false;
   }
 
-  public boolean lengthGe(@Nonnull Function<T, String> getter, int boundary) {
+  public boolean lengthGe(Function<T, String> getter, int boundary) {
     return lengthGe(getValue(getter), boundary, getPropertyName(getter));
   }
 
-  public boolean lengthGe(@Nullable String value, int boundary, @Nonnull String propertyName) {
+  public boolean lengthGe(String value, int boundary, String propertyName) {
     Preconditions.checkArgument(boundary >= 0, "boundary must be non-negative");
     int length = value == null ? 0 : value.length();
     if (length >= boundary) {
@@ -995,11 +959,11 @@ public class ValidationContext<T> {
     return false;
   }
 
-  public boolean lengthGreater(@Nonnull Function<T, String> getter, int boundary) {
+  public boolean lengthGreater(Function<T, String> getter, int boundary) {
     return lengthGreater(getValue(getter), boundary, getPropertyName(getter));
   }
 
-  public boolean lengthGreater(@Nullable String value, int boundary, @Nonnull String propertyName) {
+  public boolean lengthGreater(String value, int boundary, String propertyName) {
     Preconditions.checkArgument(boundary >= 0, "boundary must be non-negative");
     int length = value == null ? 0 : value.length();
     if (length > boundary) {
@@ -1010,11 +974,11 @@ public class ValidationContext<T> {
     return false;
   }
 
-  public boolean empty(@Nonnull Function<T, Collection<?>> getter) {
+  public boolean empty(Function<T, Collection<?>> getter) {
     return empty(getValue(getter), getPropertyName(getter));
   }
 
-  public boolean empty(@Nullable Collection<?> value, @Nonnull String propertyName) {
+  public boolean empty(Collection<?> value, String propertyName) {
     if (CollectionUtils.isEmpty(value)) {
       return true;
     }
@@ -1023,11 +987,11 @@ public class ValidationContext<T> {
     return false;
   }
 
-  public boolean notEmpty(@Nonnull Function<T, Collection<?>> getter) {
+  public boolean notEmpty(Function<T, Collection<?>> getter) {
     return notEmpty(getValue(getter), getPropertyName(getter));
   }
 
-  public boolean notEmpty(@Nullable Collection<?> value, @Nonnull String propertyName) {
+  public boolean notEmpty(Collection<?> value, String propertyName) {
     if (!CollectionUtils.isEmpty(value)) {
       return true;
     }
@@ -1036,11 +1000,11 @@ public class ValidationContext<T> {
     return false;
   }
 
-  public boolean validEmail(@Nonnull Function<T, String> getter) {
+  public boolean validEmail(Function<T, String> getter) {
     return validEmail(getValue(getter), getPropertyName(getter));
   }
 
-  public boolean validEmail(@Nullable String value, @Nonnull String propertyName) {
+  public boolean validEmail(String value, String propertyName) {
     if (isValidEmail(value)) {
       return true;
     }
@@ -1055,22 +1019,24 @@ public class ValidationContext<T> {
    * <p>ATTENTION: In this implementation we cut several corners in order to simplify code. We're
    * ignoring several edge cases which seem to be invalid for human eye, while according to
    * specification these are valid cases. Method will incorrectly report as <b>invalid</b>, while
-   * these are <b>valid</b> emails:
-   *
-   * <pre>
-   *  admin@mailserver1
-   *  " "@example.org
-   *  "very.(),:;<>[]\".VERY.\"very@\\ \"very\".unusual"@strange.example.com
-   *  "postmaster@[IPv6:2001:0db8:85a3:0000:0000:8a2e:0370:7334]"
-   * </pre>
-   *
-   * Method will incorrectly report as <b>valid</b>, while this is <b>invalid</b> email:
-   *
-   * <pre>
-   *  1234567890123456789012345678901234567890123456789012345678901234+x@example.com
-   * </pre>
+   * these are <b>valid</b> emails.
    */
-  public static boolean isValidEmail(@Nullable String email) {
+  public static boolean isValidEmail(String email) {
+    // Method will incorrectly report as <b>invalid</b>, while these are
+    // <b>valid</b>
+    // emails:
+    // <pre>
+    // admin@mailserver1
+    // " "@example.org
+    // "very.(),:;<>[]\".VERY.\"very@\\ \"very\".unusual"@strange.example.com
+    // "postmaster@[IPv6:2001:0db8:85a3:0000:0000:8a2e:0370:7334]"
+    // </pre>
+    // Method will incorrectly report as <b>valid</b>, while this is <b>invalid</b>
+    // email:
+    // <pre>
+    // 1234567890123456789012345678901234567890123456789012345678901234+x@example.com
+    // </pre>
+
     if (email == null) {
       return false;
     }
@@ -1091,17 +1057,12 @@ public class ValidationContext<T> {
    * @return true if value is valid, or false otherwise
    */
   public boolean matches(
-      @Nonnull Function<T, String> getter,
-      @Nonnull Predicate<String> matcher,
-      @Nonnull String messageCode) {
+      Function<T, String> getter, Predicate<String> matcher, String messageCode) {
     return matches(getValue(getter), matcher, messageCode, getPropertyName(getter));
   }
 
   public boolean matches(
-      @Nullable String value,
-      @Nonnull Predicate<String> matcher,
-      @Nonnull String messageCode,
-      @Nonnull String propertyName) {
+      String value, Predicate<String> matcher, String messageCode, String propertyName) {
 
     Preconditions.checkArgument(matcher != null, "matcher required");
     Preconditions.checkArgument(StringUtils.hasText(messageCode), "messageCode required");
@@ -1118,11 +1079,11 @@ public class ValidationContext<T> {
     return false;
   }
 
-  public <V extends Comparable<V>> boolean future(@Nonnull Function<T, V> getter) {
+  public <V extends Comparable<V>> boolean future(Function<T, V> getter) {
     return future(getValue(getter), getPropertyName(getter));
   }
 
-  public <V extends Comparable<V>> boolean future(@Nullable V value, @Nonnull String propertyName) {
+  public <V extends Comparable<V>> boolean future(V value, String propertyName) {
     if (!notNull(value, propertyName)) {
       return false;
     }
@@ -1137,12 +1098,11 @@ public class ValidationContext<T> {
     return false;
   }
 
-  public <V extends Comparable<V>> boolean futureOrPresent(@Nonnull Function<T, V> getter) {
+  public <V extends Comparable<V>> boolean futureOrPresent(Function<T, V> getter) {
     return futureOrPresent(getValue(getter), getPropertyName(getter));
   }
 
-  public <V extends Comparable<V>> boolean futureOrPresent(
-      @Nullable V value, @Nonnull String propertyName) {
+  public <V extends Comparable<V>> boolean futureOrPresent(V value, String propertyName) {
     if (!notNull(value, propertyName)) {
       return false;
     }
@@ -1157,11 +1117,11 @@ public class ValidationContext<T> {
     return false;
   }
 
-  public <V extends Comparable<V>> boolean past(@Nonnull Function<T, V> getter) {
+  public <V extends Comparable<V>> boolean past(Function<T, V> getter) {
     return past(getValue(getter), getPropertyName(getter));
   }
 
-  public <V extends Comparable<V>> boolean past(@Nullable V value, @Nonnull String propertyName) {
+  public <V extends Comparable<V>> boolean past(V value, String propertyName) {
     if (!notNull(value, propertyName)) {
       return false;
     }
@@ -1176,12 +1136,11 @@ public class ValidationContext<T> {
     return false;
   }
 
-  public <V extends Comparable<V>> boolean pastOrPresent(@Nonnull Function<T, V> getter) {
+  public <V extends Comparable<V>> boolean pastOrPresent(Function<T, V> getter) {
     return pastOrPresent(getValue(getter), getPropertyName(getter));
   }
 
-  public <V extends Comparable<V>> boolean pastOrPresent(
-      @Nullable V value, @Nonnull String propertyName) {
+  public <V extends Comparable<V>> boolean pastOrPresent(V value, String propertyName) {
     if (!notNull(value, propertyName)) {
       return false;
     }
@@ -1207,14 +1166,16 @@ public class ValidationContext<T> {
   @SuppressWarnings({"unchecked"})
   protected <V extends Comparable<V>> Function<NowResolver, V> getTemporalBuilderOfType(
       Class<V> clazz) {
-    return (Function<NowResolver, V>)
-        ALLOWED_TEMPORAL_TYPES.entrySet().stream()
-            .filter(e -> e.getKey().isAssignableFrom(clazz))
-            .findFirst()
-            .map(e -> e.getValue())
-            .orElseThrow(
-                () ->
-                    new IllegalArgumentException(
-                        "Value class " + clazz + " is not one of the allowed temporal types"));
+    for (Entry<Class<?>, Function<NowResolver, Comparable<?>>> entry :
+        ALLOWED_TEMPORAL_TYPES.entrySet()) {
+      if (entry.getKey().isAssignableFrom(clazz)) {
+        // NOTE: if you know how to get rid of this workaround -- please let me know
+        Object raw = entry.getValue();
+        return (Function<NowResolver, V>) raw;
+      }
+    }
+
+    throw new IllegalArgumentException(
+        "Value class " + clazz + " is not one of the allowed temporal types");
   }
 }

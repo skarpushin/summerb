@@ -26,8 +26,9 @@ import org.summerb.validation.ValidationException;
  * EasyCrudServiceImpl} via {@link EasyCrudWireTap}, but also impl of this interface can be used
  * separately
  *
- * <p>In case validation rules are the same for both {@link EasyCrudService#create(Object)} and
- * {@link EasyCrudService#update(Object)}, consider sub-classing {@link
+ * <p>In case validation rules are the same for both {@link
+ * EasyCrudService#create(org.summerb.easycrud.api.row.HasId)} and {@link
+ * EasyCrudService#update(org.summerb.easycrud.api.row.HasId)}, consider sub-classing {@link
  * EasyCrudValidationStrategyAbstract}
  *
  * @author sergey.karpushin

@@ -18,7 +18,6 @@ package org.summerb.properties.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.transaction.annotation.Transactional;
 import org.summerb.properties.api.exceptions.PropertyServiceUnexpectedException;
@@ -38,6 +37,11 @@ public class StringIdAliasServiceSimpleImpl implements StringIdAliasService, Ini
   protected static Logger log = LoggerFactory.getLogger(StringIdAliasServiceSimpleImpl.class);
 
   protected StringIdAliasDao stringIdAliasDao;
+
+  public StringIdAliasServiceSimpleImpl(StringIdAliasDao stringIdAliasDao) {
+    super();
+    this.stringIdAliasDao = stringIdAliasDao;
+  }
 
   @Override
   public void afterPropertiesSet() throws Exception {
@@ -85,10 +89,5 @@ public class StringIdAliasServiceSimpleImpl implements StringIdAliasService, Ini
 
   public StringIdAliasDao getStringIdAliasDao() {
     return stringIdAliasDao;
-  }
-
-  @Required
-  public void setStringIdAliasDao(StringIdAliasDao stringIdAliasDao) {
-    this.stringIdAliasDao = stringIdAliasDao;
   }
 }

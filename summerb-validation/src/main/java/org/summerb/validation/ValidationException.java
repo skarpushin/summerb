@@ -18,12 +18,9 @@ package org.summerb.validation;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.springframework.util.CollectionUtils;
 import org.summerb.i18n.HasMessageCode;
-import org.summerb.utils.exceptions.HasErrorDescriptionObject;
+import org.summerb.i18n.exceptions.HasErrorDescriptionObject;
 
 import com.google.common.base.Preconditions;
 
@@ -40,42 +37,41 @@ public class ValidationException extends RuntimeException
   @Deprecated
   public ValidationException() {}
 
-  public ValidationException(@Nonnull ValidationError validationError) {
+  public ValidationException(ValidationError validationError) {
     Preconditions.checkArgument(validationError != null, "validationError required");
     this.errors = new ValidationErrors(MESSAGE_CODE, Arrays.asList(validationError));
   }
 
-  public ValidationException(@Nonnull List<ValidationError> validationErrors) {
+  public ValidationException(List<ValidationError> validationErrors) {
     Preconditions.checkArgument(
         !CollectionUtils.isEmpty(validationErrors), "validationErrors required");
     this.errors = new ValidationErrors(MESSAGE_CODE, validationErrors);
   }
 
-  public ValidationException(@Nonnull ValidationErrors validationErrors) {
+  public ValidationException(ValidationErrors validationErrors) {
     Preconditions.checkArgument(
         validationErrors != null && !CollectionUtils.isEmpty(validationErrors.getList()),
         "validationErrors required");
     this.errors = validationErrors;
   }
 
-  public @Nonnull List<ValidationError> getErrors() {
+  public List<ValidationError> getErrors() {
     return errors.getList();
   }
 
-  public boolean hasErrorOfType(@Nonnull Class<?> clazz) {
+  public boolean hasErrorOfType(Class<?> clazz) {
     return ValidationErrorsUtils.hasErrorOfType(clazz, errors.getList());
   }
 
-  public <V> @Nullable V findErrorOfType(@Nonnull Class<V> clazz) {
+  public <V> V findErrorOfType(Class<V> clazz) {
     return ValidationErrorsUtils.findErrorOfType(clazz, errors.getList());
   }
 
-  public @Nonnull List<ValidationError> findErrorsForField(@Nonnull String propertyName) {
+  public List<ValidationError> findErrorsForField(String propertyName) {
     return ValidationErrorsUtils.findErrorsForField(propertyName, errors.getList());
   }
 
-  public <V> @Nullable V findErrorOfTypeForField(
-      @Nonnull Class<V> clazz, @Nonnull String propertyName) {
+  public <V> V findErrorOfTypeForField(Class<V> clazz, String propertyName) {
     return ValidationErrorsUtils.findErrorOfTypeForField(clazz, propertyName, errors.getList());
   }
 
@@ -90,7 +86,7 @@ public class ValidationException extends RuntimeException
   }
 
   @Override
-  public @Nonnull ValidationErrors getErrorDescriptionObject() {
+  public ValidationErrors getErrorDescriptionObject() {
     return errors;
   }
 }

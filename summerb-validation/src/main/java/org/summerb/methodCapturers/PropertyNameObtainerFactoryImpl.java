@@ -15,8 +15,6 @@
  ******************************************************************************/
 package org.summerb.methodCapturers;
 
-import javax.annotation.Nonnull;
-
 import com.google.common.base.Preconditions;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -27,7 +25,7 @@ public class PropertyNameObtainerFactoryImpl implements PropertyNameObtainerFact
   protected LoadingCache<Class<?>, PropertyNameObtainer<?>> propertyNameObtainers;
 
   public PropertyNameObtainerFactoryImpl(
-      @Nonnull MethodCapturerProxyClassFactory methodCapturerProxyClassFactory) {
+      MethodCapturerProxyClassFactory methodCapturerProxyClassFactory) {
     Preconditions.checkArgument(
         methodCapturerProxyClassFactory != null, "methodCapturerProxyClassFactory required");
     this.methodCapturerProxyClassFactory = methodCapturerProxyClassFactory;

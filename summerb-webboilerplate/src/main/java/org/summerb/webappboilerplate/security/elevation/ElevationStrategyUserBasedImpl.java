@@ -41,12 +41,12 @@ import com.google.common.base.Preconditions;
  * @author sergey.karpushin
  */
 public class ElevationStrategyUserBasedImpl implements ElevationStrategy, InitializingBean {
-  @Autowired private UserService userService;
-  @Autowired private PermissionService permissionService;
+  @Autowired protected UserService userService;
+  @Autowired protected PermissionService permissionService;
 
-  private String userEmail;
-  private Authentication authentication;
-  private boolean force;
+  protected String userEmail;
+  protected Authentication authentication;
+  protected boolean force;
 
   public ElevationStrategyUserBasedImpl(String userEmail) {
     this(userEmail, false);
@@ -83,7 +83,7 @@ public class ElevationStrategyUserBasedImpl implements ElevationStrategy, Initia
     return ret;
   }
 
-  private Authentication getAuthentication() {
+  protected Authentication getAuthentication() {
     if (authentication == null) {
       try {
         User user = userService.getUserByEmail(userEmail);

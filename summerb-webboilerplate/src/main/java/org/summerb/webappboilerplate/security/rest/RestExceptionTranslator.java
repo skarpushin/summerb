@@ -36,18 +36,18 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
 import org.springframework.web.servlet.LocaleContextResolver;
+import org.summerb.i18n.exceptions.dto.ExceptionInfo;
+import org.summerb.i18n.exceptions.dto.GenericServerErrorResult;
 import org.summerb.security.api.CurrentUserNotFoundException;
 import org.summerb.security.api.dto.NotAuthorizedResult;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
 import org.summerb.spring.security.SecurityMessageCodes;
 import org.summerb.utils.DtoBase;
 import org.summerb.utils.exceptions.ExceptionUtils;
-import org.summerb.utils.exceptions.dto.ExceptionInfo;
-import org.summerb.utils.exceptions.dto.GenericServerErrorResult;
-import org.summerb.utils.exceptions.translator.ExceptionTranslator;
-import org.summerb.utils.json.JsonResponseWriter;
-import org.summerb.utils.json.JsonResponseWriterGsonImpl;
 import org.summerb.validation.ValidationException;
+import org.summerb.webappboilerplate.utils.exceptions.translator.ExceptionTranslator;
+import org.summerb.webappboilerplate.utils.json.JsonResponseWriter;
+import org.summerb.webappboilerplate.utils.json.JsonResponseWriterGsonImpl;
 
 /**
  * Request filter that helps to format and gracefully communicate server errors to client.
@@ -72,14 +72,14 @@ import org.summerb.validation.ValidationException;
  * @author sergeyk
  */
 public class RestExceptionTranslator extends GenericFilterBean {
-  private Logger log = LoggerFactory.getLogger(getClass());
+  protected Logger log = LoggerFactory.getLogger(getClass());
   public static final String X_TRANSLATE_AUTHORIZATION_ERRORS = "X-TranslateAuthorizationErrors";
 
-  private AuthenticationTrustResolver authenticationTrustResolver;
-  private JsonResponseWriter jsonResponseHelper;
+  protected AuthenticationTrustResolver authenticationTrustResolver;
+  protected JsonResponseWriter jsonResponseHelper;
 
-  private ExceptionTranslator exceptionTranslator;
-  private LocaleContextResolver localeContextResolver;
+  protected ExceptionTranslator exceptionTranslator;
+  protected LocaleContextResolver localeContextResolver;
 
   public RestExceptionTranslator() {
     jsonResponseHelper = new JsonResponseWriterGsonImpl();

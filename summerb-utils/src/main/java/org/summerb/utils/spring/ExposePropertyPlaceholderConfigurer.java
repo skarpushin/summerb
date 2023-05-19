@@ -36,6 +36,7 @@ import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
  *
  * @author sergey.karpushin
  */
+@SuppressWarnings("deprecation")
 public class ExposePropertyPlaceholderConfigurer extends PropertyPlaceholderConfigurer {
   private Map<String, String> properties;
 

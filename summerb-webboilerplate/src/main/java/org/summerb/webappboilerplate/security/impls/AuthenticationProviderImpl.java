@@ -54,11 +54,11 @@ public class AuthenticationProviderImpl
     implements AuthenticationProvider, InitializingBean, ApplicationContextAware {
   protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-  private PasswordEncoder passwordEncoder;
-  private PasswordService passwordService;
-  private ApplicationContext applicationContext;
-  private PermissionService permissionService;
-  private UserService userService;
+  protected PasswordEncoder passwordEncoder;
+  protected PasswordService passwordService;
+  protected ApplicationContext applicationContext;
+  protected PermissionService permissionService;
+  protected UserService userService;
 
   @Override
   public void afterPropertiesSet() throws Exception {}
@@ -123,7 +123,7 @@ public class AuthenticationProviderImpl
         getMessage(SecurityMessageCodes.BAD_CREDENTIALS, "Bad credentials"), e);
   }
 
-  private String getMessage(String msgCode, String defaultValue) {
+  protected String getMessage(String msgCode, String defaultValue) {
     return applicationContext.getMessage(
         msgCode, null, defaultValue, CurrentRequestUtils.getLocale());
   }

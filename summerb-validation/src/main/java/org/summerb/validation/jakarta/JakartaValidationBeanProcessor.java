@@ -17,8 +17,6 @@ package org.summerb.validation.jakarta;
 
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
 /**
  * Impl of this interface supposed to process class to identify all validations that are declared on
  * fields and/or getters/setters.
@@ -35,6 +33,5 @@ public interface JakartaValidationBeanProcessor {
    * @return list of validations found in clazz. Might be empty, never null. Validation annotations
    *     might be found on getters/setters or fields
    */
-  @Nonnull
-  List<JakartaValidatorItem> getValidationsFor(@Nonnull Class<?> clazz);
+  List<JakartaValidatorItem> getValidationsFor(Class<?> clazz);
 }

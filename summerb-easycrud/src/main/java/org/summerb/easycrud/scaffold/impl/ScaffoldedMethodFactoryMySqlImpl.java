@@ -22,7 +22,6 @@ import java.util.Collection;
 
 import javax.sql.DataSource;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -37,7 +36,6 @@ import org.summerb.easycrud.scaffold.api.ScaffoldedQuery;
  * @author sergeyk
  */
 public class ScaffoldedMethodFactoryMySqlImpl extends DaoBase implements ScaffoldedMethodFactory {
-  @Autowired
   public ScaffoldedMethodFactoryMySqlImpl(DataSource dataSource) {
     super(dataSource);
   }

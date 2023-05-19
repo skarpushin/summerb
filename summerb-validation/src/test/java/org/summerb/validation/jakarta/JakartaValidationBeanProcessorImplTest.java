@@ -8,6 +8,10 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.List;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 import org.junit.jupiter.api.Test;
 import org.summerb.validation.testDtos.JakartaBean;
 import org.summerb.validation.testDtos.JakartaBeanInvalid1;
@@ -15,10 +19,6 @@ import org.summerb.validation.testDtos.JakartaBeanInvalid2;
 import org.summerb.validation.testDtos.JakartaBeanInvalid3;
 
 import com.google.common.base.Preconditions;
-
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 class JakartaValidationBeanProcessorImplTest {
 

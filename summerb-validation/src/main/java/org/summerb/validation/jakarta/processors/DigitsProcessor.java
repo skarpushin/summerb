@@ -17,7 +17,7 @@ package org.summerb.validation.jakarta.processors;
 
 import java.math.BigDecimal;
 
-import javax.annotation.Nonnull;
+import javax.validation.constraints.Digits;
 
 import org.summerb.validation.ValidationContext;
 import org.summerb.validation.jakarta.processors.abstracts.DecimalProcessorNullableAbstract;
@@ -25,13 +25,11 @@ import org.summerb.validation.jakarta.processors.abstracts.DecimalProcessorNulla
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 
-import javax.validation.constraints.Digits;
-
 public class DigitsProcessor extends DecimalProcessorNullableAbstract<Digits> {
 
   protected BigDecimal boundary;
 
-  public DigitsProcessor(@Nonnull Digits annotation, @Nonnull String propertyName) {
+  public DigitsProcessor(Digits annotation, String propertyName) {
     super(annotation, propertyName);
     boundary = buildBoundary(annotation.integer(), annotation.fraction());
   }

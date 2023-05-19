@@ -20,16 +20,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.util.ObjectUtils;
-import org.summerb.easycrud.api.dto.EntityChangedEvent;
 import org.summerb.properties.api.SimplePropertyService;
 import org.summerb.properties.api.dto.NamedProperty;
 import org.summerb.properties.api.dto.SimplePropertiesSubject;
 import org.summerb.utils.cache.CachesInvalidationNeeded;
+import org.summerb.utils.easycrud.api.dto.EntityChangedEvent;
 import org.summerb.utils.tx.TransactionBoundCache;
 
+import com.google.common.base.Preconditions;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -42,9 +41,17 @@ public class SimplePropertyServiceCachedImpl implements SimplePropertyService, I
 
   protected LoadingCache<String, Map<String, String>> cache;
 
+  public SimplePropertyServiceCachedImpl(SimplePropertyService service, EventBus eventBus) {
+    this.simplePropertyService = service;
+    this.eventBus = eventBus;
+  }
+
   @SuppressWarnings({"rawtypes", "unchecked"})
   @Override
   public void afterPropertiesSet() throws Exception {
+    Preconditions.checkArgument(simplePropertyService != null, "simplePropertyService required");
+    Preconditions.checkArgument(eventBus != null, "eventBus required");
+
     String jmxName =
         "SimplePropertyServiceCachedImpl_"
             + simplePropertyService.getAppName()
@@ -123,11 +130,6 @@ public class SimplePropertyServiceCachedImpl implements SimplePropertyService, I
     return simplePropertyService;
   }
 
-  @Required
-  public void setSimplePropertyService(SimplePropertyService service) {
-    this.simplePropertyService = service;
-  }
-
   @Override
   public String getAppName() {
     return simplePropertyService.getAppName();
@@ -140,11 +142,6 @@ public class SimplePropertyServiceCachedImpl implements SimplePropertyService, I
 
   public EventBus getEventBus() {
     return eventBus;
-  }
-
-  @Autowired
-  public void setEventBus(EventBus eventBus) {
-    this.eventBus = eventBus;
   }
 
   public void resetCaches() {

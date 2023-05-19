@@ -1,8 +1,8 @@
 package org.summerb.validation.jakarta.test_data;
 
-import org.summerb.validation.ValidationContext;
-
 import javax.validation.constraints.Pattern;
+
+import org.summerb.validation.ValidationContext;
 
 public class ValidViaAbstractInterface implements AbstractInterface {
   private String propertyName;

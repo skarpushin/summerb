@@ -23,10 +23,10 @@ import java.io.Serializable;
  * @author sergeyk
  */
 public class ExceptionDescription implements Serializable {
-  private static final long serialVersionUID = 2895147359877289381L;
+  protected static final long serialVersionUID = 2895147359877289381L;
 
-  private String className;
-  private String message;
+  protected String className;
+  protected String message;
 
   public ExceptionDescription() {}
 

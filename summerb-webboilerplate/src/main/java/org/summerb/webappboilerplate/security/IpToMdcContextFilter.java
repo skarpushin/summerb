@@ -37,7 +37,7 @@ public class IpToMdcContextFilter extends OncePerRequestFilter {
     filterChain.doFilter(request, response);
   }
 
-  private String resolveRemoteAddr(HttpServletRequest request) {
+  protected String resolveRemoteAddr(HttpServletRequest request) {
     String ret = request.getHeader("X-Forwarded-For");
     if (StringUtils.hasText(ret)) {
       return ret;

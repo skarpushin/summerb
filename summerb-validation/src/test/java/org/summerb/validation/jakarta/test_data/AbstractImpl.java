@@ -1,10 +1,10 @@
 package org.summerb.validation.jakarta.test_data;
 
+import javax.validation.constraints.NotNull;
+
 import org.summerb.i18n.HasMessageCode;
 import org.summerb.validation.ValidationContext;
 import org.summerb.validation.jakarta.processors.abstracts.AnnotationProcessorNullableAbstract;
-
-import javax.validation.constraints.NotNull;
 
 public abstract class AbstractImpl extends AnnotationProcessorNullableAbstract<NotNull>
     implements HasMessageCode {

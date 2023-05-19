@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.annotation.Nonnull;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,9 +39,6 @@ import org.summerb.easycrud.api.EasyCrudDao;
 import org.summerb.easycrud.api.ParameterSourceBuilder;
 import org.summerb.easycrud.api.QueryToNativeSqlCompiler;
 import org.summerb.easycrud.api.StringIdGenerator;
-import org.summerb.easycrud.api.dto.PagerParams;
-import org.summerb.easycrud.api.dto.PaginatedList;
-import org.summerb.easycrud.api.dto.Top;
 import org.summerb.easycrud.api.query.OrderBy;
 import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.api.row.HasAuthor;
@@ -58,7 +54,9 @@ import org.summerb.easycrud.impl.dao.ParameterSourceBuilderBeanPropImpl;
 import org.summerb.easycrud.impl.dao.TableDaoBase;
 import org.summerb.utils.clock.NowResolver;
 import org.summerb.utils.clock.NowResolverImpl;
-import org.summerb.validation.ValidationException;
+import org.summerb.utils.easycrud.api.dto.PagerParams;
+import org.summerb.utils.easycrud.api.dto.PaginatedList;
+import org.summerb.utils.easycrud.api.dto.Top;
 
 import com.google.common.base.Preconditions;
 
@@ -142,8 +140,7 @@ public class EasyCrudDaoMySqlImpl<TId, TRow extends HasId<TId>> extends TableDao
    *
    * @param parameterSourceBuilder parameterSourceBuilder
    */
-  public void setParameterSourceBuilder(
-      @Nonnull ParameterSourceBuilder<TRow> parameterSourceBuilder) {
+  public void setParameterSourceBuilder(ParameterSourceBuilder<TRow> parameterSourceBuilder) {
     Preconditions.checkArgument(parameterSourceBuilder != null, "parameterSourceBuilder required");
     this.parameterSourceBuilder = parameterSourceBuilder;
   }
@@ -159,8 +156,7 @@ public class EasyCrudDaoMySqlImpl<TId, TRow extends HasId<TId>> extends TableDao
    * @param queryToNativeSqlCompiler queryToNativeSqlCompiler
    */
   @Autowired(required = false)
-  public void setQueryToNativeSqlCompiler(
-      @Nonnull QueryToNativeSqlCompiler queryToNativeSqlCompiler) {
+  public void setQueryToNativeSqlCompiler(QueryToNativeSqlCompiler queryToNativeSqlCompiler) {
     Preconditions.checkArgument(
         queryToNativeSqlCompiler != null, "queryToNativeSqlCompiler required");
     this.queryToNativeSqlCompiler = queryToNativeSqlCompiler;
@@ -177,7 +173,7 @@ public class EasyCrudDaoMySqlImpl<TId, TRow extends HasId<TId>> extends TableDao
    * @param conversionService conversionService
    */
   @Autowired(required = false)
-  public void setConversionService(@Nonnull ConversionService conversionService) {
+  public void setConversionService(ConversionService conversionService) {
     Preconditions.checkArgument(conversionService != null, "conversionService required");
     this.conversionService = conversionService;
   }
@@ -192,7 +188,7 @@ public class EasyCrudDaoMySqlImpl<TId, TRow extends HasId<TId>> extends TableDao
    *
    * @param stringIdGenerator stringIdGenerator
    */
-  public void setStringIdGenerator(@Nonnull StringIdGenerator stringIdGenerator) {
+  public void setStringIdGenerator(StringIdGenerator stringIdGenerator) {
     Preconditions.checkState(rowClass != null, "please set rowClass before callign this method");
     Preconditions.checkArgument(
         !HasUuid.class.isAssignableFrom(rowClass) || stringIdGenerator != null,
@@ -211,7 +207,7 @@ public class EasyCrudDaoMySqlImpl<TId, TRow extends HasId<TId>> extends TableDao
    * @param daoExceptionTranslator daoExceptionTranslator
    */
   @Autowired(required = false)
-  public void setDaoExceptionTranslator(@Nonnull DaoExceptionTranslator daoExceptionTranslator) {
+  public void setDaoExceptionTranslator(DaoExceptionTranslator daoExceptionTranslator) {
     Preconditions.checkArgument(daoExceptionTranslator != null, "daoExceptionTranslator required");
     this.daoExceptionTranslator = daoExceptionTranslator;
   }
@@ -227,7 +223,7 @@ public class EasyCrudDaoMySqlImpl<TId, TRow extends HasId<TId>> extends TableDao
    * @param nowResolver nowResolver
    */
   @Autowired(required = false)
-  public void setNowResolver(@Nonnull NowResolver nowResolver) {
+  public void setNowResolver(NowResolver nowResolver) {
     Preconditions.checkState(rowClass != null, "please set rowClass before callign this method");
     Preconditions.checkArgument(
         !HasTimestamps.class.isAssignableFrom(rowClass) || nowResolver != null,
@@ -373,7 +369,7 @@ public class EasyCrudDaoMySqlImpl<TId, TRow extends HasId<TId>> extends TableDao
       };
 
   @Override
-  public void create(TRow row){
+  public void create(TRow row) {
     if (row instanceof HasUuid) {
       HasUuid hasUuid = (HasUuid) row;
       if (!stringIdGenerator.isValidId(hasUuid.getId())) {
@@ -403,7 +399,7 @@ public class EasyCrudDaoMySqlImpl<TId, TRow extends HasId<TId>> extends TableDao
   }
 
   @Override
-  public int update(TRow row){
+  public int update(TRow row) {
     MapSqlParameterSource restrictionParams = new MapSqlParameterSource();
     restrictionParams.addValue(HasId.FN_ID, row.getId());
     if (row instanceof HasTimestamps) {

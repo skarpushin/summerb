@@ -20,8 +20,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
 import org.summerb.validation.ValidationError;
 
 import com.google.common.base.Preconditions;
@@ -60,7 +58,7 @@ public class ValidationErrorGsonTypeAdapter
     this(new Gson());
   }
 
-  public ValidationErrorGsonTypeAdapter(@Nonnull Gson vanillaGson) {
+  public ValidationErrorGsonTypeAdapter(Gson vanillaGson) {
     Preconditions.checkArgument(vanillaGson != null, "vanillaGson required");
     this.vanillaGson = vanillaGson;
   }

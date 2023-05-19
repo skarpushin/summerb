@@ -27,7 +27,7 @@ import org.summerb.webappboilerplate.security.apis.RememberMeRequestedStrategy;
 public class RememberMeRequestedStrategyImpl implements RememberMeRequestedStrategy {
   public static final String HEADER_REMEMBER_ME = "rememberMe";
 
-  private String rememberMeParameter = "_spring_security_remember_me";
+  protected String rememberMeParameter = "_spring_security_remember_me";
 
   @Override
   public boolean isRememberMeRequested(HttpServletRequest request) {
@@ -40,7 +40,7 @@ public class RememberMeRequestedStrategyImpl implements RememberMeRequestedStrat
     return isFormAuthRequestForRememberMe(request);
   }
 
-  private boolean isFormAuthRequestForRememberMe(HttpServletRequest request) {
+  protected boolean isFormAuthRequestForRememberMe(HttpServletRequest request) {
     String paramValue = request.getParameter(rememberMeParameter);
 
     if (paramValue != null) {

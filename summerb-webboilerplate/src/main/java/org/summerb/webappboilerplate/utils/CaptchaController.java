@@ -26,8 +26,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.summerb.security.api.AuditEvents;
@@ -47,8 +46,8 @@ public class CaptchaController implements InitializingBean {
   public static final String AUDIT_CAPTCHA_MISUSE = "CPTCHMU";
   public static final String AUDIT_CAPTCHA_INVALID = "CPTCHNVLD";
 
-  private AuditEvents auditEvents;
-  private static AuditEvents staticAuditLog = new AuditEventsDefaultImpl();
+  protected AuditEvents auditEvents;
+  protected static AuditEvents staticAuditLog = new AuditEventsDefaultImpl();
 
   @Override
   public void afterPropertiesSet() throws Exception {
@@ -58,7 +57,7 @@ public class CaptchaController implements InitializingBean {
     staticAuditLog = auditEvents;
   }
 
-  @RequestMapping(method = RequestMethod.GET, value = "/rest/captcha-token")
+  @GetMapping("/rest/captcha-token")
   public @ResponseBody Map<String, String> getCaptcha(
       @RequestParam("goal") String goal, HttpServletRequest request) {
     Preconditions.checkArgument(StringUtils.hasText(goal));
@@ -71,7 +70,7 @@ public class CaptchaController implements InitializingBean {
     return Collections.singletonMap("captcha", token);
   }
 
-  private static String findToken(String goal, HttpServletRequest request) {
+  protected static String findToken(String goal, HttpServletRequest request) {
     HttpSession session = request.getSession(false);
     if (session == null) {
       return null;
@@ -114,7 +113,7 @@ public class CaptchaController implements InitializingBean {
     session.setAttribute(buildCaptchaTokenAttrName(goal), null);
   }
 
-  private static String buildCaptchaTokenAttrName(String goal) {
+  protected static String buildCaptchaTokenAttrName(String goal) {
     return "captchaToken_" + goal;
   }
 

@@ -32,60 +32,55 @@ public class PropertiesConfig {
   public @Autowired DataSource dataSource;
 
   @Bean
-  public SimplePropertyService appProps(Optional<EventBus> eventBus) {
-    SimplePropertyServiceImpl ret = new SimplePropertyServiceImpl();
-    ret.setAppName(SecurityConstants.DOMAIN);
-    ret.setDomainName(SecurityConstants.DOMAIN);
+  SimplePropertyService appProps(PropertyService propertyService, Optional<EventBus> eventBus) {
+    SimplePropertyServiceImpl ret =
+        new SimplePropertyServiceImpl(
+            propertyService, SecurityConstants.DOMAIN, SecurityConstants.DOMAIN);
     if (eventBus.isPresent()) {
       ret.setEventBus(eventBus.get());
     }
-    ret.setPropertyService(propertyService());
     return ret;
   }
 
   // ================= Under-th-hood impl
   @Bean
-  public StringIdAliasDao appAliasDao() {
+  StringIdAliasDao appAliasDao() {
     return new StringIdAliasDaoImpl(dataSource, "props_alias_app");
   }
 
   @Bean
-  public StringIdAliasDao domainAliasDao() {
+  StringIdAliasDao domainAliasDao() {
     return new StringIdAliasDaoImpl(dataSource, "props_alias_domain");
   }
 
   @Bean
-  public StringIdAliasDao propertyNameAliasDao() {
+  StringIdAliasDao propertyNameAliasDao() {
     return new StringIdAliasDaoImpl(dataSource, "props_alias_name");
   }
 
   @Bean
-  public StringIdAliasService appAliasService() {
+  StringIdAliasService appAliasService() {
     return new StringIdAliasServiceEagerImpl(appAliasDao());
   }
 
   @Bean
-  public StringIdAliasService domainAliasService() {
+  StringIdAliasService domainAliasService() {
     return new StringIdAliasServiceEagerImpl(domainAliasDao());
   }
 
   @Bean
-  public StringIdAliasService propertyNameAliasService() {
+  StringIdAliasService propertyNameAliasService() {
     return new StringIdAliasServiceEagerImpl(propertyNameAliasDao());
   }
 
   @Bean
-  public PropertyDao propertyDao() {
+  PropertyDao propertyDao() {
     return new PropertyDaoImpl(dataSource, "props_values");
   }
 
   @Bean
-  public PropertyService propertyService() {
-    PropertyServiceImpl ret = new PropertyServiceImpl();
-    ret.setPropertyDao(propertyDao());
-    ret.setAppNameAlias(appAliasService());
-    ret.setDomainNameAlias(domainAliasService());
-    ret.setPropertyNameAlias(propertyNameAliasService());
-    return ret;
+  PropertyService propertyService(PropertyDao propertyDao) {
+    return new PropertyServiceImpl(
+        propertyDao, domainAliasService(), appAliasService(), propertyNameAliasService());
   }
 }

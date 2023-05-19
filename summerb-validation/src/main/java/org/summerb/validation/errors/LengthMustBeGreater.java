@@ -1,7 +1,5 @@
 package org.summerb.validation.errors;
 
-import javax.annotation.Nonnull;
-
 import org.summerb.validation.ValidationError;
 
 public class LengthMustBeGreater extends ValidationError {
@@ -12,7 +10,7 @@ public class LengthMustBeGreater extends ValidationError {
   /** @deprecated used only for serialization */
   public LengthMustBeGreater() {}
 
-  public LengthMustBeGreater(@Nonnull String propertyName, int boundary) {
+  public LengthMustBeGreater(String propertyName, int boundary) {
     super(propertyName, MESSAGE_CODE, boundary);
   }
 }

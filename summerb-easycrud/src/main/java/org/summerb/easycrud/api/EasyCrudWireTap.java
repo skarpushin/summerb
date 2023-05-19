@@ -15,10 +15,6 @@
  ******************************************************************************/
 package org.summerb.easycrud.api;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.impl.EasyCrudServiceImpl;
 import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapDelegatingImpl;
 import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapEventBusImpl;
@@ -55,54 +51,50 @@ import com.google.common.eventbus.EventBus;
 public interface EasyCrudWireTap<T> {
 
   /**
-   * Impl must respond whether or not {@link #beforeCreate(HasId)} and {@link #afterCreate(HasId)}
+   * Impl must respond whether or not {@link #beforeCreate(Object)} and {@link #afterCreate(Object)}
    * must be called
    *
    * @return true if must be called, false otherwise.
    */
   boolean requiresOnCreate();
 
-  void beforeCreate(@Nonnull T row);
+  void beforeCreate(T row);
 
-  void afterCreate(@Nonnull T row);
+  void afterCreate(T row);
 
   /**
-   * Impl must respond whether or not {@link #beforeRead()} and {@link #afterRead(HasId)} must
-   * be called
+   * Impl must respond whether or not {@link #beforeRead()} and {@link #afterRead(Object)} must be
+   * called
    *
    * @return true if must be called, false otherwise.
    */
   boolean requiresOnRead();
 
-  /**
-   * @param id if {@link #requiresOnRead()} returned {@link EasyCrudWireTapMode#ONLY_INVOKE_WIRETAP}
-   *     then in some cases Id might be passed as null
-   */
   void beforeRead();
 
-  void afterRead(@Nonnull T row);
+  void afterRead(T row);
 
   /**
-   * Impl must respond whether or not {@link #beforeUpdate(HasId, HasId)} and {@link
-   * #afterCreate(HasId)} must be called
+   * Impl must respond whether or not {@link #beforeUpdate(Object, Object)} and {@link
+   * #afterUpdate(Object, Object)} must be called and what amount of information is required
    *
    * @return level of information needed for "Update" WireTap
    */
   EasyCrudWireTapMode requiresOnUpdate();
 
-  void beforeUpdate(@Nullable T from, @Nullable T to);
+  void beforeUpdate(T from, T to);
 
-  void afterUpdate(@Nullable T from, @Nullable T to);
+  void afterUpdate(T from, T to);
 
   /**
-   * Impl must respond whether or not {@link #beforeDelete(HasId)} and {@link
-   * #afterDelete(HasId)} must be called
+   * Impl must respond whether or not {@link #beforeDelete(Object)} and {@link #afterDelete(Object)}
+   * must be called
    *
    * @return level of information needed for "Delete" WireTap
    */
   EasyCrudWireTapMode requiresOnDelete();
 
-  void beforeDelete(@Nullable T row);
+  void beforeDelete(T row);
 
-  void afterDelete(@Nullable T row);
+  void afterDelete(T row);
 }

@@ -1,12 +1,12 @@
 package org.summerb.webappboilerplate.security.impls;
 
-import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -14,9 +14,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.summerb.spring.security.SecurityConstants;
 import org.summerb.users.api.dto.User;
 
+import com.google.common.base.Preconditions;
+
 public class BackgroundProcessAuthentication<TUserDetails extends UserDetails, TUser extends User>
     implements Authentication {
-  private static final long serialVersionUID = 3710514197842955814L;
+  protected static final long serialVersionUID = 3710514197842955814L;
 
   public static List<String> AUTHORITIES_STRINGS =
       new ArrayList<>(Arrays.asList(SecurityConstants.ROLE_BACKGROUND_PROCESS));
@@ -29,7 +31,7 @@ public class BackgroundProcessAuthentication<TUserDetails extends UserDetails, T
   protected TUserDetails userDetails;
   protected final Collection<? extends GrantedAuthority> authorities;
 
-  private Function<TUserDetails, TUser> userGetter;
+  protected Function<TUserDetails, TUser> userGetter;
 
   /**
    * @param origin some string which is probably suppose to clarify what is the origin of that

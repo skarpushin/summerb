@@ -15,18 +15,16 @@
  ******************************************************************************/
 package org.summerb.validation.jakarta.processors;
 
-import javax.annotation.Nonnull;
+import javax.validation.constraints.Future;
 
 import org.summerb.validation.ValidationContext;
 import org.summerb.validation.jakarta.processors.abstracts.AnnotationProcessorNullableAbstract;
 
 import com.google.common.base.Preconditions;
 
-import javax.validation.constraints.Future;
-
 public class FutureProcessor extends AnnotationProcessorNullableAbstract<Future> {
 
-  public FutureProcessor(@Nonnull Future annotation, @Nonnull String propertyName) {
+  public FutureProcessor(Future annotation, String propertyName) {
     super(annotation, propertyName);
   }
 

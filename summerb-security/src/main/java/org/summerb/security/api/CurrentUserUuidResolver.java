@@ -19,7 +19,6 @@ package org.summerb.security.api;
  * Interface for resolving the user from current context.
  *
  * @author sergeyk
- * @param <TUser> user DTO type
  */
 public interface CurrentUserUuidResolver {
 

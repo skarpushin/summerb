@@ -20,9 +20,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.springframework.util.CollectionUtils;
 import org.summerb.utils.DtoBase;
 
@@ -39,30 +36,30 @@ public class ValidationErrors extends ValidationError
     this.list = new LinkedList<>();
   }
 
-  public ValidationErrors(@Nonnull List<ValidationError> errors) {
+  public ValidationErrors(List<ValidationError> errors) {
     super("validationErrors", "validation.error");
     Preconditions.checkArgument(errors != null);
     this.list = errors;
   }
 
-  public ValidationErrors(@Nonnull String propertyName, @Nonnull List<ValidationError> errors) {
+  public ValidationErrors(String propertyName, List<ValidationError> errors) {
     super(propertyName, "validation.error");
     Preconditions.checkArgument(errors != null);
     this.list = errors;
   }
 
   @Override
-  public @Nonnull List<ValidationError> getList() {
+  public List<ValidationError> getList() {
     return list;
   }
 
-  public void add(@Nonnull ValidationError validationError) {
+  public void add(ValidationError validationError) {
     Preconditions.checkArgument(validationError != null, "validationError required");
     list.add(validationError);
   }
 
   /** @param errors errors list, must not be empty */
-  public void setList(@Nonnull List<ValidationError> errors) {
+  public void setList(List<ValidationError> errors) {
     Preconditions.checkArgument(errors != null);
     this.list = errors;
   }
@@ -72,20 +69,19 @@ public class ValidationErrors extends ValidationError
     return !list.isEmpty();
   }
 
-  public boolean hasErrorOfType(@Nonnull Class<?> clazz) {
+  public boolean hasErrorOfType(Class<?> clazz) {
     return ValidationErrorsUtils.hasErrorOfType(clazz, list);
   }
 
-  public <V> @Nullable V findErrorOfType(@Nonnull Class<V> clazz) {
+  public <V> V findErrorOfType(Class<V> clazz) {
     return ValidationErrorsUtils.findErrorOfType(clazz, list);
   }
 
-  public @Nonnull List<ValidationError> findErrorsForField(@Nonnull String propertyName) {
+  public List<ValidationError> findErrorsForField(String propertyName) {
     return ValidationErrorsUtils.findErrorsForField(propertyName, list);
   }
 
-  public <V> @Nullable V findErrorOfTypeForField(
-      @Nonnull Class<V> clazz, @Nonnull String propertyName) {
+  public <V> V findErrorOfTypeForField(Class<V> clazz, String propertyName) {
     return ValidationErrorsUtils.findErrorOfTypeForField(clazz, propertyName, list);
   }
 
@@ -98,7 +94,7 @@ public class ValidationErrors extends ValidationError
    * @param i index of an element in the original collection
    * @return instance of {@link ValidationErrors} or null if no errors
    */
-  public @Nullable ValidationErrors findAggregatedErrorsAtIndex(int i) {
+  public ValidationErrors findAggregatedErrorsAtIndex(int i) {
     return ValidationErrorsUtils.findAggregatedErrorsAtIndex(i, list);
   }
 
@@ -107,7 +103,7 @@ public class ValidationErrors extends ValidationError
     return toString(this, propertyName);
   }
 
-  public static String toString(@Nonnull HasValidationErrors errors, @Nullable String prefix) {
+  public static String toString(HasValidationErrors errors, String prefix) {
     if (CollectionUtils.isEmpty(errors.getList())) {
       return prefix + ": (empty)";
     }

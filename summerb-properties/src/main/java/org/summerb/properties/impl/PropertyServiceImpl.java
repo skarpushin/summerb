@@ -36,11 +36,27 @@ import com.google.common.base.Preconditions;
 public class PropertyServiceImpl implements PropertyService {
   // protected Logger log = LoggerFactory.getLogger(PropertyServiceImpl.class);
 
+  protected PropertyDao propertyDao;
   protected StringIdAliasService appNameAlias;
   protected StringIdAliasService domainNameAlias;
   protected StringIdAliasService propertyNameAlias;
 
-  protected PropertyDao propertyDao;
+  public PropertyServiceImpl(
+      PropertyDao propertyDao,
+      StringIdAliasService domainNameAlias,
+      StringIdAliasService appNameAlias,
+      StringIdAliasService propertyNameAlias) {
+    super();
+    Preconditions.checkArgument(propertyDao != null, "propertyDao required");
+    Preconditions.checkArgument(domainNameAlias != null, "domainNameAlias required");
+    Preconditions.checkArgument(appNameAlias != null, "appNameAlias required");
+    Preconditions.checkArgument(propertyNameAlias != null, "propertyNameAlias required");
+
+    this.propertyDao = propertyDao;
+    this.domainNameAlias = domainNameAlias;
+    this.appNameAlias = appNameAlias;
+    this.propertyNameAlias = propertyNameAlias;
+  }
 
   @Override
   @Transactional(rollbackFor = Throwable.class)
@@ -270,31 +286,15 @@ public class PropertyServiceImpl implements PropertyService {
     return propertyDao;
   }
 
-  public void setPropertyDao(PropertyDao propertyDao) {
-    this.propertyDao = propertyDao;
-  }
-
   public StringIdAliasService getAppNameAlias() {
     return appNameAlias;
-  }
-
-  public void setAppNameAlias(StringIdAliasService appNameAlias) {
-    this.appNameAlias = appNameAlias;
   }
 
   public StringIdAliasService getDomainNameAlias() {
     return domainNameAlias;
   }
 
-  public void setDomainNameAlias(StringIdAliasService domainNameAlias) {
-    this.domainNameAlias = domainNameAlias;
-  }
-
   public StringIdAliasService getPropertyNameAlias() {
     return propertyNameAlias;
-  }
-
-  public void setPropertyNameAlias(StringIdAliasService propertyNameAlias) {
-    this.propertyNameAlias = propertyNameAlias;
   }
 }

@@ -18,11 +18,11 @@ package org.summerb.easycrud.impl.dataset;
 import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.api.EasyCrudServiceResolver;
 import org.summerb.easycrud.api.dataset.DataSetUpdaterOnEntityChangedEvent;
-import org.summerb.easycrud.api.dto.EntityChangedEvent;
-import org.summerb.easycrud.api.dto.EntityChangedEvent.ChangeType;
 import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.api.row.datapackage.DataSet;
 import org.summerb.easycrud.api.row.datapackage.DataTable;
+import org.summerb.utils.easycrud.api.dto.EntityChangedEvent;
+import org.summerb.utils.easycrud.api.dto.EntityChangedEvent.ChangeType;
 
 import com.google.common.base.Preconditions;
 

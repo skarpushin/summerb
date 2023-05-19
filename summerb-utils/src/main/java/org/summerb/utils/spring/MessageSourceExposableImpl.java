@@ -18,7 +18,6 @@ package org.summerb.utils.spring;
 import java.util.Locale;
 import java.util.Properties;
 
-import org.springframework.context.support.HackToGetCacheSeconds;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 
 /**
@@ -39,6 +38,6 @@ public class MessageSourceExposableImpl extends ReloadableResourceBundleMessageS
 
   @Override
   public long getReloadIntervalSeconds() {
-    return HackToGetCacheSeconds.getFrom(this);
+    return getCacheMillis() / 1000;
   }
 }

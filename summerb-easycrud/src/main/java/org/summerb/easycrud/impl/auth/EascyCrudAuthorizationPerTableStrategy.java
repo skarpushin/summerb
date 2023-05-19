@@ -31,11 +31,11 @@ import com.google.common.base.Preconditions;
  * This is abstract class for implementing Table-wide authorization logic. Table-wide means that
  * authorization is performed for general access operations regardless off row data.
  *
- * <p>All you need to do is implement abstract methods {@link #isAuthorizedToRead()} and {@link
- * #isAuthorizedToUpdate()}. If you need to customize this logic, override other methods.
+ * <p>You need to implement {@link #getForRead()} and {@link #getForUpdate()}. If you need to
+ * customize this logic, override other methods.
  *
  * <p>If your authorization logic for Deletion and Creation is different from Update, please
- * override respective methods {@link #isAuthorizedToCreate()} and {@link #isAuthorizedToDelete()}
+ * override respective methods {@link #getForDelete()} and {@link #getForCreate()}
  *
  * <p>If you do not need authorization to be performed for some of the CRUD operations you can
  * optimize performance by overriding following methods and disabling calls to this authorization
@@ -47,11 +47,6 @@ import com.google.common.base.Preconditions;
  *   <li>{@link #requiresOnUpdate()}
  *   <li>{@link #requiresOnDelete()}
  * </ul>
- *
- * @see {@link EascyCrudAuthorizationPerRowStrategy}
- * @author Sergey Karpushin
- * @param <TId> type of id
- * @param <TRow> type of row
  */
 public abstract class EascyCrudAuthorizationPerTableStrategy extends EasyCrudWireTapAbstract<Object>
     implements InitializingBean {

@@ -18,14 +18,13 @@ package org.summerb.easycrud.impl;
 import java.util.List;
 
 import org.summerb.easycrud.api.EasyCrudService;
-import org.summerb.easycrud.api.dto.PagerParams;
-import org.summerb.easycrud.api.dto.PaginatedList;
 import org.summerb.easycrud.api.exceptions.EntityNotFoundException;
 import org.summerb.easycrud.api.query.OrderBy;
 import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.api.row.HasId;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
-import org.summerb.validation.ValidationException;
+import org.summerb.utils.easycrud.api.dto.PagerParams;
+import org.summerb.utils.easycrud.api.dto.PaginatedList;
 
 import com.google.common.base.Preconditions;
 
@@ -40,13 +39,12 @@ public class EasyCrudServiceWrapper<
   }
 
   @Override
-  public TRow create(TRow row){
+  public TRow create(TRow row) {
     return actual.create(row);
   }
 
   @Override
-  public TRow update(TRow row)
-      {
+  public TRow update(TRow row) {
     return actual.update(row);
   }
 
