@@ -16,7 +16,7 @@
 package org.summerb.easycrud.api.dataset;
 
 import org.summerb.easycrud.api.dto.EntityChangedEvent;
-import org.summerb.easycrud.api.dto.datapackage.DataSet;
+import org.summerb.easycrud.api.row.datapackage.DataSet;
 
 public interface DataSetUpdaterOnEntityChangedEvent {
   void updateDataSet(DataSet dataSet, EntityChangedEvent<?> e);

@@ -2,11 +2,11 @@ package org.summerb.easycrud.gen2;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.summerb.easycrud.query.ConditionEx;
 import org.summerb.easycrud.query.FieldConditionEx;
 
-import integr.org.summerb.easycrud.TestDto1;
+import integr.org.summerb.easycrud.dtos.TestDto1;
 
 public class QueryExTest {
 

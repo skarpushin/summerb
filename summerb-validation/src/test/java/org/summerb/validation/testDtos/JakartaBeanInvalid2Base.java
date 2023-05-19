@@ -1,6 +1,6 @@
 package org.summerb.validation.testDtos;
 
-import jakarta.validation.constraints.Size;
+import javax.validation.constraints.Size;
 
 public class JakartaBeanInvalid2Base {
 

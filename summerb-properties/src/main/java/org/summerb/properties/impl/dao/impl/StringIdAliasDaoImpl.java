@@ -21,40 +21,42 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Required;
+import javax.sql.DataSource;
+
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.summerb.easycrud.api.dto.PagerParams;
 import org.summerb.easycrud.api.dto.PaginatedList;
-import org.summerb.easycrud.common.DaoBase;
+import org.summerb.easycrud.impl.dao.TableDaoBase;
 import org.summerb.properties.impl.dao.AliasEntry;
 import org.summerb.properties.impl.dao.StringIdAliasDao;
 
-public class StringIdAliasDaoImpl extends DaoBase implements StringIdAliasDao, InitializingBean {
+public class StringIdAliasDaoImpl extends TableDaoBase implements StringIdAliasDao {
   protected static final String PARAM_ALIAS = "alias";
   protected static final String PARAM_ALIAS_NAME = "alias_name";
   protected static final String PARAM_MAX = "max";
   protected static final String PARAM_OFFSET = "offset";
 
-  protected String tableName;
   protected SimpleJdbcInsert jdbcInsert;
   protected String sqlFindAliasByName;
   protected String sqlFindAllAliases;
   protected String sqlLastStatementCount;
   protected String sqlFindNameByAlias;
 
-  public StringIdAliasDaoImpl() {}
+  public StringIdAliasDaoImpl(DataSource dataSource, String tableName) {
+    super(dataSource, tableName);
+  }
 
   @Override
   public void afterPropertiesSet() throws Exception {
-    Assert.hasText(tableName, "Table name must be provided");
+    super.afterPropertiesSet();
+    buildSqlStatements();
+  }
+
+  protected void buildSqlStatements() {
     jdbcInsert =
-        new SimpleJdbcInsert(getDataSource())
-            .withTableName(getTableName())
-            .usingGeneratedKeyColumns("alias");
+        new SimpleJdbcInsert(dataSource).withTableName(tableName).usingGeneratedKeyColumns("alias");
 
     sqlFindAliasByName =
         String.format("SELECT alias FROM %s WHERE alias_name = :alias_name", tableName);
@@ -62,7 +64,7 @@ public class StringIdAliasDaoImpl extends DaoBase implements StringIdAliasDao, I
 
     sqlFindAllAliases =
         String.format(
-            "SELECT SQL_CALC_FOUND_ROWS alias_name, alias FROM %s ORDER BY alias ASC LIMIT :offset OFFSET :max",
+            "SELECT SQL_CALC_FOUND_ROWS alias_name, alias FROM %s ORDER BY alias ASC LIMIT :max OFFSET :offset",
             tableName);
     sqlLastStatementCount = "SELECT FOUND_ROWS()";
   }
@@ -125,10 +127,5 @@ public class StringIdAliasDaoImpl extends DaoBase implements StringIdAliasDao, I
 
   public String getTableName() {
     return tableName;
-  }
-
-  @Required
-  public void setTableName(String tableName) {
-    this.tableName = tableName;
   }
 }

@@ -18,9 +18,7 @@ package org.summerb.easycrud.impl.wireTaps;
 import java.util.List;
 
 import org.summerb.easycrud.api.EasyCrudWireTap;
-import org.summerb.easycrud.api.dto.HasId;
-import org.summerb.security.api.exceptions.NotAuthorizedException;
-import org.summerb.validation.ValidationException;
+import org.summerb.easycrud.api.EasyCrudWireTapMode;
 
 import com.google.common.base.Preconditions;
 
@@ -29,28 +27,17 @@ import com.google.common.base.Preconditions;
  *
  * @author sergeyk
  */
-public class EasyCrudWireTapDelegatingImpl<TId, TDto extends HasId<TId>>
-    implements EasyCrudWireTap<TId, TDto> {
-  private List<EasyCrudWireTap<TId, TDto>> chain;
+public class EasyCrudWireTapDelegatingImpl<TRow> implements EasyCrudWireTap<TRow> {
+  protected List<EasyCrudWireTap<TRow>> chain;
 
-  public EasyCrudWireTapDelegatingImpl(List<EasyCrudWireTap<TId, TDto>> chain) {
+  public EasyCrudWireTapDelegatingImpl(List<EasyCrudWireTap<TRow>> chain) {
     Preconditions.checkArgument(chain != null, "chain list must not be null");
     this.chain = chain;
   }
 
   @Override
-  public boolean requiresFullDto() {
-    for (EasyCrudWireTap<TId, TDto> tap : chain) {
-      if (tap.requiresFullDto()) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  @Override
-  public boolean requiresOnCreate() throws ValidationException, NotAuthorizedException {
-    for (EasyCrudWireTap<TId, TDto> tap : chain) {
+  public boolean requiresOnCreate() {
+    for (EasyCrudWireTap<TRow> tap : chain) {
       if (tap.requiresOnCreate()) {
         return true;
       }
@@ -59,70 +46,28 @@ public class EasyCrudWireTapDelegatingImpl<TId, TDto extends HasId<TId>>
   }
 
   @Override
-  public void beforeCreate(TDto dto) throws NotAuthorizedException, ValidationException {
-    for (EasyCrudWireTap<TId, TDto> tap : chain) {
-      tap.beforeCreate(dto);
-    }
-  }
-
-  @Override
-  public void afterCreate(TDto dto) throws ValidationException, NotAuthorizedException {
-    for (EasyCrudWireTap<TId, TDto> tap : chain) {
-      tap.afterCreate(dto);
-    }
-  }
-
-  @Override
-  public boolean requiresOnUpdate() throws NotAuthorizedException, ValidationException {
-    for (EasyCrudWireTap<TId, TDto> tap : chain) {
-      if (tap.requiresOnUpdate()) {
-        return true;
+  public void beforeCreate(TRow row) {
+    for (EasyCrudWireTap<TRow> tap : chain) {
+      if (!tap.requiresOnCreate()) {
+        continue;
       }
-    }
-    return false;
-  }
-
-  @Override
-  public void beforeUpdate(TDto from, TDto to) throws ValidationException, NotAuthorizedException {
-    for (EasyCrudWireTap<TId, TDto> tap : chain) {
-      tap.beforeUpdate(from, to);
+      tap.beforeCreate(row);
     }
   }
 
   @Override
-  public void afterUpdate(TDto from, TDto to) throws NotAuthorizedException, ValidationException {
-    for (EasyCrudWireTap<TId, TDto> tap : chain) {
-      tap.afterUpdate(from, to);
-    }
-  }
-
-  @Override
-  public boolean requiresOnDelete() throws ValidationException, NotAuthorizedException {
-    for (EasyCrudWireTap<TId, TDto> tap : chain) {
-      if (tap.requiresOnDelete()) {
-        return true;
+  public void afterCreate(TRow row) {
+    for (EasyCrudWireTap<TRow> tap : chain) {
+      if (!tap.requiresOnCreate()) {
+        continue;
       }
-    }
-    return false;
-  }
-
-  @Override
-  public void beforeDelete(TDto dto) throws NotAuthorizedException, ValidationException {
-    for (EasyCrudWireTap<TId, TDto> tap : chain) {
-      tap.beforeDelete(dto);
+      tap.afterCreate(row);
     }
   }
 
   @Override
-  public void afterDelete(TDto dto) throws ValidationException, NotAuthorizedException {
-    for (EasyCrudWireTap<TId, TDto> tap : chain) {
-      tap.afterDelete(dto);
-    }
-  }
-
-  @Override
-  public boolean requiresOnRead() throws NotAuthorizedException, ValidationException {
-    for (EasyCrudWireTap<TId, TDto> tap : chain) {
+  public boolean requiresOnRead() {
+    for (EasyCrudWireTap<TRow> tap : chain) {
       if (tap.requiresOnRead()) {
         return true;
       }
@@ -131,17 +76,85 @@ public class EasyCrudWireTapDelegatingImpl<TId, TDto extends HasId<TId>>
   }
 
   @Override
-  public void afterRead(TDto dto) throws ValidationException, NotAuthorizedException {
-    for (EasyCrudWireTap<TId, TDto> tap : chain) {
-      tap.afterRead(dto);
+  public void beforeRead() {
+    for (EasyCrudWireTap<TRow> tap : chain) {
+      if (!tap.requiresOnRead()) {
+        continue;
+      }
+      tap.beforeRead();
     }
   }
 
-  public List<EasyCrudWireTap<TId, TDto>> getChain() {
+  @Override
+  public void afterRead(TRow row) {
+    for (EasyCrudWireTap<TRow> tap : chain) {
+      if (!tap.requiresOnRead()) {
+        continue;
+      }
+      tap.afterRead(row);
+    }
+  }
+
+  @Override
+  public EasyCrudWireTapMode requiresOnUpdate() {
+    EasyCrudWireTapMode ret = EasyCrudWireTapMode.NOT_APPLICABLE;
+    for (EasyCrudWireTap<TRow> tap : chain) {
+      ret = ret.max(tap.requiresOnUpdate());
+    }
+    return ret;
+  }
+
+  @Override
+  public void beforeUpdate(TRow from, TRow to) {
+    for (EasyCrudWireTap<TRow> tap : chain) {
+      if (!tap.requiresOnUpdate().isNeeded()) {
+        continue;
+      }
+      tap.beforeUpdate(from, to);
+    }
+  }
+
+  @Override
+  public void afterUpdate(TRow from, TRow to) {
+    for (EasyCrudWireTap<TRow> tap : chain) {
+      if (!tap.requiresOnUpdate().isNeeded()) {
+        continue;
+      }
+      tap.afterUpdate(from, to);
+    }
+  }
+
+  @Override
+  public EasyCrudWireTapMode requiresOnDelete() {
+    EasyCrudWireTapMode ret = EasyCrudWireTapMode.NOT_APPLICABLE;
+    for (EasyCrudWireTap<TRow> tap : chain) {
+      ret = ret.max(tap.requiresOnDelete());
+    }
+    return ret;
+  }
+
+  @Override
+  public void beforeDelete(TRow row) {
+    for (EasyCrudWireTap<TRow> tap : chain) {
+      if (!tap.requiresOnUpdate().isNeeded()) {
+        continue;
+      }
+      tap.beforeDelete(row);
+    }
+  }
+
+  @Override
+  public void afterDelete(TRow row) {
+    for (EasyCrudWireTap<TRow> tap : chain) {
+      tap.afterDelete(row);
+    }
+  }
+
+  public List<EasyCrudWireTap<TRow>> getChain() {
     return chain;
   }
 
-  public void setChain(List<EasyCrudWireTap<TId, TDto>> chain) {
+  public void setChain(List<EasyCrudWireTap<TRow>> chain) {
     this.chain = chain;
   }
 }

@@ -15,25 +15,24 @@
  ******************************************************************************/
 package org.summerb.easycrud.api;
 
-import org.summerb.easycrud.api.dto.HasId;
-import org.summerb.easycrud.impl.EasyCrudServicePluggableImpl;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import org.summerb.easycrud.api.row.HasId;
+import org.summerb.easycrud.impl.EasyCrudServiceImpl;
 import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapDelegatingImpl;
 import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapEventBusImpl;
 import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapNoOpImpl;
-import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapPerRowAuthImpl;
-import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapTableAuthImpl;
 import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapValidationImpl;
-import org.summerb.security.api.exceptions.NotAuthorizedException;
-import org.summerb.validation.ValidationException;
 
 import com.google.common.eventbus.EventBus;
 
 /**
  * This interface defines "wire tap" for all common CRUD service methods implemented by {@link
- * EasyCrudServicePluggableImpl}.
+ * EasyCrudServiceImpl}.
  *
  * <p>You can easily tap into the workflow by implementing methods of this interface and injecting
- * it into {@link EasyCrudServicePluggableImpl}.
+ * it into {@link EasyCrudServiceImpl}.
  *
  * <p>Consider extending {@link EasyCrudWireTapNoOpImpl} class if you don't need to implement all
  * methods.
@@ -47,44 +46,63 @@ import com.google.common.eventbus.EventBus;
  * <p>Validation impl of {@link EasyCrudValidationStrategy} can be injected using {@link
  * EasyCrudWireTapValidationImpl}.
  *
- * <p>Per-Table authorization {@link EasyCrudTableAuthStrategy} can be injected using {@link
- * EasyCrudWireTapTableAuthImpl}.
- *
- * <p>Per-Row authorization {@link EasyCrudPerRowAuthStrategy} can be injected using {@link
- * EasyCrudWireTapPerRowAuthImpl}.
+ * <p>TODO: Add doc for auth wire taps
  *
  * <p>{@link EventBus}-based events can be injected using {@link EasyCrudWireTapEventBusImpl}.
  *
  * @author sergeyk
  */
-public interface EasyCrudWireTap<TId, TDto extends HasId<TId>> {
+public interface EasyCrudWireTap<T> {
+
   /**
-   * @return False if all methods will work OK with just ID field. True if all dto's must be fully
-   *     filled befor invoking method of this interface. In case False is returned then {@link
-   *     EasyCrudService} will perform batch operations when applicable instead of iterating
-   *     elements one-by-one
+   * Impl must respond whether or not {@link #beforeCreate(HasId)} and {@link #afterCreate(HasId)}
+   * must be called
+   *
+   * @return true if must be called, false otherwise.
    */
-  boolean requiresFullDto();
+  boolean requiresOnCreate();
 
-  boolean requiresOnCreate() throws ValidationException, NotAuthorizedException;
+  void beforeCreate(@Nonnull T row);
 
-  void beforeCreate(TDto dto) throws NotAuthorizedException, ValidationException;
+  void afterCreate(@Nonnull T row);
 
-  void afterCreate(TDto dto) throws ValidationException, NotAuthorizedException;
+  /**
+   * Impl must respond whether or not {@link #beforeRead()} and {@link #afterRead(HasId)} must
+   * be called
+   *
+   * @return true if must be called, false otherwise.
+   */
+  boolean requiresOnRead();
 
-  boolean requiresOnUpdate() throws NotAuthorizedException, ValidationException;
+  /**
+   * @param id if {@link #requiresOnRead()} returned {@link EasyCrudWireTapMode#ONLY_INVOKE_WIRETAP}
+   *     then in some cases Id might be passed as null
+   */
+  void beforeRead();
 
-  void beforeUpdate(TDto from, TDto to) throws ValidationException, NotAuthorizedException;
+  void afterRead(@Nonnull T row);
 
-  void afterUpdate(TDto from, TDto to) throws NotAuthorizedException, ValidationException;
+  /**
+   * Impl must respond whether or not {@link #beforeUpdate(HasId, HasId)} and {@link
+   * #afterCreate(HasId)} must be called
+   *
+   * @return level of information needed for "Update" WireTap
+   */
+  EasyCrudWireTapMode requiresOnUpdate();
 
-  boolean requiresOnDelete() throws ValidationException, NotAuthorizedException;
+  void beforeUpdate(@Nullable T from, @Nullable T to);
 
-  void beforeDelete(TDto dto) throws NotAuthorizedException, ValidationException;
+  void afterUpdate(@Nullable T from, @Nullable T to);
 
-  void afterDelete(TDto dto) throws ValidationException, NotAuthorizedException;
+  /**
+   * Impl must respond whether or not {@link #beforeDelete(HasId)} and {@link
+   * #afterDelete(HasId)} must be called
+   *
+   * @return level of information needed for "Delete" WireTap
+   */
+  EasyCrudWireTapMode requiresOnDelete();
 
-  boolean requiresOnRead() throws NotAuthorizedException, ValidationException;
+  void beforeDelete(@Nullable T row);
 
-  void afterRead(TDto dto) throws ValidationException, NotAuthorizedException;
+  void afterDelete(@Nullable T row);
 }

@@ -22,7 +22,7 @@ import org.summerb.validation.jakarta.processors.abstracts.AnnotationProcessorNu
 
 import com.google.common.base.Preconditions;
 
-import jakarta.validation.constraints.AssertFalse;
+import javax.validation.constraints.AssertFalse;
 
 public class AssertFalseProcessor extends AnnotationProcessorNullableAbstract<AssertFalse> {
 

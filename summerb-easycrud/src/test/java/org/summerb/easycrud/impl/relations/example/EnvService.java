@@ -18,5 +18,5 @@ package org.summerb.easycrud.impl.relations.example;
 import org.summerb.easycrud.api.EasyCrudService;
 
 public interface EnvService extends EasyCrudService<Long, EnvironmentRow> {
-  String ENTITY_TYPE_MESSAGE_CODE = "term.environment";
+  String TERM = "term.environment";
 }

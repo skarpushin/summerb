@@ -16,9 +16,7 @@
 package org.summerb.easycrud.impl.wireTaps;
 
 import org.summerb.easycrud.api.EasyCrudValidationStrategy;
-import org.summerb.easycrud.api.dto.HasId;
-import org.summerb.security.api.exceptions.NotAuthorizedException;
-import org.summerb.validation.ValidationException;
+import org.summerb.easycrud.api.EasyCrudWireTapMode;
 
 import com.google.common.base.Preconditions;
 
@@ -28,32 +26,33 @@ import com.google.common.base.Preconditions;
  *
  * @author sergeyk
  */
-public class EasyCrudWireTapValidationImpl<TId, TDto extends HasId<TId>>
-    extends EasyCrudWireTapNoOpImpl<TId, TDto> {
-  private EasyCrudValidationStrategy<TDto> strategy;
+public class EasyCrudWireTapValidationImpl<TRow> extends EasyCrudWireTapAbstract<TRow> {
+  protected EasyCrudValidationStrategy<TRow> strategy;
 
-  public EasyCrudWireTapValidationImpl(EasyCrudValidationStrategy<TDto> strategy) {
+  public EasyCrudWireTapValidationImpl(EasyCrudValidationStrategy<TRow> strategy) {
     Preconditions.checkArgument(strategy != null);
     this.strategy = strategy;
   }
 
   @Override
-  public boolean requiresOnCreate() throws ValidationException, NotAuthorizedException {
+  public boolean requiresOnCreate() {
     return true;
   }
 
   @Override
-  public void beforeCreate(TDto dto) throws NotAuthorizedException, ValidationException {
-    strategy.validateForCreate(dto);
+  public void beforeCreate(TRow row) {
+    strategy.validateForCreate(row);
   }
 
   @Override
-  public boolean requiresOnUpdate() throws NotAuthorizedException, ValidationException {
-    return true;
+  public EasyCrudWireTapMode requiresOnUpdate() {
+    return strategy.isCurrentlyPersistedRowNeededForUpdateValidation()
+        ? EasyCrudWireTapMode.FULL_DTO_AND_CURRENT_VERSION_NEEDED
+        : EasyCrudWireTapMode.FULL_DTO_NEEDED;
   }
 
   @Override
-  public void beforeUpdate(TDto from, TDto to) throws ValidationException, NotAuthorizedException {
+  public void beforeUpdate(TRow from, TRow to) {
     strategy.validateForUpdate(from, to);
   }
 }

@@ -16,7 +16,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.summerb.validation.testDtos.TypicalBean;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {ValidationBeansConfig.class})
+@ContextConfiguration(classes = {ValidationContextConfig.class})
 public class SmokeIntegrTest {
   protected static final BigDecimal BIG_DECIMAL_100 = BigDecimal.valueOf(100);
 

@@ -1,6 +1,6 @@
 package org.summerb.validation.jakarta.test_data;
 
-import jakarta.validation.constraints.AssertFalse;
+import javax.validation.constraints.AssertFalse;
 
 public class JustSomeClassWithoutParent {
 

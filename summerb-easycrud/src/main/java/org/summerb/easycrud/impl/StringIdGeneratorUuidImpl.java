@@ -25,7 +25,7 @@ import org.summerb.easycrud.api.StringIdGenerator;
  * @author sergeyk
  */
 public class StringIdGeneratorUuidImpl implements StringIdGenerator {
-  private boolean strictUuidMode = false;
+  protected boolean strictUuidMode = false;
 
   @Override
   public String generateNewId(Object optionalDto) {

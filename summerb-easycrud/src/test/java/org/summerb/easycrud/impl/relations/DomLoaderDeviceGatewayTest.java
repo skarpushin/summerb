@@ -17,7 +17,7 @@ package org.summerb.easycrud.impl.relations;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -27,15 +27,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.BeanUtils;
 import org.summerb.easycrud.api.EasyCrudServiceResolver;
-import org.summerb.easycrud.api.dto.HasId;
 import org.summerb.easycrud.api.dto.PagerParams;
 import org.summerb.easycrud.api.dto.PaginatedList;
-import org.summerb.easycrud.api.dto.relations.Ref;
 import org.summerb.easycrud.api.relations.DataSetLoader;
 import org.summerb.easycrud.api.relations.ReferencesRegistry;
+import org.summerb.easycrud.api.row.HasId;
+import org.summerb.easycrud.api.row.relations.Ref;
 import org.summerb.easycrud.impl.relations.example.Device;
 import org.summerb.easycrud.impl.relations.example.DeviceRow;
 import org.summerb.easycrud.impl.relations.example.DeviceService;
@@ -81,20 +81,18 @@ public class DomLoaderDeviceGatewayTest {
     EasyCrudServiceResolver easyCrudServiceResolver = mock(EasyCrudServiceResolver.class);
 
     DeviceService deviceService = mock(DeviceService.class);
-    when(deviceService.getRowMessageCode()).thenReturn(DeviceService.ENTITY_TYPE_MESSAGE_CODE);
+    when(deviceService.getRowMessageCode()).thenReturn(DeviceService.TERM);
     when(easyCrudServiceResolver.resolveByRowClass(DeviceRow.class)).thenReturn(deviceService);
-    when(easyCrudServiceResolver.resolveByRowMessageCode(DeviceService.ENTITY_TYPE_MESSAGE_CODE))
+    when(easyCrudServiceResolver.resolveByRowMessageCode(DeviceService.TERM))
         .thenReturn(deviceService);
 
     EnvService envService = mock(EnvService.class);
-    when(envService.getRowMessageCode()).thenReturn(EnvService.ENTITY_TYPE_MESSAGE_CODE);
+    when(envService.getRowMessageCode()).thenReturn(EnvService.TERM);
     when(easyCrudServiceResolver.resolveByRowClass(EnvironmentRow.class)).thenReturn(envService);
-    when(easyCrudServiceResolver.resolveByRowMessageCode(EnvService.ENTITY_TYPE_MESSAGE_CODE))
-        .thenReturn(envService);
+    when(easyCrudServiceResolver.resolveByRowMessageCode(EnvService.TERM)).thenReturn(envService);
 
-    DataSetLoaderImpl dataSetLoader = new DataSetLoaderImpl();
-    dataSetLoader.setEasyCrudServiceResolver(easyCrudServiceResolver);
-    dataSetLoader.setReferencesRegistry(referencesRegistry);
+    DataSetLoaderImpl dataSetLoader =
+        new DataSetLoaderImpl(referencesRegistry, easyCrudServiceResolver);
 
     DomLoaderImpl f = new DomLoaderImpl(dataSetLoader, easyCrudServiceResolver);
 
@@ -107,7 +105,7 @@ public class DomLoaderDeviceGatewayTest {
     when(envService.find(any(), any(), any()))
         .thenReturn(new PaginatedList<>(PagerParams.ALL, Arrays.asList(envRow), 1));
     when(envService.findById(1L)).thenReturn(envRow);
-    // ds.get(EnvService.ENTITY_TYPE_MESSAGE_CODE).put(envRow);
+    // ds.get(EnvService.TERM).put(envRow);
 
     DeviceRow deviceRow = new DeviceRow();
     deviceRow.setId(2L);
@@ -116,7 +114,7 @@ public class DomLoaderDeviceGatewayTest {
     when(deviceService.find(any(), any()))
         .thenReturn(new PaginatedList<>(PagerParams.ALL, Arrays.asList(deviceRow), 1));
     when(deviceService.findById(2L)).thenReturn(deviceRow);
-    // ds.get(DeviceService.ENTITY_TYPE_MESSAGE_CODE).put(deviceRow);
+    // ds.get(DeviceService.TERM).put(deviceRow);
 
     // when(dataSetLoader.loadObjectsByIds(any(),
     // anyString())).thenReturn(Arrays.asList(envRow));

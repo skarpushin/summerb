@@ -18,7 +18,7 @@ package org.summerb.easycrud.api;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.summerb.easycrud.api.query.Query;
-import org.summerb.easycrud.impl.mysql.QueryToNativeSqlCompilerMySqlImpl;
+import org.summerb.easycrud.impl.dao.mysql.QueryToNativeSqlCompilerMySqlImpl;
 
 /**
  * DAO-specific impl that can convert abstracted {@link Query} instance to DAO-specific (native)

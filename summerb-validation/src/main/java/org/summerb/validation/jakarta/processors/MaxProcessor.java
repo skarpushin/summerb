@@ -22,7 +22,7 @@ import javax.annotation.Nonnull;
 import org.summerb.validation.ValidationContext;
 import org.summerb.validation.jakarta.processors.abstracts.DecimalProcessorNullableAbstract;
 
-import jakarta.validation.constraints.Max;
+import javax.validation.constraints.Max;
 
 public class MaxProcessor extends DecimalProcessorNullableAbstract<Max> {
 

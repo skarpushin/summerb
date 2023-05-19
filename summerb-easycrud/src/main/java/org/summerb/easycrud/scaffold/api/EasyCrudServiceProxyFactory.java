@@ -16,6 +16,7 @@
 package org.summerb.easycrud.scaffold.api;
 
 import org.summerb.easycrud.api.EasyCrudService;
+import org.summerb.easycrud.api.row.HasId;
 
 /**
  * Factory for Proxies of custom sub-interfaces of {@link EasyCrudService}
@@ -24,5 +25,6 @@ import org.summerb.easycrud.api.EasyCrudService;
  */
 public interface EasyCrudServiceProxyFactory {
 
-  <TService> TService createImpl(Class<TService> serviceInterface);
+  <TId, TDto extends HasId<TId>, TService extends EasyCrudService<TId, TDto>> TService createProxy(
+      Class<TService> serviceInterface, EasyCrudService<TId, TDto> actualImpl);
 }

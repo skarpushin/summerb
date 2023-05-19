@@ -23,12 +23,14 @@ import org.summerb.easycrud.api.dto.PaginatedList;
 import org.summerb.easycrud.api.exceptions.EntityNotFoundException;
 import org.summerb.easycrud.api.query.OrderBy;
 import org.summerb.easycrud.api.query.Query;
+import org.summerb.easycrud.api.row.HasId;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
 import org.summerb.validation.ValidationException;
 
 import com.google.common.base.Preconditions;
 
-public class EasyCrudServiceWrapper<TId, TRow, TActual extends EasyCrudService<TId, TRow>>
+public class EasyCrudServiceWrapper<
+        TId, TRow extends HasId<TId>, TActual extends EasyCrudService<TId, TRow>>
     implements EasyCrudService<TId, TRow> {
   protected TActual actual;
 
@@ -38,13 +40,13 @@ public class EasyCrudServiceWrapper<TId, TRow, TActual extends EasyCrudService<T
   }
 
   @Override
-  public TRow create(TRow row) throws ValidationException, NotAuthorizedException {
+  public TRow create(TRow row){
     return actual.create(row);
   }
 
   @Override
   public TRow update(TRow row)
-      throws ValidationException, NotAuthorizedException, EntityNotFoundException {
+      {
     return actual.update(row);
   }
 

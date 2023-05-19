@@ -17,7 +17,7 @@ package org.summerb.easycrud.rest;
 
 import java.util.List;
 
-import org.summerb.easycrud.api.dto.HasId;
+import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.rest.dto.MultipleItemsResult;
 import org.summerb.easycrud.rest.dto.SingleItemResult;
 

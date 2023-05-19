@@ -1,6 +1,6 @@
 package org.summerb.validation.testDtos;
 
-import jakarta.validation.constraints.Size;
+import javax.validation.constraints.Size;
 
 /** It is invalid because field does not have matching getter/setter */
 public class JakartaBeanInvalid2 extends JakartaBeanInvalid2Base {

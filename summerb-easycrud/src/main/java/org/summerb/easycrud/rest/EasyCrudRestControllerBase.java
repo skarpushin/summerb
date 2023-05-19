@@ -36,17 +36,22 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.filter.GenericFilterBean;
 import org.summerb.easycrud.api.EasyCrudService;
-import org.summerb.easycrud.api.dto.HasId;
+import org.summerb.easycrud.api.EasyCrudWireTap;
 import org.summerb.easycrud.api.dto.PagerParams;
 import org.summerb.easycrud.api.dto.PaginatedList;
-import org.summerb.easycrud.api.dto.datapackage.DataSet;
-import org.summerb.easycrud.api.dto.datapackage.DataTable;
-import org.summerb.easycrud.api.dto.relations.Ref;
 import org.summerb.easycrud.api.exceptions.EntityNotFoundException;
 import org.summerb.easycrud.api.query.OrderBy;
 import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.api.relations.DataSetLoader;
 import org.summerb.easycrud.api.relations.ReferencesRegistry;
+import org.summerb.easycrud.api.row.HasId;
+import org.summerb.easycrud.api.row.datapackage.DataSet;
+import org.summerb.easycrud.api.row.datapackage.DataTable;
+import org.summerb.easycrud.api.row.relations.Ref;
+import org.summerb.easycrud.impl.EasyCrudServiceImpl;
+import org.summerb.easycrud.impl.auth.EascyCrudAuthorizationPerRowStrategy;
+import org.summerb.easycrud.impl.auth.EascyCrudAuthorizationPerTableStrategy;
+import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapDelegatingImpl;
 import org.summerb.easycrud.mvc.filter.FilteringParamsToQueryConverter;
 import org.summerb.easycrud.mvc.filter.FilteringParamsToQueryConverterImpl;
 import org.summerb.easycrud.mvc.model.EasyCrudQueryParams;
@@ -55,6 +60,8 @@ import org.summerb.easycrud.rest.dto.CrudQueryResult;
 import org.summerb.easycrud.rest.dto.MultipleItemsResult;
 import org.summerb.easycrud.rest.dto.SingleItemResult;
 import org.summerb.easycrud.rest.permissions.PermissionsResolverStrategy;
+import org.summerb.easycrud.rest.permissions.PermissionsResolverStrategyPerRow;
+import org.summerb.easycrud.rest.permissions.PermissionsResolverStrategyPerTable;
 import org.summerb.easycrud.rest.querynarrower.QueryNarrowerStrategy;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
 
@@ -71,12 +78,12 @@ import com.google.common.base.Preconditions;
  * which is subclass of {@link GenericFilterBean} (Spring approach on filtering requests).
  *
  * @param <TId> primary key type
- * @param <TDto> entity type
+ * @param <TRow> entity type
  * @param <TEasyCrudService> service type
  * @author sergeyk
  */
 public class EasyCrudRestControllerBase<
-        TId, TDto extends HasId<TId>, TEasyCrudService extends EasyCrudService<TId, TDto>>
+        TId, TRow extends HasId<TId>, TEasyCrudService extends EasyCrudService<TId, TRow>>
     implements ApplicationContextAware, InitializingBean {
   protected static final String PERM_RESOLVER_REQ =
       "Cannot provide permissions since permissionsResolverStrategy is not set";
@@ -85,11 +92,11 @@ public class EasyCrudRestControllerBase<
   protected DataSetLoader dataSetLoader;
   protected ReferencesRegistry referencesRegistry;
 
-  protected ConvertBeforeReturnStrategy<TId, TDto> convertBeforeReturnStrategy =
-      new ConvertBeforeReturnStrategy<TId, TDto>();
-  ;
+  protected ConvertBeforeReturnStrategy<TId, TRow> convertBeforeReturnStrategy =
+      new ConvertBeforeReturnStrategy<TId, TRow>();
+
   protected QueryNarrowerStrategy queryNarrowerStrategy = new QueryNarrowerStrategy();
-  protected PermissionsResolverStrategy<TId, TDto> permissionsResolverStrategy;
+  protected PermissionsResolverStrategy<TId, TRow> permissionsResolverStrategy;
   protected FilteringParamsToQueryConverter filteringParamsToQueryConverter =
       new FilteringParamsToQueryConverterImpl();
   protected OrderBy defaultOrderBy;
@@ -103,7 +110,46 @@ public class EasyCrudRestControllerBase<
   }
 
   @Override
-  public void afterPropertiesSet() throws Exception {}
+  public void afterPropertiesSet() throws Exception {
+    Preconditions.checkArgument(service != null);
+
+    if (permissionsResolverStrategy == null) {
+      permissionsResolverStrategy = tryDiscoverPermissionsResolverFromService();
+    }
+  }
+
+  @SuppressWarnings("rawtypes")
+  protected PermissionsResolverStrategy<TId, TRow> tryDiscoverPermissionsResolverFromService() {
+    if (service instanceof EasyCrudServiceImpl) {
+      EasyCrudWireTap wireTap = ((EasyCrudServiceImpl) service).getWireTap();
+      return tryGetPermissionsResolverFromWireTap(wireTap);
+    }
+    return null;
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  private PermissionsResolverStrategy<TId, TRow> tryGetPermissionsResolverFromWireTap(
+      EasyCrudWireTap wireTap) {
+
+    if (wireTap instanceof EascyCrudAuthorizationPerTableStrategy) {
+      return new PermissionsResolverStrategyPerTable(
+          (EascyCrudAuthorizationPerTableStrategy) wireTap);
+    } else if (wireTap instanceof EascyCrudAuthorizationPerRowStrategy) {
+      return new PermissionsResolverStrategyPerRow((EascyCrudAuthorizationPerRowStrategy) wireTap);
+    } else if (wireTap instanceof EasyCrudWireTapDelegatingImpl) {
+      List<EasyCrudWireTap> chain = ((EasyCrudWireTapDelegatingImpl) wireTap).getChain();
+
+      for (EasyCrudWireTap wireTapFromDelegate : chain) {
+        PermissionsResolverStrategy<TId, TRow> ret =
+            tryGetPermissionsResolverFromWireTap(wireTapFromDelegate);
+        if (ret != null) {
+          return ret;
+        }
+      }
+    }
+
+    return null;
+  }
 
   /**
    * Default action to get list of items in this collection with either non or simple query
@@ -120,7 +166,7 @@ public class EasyCrudRestControllerBase<
    * @return list of items
    */
   @GetMapping
-  public MultipleItemsResult<TId, TDto> getList(
+  public MultipleItemsResult<TId, TRow> getList(
       @RequestParam(value = "pagerParams", required = false) PagerParams pagerParams,
       @RequestParam(value = "orderBy", required = false) OrderBy orderBy,
       @RequestParam(value = "needPerms", required = false) boolean needPerms,
@@ -135,13 +181,13 @@ public class EasyCrudRestControllerBase<
       pagerParams = defaultPagerParams;
     }
 
-    PaginatedList<TDto> rows;
+    PaginatedList<TRow> rows;
     if (orderBy == null) {
       rows = service.find(pagerParams, queryNarrowerStrategy.narrow(null, pathVariables));
     } else {
       rows = service.find(pagerParams, queryNarrowerStrategy.narrow(null, pathVariables), orderBy);
     }
-    MultipleItemsResult<TId, TDto> ret =
+    MultipleItemsResult<TId, TRow> ret =
         new MultipleItemsResult<>(service.getRowMessageCode(), rows);
 
     if (needPerms) {
@@ -157,14 +203,14 @@ public class EasyCrudRestControllerBase<
   }
 
   protected void resolveReferences(
-      List<String> referencesToResolve, CrudQueryResult<TId, TDto> ret, List<TDto> items)
+      List<String> referencesToResolve, CrudQueryResult<TId, TRow> ret, List<TRow> items)
       throws EntityNotFoundException, NotAuthorizedException {
     Preconditions.checkState(
         dataSetLoader != null, "DataSetLoader is required to resolve references");
     Preconditions.checkState(
         referencesRegistry != null, "referencesRegistry is required to resolve references");
     DataSet ds = new DataSet();
-    DataTable<TId, TDto> table = new DataTable<>(service.getRowMessageCode());
+    DataTable<TId, TRow> table = new DataTable<>(service.getRowMessageCode());
     table.putAll(items);
     ds.getTables().put(table.getName(), table);
 
@@ -173,7 +219,7 @@ public class EasyCrudRestControllerBase<
             .map(name -> referencesRegistry.getRefByName(name))
             .collect(Collectors.toList());
     Ref[] refsArr = (Ref[]) references.toArray(new Ref[references.size()]);
-    dataSetLoader.resolveReferencedObjects(ds, refsArr);
+    dataSetLoader.loadReferencedObjects(ds, refsArr);
 
     // now remove initial table from dataset because we don't want to
     // duplicate this. It's already populated to rows
@@ -189,7 +235,7 @@ public class EasyCrudRestControllerBase<
       path = "/query",
       produces = MediaType.APPLICATION_JSON_VALUE,
       consumes = MediaType.APPLICATION_JSON_VALUE)
-  public MultipleItemsResult<TId, TDto> getListWithQuery(
+  public MultipleItemsResult<TId, TRow> getListWithQuery(
       @RequestBody EasyCrudQueryParams filteringParams,
       @RequestParam(value = "needPerms", required = false) boolean needPerms,
       @RequestParam(value = "referencesToResolve", required = false)
@@ -210,9 +256,9 @@ public class EasyCrudRestControllerBase<
             filteringParams.getFilterParams(), service.getRowClass());
     query = queryNarrowerStrategy.narrow(query, pathVariables);
 
-    PaginatedList<TDto> rows =
+    PaginatedList<TRow> rows =
         service.find(filteringParams.getPagerParams(), query, filteringParams.getOrderBy());
-    MultipleItemsResult<TId, TDto> ret =
+    MultipleItemsResult<TId, TRow> ret =
         new MultipleItemsResult<>(service.getRowMessageCode(), rows);
 
     if (needPerms) {
@@ -228,20 +274,20 @@ public class EasyCrudRestControllerBase<
   }
 
   @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-  public SingleItemResult<TId, TDto> getItem(
+  public SingleItemResult<TId, TRow> getItem(
       @PathVariable("id") TId id,
       @RequestParam(value = "needPerms", required = false) boolean needPerms,
       @RequestParam(value = "referencesToResolve", required = false)
           List<String> referencesToResolve)
       throws Exception {
 
-    TDto row = service.findById(id);
-    SingleItemResult<TId, TDto> ret =
-        new SingleItemResult<TId, TDto>(service.getRowMessageCode(), row);
+    TRow row = service.findById(id);
+    SingleItemResult<TId, TRow> ret =
+        new SingleItemResult<TId, TRow>(service.getRowMessageCode(), row);
 
     if (needPerms && row != null) {
       Preconditions.checkArgument(permissionsResolverStrategy != null, PERM_RESOLVER_REQ);
-      permissionsResolverStrategy.resolvePermissions(ret);
+      permissionsResolverStrategy.resolvePermissions(ret, null);
     }
 
     if (row != null && !CollectionUtils.isEmpty(referencesToResolve)) {
@@ -254,14 +300,15 @@ public class EasyCrudRestControllerBase<
   @PostMapping(
       produces = MediaType.APPLICATION_JSON_VALUE,
       consumes = MediaType.APPLICATION_JSON_VALUE)
-  public SingleItemResult<TId, TDto> createNewItem(
-      @RequestBody TDto dto, @RequestParam(value = "needPerms", required = false) boolean needPerms)
+  public SingleItemResult<TId, TRow> createNewItem(
+      @RequestBody TRow rowToCreate,
+      @RequestParam(value = "needPerms", required = false) boolean needPerms)
       throws Exception {
-    TDto row = service.create(dto);
-    SingleItemResult<TId, TDto> ret = new SingleItemResult<>(service.getRowMessageCode(), row);
+    TRow row = service.create(rowToCreate);
+    SingleItemResult<TId, TRow> ret = new SingleItemResult<>(service.getRowMessageCode(), row);
     if (needPerms) {
       Preconditions.checkArgument(permissionsResolverStrategy != null, PERM_RESOLVER_REQ);
-      permissionsResolverStrategy.resolvePermissions(ret);
+      permissionsResolverStrategy.resolvePermissions(ret, null);
     }
     return convertBeforeReturnStrategy.convert(ret);
   }
@@ -270,16 +317,16 @@ public class EasyCrudRestControllerBase<
       path = "/{id}",
       produces = MediaType.APPLICATION_JSON_VALUE,
       consumes = MediaType.APPLICATION_JSON_VALUE)
-  public SingleItemResult<TId, TDto> updateItem(
+  public SingleItemResult<TId, TRow> updateItem(
       @PathVariable("id") TId id,
-      @RequestBody TDto rowToUpdate,
+      @RequestBody TRow rowToUpdate,
       @RequestParam(value = "needPerms", required = false) boolean needPerms)
       throws Exception {
-    TDto row = service.update(rowToUpdate);
-    SingleItemResult<TId, TDto> ret = new SingleItemResult<>(service.getRowMessageCode(), row);
+    TRow row = service.update(rowToUpdate);
+    SingleItemResult<TId, TRow> ret = new SingleItemResult<>(service.getRowMessageCode(), row);
     if (needPerms) {
       Preconditions.checkArgument(permissionsResolverStrategy != null, PERM_RESOLVER_REQ);
-      permissionsResolverStrategy.resolvePermissions(ret);
+      permissionsResolverStrategy.resolvePermissions(ret, null);
     }
     return convertBeforeReturnStrategy.convert(ret);
   }

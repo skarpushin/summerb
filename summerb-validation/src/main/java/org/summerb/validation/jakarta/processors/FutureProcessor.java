@@ -22,7 +22,7 @@ import org.summerb.validation.jakarta.processors.abstracts.AnnotationProcessorNu
 
 import com.google.common.base.Preconditions;
 
-import jakarta.validation.constraints.Future;
+import javax.validation.constraints.Future;
 
 public class FutureProcessor extends AnnotationProcessorNullableAbstract<Future> {
 

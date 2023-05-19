@@ -15,13 +15,12 @@
  ******************************************************************************/
 package org.summerb.easycrud.api;
 
-import org.summerb.easycrud.api.dto.HasId;
 import org.summerb.easycrud.api.dto.PagerParams;
 import org.summerb.easycrud.api.dto.PaginatedList;
 import org.summerb.easycrud.api.query.OrderBy;
 import org.summerb.easycrud.api.query.Query;
-import org.summerb.easycrud.impl.mysql.EasyCrudDaoMySqlImpl;
-import org.summerb.validation.ValidationException;
+import org.summerb.easycrud.api.row.HasId;
+import org.summerb.easycrud.impl.dao.mysql.EasyCrudDaoMySqlImpl;
 
 /**
  * Abstraction for DAO layer. Intended to be used by impl of {@link EasyCrudService}.
@@ -31,20 +30,20 @@ import org.summerb.validation.ValidationException;
  *
  * @author sergey.karpushin
  */
-public interface EasyCrudDao<TId, TDto extends HasId<TId>> {
-  void create(TDto dto) throws ValidationException;
+public interface EasyCrudDao<TId, TRow extends HasId<TId>> {
+  void create(TRow row);
 
-  TDto findById(TId id);
+  TRow findById(TId id);
 
-  TDto findOneByQuery(Query query);
+  TRow findOneByQuery(Query query);
 
   int delete(TId id);
 
   int delete(TId id, long modifiedAt);
 
-  int update(TDto dto) throws ValidationException;
+  int update(TRow row);
 
   int deleteByQuery(Query query);
 
-  PaginatedList<TDto> query(PagerParams pagerParams, Query optionalQuery, OrderBy... orderBy);
+  PaginatedList<TRow> query(PagerParams pagerParams, Query optionalQuery, OrderBy... orderBy);
 }

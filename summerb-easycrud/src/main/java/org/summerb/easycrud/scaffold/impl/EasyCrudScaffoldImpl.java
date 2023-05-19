@@ -20,32 +20,36 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nonnull;
 import javax.sql.DataSource;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.jdbc.core.RowMapper;
+import org.summerb.easycrud.api.DaoExceptionTranslator;
 import org.summerb.easycrud.api.EasyCrudDao;
 import org.summerb.easycrud.api.EasyCrudExceptionStrategy;
-import org.summerb.easycrud.api.EasyCrudPerRowAuthStrategy;
 import org.summerb.easycrud.api.EasyCrudService;
-import org.summerb.easycrud.api.EasyCrudTableAuthStrategy;
 import org.summerb.easycrud.api.EasyCrudValidationStrategy;
 import org.summerb.easycrud.api.EasyCrudWireTap;
 import org.summerb.easycrud.api.ParameterSourceBuilder;
-import org.summerb.easycrud.api.dto.HasId;
-import org.summerb.easycrud.impl.EasyCrudServicePluggableImpl;
-import org.summerb.easycrud.impl.mysql.EasyCrudDaoMySqlImpl;
-import org.summerb.easycrud.impl.mysql.QueryToNativeSqlCompilerMySqlImpl;
+import org.summerb.easycrud.api.QueryToNativeSqlCompiler;
+import org.summerb.easycrud.api.StringIdGenerator;
+import org.summerb.easycrud.api.row.HasId;
+import org.summerb.easycrud.impl.EasyCrudServiceImpl;
+import org.summerb.easycrud.impl.dao.mysql.EasyCrudDaoMySqlImpl;
+import org.summerb.easycrud.impl.dao.mysql.QueryToNativeSqlCompilerMySqlImpl;
 import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapDelegatingImpl;
 import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapEventBusImpl;
-import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapPerRowAuthImpl;
-import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapTableAuthImpl;
 import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapValidationImpl;
 import org.summerb.easycrud.scaffold.api.EasyCrudScaffold;
 import org.summerb.easycrud.scaffold.api.EasyCrudServiceProxyFactory;
+import org.summerb.easycrud.scaffold.api.ScaffoldedMethodFactory;
+import org.summerb.easycrud.scaffold.api.ScaffoldedQuery;
+import org.summerb.security.api.CurrentUserUuidResolver;
 import org.summerb.utils.DtoBase;
 
 import com.google.common.base.Preconditions;
@@ -56,12 +60,80 @@ import com.google.common.eventbus.EventBus;
  *
  * @author sergeyk
  */
-public class EasyCrudScaffoldImpl implements EasyCrudScaffold {
+public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean {
   protected DataSource dataSource;
-
-  protected EasyCrudServiceProxyFactory easyCrudServiceProxyFactory =
-      new EasyCrudServiceProxyFactoryImpl();
   protected AutowireCapableBeanFactory beanFactory;
+  protected ScaffoldedMethodFactory scaffoldedMethodFactory;
+
+  protected EasyCrudServiceProxyFactory easyCrudServiceProxyFactory;
+
+  public EasyCrudScaffoldImpl(
+      DataSource dataSource,
+      AutowireCapableBeanFactory beanFactory,
+      ScaffoldedMethodFactory scaffoldedMethodFactory) {
+    this.beanFactory = beanFactory;
+    this.dataSource = dataSource;
+    this.scaffoldedMethodFactory = scaffoldedMethodFactory;
+  }
+
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    Preconditions.checkArgument(dataSource != null, "dataSource required");
+    Preconditions.checkArgument(beanFactory != null, "beanFactory required");
+    Preconditions.checkArgument(
+        scaffoldedMethodFactory != null, "scaffoldedMethodFactory required");
+
+    if (easyCrudServiceProxyFactory == null) {
+      easyCrudServiceProxyFactory =
+          buildDefaultEasyCrudServiceProxyFactory(scaffoldedMethodFactory);
+    }
+  }
+
+  public AutowireCapableBeanFactory getBeanFactory() {
+    return beanFactory;
+  }
+
+  public DataSource getDataSource() {
+    return dataSource;
+  }
+
+  public EasyCrudServiceProxyFactory getEasyCrudServiceProxyFactory() {
+    return easyCrudServiceProxyFactory;
+  }
+
+  /**
+   * Set {@link EasyCrudServiceProxyFactory}. Optional. If nothing set, then {@link
+   * EasyCrudServiceProxyFactoryImpl} will be used
+   *
+   * @param easyCrudServiceProxyFactory easyCrudServiceProxyFactory
+   */
+  public void setEasyCrudServiceProxyFactory(
+      EasyCrudServiceProxyFactory easyCrudServiceProxyFactory) {
+    Preconditions.checkArgument(
+        easyCrudServiceProxyFactory != null, "easyCrudServiceProxyFactory required");
+    this.easyCrudServiceProxyFactory = easyCrudServiceProxyFactory;
+  }
+
+  public ScaffoldedMethodFactory getScaffoldedMethodFactory() {
+    return scaffoldedMethodFactory;
+  }
+
+  /**
+   * Set {@link ScaffoldedMethodFactory}. Optional. Requried only if your interface has methods
+   * annotated with {@link ScaffoldedQuery}
+   *
+   * @param scaffoldedMethodFactory scaffoldedMethodFactory
+   */
+  public void setScaffoldedMethodFactory(@Nonnull ScaffoldedMethodFactory scaffoldedMethodFactory) {
+    Preconditions.checkArgument(
+        scaffoldedMethodFactory != null, "scaffoldedMethodFactory required");
+    this.scaffoldedMethodFactory = scaffoldedMethodFactory;
+  }
+
+  protected EasyCrudServiceProxyFactory buildDefaultEasyCrudServiceProxyFactory(
+      ScaffoldedMethodFactory scaffoldedMethodFactory) {
+    return new EasyCrudServiceProxyFactoryImpl(scaffoldedMethodFactory);
+  }
 
   @Override
   public <TId, TDto extends HasId<TId>> EasyCrudService<TId, TDto> fromRowClass(
@@ -76,133 +148,84 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold {
       Class<TDto> rowClass, String messageCode, String tableName, Object... injections) {
     try {
       EasyCrudDao<TId, TDto> dao = buildDao(rowClass, tableName);
-      EasyCrudService<TId, TDto> service =
-          buildService(rowClass, messageCode, tableName, dao, injections);
-      return service;
+      var ret = instantiateAndAutowireService(dao, rowClass);
+      ret.setRowMessageCode(messageCode);
+      autowireInjections(injections);
+      setServiceInjectionsIfAny(ret, injections);
+      ret.afterPropertiesSet();
+      return ret;
     } catch (Throwable t) {
       throw new RuntimeException("Failed to scaffold EasyCrudService for " + rowClass, t);
     }
   }
 
-  protected <TRow extends HasId<TId>, TId>
-      EasyCrudServicePluggableImpl<TId, TRow, EasyCrudDao<TId, TRow>> buildService(
-          Class<TRow> rowClass,
-          String messageCode,
-          String tableName,
-          EasyCrudDao<TId, TRow> dao,
-          Object... injections)
-          throws Exception {
-    EasyCrudServicePluggableImpl<TId, TRow, EasyCrudDao<TId, TRow>> service = buildServiceImpl();
-    initService(service, rowClass, messageCode, tableName, dao, injections);
-    return service;
-  }
-
-  protected <TDto extends HasId<TId>, TId>
-      EasyCrudServicePluggableImpl<TId, TDto, EasyCrudDao<TId, TDto>> buildServiceImpl() {
-    return new EasyCrudServicePluggableImpl<>();
-  }
-
-  @SuppressWarnings({"rawtypes", "unchecked"})
-  protected <TId, TDto extends HasId<TId>> void initService(
-      EasyCrudServicePluggableImpl<TId, TDto, EasyCrudDao<TId, TDto>> service,
-      Class<TDto> rowClass,
-      String messageCode,
-      String tableName,
-      EasyCrudDao<TId, TDto> dao,
-      Object... injections)
-      throws Exception {
-    service.setRowClass(rowClass);
-    service.setDao(dao);
-    service.setRowMessageCode(messageCode);
-    getBeanFactory().autowireBean(service);
-
-    if (injections == null || injections.length == 0) {
-      service.afterPropertiesSet();
+  /**
+   * Autowire injections here so that we do not have to create separate beans and then inject them
+   * in configuration
+   *
+   * @param injections injections to autowire
+   */
+  protected void autowireInjections(Object[] injections) {
+    if (injections == null) {
       return;
     }
-
-    // NOTE: Ok. This thing around EasyCrudExceptionStrategy tells me this code is
-    // begging to be refactoried. Screaming about OCP... I'll do it later.
-    List<EasyCrudWireTap<TId, TDto>> wireTaps =
-        Arrays.stream(injections)
-            .map(injectionToWireTapMapper(rowClass, messageCode, tableName))
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
-    if (wireTaps.size() > 0) {
-      service.setWireTap(new EasyCrudWireTapDelegatingImpl<>(wireTaps));
+    for (Object inj : injections) {
+      if (inj == null) {
+        continue;
+      }
+      beanFactory.autowireBean(inj);
     }
-
-    EasyCrudExceptionStrategy exceptionStrategy =
-        Arrays.stream(injections)
-            .filter(x -> x instanceof EasyCrudExceptionStrategy)
-            .map(x -> (EasyCrudExceptionStrategy) x)
-            .findFirst()
-            .orElse(null);
-    if (exceptionStrategy != null) {
-      service.setGenericExceptionStrategy(exceptionStrategy);
-    }
-
-    // TZD: Give a warning or maybe even a failure if some of the injections were
-    // not used
-
-    // x.
-    service.afterPropertiesSet();
   }
 
   @SuppressWarnings("unchecked")
-  protected <TId, TDto extends HasId<TId>>
-      Function<Object, EasyCrudWireTap<TId, TDto>> injectionToWireTapMapper(
-          Class<TDto> rowClass, String messageCode, String tableName) {
-    return inj -> {
-      // Note: I know, OCP smell
-      if (inj instanceof EasyCrudValidationStrategy) {
-        return new EasyCrudWireTapValidationImpl<>((EasyCrudValidationStrategy<TDto>) inj);
-      } else if (inj instanceof EasyCrudPerRowAuthStrategy) {
-        return new EasyCrudWireTapPerRowAuthImpl<>((EasyCrudPerRowAuthStrategy<TDto>) inj);
-      } else if (inj instanceof EasyCrudTableAuthStrategy) {
-        return new EasyCrudWireTapTableAuthImpl<>((EasyCrudTableAuthStrategy) inj);
-      } else if (inj instanceof EasyCrudWireTap) {
-        return (EasyCrudWireTap<TId, TDto>) inj;
-      } else if (inj instanceof EventBus) {
-        return new EasyCrudWireTapEventBusImpl<>((EventBus) inj);
-      } else if (inj instanceof EasyCrudExceptionStrategy) {
-        // do nothing - it was injected above
-        return null;
-      } else if (inj instanceof ParameterSourceBuilder) {
-        // do nothing - it was injected above
-        return null;
-      } else {
-        throw new IllegalStateException("Failed to automatically inject " + inj);
-      }
-    };
+  protected <TId, TRow extends HasId<TId>> void setServiceInjectionsIfAny(
+      EasyCrudServiceImpl<TId, TRow, EasyCrudDao<TId, TRow>> ret, Object... injections) {
+    var currentUserResolver = find(injections, CurrentUserUuidResolver.class);
+    if (currentUserResolver != null) {
+      ret.setCurrentUserResolver(currentUserResolver);
+    }
+
+    var stringIdGenerator = find(injections, StringIdGenerator.class);
+    if (stringIdGenerator != null) {
+      ret.setStringIdGenerator(stringIdGenerator);
+    }
+
+    var exceptionStrategy = find(injections, EasyCrudExceptionStrategy.class);
+    if (exceptionStrategy != null) {
+      ret.setExceptionStrategy(exceptionStrategy);
+    }
+
+    var easyCrudWireTap = buildWireTap(injections);
+    if (easyCrudWireTap != null) {
+      ret.setWireTap((EasyCrudWireTap<TRow>) easyCrudWireTap);
+    }
   }
 
-  protected <TId, TDto extends HasId<TId>> EasyCrudDao<TId, TDto> buildDao(
-      Class<TDto> rowClass, String tableName) throws Exception {
-    EasyCrudDaoMySqlImpl<TId, TDto> dao = buildInstance();
-    dao.setDataSource(getDataSource());
-    dao.setRowClass(rowClass);
-    dao.setTableName(tableName);
-    beanFactory.autowireBean(dao);
-    dao.afterPropertiesSet();
-    return dao;
+  protected <TDto extends HasId<TId>, TId>
+      EasyCrudServiceImpl<TId, TDto, EasyCrudDao<TId, TDto>> instantiateAndAutowireService(
+          EasyCrudDao<TId, TDto> dao, Class<TDto> rowClass) {
+
+    var ret = new EasyCrudServiceImpl<>(dao, rowClass);
+    beanFactory.autowireBean(ret);
+    return ret;
   }
 
-  protected <TDto extends HasId<TId>, TId> EasyCrudDaoMySqlImpl<TId, TDto> buildInstance() {
-    return new EasyCrudDaoMySqlImpl<>();
-  }
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  protected <TId, TRow extends HasId<TId>> EasyCrudWireTap<TRow> buildWireTap(
+      Object... injections) {
+    List<EasyCrudWireTap> wireTaps =
+        Arrays.stream(injections)
+            .map(this::tryMapServiceInjectionToWireTap)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
+    if (wireTaps.size() > 0) {
+      return (EasyCrudWireTap<TRow>) new EasyCrudWireTapDelegatingImpl(wireTaps);
+    }
 
-  public DataSource getDataSource() {
-    return dataSource;
-  }
-
-  @Autowired
-  public void setDataSource(DataSource dataSource) {
-    this.dataSource = dataSource;
+    return null;
   }
 
   @Override
-  @SuppressWarnings({"rawtypes", "unchecked"})
   public <TId, TDto extends HasId<TId>, TService extends EasyCrudService<TId, TDto>>
       TService fromService(
           Class<TService> serviceInterface,
@@ -214,39 +237,98 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold {
       Class<TDto> rowClass = discoverRowClassFromServiceInterface(serviceInterface);
       EasyCrudDao<TId, TDto> dao = buildDao(rowClass, tableName, injections);
 
-      TService proxy = getEasyCrudServiceProxyFactory().createImpl(serviceInterface);
-      EasyCrudServicePluggableImpl service =
-          (EasyCrudServicePluggableImpl) java.lang.reflect.Proxy.getInvocationHandler(proxy);
-      initService(service, rowClass, messageCode, tableName, dao, injections);
+      var actualService = instantiateAndAutowireService(dao, rowClass);
+      actualService.setRowMessageCode(messageCode);
+      setServiceInjectionsIfAny(actualService, injections);
+      actualService.afterPropertiesSet();
 
-      return proxy;
+      return getEasyCrudServiceProxyFactory().createProxy(serviceInterface, actualService);
     } catch (Throwable t) {
       throw new RuntimeException("Failed to scaffold EasyCrudService for " + serviceInterface, t);
     }
   }
 
+  @SuppressWarnings({"unchecked", "rawtypes"})
+  protected EasyCrudWireTap tryMapServiceInjectionToWireTap(Object inj) {
+    // Note: I know, OCP smell
+    if (inj instanceof EasyCrudWireTap) {
+      return (EasyCrudWireTap) inj;
+    }
+
+    if (inj instanceof EasyCrudValidationStrategy) {
+      return new EasyCrudWireTapValidationImpl((EasyCrudValidationStrategy) inj);
+    }
+
+    if (inj instanceof EventBus) {
+      return new EasyCrudWireTapEventBusImpl<>((EventBus) inj);
+    }
+
+    return null;
+  }
+
   protected <TId, TDto extends HasId<TId>> EasyCrudDao<TId, TDto> buildDao(
       Class<TDto> rowClass, String tableName, Object... injections) throws Exception {
-    EasyCrudDaoMySqlImpl<TId, TDto> dao = buildInstance();
-    dao.setDataSource(getDataSource());
-    dao.setRowClass(rowClass);
-    dao.setTableName(tableName);
-    beanFactory.autowireBean(dao);
-    propagateInjectionsIntoDaoIfAny(dao, injections);
-    dao.afterPropertiesSet();
-    return dao;
+
+    EasyCrudDaoMySqlImpl<TId, TDto> ret =
+        instantiateAndAutowireDao(dataSource, tableName, rowClass);
+    autowireInjections(injections);
+    setDaoInjectionsIfAny(ret, injections);
+    ret.afterPropertiesSet();
+    return ret;
   }
 
   @SuppressWarnings("unchecked")
-  protected <TDto extends HasId<TId>, TId> void propagateInjectionsIntoDaoIfAny(
-      EasyCrudDaoMySqlImpl<TId, TDto> dao, Object... injections) {
-    if (injections != null) {
-      for (Object inj : injections) {
-        if (inj instanceof ParameterSourceBuilder) {
-          dao.setParameterSourceBuilder((ParameterSourceBuilder<TDto>) inj);
-        }
+  protected <TId, TDto extends HasId<TId>> void setDaoInjectionsIfAny(
+      EasyCrudDaoMySqlImpl<TId, TDto> ret, Object... injections) {
+
+    var conversionService = find(injections, ConversionService.class);
+    if (conversionService != null) {
+      ret.setConversionService(conversionService);
+    }
+
+    var stringIdGenerator = find(injections, StringIdGenerator.class);
+    if (stringIdGenerator != null) {
+      ret.setStringIdGenerator(stringIdGenerator);
+    }
+
+    var rowMapper = find(injections, RowMapper.class);
+    if (rowMapper != null) {
+      ret.setRowMapper(rowMapper);
+    }
+
+    var parameterSourceBuilder = find(injections, ParameterSourceBuilder.class);
+    if (parameterSourceBuilder != null) {
+      ret.setParameterSourceBuilder(parameterSourceBuilder);
+    }
+
+    var queryToNativeSqlCompiler = find(injections, QueryToNativeSqlCompiler.class);
+    if (queryToNativeSqlCompiler != null) {
+      ret.setQueryToNativeSqlCompiler(queryToNativeSqlCompiler);
+    }
+
+    var daoExceptionTranslator = find(injections, DaoExceptionTranslator.class);
+    if (daoExceptionTranslator != null) {
+      ret.setDaoExceptionTranslator(daoExceptionTranslator);
+    }
+  }
+
+  @SuppressWarnings({"unchecked"})
+  protected <T> T find(Object[] injections, Class<T> clazz) {
+    for (Object i : injections) {
+      if (clazz.isAssignableFrom(i.getClass())) {
+        return (T) i;
       }
     }
+    return null;
+  }
+
+  protected <TDto extends HasId<TId>, TId>
+      EasyCrudDaoMySqlImpl<TId, TDto> instantiateAndAutowireDao(
+          DataSource dataSource, String tableName, Class<TDto> rowClass) {
+    EasyCrudDaoMySqlImpl<TId, TDto> ret =
+        new EasyCrudDaoMySqlImpl<>(dataSource, tableName, rowClass);
+    beanFactory.autowireBean(ret);
+    return ret;
   }
 
   @SuppressWarnings("unchecked")
@@ -280,24 +362,5 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold {
         HasId.class.isAssignableFrom((Class<?>) ret), "DTO class supposed to impl HasId interface");
 
     return (Class<TDto>) ret;
-  }
-
-  public EasyCrudServiceProxyFactory getEasyCrudServiceProxyFactory() {
-    return easyCrudServiceProxyFactory;
-  }
-
-  @Autowired(required = false)
-  public void setEasyCrudServiceProxyFactory(
-      EasyCrudServiceProxyFactory easyCrudServiceProxyFactory) {
-    this.easyCrudServiceProxyFactory = easyCrudServiceProxyFactory;
-  }
-
-  public AutowireCapableBeanFactory getBeanFactory() {
-    return beanFactory;
-  }
-
-  @Autowired
-  public void setBeanFactory(AutowireCapableBeanFactory beanFactory) {
-    this.beanFactory = beanFactory;
   }
 }

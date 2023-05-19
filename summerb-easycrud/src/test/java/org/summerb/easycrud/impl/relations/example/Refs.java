@@ -15,31 +15,28 @@
  ******************************************************************************/
 package org.summerb.easycrud.impl.relations.example;
 
-import org.summerb.easycrud.api.dto.HasId;
-import org.summerb.easycrud.api.dto.relations.Ref;
-import org.summerb.easycrud.api.dto.relations.RefQuantity;
-import org.summerb.easycrud.api.dto.relations.RelationType;
+import org.summerb.easycrud.api.row.HasId;
+import org.summerb.easycrud.api.row.relations.Ref;
+import org.summerb.easycrud.api.row.relations.RefQuantity;
 import org.summerb.easycrud.impl.relations.ReferencesRegistryPredefinedImpl;
 
 public class Refs extends ReferencesRegistryPredefinedImpl {
   public static final Ref deviceEnv =
       new Ref(
           "deviceEnv",
-          DeviceService.ENTITY_TYPE_MESSAGE_CODE,
+          DeviceService.TERM,
           DeviceRow.FN_ENV_ID,
-          EnvService.ENTITY_TYPE_MESSAGE_CODE,
+          EnvService.TERM,
           HasId.FN_ID,
-          RelationType.PartOf,
           RefQuantity.Many2One);
 
   public static final Ref envDevices =
       new Ref(
           "envDevices",
-          EnvService.ENTITY_TYPE_MESSAGE_CODE,
+          EnvService.TERM,
           HasId.FN_ID,
-          DeviceService.ENTITY_TYPE_MESSAGE_CODE,
+          DeviceService.TERM,
           DeviceRow.FN_ENV_ID,
-          RelationType.Aggregates,
           RefQuantity.One2Many);
 
   public Refs() {

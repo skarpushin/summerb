@@ -17,6 +17,7 @@ package integr.org.summerb.easycrud;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
@@ -25,25 +26,39 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.annotation.ProfileValueSourceConfiguration;
 import org.springframework.test.annotation.SystemProfileValueSource;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 import org.summerb.easycrud.api.EasyCrudService;
-import org.summerb.easycrud.api.dto.tools.EasyCrudDtoUtils;
 import org.summerb.easycrud.api.relations.EasyCrudM2mService;
+import org.summerb.easycrud.api.row.tools.EasyCrudDtoUtils;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("classpath:summerb-integr-test-context.xml")
+import integr.org.summerb.easycrud.config.EasyCrudIntegrTestConfig;
+import integr.org.summerb.easycrud.config.EmbeddedMariaDbConfig;
+import integr.org.summerb.easycrud.dtos.TestDto1;
+import integr.org.summerb.easycrud.dtos.TestDto2;
+
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {EmbeddedMariaDbConfig.class, EasyCrudIntegrTestConfig.class})
 @ProfileValueSourceConfiguration(SystemProfileValueSource.class)
 @Transactional
 public class ManyToManyServiceTest {
+//  @BeforeAll
+//  static void setup(@Autowired DataSource dataSource) throws SQLException {
+//    try (Connection conn = dataSource.getConnection()) {
+//      // you'll have to make sure conn.autoCommit = true (default for e.g. H2)
+//      // e.g. url=jdbc:h2:mem:myDb;DB_CLOSE_DELAY=-1;MODE=MySQL
+//      ScriptUtils.executeSqlScript(conn, new ClassPathResource("mysql_init.sql"));
+//    }
+//  }
+
   @Autowired
   @Qualifier("testDto2ServiceBasicAuth")
   private EasyCrudService<Long, TestDto2> testDto2ServiceBasicAuth;
@@ -86,19 +101,20 @@ public class ManyToManyServiceTest {
     assertEquals(2, ree.size());
   }
 
-  @Test(expected = NotAuthorizedException.class)
+  @Test
   public void testAddReferenceeExpectNaeIfNotAllowedToUpdateSrc() throws Exception {
-    TestDto2 d2i1 = new TestDto2();
-    d2i1.setEnv("throwNaeOnUpdate");
-    d2i1.setLinkToFullDonwload("required");
-    d2i1 = testDto2ServiceBasicAuth.create(d2i1);
+    TestDto2 d2i1n = new TestDto2();
+    d2i1n.setEnv("throwNaeOnUpdate");
+    d2i1n.setLinkToFullDonwload("required");
+    TestDto2 d2i1 = testDto2ServiceBasicAuth.create(d2i1n);
 
-    TestDto1 d3i1 = new TestDto1();
-    d3i1.setEnv("required");
-    d3i1.setLinkToFullDonwload("required");
-    d3i1 = testDto1Service.create(d3i1);
+    TestDto1 d3i1n = new TestDto1();
+    d3i1n.setEnv("required");
+    d3i1n.setLinkToFullDonwload("required");
+    TestDto1 d3i1 = testDto1Service.create(d3i1n);
 
-    m2mService.addReferencee(d2i1.getId(), d3i1.getId());
+    assertThrows(
+        NotAuthorizedException.class, () -> m2mService.addReferencee(d2i1.getId(), d3i1.getId()));
   }
 
   @Test

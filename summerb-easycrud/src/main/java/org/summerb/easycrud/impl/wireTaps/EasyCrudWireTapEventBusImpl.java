@@ -15,12 +15,10 @@
  ******************************************************************************/
 package org.summerb.easycrud.impl.wireTaps;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.summerb.easycrud.api.EasyCrudWireTapMode;
 import org.summerb.easycrud.api.dto.EntityChangedEvent;
-import org.summerb.easycrud.api.dto.HasId;
-import org.summerb.security.api.exceptions.NotAuthorizedException;
+import org.summerb.utils.DtoBase;
 import org.summerb.utils.tx.AfterCommitExecutorThreadLocalImpl;
-import org.summerb.validation.ValidationException;
 
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.EventBus;
@@ -35,48 +33,42 @@ import com.google.common.eventbus.EventBus;
  *
  * @author sergeyk
  */
-public class EasyCrudWireTapEventBusImpl<TId, TDto extends HasId<TId>>
-    extends EasyCrudWireTapNoOpImpl<TId, TDto> {
-  private EventBus eventBus;
+public class EasyCrudWireTapEventBusImpl<TRow extends DtoBase>
+    extends EasyCrudWireTapAbstract<TRow> {
+  protected EventBus eventBus;
 
-  @Autowired
   public EasyCrudWireTapEventBusImpl(EventBus eventBus) {
     Preconditions.checkArgument(eventBus != null);
     this.eventBus = eventBus;
   }
 
   @Override
-  public boolean requiresOnCreate() throws ValidationException, NotAuthorizedException {
+  public boolean requiresOnCreate() {
     return true;
   }
 
   @Override
-  public void afterCreate(TDto dto) throws ValidationException, NotAuthorizedException {
-    eventBus.post(EntityChangedEvent.added(dto));
+  public EasyCrudWireTapMode requiresOnUpdate() {
+    return EasyCrudWireTapMode.FULL_DTO_NEEDED;
   }
 
   @Override
-  public boolean requiresOnUpdate() throws NotAuthorizedException, ValidationException {
-    return true;
+  public EasyCrudWireTapMode requiresOnDelete() {
+    return EasyCrudWireTapMode.FULL_DTO_NEEDED;
   }
 
   @Override
-  public void afterUpdate(TDto from, TDto to) throws NotAuthorizedException, ValidationException {
+  public void afterCreate(TRow row) {
+    eventBus.post(EntityChangedEvent.added(row));
+  }
+
+  @Override
+  public void afterUpdate(TRow from, TRow to) {
     eventBus.post(EntityChangedEvent.updated(to));
   }
 
   @Override
-  public boolean requiresOnDelete() throws ValidationException, NotAuthorizedException {
-    return true;
-  }
-
-  @Override
-  public void afterDelete(TDto dto) throws ValidationException, NotAuthorizedException {
-    eventBus.post(EntityChangedEvent.removedObject(dto));
-  }
-
-  @Override
-  public boolean requiresOnRead() throws NotAuthorizedException, ValidationException {
-    return false;
+  public void afterDelete(TRow row) {
+    eventBus.post(EntityChangedEvent.removedObject(row));
   }
 }

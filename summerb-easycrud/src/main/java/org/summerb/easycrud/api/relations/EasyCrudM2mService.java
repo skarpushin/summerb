@@ -20,10 +20,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.summerb.easycrud.api.EasyCrudService;
-import org.summerb.easycrud.api.dto.HasId;
-import org.summerb.easycrud.api.dto.relations.ManyToManyDto;
-import org.summerb.security.api.exceptions.NotAuthorizedException;
-import org.summerb.validation.ValidationException;
+import org.summerb.easycrud.api.row.HasId;
+import org.summerb.easycrud.api.row.relations.ManyToManyRow;
 
 /**
  * Service for m2m references. It's based on {@link EasyCrudService}, but it's more for
@@ -33,24 +31,23 @@ import org.summerb.validation.ValidationException;
  *
  * @author sergeyk
  * @param <T1Id> id of referencer
- * @param <T1Dto> referencer. Dto that suppose to reference dictionary objects
+ * @param <T1Row> referencer. Dto that suppose to reference dictionary objects
  * @param <T2Id> id of referencee
- * @param <T2Dto> referencee dto. The one is referenced by many referencers
+ * @param <T2Row> referencee row. The one is referenced by many referencers
  */
 public interface EasyCrudM2mService<
-        T1Id, T1Dto extends HasId<T1Id>, T2Id, T2Dto extends HasId<T2Id>>
-    extends EasyCrudService<Long, ManyToManyDto<T1Id, T2Id>> {
+        T1Id, T1Row extends HasId<T1Id>, T2Id, T2Row extends HasId<T2Id>>
+    extends EasyCrudService<Long, ManyToManyRow<T1Id, T2Id>> {
 
-  List<T2Dto> findReferenceeByReferencer(T1Id referencerId);
+  List<T2Row> findReferenceeByReferencer(T1Id referencerId);
 
   /**
    * @param referencerIds referencer ids
    * @return mapping between referencer id and list of referencee
    */
-  Map<T1Id, List<T2Dto>> findReferenceeByReferencers(Set<T1Id> referencerIds);
+  Map<T1Id, List<T2Row>> findReferenceeByReferencers(Set<T1Id> referencerIds);
 
-  ManyToManyDto<T1Id, T2Id> addReferencee(T1Id referencerId, T2Id referenceeId)
-      throws ValidationException, NotAuthorizedException;
+  ManyToManyRow<T1Id, T2Id> addReferencee(T1Id referencerId, T2Id referenceeId);
 
-  void removeReferencee(T1Id referencerId, T2Id referenceeId) throws NotAuthorizedException;
+  void removeReferencee(T1Id referencerId, T2Id referenceeId);
 }

@@ -2,7 +2,7 @@ package org.summerb.validation.jakarta.test_data;
 
 import org.summerb.validation.ValidationContext;
 
-import jakarta.validation.constraints.Pattern;
+import javax.validation.constraints.Pattern;
 
 public class ValidViaAbstractInterface implements AbstractInterface {
   private String propertyName;

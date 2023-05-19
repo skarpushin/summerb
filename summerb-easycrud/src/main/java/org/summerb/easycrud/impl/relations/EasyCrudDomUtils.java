@@ -23,11 +23,11 @@ import java.util.function.Function;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.ObjectUtils;
-import org.summerb.easycrud.api.dto.HasId;
-import org.summerb.easycrud.api.dto.datapackage.DataSet;
-import org.summerb.easycrud.api.dto.datapackage.DataTable;
-import org.summerb.easycrud.api.dto.relations.Ref;
-import org.summerb.easycrud.api.dto.relations.RefQuantity;
+import org.summerb.easycrud.api.row.HasId;
+import org.summerb.easycrud.api.row.datapackage.DataSet;
+import org.summerb.easycrud.api.row.datapackage.DataTable;
+import org.summerb.easycrud.api.row.relations.Ref;
+import org.summerb.easycrud.api.row.relations.RefQuantity;
 
 import com.google.common.base.Preconditions;
 
@@ -95,13 +95,13 @@ public class EasyCrudDomUtils {
     }
   }
 
-  private static Object findSrcFieldValue(Object dto, String fieldName) {
+  protected static Object findSrcFieldValue(Object row, String fieldName) {
     try {
-      PropertyDescriptor property = BeanUtils.getPropertyDescriptor(dto.getClass(), fieldName);
-      return property.getReadMethod().invoke(dto);
+      PropertyDescriptor property = BeanUtils.getPropertyDescriptor(row.getClass(), fieldName);
+      return property.getReadMethod().invoke(row);
     } catch (Throwable t) {
       throw new RuntimeException(
-          "Failed to get source field (" + fieldName + ") value from object " + dto, t);
+          "Failed to get source field (" + fieldName + ") value from object " + row, t);
     }
   }
 }

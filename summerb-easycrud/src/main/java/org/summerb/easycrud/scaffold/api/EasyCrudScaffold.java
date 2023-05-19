@@ -16,7 +16,7 @@
 package org.summerb.easycrud.scaffold.api;
 
 import org.summerb.easycrud.api.EasyCrudService;
-import org.summerb.easycrud.api.dto.HasId;
+import org.summerb.easycrud.api.row.HasId;
 
 /**
  * This gives you a quick start for EasyCrud back-end functionality. It will bootstrap Dao and

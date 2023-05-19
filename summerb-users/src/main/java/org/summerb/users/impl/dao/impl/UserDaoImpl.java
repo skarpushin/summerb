@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -28,7 +30,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.summerb.easycrud.api.dto.PagerParams;
 import org.summerb.easycrud.api.dto.PaginatedList;
-import org.summerb.easycrud.common.DaoBase;
+import org.summerb.easycrud.impl.dao.TableDaoBase;
 import org.summerb.users.api.dto.User;
 import org.summerb.users.impl.dao.UserDao;
 
@@ -37,28 +39,37 @@ import org.summerb.users.impl.dao.UserDao;
  *
  * @author skarpushin
  */
-public class UserDaoImpl extends DaoBase implements InitializingBean, UserDao {
-  private static final String PARAM_MAX = "max";
-  private static final String PARAM_OFFSET = "offset";
-  private static final String PARAM_DISPLAY_NAME_AS_IS = "displayNameAsIs";
-  private static final String PARAM_DISPLAY_NAME = "displayName";
-  private static final String PARAM_USER_UUID = "userUuid";
-  private static final String PARAM_USER_EMAIL = "userEmail";
+public class UserDaoImpl extends TableDaoBase implements InitializingBean, UserDao {
+  protected static final String PARAM_MAX = "max";
+  protected static final String PARAM_OFFSET = "offset";
+  protected static final String PARAM_DISPLAY_NAME_AS_IS = "displayNameAsIs";
+  protected static final String PARAM_DISPLAY_NAME = "displayName";
+  protected static final String PARAM_USER_UUID = "userUuid";
+  protected static final String PARAM_USER_EMAIL = "userEmail";
 
-  private SimpleJdbcInsert jdbcInsert;
-  private String tableName = "users";
-  private BeanPropertyRowMapper<User> rowMapper;
-  private String sqlSelectUserByUuid;
-  private String sqlSelectUserByEmail;
-  private String sqlDeleteUserByUuid;
-  private String sqlUpdateUser;
-  private String sqlSearchUsersByDisplayName;
-  private String sqlSearchUsersByDisplayNameGetCount;
+  protected SimpleJdbcInsert jdbcInsert;
+  protected BeanPropertyRowMapper<User> rowMapper;
+  protected String sqlSelectUserByUuid;
+  protected String sqlSelectUserByEmail;
+  protected String sqlDeleteUserByUuid;
+  protected String sqlUpdateUser;
+  protected String sqlSearchUsersByDisplayName;
+  protected String sqlSearchUsersByDisplayNameGetCount;
+
+  /**
+   * @param dataSource dataSource
+   * @param tableName i.e. "users"
+   */
+  public UserDaoImpl(DataSource dataSource, String tableName) {
+    super(dataSource, tableName);
+  }
 
   @Override
   public void afterPropertiesSet() throws Exception {
+    super.afterPropertiesSet();
+
     rowMapper = new BeanPropertyRowMapper<User>(User.class);
-    jdbcInsert = new SimpleJdbcInsert(getDataSource()).withTableName(tableName);
+    jdbcInsert = new SimpleJdbcInsert(dataSource).withTableName(tableName);
 
     sqlSelectUserByUuid = String.format("SELECT * FROM %s u WHERE u.uuid = :userUuid", tableName);
     sqlSelectUserByEmail =
@@ -74,14 +85,6 @@ public class UserDaoImpl extends DaoBase implements InitializingBean, UserDao {
             "SELECT SQL_CALC_FOUND_ROWS u.*, INSTR(u.display_name, :displayNameAsIs) as ddd FROM %s u WHERE u.display_name LIKE :displayName ORDER BY ddd ASC, u.display_name LIMIT :offset,:max",
             tableName);
     sqlSearchUsersByDisplayNameGetCount = "SELECT FOUND_ROWS()";
-  }
-
-  public String getTableName() {
-    return tableName;
-  }
-
-  public void setTableName(String tableName) {
-    this.tableName = tableName;
   }
 
   @Override
@@ -138,5 +141,9 @@ public class UserDaoImpl extends DaoBase implements InitializingBean, UserDao {
     int totalResultsCount =
         jdbc.queryForInt(sqlSearchUsersByDisplayNameGetCount, new HashMap<String, Object>());
     return new PaginatedList<User>(pagerParams, results, totalResultsCount);
+  }
+
+  public String getTableName() {
+    return tableName;
   }
 }

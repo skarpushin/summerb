@@ -19,22 +19,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.summerb.easycrud.common.DaoBase;
+import org.summerb.easycrud.impl.dao.TableDaoBase;
 import org.summerb.users.api.dto.AuthToken;
 import org.summerb.users.impl.dao.AuthTokenDao;
 
-public class AuthTokenDaoImpl extends DaoBase implements InitializingBean, AuthTokenDao {
+public class AuthTokenDaoImpl extends TableDaoBase implements InitializingBean, AuthTokenDao {
   private static final String PARAM_LAST_VERIFIED_AT = "lastVerifiedAt";
   private static final String PARAM_AUTH_TOKEN_UUID = "authTokenUuid";
   private static final String PARAM_TOKEN_VALUE = "tokenValue";
   private static final String PARAM_USER_UUID = "userUuid";
 
   private SimpleJdbcInsert jdbcInsert;
-  private String tableName = "users_auth_tokens";
   private BeanPropertyRowMapper<AuthToken> rowMapper;
 
   private String sqlSelectTokenByUuid;
@@ -42,10 +43,20 @@ public class AuthTokenDaoImpl extends DaoBase implements InitializingBean, AuthT
   private String sqlDeleteTokenByUuid;
   private String sqlSearchUserTokens;
 
+  /**
+   * @param dataSource dataSource
+   * @param tableName i.e. "users_auth_tokens"
+   */
+  public AuthTokenDaoImpl(DataSource dataSource, String tableName) {
+    super(dataSource, tableName);
+  }
+
   @Override
   public void afterPropertiesSet() throws Exception {
+    super.afterPropertiesSet();
+
     rowMapper = new BeanPropertyRowMapper<AuthToken>(AuthToken.class);
-    jdbcInsert = new SimpleJdbcInsert(getDataSource()).withTableName(tableName);
+    jdbcInsert = new SimpleJdbcInsert(dataSource).withTableName(tableName);
 
     sqlSelectTokenByUuid =
         String.format("SELECT * FROM %s u WHERE u.uuid = :authTokenUuid", tableName);

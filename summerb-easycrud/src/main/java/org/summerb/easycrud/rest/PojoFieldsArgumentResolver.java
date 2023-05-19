@@ -49,11 +49,11 @@ import com.google.gson.GsonBuilder;
  * @author sergeyk
  */
 public class PojoFieldsArgumentResolver implements HandlerMethodArgumentResolver {
-  private static final String ATTR_NAME = "PojoFieldsArgumentResolver.cachedJson";
+  protected static final String ATTR_NAME = "PojoFieldsArgumentResolver.cachedJson";
 
-  private Set<Class<?>> supportedClasses;
-  private boolean acceptSubClasses = true;
-  private Gson gson = new GsonBuilder().create();
+  protected Set<Class<?>> supportedClasses;
+  protected boolean acceptSubClasses = true;
+  protected Gson gson = new GsonBuilder().create();
 
   public PojoFieldsArgumentResolver() {
     this(Arrays.asList(PagerParams.class.getName(), OrderBy.class.getName()));

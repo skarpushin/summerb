@@ -17,6 +17,7 @@ package org.summerb.spring.security.impl;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Set;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -36,7 +37,7 @@ public abstract class SecurityContextResolverAbstract<TUser>
 
   @Override
   public TUser getUser() throws CurrentUserNotFoundException {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    Authentication authentication = resolveSecurityContext().getAuthentication();
     if (authentication == null) {
       throw new CurrentUserNotFoundException();
     }
@@ -51,9 +52,8 @@ public abstract class SecurityContextResolverAbstract<TUser>
 
   protected abstract TUser getUserFromUserDetails(UserDetails principal);
 
-  @Override
   public Collection<? extends GrantedAuthority> getCurrentUserGlobalPermissions() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    Authentication authentication = resolveSecurityContext().getAuthentication();
     if (authentication == null) {
       return Collections.emptyList();
     }
@@ -80,6 +80,16 @@ public abstract class SecurityContextResolverAbstract<TUser>
 
   @Override
   public boolean hasAnyRole(String... roles) {
+    for (String role : roles) {
+      if (hasRole(role)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public boolean hasAnyRole(Set<String> roles) {
     for (String role : roles) {
       if (hasRole(role)) {
         return true;

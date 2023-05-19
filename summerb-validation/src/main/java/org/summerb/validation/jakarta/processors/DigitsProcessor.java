@@ -25,7 +25,7 @@ import org.summerb.validation.jakarta.processors.abstracts.DecimalProcessorNulla
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 
-import jakarta.validation.constraints.Digits;
+import javax.validation.constraints.Digits;
 
 public class DigitsProcessor extends DecimalProcessorNullableAbstract<Digits> {
 

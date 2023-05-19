@@ -16,7 +16,7 @@
 package org.summerb.easycrud.mvc.model;
 
 public class AjaxCreateResult<T> {
-  private T ajaxCreatedObj;
+  protected T ajaxCreatedObj;
 
   public T getAjaxCreatedObj() {
     return ajaxCreatedObj;

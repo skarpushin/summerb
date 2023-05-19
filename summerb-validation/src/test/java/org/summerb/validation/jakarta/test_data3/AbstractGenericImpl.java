@@ -4,7 +4,7 @@ import org.summerb.i18n.HasMessageCode;
 import org.summerb.validation.ValidationContext;
 import org.summerb.validation.jakarta.processors.abstracts.AnnotationProcessorNullableAbstract;
 
-import jakarta.validation.constraints.Min;
+import javax.validation.constraints.Min;
 
 public abstract class AbstractGenericImpl<T> extends AnnotationProcessorNullableAbstract<Min>
     implements HasMessageCode {

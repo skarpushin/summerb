@@ -25,7 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,11 +37,13 @@ import org.summerb.easycrud.api.dto.PagerParams;
 import org.summerb.easycrud.api.dto.PaginatedList;
 import org.summerb.easycrud.api.query.OrderBy;
 import org.summerb.easycrud.api.query.Query;
-import org.summerb.security.api.exceptions.NotAuthorizedException;
-import org.summerb.validation.ValidationException;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+
+import integr.org.summerb.easycrud.dtos.TestDto1;
+import integr.org.summerb.easycrud.dtos.TestDto2;
+import integr.org.summerb.easycrud.utils.CurrentUserResolverTestImpl;
 
 @Transactional
 public abstract class GenericCrudServiceTestTemplate {
@@ -615,7 +617,7 @@ public abstract class GenericCrudServiceTestTemplate {
     assertEquals(initialCreatedBy, dto.getCreatedBy());
   }
 
-  private void createTestData() throws ValidationException, NotAuthorizedException {
+  private void createTestData(){
     TestDto1 dto = new TestDto1();
     dto.setActive(true);
     dto.setEnv("env-uat");

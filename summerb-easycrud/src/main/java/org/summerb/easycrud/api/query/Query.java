@@ -26,8 +26,6 @@ import org.springframework.beans.PropertyAccessor;
 import org.summerb.easycrud.api.EasyCrudDao;
 import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.api.QueryToNativeSqlCompiler;
-import org.summerb.easycrud.api.dto.HasId;
-import org.summerb.easycrud.api.dto.tools.EasyCrudDtoUtils;
 import org.summerb.easycrud.api.query.restrictions.BooleanEqRestriction;
 import org.summerb.easycrud.api.query.restrictions.IsNullRestriction;
 import org.summerb.easycrud.api.query.restrictions.NumberBetweenRestriction;
@@ -41,6 +39,8 @@ import org.summerb.easycrud.api.query.restrictions.StringEqRestriction;
 import org.summerb.easycrud.api.query.restrictions.StringLengthBetweenRestriction;
 import org.summerb.easycrud.api.query.restrictions.StringOneOfRestriction;
 import org.summerb.easycrud.api.query.restrictions.StringStartsWithRestriction;
+import org.summerb.easycrud.api.row.HasId;
+import org.summerb.easycrud.api.row.tools.EasyCrudDtoUtils;
 
 /**
  * This class is used to build very simple queries to {@link EasyCrudService} (nothing fancy -- no
@@ -239,12 +239,12 @@ public class Query implements Serializable {
     return this;
   }
 
-  public Query inIdsStrings(String fieldName, Iterable<? extends HasId<String>> dtos) {
-    return inStrings(fieldName, EasyCrudDtoUtils.enumerateIds(dtos));
+  public Query inIdsStrings(String fieldName, Iterable<? extends HasId<String>> rows) {
+    return inStrings(fieldName, EasyCrudDtoUtils.enumerateIds(rows));
   }
 
-  public Query notInIdsStrings(String fieldName, Iterable<? extends HasId<String>> dtos) {
-    return notInStrings(fieldName, EasyCrudDtoUtils.enumerateIds(dtos));
+  public Query notInIdsStrings(String fieldName, Iterable<? extends HasId<String>> rows) {
+    return notInStrings(fieldName, EasyCrudDtoUtils.enumerateIds(rows));
   }
 
   public Query notInStrings(String fieldName, Collection<String> values) {
@@ -266,12 +266,12 @@ public class Query implements Serializable {
     return this;
   }
 
-  public Query inIdsLongs(String fieldName, Iterable<? extends HasId<Long>> dtos) {
-    return inLongs(fieldName, EasyCrudDtoUtils.enumerateIds(dtos));
+  public Query inIdsLongs(String fieldName, Iterable<? extends HasId<Long>> rows) {
+    return inLongs(fieldName, EasyCrudDtoUtils.enumerateIds(rows));
   }
 
-  public Query notInIdsLongs(String fieldName, Iterable<? extends HasId<Long>> dtos) {
-    return notInLongs(fieldName, EasyCrudDtoUtils.enumerateIds(dtos));
+  public Query notInIdsLongs(String fieldName, Iterable<? extends HasId<Long>> rows) {
+    return notInLongs(fieldName, EasyCrudDtoUtils.enumerateIds(rows));
   }
 
   protected <T> Set<T> asSet(Collection<T> values) {

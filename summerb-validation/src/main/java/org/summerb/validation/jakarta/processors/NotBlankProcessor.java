@@ -23,7 +23,7 @@ import org.summerb.validation.jakarta.processors.abstracts.AnnotationProcessorAb
 
 import com.google.common.base.Preconditions;
 
-import jakarta.validation.constraints.NotBlank;
+import javax.validation.constraints.NotBlank;
 
 public class NotBlankProcessor extends AnnotationProcessorAbstract<NotBlank> {
 

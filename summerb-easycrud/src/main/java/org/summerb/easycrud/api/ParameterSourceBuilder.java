@@ -17,7 +17,7 @@ package org.summerb.easycrud.api;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.summerb.easycrud.impl.ParameterSourceBuilderBeanPropImpl;
+import org.summerb.easycrud.impl.dao.ParameterSourceBuilderBeanPropImpl;
 
 /**
  * Strategy used to build parameter source when creating or updating row using {@link JdbcTemplate}.

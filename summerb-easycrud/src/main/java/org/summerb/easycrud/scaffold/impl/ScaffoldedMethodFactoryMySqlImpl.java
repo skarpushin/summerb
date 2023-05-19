@@ -26,7 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.summerb.easycrud.common.DaoBase;
+import org.summerb.easycrud.impl.dao.DaoBase;
 import org.summerb.easycrud.scaffold.api.CallableMethod;
 import org.summerb.easycrud.scaffold.api.ScaffoldedMethodFactory;
 import org.summerb.easycrud.scaffold.api.ScaffoldedQuery;
@@ -39,7 +39,7 @@ import org.summerb.easycrud.scaffold.api.ScaffoldedQuery;
 public class ScaffoldedMethodFactoryMySqlImpl extends DaoBase implements ScaffoldedMethodFactory {
   @Autowired
   public ScaffoldedMethodFactoryMySqlImpl(DataSource dataSource) {
-    setDataSource(dataSource);
+    super(dataSource);
   }
 
   @Override
@@ -48,11 +48,11 @@ public class ScaffoldedMethodFactoryMySqlImpl extends DaoBase implements Scaffol
   }
 
   public class CallableMethodImpl implements CallableMethod {
-    private Method method;
-    private ScaffoldedQuery annotation;
+    protected Method method;
+    protected ScaffoldedQuery annotation;
 
     @SuppressWarnings("rawtypes")
-    private RowMapper rowMapper;
+    protected RowMapper rowMapper;
 
     public CallableMethodImpl(Method key) {
       annotation = key.getAnnotation(ScaffoldedQuery.class);
@@ -60,8 +60,8 @@ public class ScaffoldedMethodFactoryMySqlImpl extends DaoBase implements Scaffol
       initRowMapper(key);
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private void initRowMapper(Method key) {
+    @SuppressWarnings({"unchecked", "rawtypes", "deprecation"})
+    protected void initRowMapper(Method key) {
       try {
         rowMapper = annotation.rowMapper().newInstance();
 
@@ -88,7 +88,7 @@ public class ScaffoldedMethodFactoryMySqlImpl extends DaoBase implements Scaffol
     @Override
     @SuppressWarnings("unchecked")
     public Object call(Object[] args) throws Exception {
-      JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSource());
+      JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
       Class<?> returnType = method.getReturnType();
       if (isCollectionType(returnType)) {
         return jdbcTemplate.query(annotation.value(), rowMapper, args);
@@ -101,13 +101,13 @@ public class ScaffoldedMethodFactoryMySqlImpl extends DaoBase implements Scaffol
       }
     }
 
-    private boolean isPrimitive(Class<?> clazz) {
+    protected boolean isPrimitive(Class<?> clazz) {
       return clazz.isPrimitive()
           || clazz.getName().startsWith("java.lang.")
           || clazz.getName().equals("java.util.Date");
     }
 
-    private boolean isCollectionType(Class<?> clazz) {
+    protected boolean isCollectionType(Class<?> clazz) {
       return Collection.class.isAssignableFrom(clazz);
     }
   }

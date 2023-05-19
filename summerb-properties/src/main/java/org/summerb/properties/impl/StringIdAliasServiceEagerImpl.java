@@ -57,6 +57,11 @@ public class StringIdAliasServiceEagerImpl implements StringIdAliasService, Init
   protected BiMap<String, Long> aliases;
   protected Future<BiMap<String, Long>> aliasesFuture;
 
+  public StringIdAliasServiceEagerImpl(StringIdAliasDao stringIdAliasDao) {
+    Preconditions.checkArgument(stringIdAliasDao != null, "stringIdAliasDao required");
+    this.stringIdAliasDao = stringIdAliasDao;
+  }
+
   @Override
   public void afterPropertiesSet() throws Exception {
     Preconditions.checkState(stringIdAliasDao != null);
@@ -67,7 +72,9 @@ public class StringIdAliasServiceEagerImpl implements StringIdAliasService, Init
     }
 
     // Schedule background task for retrieving map aliases map
-    aliasesFuture = executorService.submit(aliasesBackgroundResolver);
+    if (aliasesFuture == null) {
+      aliasesFuture = executorService.submit(aliasesBackgroundResolver);
+    }
   }
 
   protected final Callable<BiMap<String, Long>> aliasesBackgroundResolver =
@@ -141,7 +148,7 @@ public class StringIdAliasServiceEagerImpl implements StringIdAliasService, Init
       try {
         alias = doCreateAlias(str);
       } catch (DuplicateKeyException dke) {
-        log.debug("Looks like alias already exist in database, will load it");
+        log.warn("Looks like alias {} already exist in database, will load it", str);
         ret = stringIdAliasDao.findAliasFor(str);
         if (ret == null) {
           throw new PropertyServiceUnexpectedException(
@@ -203,10 +210,6 @@ public class StringIdAliasServiceEagerImpl implements StringIdAliasService, Init
 
   public StringIdAliasDao getStringIdAliasDao() {
     return stringIdAliasDao;
-  }
-
-  public void setStringIdAliasDao(StringIdAliasDao stringIdAliasDao) {
-    this.stringIdAliasDao = stringIdAliasDao;
   }
 
   public ExecutorService getExecutorService() {

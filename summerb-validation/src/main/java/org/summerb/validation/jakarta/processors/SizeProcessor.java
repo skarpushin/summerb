@@ -24,7 +24,7 @@ import org.summerb.validation.ValidationContext;
 import org.summerb.validation.errors.LengthMustBeBetween;
 import org.summerb.validation.jakarta.processors.abstracts.AnnotationProcessorNullableAbstract;
 
-import jakarta.validation.constraints.Size;
+import javax.validation.constraints.Size;
 
 public class SizeProcessor extends AnnotationProcessorNullableAbstract<Size> {
 

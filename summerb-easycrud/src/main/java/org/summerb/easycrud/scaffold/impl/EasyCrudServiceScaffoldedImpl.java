@@ -19,23 +19,22 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
-import org.summerb.easycrud.api.EasyCrudDao;
 import org.summerb.easycrud.api.EasyCrudService;
-import org.summerb.easycrud.api.dto.HasId;
-import org.summerb.easycrud.impl.EasyCrudServicePluggableImpl;
+import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.scaffold.api.CallableMethod;
 import org.summerb.easycrud.scaffold.api.ScaffoldedMethodFactory;
+import org.summerb.easycrud.scaffold.api.ScaffoldedQuery;
 
+import com.google.common.base.Preconditions;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
-public class EasyCrudServiceScaffoldedImpl
-    extends EasyCrudServicePluggableImpl<Object, HasId<Object>, EasyCrudDao<Object, HasId<Object>>>
-    implements java.lang.reflect.InvocationHandler {
+public class EasyCrudServiceScaffoldedImpl implements java.lang.reflect.InvocationHandler {
 
   protected ScaffoldedMethodFactory scaffoldedMethodFactory;
   protected Class<?> interfaceType;
+  protected EasyCrudService<?, HasId<?>> actual;
 
   /**
    * We'd better cache method callers so that we don't need to do rather expensive reflection-based
@@ -43,22 +42,36 @@ public class EasyCrudServiceScaffoldedImpl
    */
   protected LoadingCache<Method, CallableMethod> methodCallers;
 
-  public EasyCrudServiceScaffoldedImpl(
-      ScaffoldedMethodFactory scaffoldedMethodFactory, Class<?> interfaceType) {
+  protected EasyCrudServiceScaffoldedImpl(
+      ScaffoldedMethodFactory scaffoldedMethodFactory,
+      Class<?> interfaceType,
+      EasyCrudService<?, HasId<?>> actual) {
+    Preconditions.checkArgument(interfaceType != null, "interfaceType required");
+    Preconditions.checkArgument(actual != null, "actual required");
+
     this.scaffoldedMethodFactory = scaffoldedMethodFactory;
     this.interfaceType = interfaceType;
+    this.actual = actual;
 
     methodCallers = CacheBuilder.newBuilder().build(methodCallerFactory);
   }
 
   @SuppressWarnings("unchecked")
-  public static <T> T createImpl(
-      Class<T> interfaceType, ScaffoldedMethodFactory scaffoldedMethodFactory) {
+  public static <TId, TDto extends HasId<TId>, TService extends EasyCrudService<TId, TDto>>
+      TService createImpl(
+          Class<TService> interfaceType,
+          EasyCrudService<TId, TDto> actualImpl,
+          ScaffoldedMethodFactory scaffoldedMethodFactory) {
+
+    Preconditions.checkArgument(interfaceType != null, "interfaceType required");
+    Preconditions.checkArgument(actualImpl != null, "actualImpl required");
+
     ClassLoader cl = interfaceType.getClassLoader();
     Class<?>[] target = new Class<?>[] {interfaceType};
     EasyCrudServiceScaffoldedImpl proxyImpl =
-        new EasyCrudServiceScaffoldedImpl(scaffoldedMethodFactory, interfaceType);
-    return (T) Proxy.newProxyInstance(cl, target, proxyImpl);
+        new EasyCrudServiceScaffoldedImpl(
+            scaffoldedMethodFactory, interfaceType, (EasyCrudService<?, HasId<?>>) actualImpl);
+    return (TService) Proxy.newProxyInstance(cl, target, proxyImpl);
   }
 
   @Override
@@ -74,7 +87,7 @@ public class EasyCrudServiceScaffoldedImpl
       }
 
       if (Object.class.equals(method.getDeclaringClass())) {
-        return method.invoke(this, args);
+        return method.invoke(actual, args);
       }
 
       return methodCallers.get(method).call(args);
@@ -84,7 +97,8 @@ public class EasyCrudServiceScaffoldedImpl
   }
 
   protected void invokeDefault(Object proxy, Method method, Object[] args) {
-    throw new IllegalArgumentException("default methods invocation is not supported yet");
+    throw new IllegalArgumentException(
+        "default methods invocation is not supported yet. In Java 17 this will be easily implemented");
   }
 
   protected CacheLoader<Method, CallableMethod> methodCallerFactory =
@@ -95,9 +109,15 @@ public class EasyCrudServiceScaffoldedImpl
             return new CallableMethodLocalImpl(key);
           }
 
-          // NOTE: Here we assume that all custom methods can be implemented by
-          // scaffoldedMethodFactory
-          return scaffoldedMethodFactory.create(key);
+          if (key.isAnnotationPresent(ScaffoldedQuery.class)) {
+            Preconditions.checkState(
+                scaffoldedMethodFactory != null,
+                "scaffoldedMethodFactory is required if you want to call scaffoldedmethods");
+            return scaffoldedMethodFactory.create(key);
+          }
+
+          throw new IllegalStateException(
+              "Cannot invoke method " + key.getName() + " -- case not supported");
         }
       };
 
@@ -110,7 +130,7 @@ public class EasyCrudServiceScaffoldedImpl
 
     @Override
     public Object call(Object[] args) throws Exception {
-      return method.invoke(EasyCrudServiceScaffoldedImpl.this, args);
+      return method.invoke(actual, args);
     }
   }
 }

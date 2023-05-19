@@ -23,7 +23,7 @@ import org.summerb.easycrud.api.query.Restriction;
 import org.summerb.easycrud.rest.commonpathvars.PathVariablesMap;
 
 public abstract class QueryNarrowerStrategyFieldBased extends QueryNarrowerStrategy {
-  private String fieldName;
+  protected String fieldName;
 
   public QueryNarrowerStrategyFieldBased(String fieldName) {
     this.fieldName = fieldName;

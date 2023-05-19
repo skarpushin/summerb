@@ -16,27 +16,29 @@
 package integr.org.summerb.properties.impl.dao.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.ProfileValueSourceConfiguration;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.annotation.SystemProfileValueSource;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
 import org.summerb.properties.PropertiesConfig;
+import org.summerb.properties.impl.StringIdAliasServiceEagerImpl;
 import org.summerb.properties.internal.StringIdAliasService;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { EmbeddedMariaDbConfig.class, PropertiesConfig.class })
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {EmbeddedMariaDbConfig.class, PropertiesConfig.class})
 @ProfileValueSourceConfiguration(SystemProfileValueSource.class)
 @Transactional
 public class StringIdAliasServiceTest {
@@ -64,10 +66,21 @@ public class StringIdAliasServiceTest {
       map.put(name, alias);
     }
 
+    // test for smae instance
     for (int i = 0; i < 10; i++) {
       String name = "any" + i;
       long alias = appAliasService.getAliasFor(name);
       assertEquals(map.get(name).longValue(), alias);
+    }
+
+    // test for new instance
+    StringIdAliasServiceEagerImpl newAppAliasService =
+        new StringIdAliasServiceEagerImpl(
+            ((StringIdAliasServiceEagerImpl) appAliasService).getStringIdAliasDao());
+    newAppAliasService.afterPropertiesSet();
+
+    for (long aliasId : map.values()) {
+      assertNotNull(newAppAliasService.getNameByAlias(aliasId));
     }
   }
 }

@@ -40,22 +40,22 @@ public class TableMetaDataContext {
   protected final Logger logger = LoggerFactory.getLogger(getClass());
 
   /** name of procedure to call * */
-  private String tableName;
+  protected String tableName;
 
   /** name of catalog for call * */
-  private String catalogName;
+  protected String catalogName;
 
   /** name of schema for call * */
-  private String schemaName;
+  protected String schemaName;
 
   /** should we access insert parameter meta data info or not */
-  private boolean accessTableColumnMetaData = true;
+  protected boolean accessTableColumnMetaData = true;
 
   /** should we override default for including synonyms for meta data lookups */
-  private boolean overrideIncludeSynonymsDefault = false;
+  protected boolean overrideIncludeSynonymsDefault = false;
 
   /** the provider of table meta data */
-  private TableMetaDataProvider metaDataProvider;
+  protected TableMetaDataProvider metaDataProvider;
 
   /** @param tableName the name of the table for this context. */
   public void setTableName(String tableName) {

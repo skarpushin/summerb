@@ -18,7 +18,7 @@ package org.summerb.dbupgrade.utils;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.summerb.dbupgrade.utils.StringTokenizer.SubString;
 
 public class StringTokenizerTest {

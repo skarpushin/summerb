@@ -17,16 +17,16 @@ package org.summerb.easycrud.rest.dto;
 
 import java.util.Map;
 
-import org.summerb.easycrud.api.dto.HasId;
-import org.summerb.easycrud.api.dto.datapackage.DataSet;
-import org.summerb.easycrud.api.dto.relations.Ref;
+import org.summerb.easycrud.api.row.HasId;
+import org.summerb.easycrud.api.row.datapackage.DataSet;
+import org.summerb.easycrud.api.row.relations.Ref;
 
-public class CrudQueryResult<TId, TDto extends HasId<TId>> {
+public class CrudQueryResult<TId, TRow extends HasId<TId>> {
 
   protected String entityMessageCode;
-  private Map<String, Ref> refsResolved;
+  protected Map<String, Ref> refsResolved;
   /** Resolved references, if any */
-  private DataSet refs;
+  protected DataSet refs;
 
   public CrudQueryResult() {
     super();

@@ -15,18 +15,14 @@
  ******************************************************************************/
 package org.summerb.spring.security.api;
 
-import java.util.Collection;
-
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
-import org.summerb.security.api.CurrentUserResolver;
+import org.summerb.security.api.CurrentUserDetailsResolver;
+import org.summerb.security.api.CurrentUserUuidResolver;
 
-public interface SecurityContextResolver<TUser> extends CurrentUserResolver<TUser> {
+public interface SecurityContextResolver<TUser>
+    extends CurrentUserDetailsResolver<TUser>, CurrentUserUuidResolver, CurrentUserRolesResolver {
+
   SecurityContext resolveSecurityContext();
 
-  Collection<? extends GrantedAuthority> getCurrentUserGlobalPermissions();
-
-  boolean hasRole(String role);
-
-  boolean hasAnyRole(String... roles);
+  //  Collection<? extends GrantedAuthority> getCurrentUserGlobalPermissions();
 }

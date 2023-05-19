@@ -16,7 +16,7 @@
 package org.summerb.properties.impl;
 
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -36,20 +36,13 @@ public class StringIdAliasServiceEagerImplFactory {
   public static final Long NAME_ALIAS = 1000L;
 
   public static StringIdAliasServiceEagerImpl createInstanceWithExecutorService() {
-    StringIdAliasServiceEagerImpl ret = new StringIdAliasServiceEagerImpl();
+    StringIdAliasServiceEagerImpl ret = new StringIdAliasServiceEagerImpl(createDaoMock());
     ret.setExecutorService(Executors.newSingleThreadExecutor());
-
-    ret.setStringIdAliasDao(createDaoMock());
-
     return ret;
   }
 
   public static StringIdAliasServiceEagerImpl createInstanceWithoutExecutorService() {
-    StringIdAliasServiceEagerImpl ret = new StringIdAliasServiceEagerImpl();
-
-    ret.setStringIdAliasDao(createDaoMock());
-
-    return ret;
+    return new StringIdAliasServiceEagerImpl(createDaoMock());
   }
 
   protected static StringIdAliasDao createDaoMock() {

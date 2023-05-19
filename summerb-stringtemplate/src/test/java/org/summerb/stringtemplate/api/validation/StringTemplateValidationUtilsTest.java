@@ -17,7 +17,7 @@ package org.summerb.stringtemplate.api.validation;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.summerb.stringtemplate.api.StringTemplateFactory;
 import org.summerb.stringtemplate.impl.StringTemplateFactorySpElImpl;
 import org.summerb.validation.ValidationContext;

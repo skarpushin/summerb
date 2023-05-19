@@ -15,9 +15,8 @@
  ******************************************************************************/
 package org.summerb.spring.security.impl;
 
-import java.util.Collection;
+import java.util.Set;
 
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.summerb.security.api.CurrentUserNotFoundException;
@@ -42,17 +41,17 @@ public class SecurityContextResolverNoOpImpl implements SecurityContextResolver 
   }
 
   @Override
-  public Collection<? extends GrantedAuthority> getCurrentUserGlobalPermissions() {
-    return null;
-  }
-
-  @Override
   public boolean hasRole(String role) {
     return false;
   }
 
   @Override
   public boolean hasAnyRole(String... roles) {
+    return false;
+  }
+
+  @Override
+  public boolean hasAnyRole(Set roles) {
     return false;
   }
 }

@@ -19,12 +19,13 @@ import java.util.List;
 
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.transaction.annotation.Transactional;
-import org.summerb.easycrud.api.dto.HasTimestamps;
 import org.summerb.easycrud.api.dto.PagerParams;
 import org.summerb.easycrud.api.dto.PaginatedList;
 import org.summerb.easycrud.api.exceptions.EntityNotFoundException;
 import org.summerb.easycrud.api.query.OrderBy;
 import org.summerb.easycrud.api.query.Query;
+import org.summerb.easycrud.api.row.HasId;
+import org.summerb.easycrud.api.row.HasTimestamps;
 import org.summerb.i18n.HasMessageCode;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
 import org.summerb.validation.ValidationException;
@@ -38,7 +39,7 @@ import org.summerb.validation.ValidationException;
  * business logic.
  *
  * <p>EasyCrudService is Row-centric, it's good at working with 1 Row type only, which is mapped to
- * the table in the database. Each Row requires it's own Service.
+ * the table in the database. Each Row type requires it's own EasyCrudService.
  *
  * <p>It's not an ORM framework, so if you need to have a reference to a user, you'll create field
  * like "long userId", but not "User user".
@@ -47,7 +48,7 @@ import org.summerb.validation.ValidationException;
  * @param <TId> type of primary key
  * @param <TRow> type of row
  */
-public interface EasyCrudService<TId, TRow> {
+public interface EasyCrudService<TId, TRow extends HasId<TId>> {
 
   /**
    * Create row

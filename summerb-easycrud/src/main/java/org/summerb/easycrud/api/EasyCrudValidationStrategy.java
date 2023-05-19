@@ -15,16 +15,16 @@
  ******************************************************************************/
 package org.summerb.easycrud.api;
 
-import org.summerb.easycrud.impl.EasyCrudServicePluggableImpl;
-import org.summerb.easycrud.impl.EasyCrudValidationStrategyAbstract;
+import org.summerb.easycrud.impl.EasyCrudServiceImpl;
+import org.summerb.easycrud.impl.validation.EasyCrudValidationStrategyAbstract;
 import org.summerb.validation.ValidationException;
 
 /**
  * Strategy interface that has method for validating DTO before it will be created and updated.
  *
  * <p>Normally will be injected into {@link EasyCrudService}. In case of using {@link
- * EasyCrudServicePluggableImpl} via {@link EasyCrudWireTap}, but also impl of this interface can be
- * used separately
+ * EasyCrudServiceImpl} via {@link EasyCrudWireTap}, but also impl of this interface can be used
+ * separately
  *
  * <p>In case validation rules are the same for both {@link EasyCrudService#create(Object)} and
  * {@link EasyCrudService#update(Object)}, consider sub-classing {@link
@@ -32,8 +32,29 @@ import org.summerb.validation.ValidationException;
  *
  * @author sergey.karpushin
  */
-public interface EasyCrudValidationStrategy<TDto> {
-  void validateForCreate(TDto dto) throws ValidationException;
+public interface EasyCrudValidationStrategy<TRow> {
 
-  void validateForUpdate(TDto existingVersion, TDto newVersion) throws ValidationException;
+  /**
+   * @param row row to validate
+   * @throws ValidationException in case there are validation errors
+   */
+  void validateForCreate(TRow row);
+
+  /**
+   * This method tells EasyCrud how to validate for update (method {@link #validateForUpdate(Object,
+   * Object)})
+   *
+   * @return Return true if validation logic require currently persisted row version to be passed to
+   *     {@link #validateForUpdate(Object, Object)}. Return false if only new version of the row is
+   *     needed to perform validation
+   */
+  boolean isCurrentlyPersistedRowNeededForUpdateValidation();
+
+  /**
+   * @param existingVersion currently persisted row version for reference (in some cases validation
+   *     rules might depend on previous state of the row)
+   * @param newVersion row to validate
+   * @throws ValidationException in case there are validation errors
+   */
+  void validateForUpdate(TRow existingVersion, TRow newVersion);
 }

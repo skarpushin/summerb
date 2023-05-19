@@ -35,7 +35,7 @@ public interface DaoExceptionTranslator {
    *
    * @param t exception
    */
-  void translateAndThrowIfApplicable(Throwable t) throws ValidationException;
+  void translateAndThrowIfApplicable(Throwable t);
 
   /**
    * Same as {@link #translateAndThrowIfApplicable(Throwable)} but will wrap exception in unchecked

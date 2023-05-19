@@ -17,8 +17,6 @@ package org.summerb.easycrud.api;
 
 import org.summerb.easycrud.api.exceptions.EntityNotFoundException;
 import org.summerb.easycrud.impl.EasyCrudExceptionStrategyDefaultImpl;
-import org.summerb.security.api.exceptions.NotAuthorizedException;
-import org.summerb.validation.ValidationException;
 
 /**
  * Exception handlign strategy. Rarely but you might need to override how exceptions are handled
@@ -31,20 +29,17 @@ import org.summerb.validation.ValidationException;
  */
 public interface EasyCrudExceptionStrategy<TId> {
 
-  RuntimeException handleExceptionAtCreate(Throwable t)
-      throws ValidationException, NotAuthorizedException;
+  RuntimeException handleExceptionAtCreate(Throwable t);
 
   EntityNotFoundException buildNotFoundException(String subjectTypeMessageCode, TId identity);
 
-  RuntimeException handleExceptionAtDelete(Throwable t)
-      throws NotAuthorizedException, EntityNotFoundException;
+  RuntimeException handleExceptionAtDelete(Throwable t);
 
   RuntimeException buildOptimisticLockException();
 
-  RuntimeException handleExceptionAtUpdate(Throwable t)
-      throws ValidationException, NotAuthorizedException, EntityNotFoundException;
+  RuntimeException handleExceptionAtUpdate(Throwable t);
 
-  RuntimeException handleExceptionAtFind(Throwable t) throws NotAuthorizedException;
+  RuntimeException handleExceptionAtFind(Throwable t);
 
-  RuntimeException handleExceptionAtDeleteByQuery(Throwable t) throws NotAuthorizedException;
+  RuntimeException handleExceptionAtDeleteByQuery(Throwable t);
 }

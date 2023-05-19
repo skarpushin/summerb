@@ -42,33 +42,33 @@ public abstract class AbstractJdbcUpdate {
   protected final Logger logger = LoggerFactory.getLogger(getClass());
 
   /** Lower-level class used to execute SQL */
-  private final JdbcTemplate jdbcTemplate;
+  protected final JdbcTemplate jdbcTemplate;
 
   /** Context used to retrieve and manage database metadata */
-  private final TableMetaDataContext tableMetaDataContext = new TableMetaDataContext();
+  protected final TableMetaDataContext tableMetaDataContext = new TableMetaDataContext();
 
   /** List of columns declared by user to be used in 'set' clause */
-  private final List<String> declaredUpdatingColumns = new ArrayList<String>();
+  protected final List<String> declaredUpdatingColumns = new ArrayList<String>();
 
   /** List of columns effectively used in 'set' clause */
-  private final List<String> reconciledUpdatingColumns = new ArrayList<String>();
+  protected final List<String> reconciledUpdatingColumns = new ArrayList<String>();
 
   /** The names of the columns to be used in 'where' clause */
-  private final Map<String, Operator> restrictingColumns = new HashMap<String, Operator>();
+  protected final Map<String, Operator> restrictingColumns = new HashMap<String, Operator>();
 
   /**
    * Has this operation been compiled? Compilation means at least checking that a DataSource or
    * JdbcTemplate has been provided, but subclasses may also implement their own custom validation.
    */
-  private boolean compiled = false;
+  protected boolean compiled = false;
 
   /** The generated string used for update statement */
-  private String updateString;
+  protected String updateString;
 
   /** The SQL type information for the declared columns */
-  private int[] columnTypes;
+  protected int[] columnTypes;
 
-  private UpdateColumnsEnlisterStrategy updateColumnsEnlisterStrategy;
+  protected UpdateColumnsEnlisterStrategy updateColumnsEnlisterStrategy;
 
   /**
    * Constructor for subclasses to delegate to for setting the DataSource.
@@ -326,7 +326,7 @@ public abstract class AbstractJdbcUpdate {
     return executeUpdateInternal(values);
   }
 
-  private int executeUpdateInternal(List<Object> values) {
+  protected int executeUpdateInternal(List<Object> values) {
     if (logger.isDebugEnabled()) {
       logger.debug(
           "The following parameters are used for update " + getUpdateString() + " with: " + values);
@@ -401,13 +401,13 @@ public abstract class AbstractJdbcUpdate {
     return updateStatement.toString();
   }
 
-  private void reconcileUpdatingColumns() {
+  protected void reconcileUpdatingColumns() {
     reconciledUpdatingColumns.clear();
     reconciledUpdatingColumns.addAll(
         getUpdateColumnsEnlisterStrategy().getColumnsForUpdate(tableMetaDataContext));
   }
 
-  private UpdateColumnsEnlisterStrategy buildDefaultUpdateColumnsEnlisterStrategy() {
+  protected UpdateColumnsEnlisterStrategy buildDefaultUpdateColumnsEnlisterStrategy() {
     return new UpdateColumnsEnlisterStrategy() {
       @Override
       public Collection<? extends String> getColumnsForUpdate(

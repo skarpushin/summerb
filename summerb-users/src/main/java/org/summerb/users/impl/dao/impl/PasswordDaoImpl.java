@@ -19,24 +19,35 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
-import org.summerb.easycrud.common.DaoBase;
+import org.summerb.easycrud.impl.dao.TableDaoBase;
 import org.summerb.users.impl.dao.PasswordDao;
 import org.summerb.users.impl.dom.Password;
 
-public class PasswordDaoImpl extends DaoBase implements InitializingBean, PasswordDao {
+public class PasswordDaoImpl extends TableDaoBase implements InitializingBean, PasswordDao {
   private static final String PARAM_RESTORATION_TOKEN = "restorationToken";
   private static final String USER_UUID_PARAM = "userUuid";
-  private String tableName = "users_passwords";
   private BeanPropertyRowMapper<Password> rowMapper;
   private String sqlPutPassword;
   private String sqlFindPasswordByUserUuid;
   private String sqlSetRestorationToken;
 
+  /**
+   * @param dataSource dataSource
+   * @param tableName i.e. "users_passwords"
+   */
+  public PasswordDaoImpl(DataSource dataSource, String tableName) {
+    super(dataSource, tableName);
+  }
+
   @Override
   public void afterPropertiesSet() throws Exception {
+    super.afterPropertiesSet();
+
     rowMapper = new BeanPropertyRowMapper<Password>(Password.class);
 
     sqlPutPassword =

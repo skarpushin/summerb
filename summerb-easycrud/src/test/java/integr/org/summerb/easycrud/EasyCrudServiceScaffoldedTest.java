@@ -15,31 +15,45 @@
  ******************************************************************************/
 package integr.org.summerb.easycrud;
 
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.annotation.ProfileValueSourceConfiguration;
 import org.springframework.test.annotation.SystemProfileValueSource;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 import org.summerb.easycrud.api.EasyCrudService;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("classpath:summerb-integr-test-scaffold.xml")
+import integr.org.summerb.easycrud.config.EasyCrudIntegrTestConfig;
+import integr.org.summerb.easycrud.config.EmbeddedMariaDbConfig;
+import integr.org.summerb.easycrud.dtos.TestDto1;
+import integr.org.summerb.easycrud.dtos.TestDto2;
+
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {EmbeddedMariaDbConfig.class, EasyCrudIntegrTestConfig.class})
 @ProfileValueSourceConfiguration(SystemProfileValueSource.class)
 @Transactional
 public class EasyCrudServiceScaffoldedTest extends GenericCrudServiceTestTemplate {
+  //  @BeforeAll
+  //  static void setup(@Autowired DataSource dataSource) throws SQLException {
+  //    try (Connection conn = dataSource.getConnection()) {
+  //      // you'll have to make sure conn.autoCommit = true (default for e.g. H2)
+  //      // e.g. url=jdbc:h2:mem:myDb;DB_CLOSE_DELAY=-1;MODE=MySQL
+  //      ScriptUtils.executeSqlScript(conn, new ClassPathResource("mysql_init.sql"));
+  //    }
+  //  }
+
   @Autowired
-  @Qualifier("testDto1Service")
+  @Qualifier("testDto1ServiceScaffolded")
   private EasyCrudService<String, TestDto1> testDto1Service;
 
   @Autowired
-  @Qualifier("testDto2Service")
+  @Qualifier("testDto2ServiceScaffolded")
   private EasyCrudService<Long, TestDto2> testDto2Service;
 
   @Autowired
-  @Qualifier("testDto1ServiceEb")
+  @Qualifier("testDto1ServiceEbScaffolded")
   private EasyCrudService<String, TestDto1> testDto1ServiceEb;
 
   @Override

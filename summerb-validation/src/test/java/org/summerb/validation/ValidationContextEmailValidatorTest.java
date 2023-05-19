@@ -27,7 +27,7 @@ public class ValidationContextEmailValidatorTest {
         "postmaster@[123.123.123.123]"
       })
   public void testValidateEmailFormat_expectOkForUsualEmail(String email)
-      throws ValidationException {
+     {
     assertEquals(true, ValidationContext.isValidEmail(email));
   }
 
@@ -44,7 +44,7 @@ public class ValidationContextEmailValidatorTest {
         "i_like_underscore@but_its_not_allowed_in_this_part.example.com"
       })
   public void testValidateEmailFormat_expectFailForInvalidEmails(String email)
-      throws ValidationException {
+     {
     assertEquals(false, ValidationContext.isValidEmail(email));
   }
 }

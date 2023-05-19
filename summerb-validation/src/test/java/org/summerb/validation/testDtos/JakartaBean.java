@@ -2,8 +2,8 @@ package org.summerb.validation.testDtos;
 
 import javax.annotation.Nullable;
 
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 public class JakartaBean extends JakartaBeanBase {
 

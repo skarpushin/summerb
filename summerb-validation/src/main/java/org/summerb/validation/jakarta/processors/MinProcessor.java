@@ -22,7 +22,7 @@ import javax.annotation.Nonnull;
 import org.summerb.validation.ValidationContext;
 import org.summerb.validation.jakarta.processors.abstracts.DecimalProcessorNullableAbstract;
 
-import jakarta.validation.constraints.Min;
+import javax.validation.constraints.Min;
 
 public class MinProcessor extends DecimalProcessorNullableAbstract<Min> {
 

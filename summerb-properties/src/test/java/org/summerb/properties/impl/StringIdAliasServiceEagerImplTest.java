@@ -19,11 +19,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.summerb.easycrud.api.dto.PagerParams;
 import org.summerb.properties.impl.dao.StringIdAliasDao;
@@ -33,8 +33,7 @@ public class StringIdAliasServiceEagerImplTest {
 
   @Test
   public void testInitialization_defensive_expectExceptionIfDaoIsNotSet() throws Exception {
-    StringIdAliasServiceEagerImpl fixture = new StringIdAliasServiceEagerImpl();
-    assertThrows(IllegalStateException.class, () -> fixture.afterPropertiesSet());
+    assertThrows(IllegalArgumentException.class, () -> new StringIdAliasServiceEagerImpl(null));
   }
 
   @Test
@@ -64,13 +63,12 @@ public class StringIdAliasServiceEagerImplTest {
 
   @Test
   public void testLoadAllAliases_whitebox_expectExceptionOnException() {
-    StringIdAliasServiceEagerImpl fixture = new StringIdAliasServiceEagerImpl();
-    
     StringIdAliasDao stringIdAliasDao = Mockito.mock(StringIdAliasDao.class);
     doThrow(new IllegalStateException("INTENTIONAL FAILURE FOR TEST PURPOSES"))
         .when(stringIdAliasDao)
         .loadAllAliases(any(PagerParams.class));
-    fixture.setStringIdAliasDao(stringIdAliasDao);
+
+    StringIdAliasServiceEagerImpl fixture = new StringIdAliasServiceEagerImpl(stringIdAliasDao);
 
     RuntimeException ex = assertThrows(RuntimeException.class, () -> fixture.loadAllAliases());
     IllegalStateException ise = ExceptionUtils.findExceptionOfType(ex, IllegalStateException.class);
@@ -80,10 +78,11 @@ public class StringIdAliasServiceEagerImplTest {
 
   @Test
   public void testGetAliases_whitebox_expectExceptionOnException() {
-    StringIdAliasServiceEagerImpl fixture = new StringIdAliasServiceEagerImpl();
     StringIdAliasDao stringIdAliasDao = Mockito.mock(StringIdAliasDao.class);
     when(stringIdAliasDao.loadAllAliases(any(PagerParams.class)))
         .thenThrow(new IllegalStateException("test exception"));
+
+    StringIdAliasServiceEagerImpl fixture = new StringIdAliasServiceEagerImpl(stringIdAliasDao);
 
     assertThrows(RuntimeException.class, () -> fixture.getAliases());
   }

@@ -1,6 +1,6 @@
 package org.summerb.easycrud.api.validation_errors;
 
-import org.summerb.easycrud.api.dto.HasId;
+import org.summerb.easycrud.api.row.HasId;
 import org.summerb.validation.ValidationError;
 
 public class ReferencedRowCannotBeDeletedValidationError extends ValidationError {

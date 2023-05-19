@@ -24,13 +24,13 @@ import java.util.Date;
 import java.util.List;
 
 import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.ProfileValueSourceConfiguration;
 import org.springframework.test.annotation.SystemProfileValueSource;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
 import org.summerb.users.api.AuthTokenService;
@@ -42,7 +42,7 @@ import org.summerb.users.api.dto.UserFactory;
 import org.summerb.users.impl.dao.AuthTokenDao;
 import org.summerb.users.impl.dao.PasswordDao;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration("classpath:test-users-app-context.xml")
 @ProfileValueSourceConfiguration(SystemProfileValueSource.class)
 @Transactional

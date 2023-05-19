@@ -67,7 +67,6 @@ public class EntityChangedEventAdapter
 
     DtoBase value = context.deserialize(jsonElement, klass);
     ChangeType changeType = context.deserialize(jsonObject.get("ct"), ChangeType.class);
-
     return new EntityChangedEvent(value, changeType);
   }
 

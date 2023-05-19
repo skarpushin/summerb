@@ -22,9 +22,9 @@ import org.summerb.easycrud.api.query.OrderBy;
 import org.summerb.easycrud.mvc.filter.FilteringParam;
 
 public class EasyCrudQueryParams {
-  private Map<String, FilteringParam> filterParams;
-  private OrderBy[] orderBy;
-  private PagerParams pagerParams;
+  protected Map<String, FilteringParam> filterParams;
+  protected OrderBy[] orderBy;
+  protected PagerParams pagerParams;
 
   public PagerParams getPagerParams() {
     return pagerParams;

@@ -37,11 +37,11 @@ import com.google.common.base.Preconditions;
 @SuppressWarnings("rawtypes")
 public class EasyCrudServiceResolverSpringImpl
     implements EasyCrudServiceResolver, ApplicationContextAware {
-  private Logger log = LoggerFactory.getLogger(getClass());
+  protected Logger log = LoggerFactory.getLogger(getClass());
 
-  private ApplicationContext applicationContext;
-  private Map<String, EasyCrudService> servicesMap;
-  private Map<Class<?>, EasyCrudService> servicesMapByClass;
+  protected ApplicationContext applicationContext;
+  protected Map<String, EasyCrudService> servicesMap;
+  protected Map<Class<?>, EasyCrudService> servicesMapByClass;
 
   @Override
   public EasyCrudService resolveByRowMessageCode(String entityName) {
@@ -71,7 +71,7 @@ public class EasyCrudServiceResolverSpringImpl
     return servicesMap;
   }
 
-  private Map<String, EasyCrudService> discoverServices() {
+  protected Map<String, EasyCrudService> discoverServices() {
     Preconditions.checkState(
         applicationContext != null, "applicationContext expected to be injected");
     Map<String, EasyCrudService> foundBeans =
@@ -93,7 +93,7 @@ public class EasyCrudServiceResolverSpringImpl
     return ret;
   }
 
-  private Map<Class<?>, EasyCrudService> discoverServicesByClass() {
+  protected Map<Class<?>, EasyCrudService> discoverServicesByClass() {
     Preconditions.checkState(
         applicationContext != null, "applicationContext expected to be injected");
     Map<String, EasyCrudService> foundBeans =

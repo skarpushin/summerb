@@ -25,7 +25,7 @@ import org.summerb.validation.jakarta.processors.abstracts.AnnotationProcessorNu
 
 import com.google.common.base.Preconditions;
 
-import jakarta.validation.constraints.Email;
+import javax.validation.constraints.Email;
 
 public class EmailProcessor extends AnnotationProcessorNullableAbstract<Email> {
   private Predicate<String> predicate;

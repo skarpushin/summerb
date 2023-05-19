@@ -22,7 +22,7 @@ import org.summerb.validation.jakarta.processors.abstracts.AnnotationProcessorNu
 
 import com.google.common.base.Preconditions;
 
-import jakarta.validation.constraints.PastOrPresent;
+import javax.validation.constraints.PastOrPresent;
 
 public class PastOrPresentProcessor extends AnnotationProcessorNullableAbstract<PastOrPresent> {
 

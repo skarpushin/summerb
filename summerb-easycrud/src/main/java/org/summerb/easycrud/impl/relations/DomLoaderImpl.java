@@ -35,11 +35,11 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.summerb.easycrud.api.EasyCrudServiceResolver;
-import org.summerb.easycrud.api.dto.HasId;
-import org.summerb.easycrud.api.dto.datapackage.DataSet;
-import org.summerb.easycrud.api.dto.relations.Ref;
 import org.summerb.easycrud.api.relations.DataSetLoader;
 import org.summerb.easycrud.api.relations.DomLoader;
+import org.summerb.easycrud.api.row.HasId;
+import org.summerb.easycrud.api.row.datapackage.DataSet;
+import org.summerb.easycrud.api.row.relations.Ref;
 import org.summerb.utils.DtoBase;
 import org.summerb.utils.Pair;
 import org.summerb.utils.objectcopy.ObjCopyUtils;
@@ -47,8 +47,8 @@ import org.summerb.utils.objectcopy.ObjCopyUtils;
 import com.google.common.base.Preconditions;
 
 public class DomLoaderImpl implements DomLoader {
-  private DataSetLoader dataSetLoader;
-  private EasyCrudServiceResolver easyCrudServiceResolver;
+  protected DataSetLoader dataSetLoader;
+  protected EasyCrudServiceResolver easyCrudServiceResolver;
 
   public DomLoaderImpl(
       DataSetLoader dataSetLoader, EasyCrudServiceResolver easyCrudServiceResolver) {
@@ -60,7 +60,7 @@ public class DomLoaderImpl implements DomLoader {
    * (non-Javadoc)
    *
    * @see ru.skarpushin.smarthome.devicesgate.services.envconfig.impl.DomLoader#
-   * load(java.lang.Class, TId, org.summerb.easycrud.api.dto.relations.Ref)
+   * load(java.lang.Class, TId, org.summerb.easycrud.api.row.relations.Ref)
    */
   @Override
   public <TId, TRowClass extends HasId<TId>, TDomClass extends TRowClass> TDomClass load(
@@ -78,7 +78,7 @@ public class DomLoaderImpl implements DomLoader {
    *
    * @see ru.skarpushin.smarthome.devicesgate.services.envconfig.impl.DomLoader#
    * load(java.lang.Class, java.util.Set,
-   * org.summerb.easycrud.api.dto.relations.Ref)
+   * org.summerb.easycrud.api.row.relations.Ref)
    */
   @Override
   @SuppressWarnings({"unchecked", "rawtypes"})
@@ -90,15 +90,15 @@ public class DomLoaderImpl implements DomLoader {
       Preconditions.checkArgument(ids != null && ids.size() > 0, "List of ids must not be empty");
 
       // Resolve root row entity name (MessageCode)
-      String dtoMessageCode = resolveDtoMessageCodeFromDomClass(rootDomClass);
+      String rowMessageCode = resolveDtoMessageCodeFromDomClass(rootDomClass);
 
       // Use DataSetLoader to load data
-      List<HasId> loadedRoots = dataSetLoader.loadObjectsByIds((Set<Object>) ids, dtoMessageCode);
+      List<HasId> loadedRoots = dataSetLoader.loadObjectsByIds((Set<Object>) ids, rowMessageCode);
       DataSet ds = new DataSet();
-      ds.get(dtoMessageCode).putAll(loadedRoots);
+      ds.get(rowMessageCode).putAll(loadedRoots);
       boolean haveRefsToLoad = refsToResolve != null && refsToResolve.length > 0;
       if (haveRefsToLoad) {
-        dataSetLoader.resolveReferencedObjects(ds, refsToResolve);
+        dataSetLoader.loadReferencedObjects(ds, refsToResolve);
       }
       Map<String, Ref> refs =
           !haveRefsToLoad
@@ -106,12 +106,12 @@ public class DomLoaderImpl implements DomLoader {
               : Arrays.stream(refsToResolve).collect(Collectors.toMap(x -> x.getName(), x -> x));
 
       // Construct root Dom objects
-      Collection<TRowClass> rootRows = ds.get(dtoMessageCode).getRows().values();
+      Collection<TRowClass> rootRows = ds.get(rowMessageCode).getRows().values();
       // map of already converted entities
       Map<EntityAndId, HasId> cache = new HashMap<>();
       List<TDomClass> ret =
           rootRows.stream()
-              .map(mapDtoToDom(dtoMessageCode, rootDomClass, refs, ds, cache))
+              .map(mapDtoToDom(rowMessageCode, rootDomClass, refs, ds, cache))
               .collect(Collectors.toList());
 
       return ret;
@@ -140,10 +140,10 @@ public class DomLoaderImpl implements DomLoader {
           Map<String, Ref> refs,
           DataSet ds,
           Map<EntityAndId, HasId> cache) {
-    return dtoRow -> {
+    return row -> {
       try {
         // try to get from cache first
-        EntityAndId cacheKey = new EntityAndId(dtoMessageCode, dtoRow.getId());
+        EntityAndId cacheKey = new EntityAndId(dtoMessageCode, row.getId());
         TDomClass dom = (TDomClass) cache.get(cacheKey);
         if (dom != null) {
           return dom;
@@ -151,7 +151,7 @@ public class DomLoaderImpl implements DomLoader {
 
         // Construct instance of DOM and migrate simple field values
         dom = domClass.newInstance();
-        ObjCopyUtils.assignFields(dtoRow, dom);
+        ObjCopyUtils.assignFields(row, dom);
         cache.put(cacheKey, dom);
 
         // Discover fields that represent references
@@ -164,7 +164,7 @@ public class DomLoaderImpl implements DomLoader {
         // with reflection
 
         List<Pair<Ref, PropertyDescriptor>> domFields = discoverDomFields(domClass, refs);
-        domFields.forEach(mapDomField(dom, dtoRow, refs, ds, cache));
+        domFields.forEach(mapDomField(dom, row, refs, ds, cache));
 
         // add to ret
         return dom;
@@ -175,10 +175,10 @@ public class DomLoaderImpl implements DomLoader {
   }
 
   @SuppressWarnings("rawtypes")
-  private <TId, TRowClass extends HasId<TId>, TDomClass extends TRowClass>
+  protected <TId, TRowClass extends HasId<TId>, TDomClass extends TRowClass>
       Consumer<? super Pair<Ref, PropertyDescriptor>> mapDomField(
           TDomClass dom,
-          TRowClass dtoRow,
+          TRowClass row,
           Map<String, Ref> refs,
           DataSet ds,
           Map<EntityAndId, HasId> cache) {
@@ -199,7 +199,7 @@ public class DomLoaderImpl implements DomLoader {
   }
 
   @SuppressWarnings({"unchecked", "rawtypes"})
-  private <TId, TRowClass extends HasId<TId>, TDomClass extends TRowClass> void resolveSingleRef(
+  protected <TId, TRowClass extends HasId<TId>, TDomClass extends TRowClass> void resolveSingleRef(
       TDomClass dom,
       Pair<Ref, PropertyDescriptor> domField,
       Map<String, Ref> refs,
@@ -208,7 +208,7 @@ public class DomLoaderImpl implements DomLoader {
       throws IllegalAccessException, InvocationTargetException {
     Preconditions.checkArgument(
         HasId.class.isAssignableFrom(domField.getValue().getPropertyType()),
-        "DOM's class (%s) supposed to implement org.summerb.easycrud.api.dto, but it's not",
+        "DOM's class (%s) supposed to implement org.summerb.easycrud.api.row, but it's not",
         domField.getValue().getPropertyType());
 
     PropertyDescriptor referenceeIdProp =
@@ -223,9 +223,9 @@ public class DomLoaderImpl implements DomLoader {
       return;
     }
 
-    HasId dto = ds.get(domField.getKey().getToEntity()).find(referenceeId);
+    HasId row = ds.get(domField.getKey().getToEntity()).find(referenceeId);
     Preconditions.checkState(
-        dto != null,
+        row != null,
         "Reference %s was supposed to be resolved, but referenced object %s wasn't loaded by id %s",
         domField.getKey().getName(),
         domField.getKey().getToEntity(),
@@ -233,12 +233,12 @@ public class DomLoaderImpl implements DomLoader {
     Class<HasId> referenceeClass = (Class<HasId>) domField.getValue().getPropertyType();
     Function<HasId, HasId> mapper =
         mapDtoToDom(domField.getKey().getToEntity(), referenceeClass, refs, ds, cache);
-    HasId referenceeDom = mapper.apply(dto);
+    HasId referenceeDom = mapper.apply(row);
     domField.getValue().getWriteMethod().invoke(dom, referenceeDom);
   }
 
   @SuppressWarnings({"unchecked", "rawtypes"})
-  private <TId, TDomClass extends TRowClass, TRowClass extends HasId<TId>>
+  protected <TId, TDomClass extends TRowClass, TRowClass extends HasId<TId>>
       void resolveOneToManyList(
           TDomClass dom,
           Pair<Ref, PropertyDescriptor> domField,
@@ -294,7 +294,7 @@ public class DomLoaderImpl implements DomLoader {
     Class<TDomClass> retClass = (Class<TDomClass>) retType;
     Preconditions.checkArgument(
         HasId.class.isAssignableFrom(retClass),
-        "DOM's class (%s) supposed to implement org.summerb.easycrud.api.dto, but it's not",
+        "DOM's class (%s) supposed to implement org.summerb.easycrud.api.row, but it's not",
         retClass);
 
     return retClass;
@@ -351,9 +351,9 @@ public class DomLoaderImpl implements DomLoader {
     try {
       Class<? super TDomClass> rowClass = domClass.getSuperclass();
 
-      // TBD: Support case when Dom class contains list of Dto class (no
+      // TBD: Support case when Dom class contains list of row class (no
       // need to create Dom class for leafs, for example). I.e. If Device
-      // class will have field List<AssetRow> ==>> then we don't nee dto
+      // class will have field List<AssetRow> ==>> then we don't need row
       // use superclass. MAYBE we can just go up one level until
       // easyCrudServiceResolver.resolveByMessageCode returns something
 
@@ -367,7 +367,7 @@ public class DomLoaderImpl implements DomLoader {
           rowClass);
       Preconditions.checkArgument(
           HasId.class.isAssignableFrom(rowClass),
-          "DOM's parent class (%s) supposed to implement org.summerb.easycrud.api.dto, but it's not",
+          "DOM's parent class (%s) supposed to implement org.summerb.easycrud.api.row, but it's not",
           rowClass);
 
       return easyCrudServiceResolver.resolveByRowClass(rowClass).getRowMessageCode();
@@ -379,8 +379,8 @@ public class DomLoaderImpl implements DomLoader {
   }
 
   public static class EntityAndId {
-    private String entityTypeMessageCode;
-    private Object id;
+    protected String entityTypeMessageCode;
+    protected Object id;
 
     public EntityAndId(String entityTypeMessageCode, Object id) {
       super();

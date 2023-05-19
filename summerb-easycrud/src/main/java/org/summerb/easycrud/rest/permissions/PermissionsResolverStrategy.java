@@ -15,7 +15,7 @@
  ******************************************************************************/
 package org.summerb.easycrud.rest.permissions;
 
-import org.summerb.easycrud.api.dto.HasId;
+import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.rest.commonpathvars.PathVariablesMap;
 import org.summerb.easycrud.rest.dto.MultipleItemsResult;
 import org.summerb.easycrud.rest.dto.SingleItemResult;
@@ -26,13 +26,18 @@ import org.summerb.easycrud.rest.dto.SingleItemResult;
  *
  * @author sergeyk
  */
-public interface PermissionsResolverStrategy<TId, TDto extends HasId<TId>> {
+public interface PermissionsResolverStrategy<TId, TRow extends HasId<TId>> {
   /**
-   * @param contextVariables variables that defines current context that can be used for table-wide
-   *     permissions resolution
    * @param ret object to populate with permissions
+   * @param contextVariables variables that defines current context that can be used for permissions
+   *     resolution
    */
-  void resolvePermissions(MultipleItemsResult<TId, TDto> ret, PathVariablesMap contextVariables);
+  void resolvePermissions(MultipleItemsResult<TId, TRow> ret, PathVariablesMap contextVariables);
 
-  void resolvePermissions(SingleItemResult<TId, TDto> ret);
+  /**
+   * @param ret object to populate with permissions
+   * @param contextVariables variables that defines current context that can be used for permissions
+   *     resolution
+   */
+  void resolvePermissions(SingleItemResult<TId, TRow> ret, PathVariablesMap contextVariables);
 }

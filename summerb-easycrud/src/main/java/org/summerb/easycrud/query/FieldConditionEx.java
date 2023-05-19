@@ -4,8 +4,8 @@ import org.summerb.easycrud.gen2.restrictions.RestrictionEx;
 
 public class FieldConditionEx extends ConditionEx {
 
-  private String fieldName;
-  private RestrictionEx restriction;
+  protected String fieldName;
+  protected RestrictionEx restriction;
 
   public FieldConditionEx(String fieldName, RestrictionEx restriction) {
     this.fieldName = fieldName;

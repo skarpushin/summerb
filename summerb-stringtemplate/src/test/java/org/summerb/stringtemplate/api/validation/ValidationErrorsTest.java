@@ -17,7 +17,7 @@ package org.summerb.stringtemplate.api.validation;
 
 import static org.junit.Assert.assertArrayEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.summerb.validation.errors.MustBeEquals;
 
 public class ValidationErrorsTest {

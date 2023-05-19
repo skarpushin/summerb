@@ -471,11 +471,11 @@ Here is an example how `ReferencesRegistry` can be implemented:
 public class Refs extends ReferencesRegistryPredefinedImpl {
 	public static final Ref deviceToEnv = new Ref("deviceEnv", 
 		"term.device", "envId", "term.environment", "id",
-		RelationType.PartOf, RefQuantity.Many2One);
+		RefQuantity.Many2One);
 
 	public static final Ref envToDevices = new Ref("envDevices", 
 		"term.environment", "id", "term.device", "envId",
-		RelationType.Aggregates, RefQuantity.One2Many);
+		RefQuantity.One2Many);
 
 	public Refs() {
 		super(new Ref[] { deviceToEnv, envToDevices });
@@ -485,8 +485,6 @@ public class Refs extends ReferencesRegistryPredefinedImpl {
 NOTE 1: As you can see same reference is described here from both directions from `environment` to `device` and vice versa. You don't have to do it same way - specify only those references you'll want to be automatically resolved when loading object graphs. The reason why I have both directions described here is because:
 * sometimes I have instance of `environment` at hand and I want to load all `devices` which belong to this environment. 
 * in other cases I have list of `devices` at hand and I need to load referenced `environments`
-
-NOTE 2: `RelationType` enum is really not affecting functionality at this time, it's reserved for future improvements. 
 
 ### Configuring beans
 It could be as simple as just declaring couple Spring beans, i.e.:

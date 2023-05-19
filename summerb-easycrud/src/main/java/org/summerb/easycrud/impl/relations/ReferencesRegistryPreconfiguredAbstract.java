@@ -19,8 +19,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.summerb.easycrud.api.dto.relations.Ref;
 import org.summerb.easycrud.api.relations.ReferencesRegistry;
+import org.summerb.easycrud.api.row.relations.Ref;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Multimap;
@@ -34,13 +34,13 @@ import com.google.common.collect.Multimap;
  * @author sergeyk
  */
 public abstract class ReferencesRegistryPreconfiguredAbstract implements ReferencesRegistry {
-  private Map<String, Ref> refsByName;
-  private Multimap<String, Ref> refsBySourceName;
-  private Multimap<String, Ref> refsByAlias;
+  protected Map<String, Ref> refsByName;
+  protected Multimap<String, Ref> refsBySourceName;
+  protected Multimap<String, Ref> refsByAlias;
 
   public ReferencesRegistryPreconfiguredAbstract() {}
 
-  private void initialize() {
+  protected void initialize() {
     Multimap<String, Ref> refsBySourceNameLocal = discoverRefsBySources();
     Preconditions.checkState(refsBySourceNameLocal != null);
     Map<String, Ref> refsByNameLocal = new HashMap<>();
@@ -72,7 +72,7 @@ public abstract class ReferencesRegistryPreconfiguredAbstract implements Referen
     return ret;
   }
 
-  private void ensureInitialized() {
+  protected void ensureInitialized() {
     if (refsByAlias == null) {
       initialize();
     }

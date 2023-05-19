@@ -25,12 +25,12 @@ import org.summerb.easycrud.api.StringIdGenerator;
  * @author sergeyk
  */
 public class StringIdGeneratorAlphaNumericImpl implements StringIdGenerator {
-  private int length = 8;
+  protected int length = 8;
 
   /** NOTE: "O" and "l" are removed to make it more human-readable */
-  private String alphabet = "ABCDEFGHIJKLMNPQRSTUVWXYZ0123456789abcdefghijkmnopqrstuvwxyz";
+  protected String alphabet = "ABCDEFGHIJKLMNPQRSTUVWXYZ0123456789abcdefghijkmnopqrstuvwxyz";
 
-  private static final Random random = new Random();
+  protected static final Random random = new Random();
 
   public StringIdGeneratorAlphaNumericImpl() {}
 
@@ -54,7 +54,7 @@ public class StringIdGeneratorAlphaNumericImpl implements StringIdGenerator {
     return id != null && id.length() == length && checkChars(id);
   }
 
-  private boolean checkChars(String id) {
+  protected boolean checkChars(String id) {
     for (int i = 0; i < id.length(); i++) {
       if (!alphabet.contains(id.substring(i, i + 1))) {
         return false;

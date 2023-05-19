@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class PathVariablesMap {
-  private Map<String, Object> map = new HashMap<>();
+  protected Map<String, Object> map = new HashMap<>();
 
   @SuppressWarnings("unchecked")
   public <T> T get(String key) {

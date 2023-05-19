@@ -18,9 +18,9 @@ package org.summerb.easycrud.api.relations;
 import java.util.List;
 import java.util.Set;
 
-import org.summerb.easycrud.api.dto.HasId;
-import org.summerb.easycrud.api.dto.datapackage.DataSet;
-import org.summerb.easycrud.api.dto.relations.Ref;
+import org.summerb.easycrud.api.row.HasId;
+import org.summerb.easycrud.api.row.datapackage.DataSet;
+import org.summerb.easycrud.api.row.relations.Ref;
 
 /**
  * Interface used to load Dom object trees. This might be more convenient than dealing with {@link

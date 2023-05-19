@@ -44,19 +44,11 @@ public class EntityChangedEvent<T extends DtoBase> implements Serializable {
   @Deprecated
   public EntityChangedEvent() {}
 
-  /**
-   * @deprecated recommended to use {@link #build(DtoBase, ChangeType)} method in order to simplify
-   *     code
-   */
-  @Deprecated
   public EntityChangedEvent(T value, ChangeType changeType) {
-    Preconditions.checkArgument(value != null);
+    Preconditions.checkArgument(value != null, "value required");
+    Preconditions.checkArgument(changeType != null, "changeType required");
     this.value = value;
     this.changeType = changeType;
-  }
-
-  public static <T extends DtoBase> Object build(T value, ChangeType changeType) {
-    return new EntityChangedEvent<T>(value, changeType);
   }
 
   @SuppressWarnings({"unchecked", "rawtypes"})

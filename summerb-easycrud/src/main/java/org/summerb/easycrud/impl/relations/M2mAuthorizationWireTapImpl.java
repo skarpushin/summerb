@@ -16,15 +16,13 @@
 package org.summerb.easycrud.impl.relations;
 
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.util.ObjectUtils;
 import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.api.EasyCrudWireTap;
-import org.summerb.easycrud.api.dto.HasId;
-import org.summerb.easycrud.api.dto.relations.ManyToManyDto;
-import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapNoOpImpl;
-import org.summerb.security.api.exceptions.NotAuthorizedException;
-import org.summerb.validation.ValidationException;
+import org.summerb.easycrud.api.EasyCrudWireTapMode;
+import org.summerb.easycrud.api.row.HasId;
+import org.summerb.easycrud.api.row.relations.ManyToManyRow;
+import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapAbstract;
 
 import com.google.common.base.Preconditions;
 
@@ -39,49 +37,77 @@ import com.google.common.base.Preconditions;
  * @param <TId2> TId2
  */
 public class M2mAuthorizationWireTapImpl<TId1, TId2>
-    extends EasyCrudWireTapNoOpImpl<Long, ManyToManyDto<TId1, TId2>> implements InitializingBean {
-  private EasyCrudWireTap<TId1, HasId<TId1>> referencerAuthorizationWireTap;
-  private EasyCrudService<TId1, HasId<TId1>> referencerService;
-  private boolean referencerAuthRequiresFullDto;
-  private Class<HasId<TId1>> referencerClass;
+    extends EasyCrudWireTapAbstract<ManyToManyRow<TId1, TId2>> implements InitializingBean {
+  protected EasyCrudWireTap<HasId<TId1>> referencerAuthorizationWireTap;
+  protected EasyCrudService<TId1, HasId<TId1>> referencerService;
+  protected Class<HasId<TId1>> referencerClass;
 
-  @Override
-  public void afterPropertiesSet() throws Exception {
-    referencerAuthRequiresFullDto = referencerAuthorizationWireTap.requiresFullDto();
-    if (!referencerAuthRequiresFullDto) {
-      referencerClass = referencerService.getRowClass();
-    }
+  public M2mAuthorizationWireTapImpl(
+      EasyCrudService<TId1, HasId<TId1>> referencerService,
+      EasyCrudWireTap<HasId<TId1>> referencerAuthorizationWireTap) {
+    this.referencerService = referencerService;
+    this.referencerAuthorizationWireTap = referencerAuthorizationWireTap;
   }
 
   @Override
-  public boolean requiresFullDto() {
-    return true;
+  public void afterPropertiesSet() {
+    Preconditions.checkArgument(referencerService != null, "referencerService required");
+    Preconditions.checkArgument(
+        referencerAuthorizationWireTap != null, "referencerAuthorizationWireTap required");
+
+    referencerClass = referencerService.getRowClass();
+  }
+
+  public EasyCrudWireTap<HasId<TId1>> getReferencerAuthorizationWireTap() {
+    return referencerAuthorizationWireTap;
+  }
+
+  public void setReferencerAuthorizationWireTap(
+      EasyCrudWireTap<HasId<TId1>> referencerAuthorizationWireTap) {
+    this.referencerAuthorizationWireTap = referencerAuthorizationWireTap;
+  }
+
+  public EasyCrudService<TId1, HasId<TId1>> getReferencerService() {
+    return referencerService;
+  }
+
+  public void setReferencerService(EasyCrudService<TId1, HasId<TId1>> referencerService) {
+    this.referencerService = referencerService;
   }
 
   @Override
-  public boolean requiresOnCreate() throws ValidationException, NotAuthorizedException {
+  public boolean requiresOnCreate() {
+    return referencerAuthorizationWireTap.requiresOnUpdate().isNeeded();
+  }
+
+  @Override
+  public boolean requiresOnRead() {
+    return referencerAuthorizationWireTap.requiresOnRead();
+  }
+
+  @Override
+  public EasyCrudWireTapMode requiresOnUpdate() {
     return referencerAuthorizationWireTap.requiresOnUpdate();
   }
 
   @Override
-  public void beforeCreate(ManyToManyDto<TId1, TId2> dto)
-      throws NotAuthorizedException, ValidationException {
+  public EasyCrudWireTapMode requiresOnDelete() {
+    return referencerAuthorizationWireTap.requiresOnUpdate();
+  }
+
+  @Override
+  public void beforeCreate(ManyToManyRow<TId1, TId2> row) {
     HasId<TId1> referencer;
-    if (referencerAuthRequiresFullDto) {
-      referencer = referencerService.findById(dto.getSrc());
-      Preconditions.checkState(
-          referencer != null,
-          referencerService.getRowMessageCode()
-              + " identified by "
-              + dto.getSrc()
-              + " wasn't found");
+    if (referencerAuthorizationWireTap.requiresOnUpdate().isDtoNeeded()) {
+      referencer = referencerService.getById(row.getSrc());
     } else {
-      referencer = buildDtoWithId(dto.getSrc());
+      referencer = buildDtoWithId(row.getSrc());
     }
     referencerAuthorizationWireTap.beforeUpdate(referencer, referencer);
   }
 
-  private HasId<TId1> buildDtoWithId(TId1 id) {
+  @SuppressWarnings("deprecation")
+  protected HasId<TId1> buildDtoWithId(TId1 id) {
     try {
       HasId<TId1> ret = referencerClass.newInstance();
       ret.setId(id);
@@ -92,25 +118,13 @@ public class M2mAuthorizationWireTapImpl<TId1, TId2>
   }
 
   @Override
-  public boolean requiresOnUpdate() throws NotAuthorizedException, ValidationException {
-    return referencerAuthorizationWireTap.requiresOnUpdate();
-  }
-
-  @Override
-  public void beforeUpdate(ManyToManyDto<TId1, TId2> from, ManyToManyDto<TId1, TId2> to)
-      throws ValidationException, NotAuthorizedException {
+  public void beforeUpdate(ManyToManyRow<TId1, TId2> from, ManyToManyRow<TId1, TId2> to) {
     Preconditions.checkArgument(
         ObjectUtils.nullSafeEquals(from.getSrc(), to.getSrc()),
         "Referencer is not supposed to be changed");
     HasId<TId1> referencer;
-    if (referencerAuthRequiresFullDto) {
-      referencer = referencerService.findById(to.getSrc());
-      Preconditions.checkState(
-          referencer != null,
-          referencerService.getRowMessageCode()
-              + " identified by "
-              + from.getSrc()
-              + " wasn't found");
+    if (referencerAuthorizationWireTap.requiresOnUpdate().isDtoNeeded()) {
+      referencer = referencerService.getById(to.getSrc());
     } else {
       referencer = buildDtoWithId(to.getSrc());
     }
@@ -118,61 +132,24 @@ public class M2mAuthorizationWireTapImpl<TId1, TId2>
   }
 
   @Override
-  public boolean requiresOnDelete() throws ValidationException, NotAuthorizedException {
-    return referencerAuthorizationWireTap.requiresOnUpdate();
-  }
-
-  @Override
-  public void beforeDelete(ManyToManyDto<TId1, TId2> dto)
-      throws NotAuthorizedException, ValidationException {
+  public void beforeDelete(ManyToManyRow<TId1, TId2> row) {
     HasId<TId1> referencer;
-    if (referencerAuthRequiresFullDto) {
-      referencer = referencerService.findById(dto.getSrc());
-      Preconditions.checkState(
-          referencer != null,
-          referencerService.getRowMessageCode()
-              + " identified by "
-              + dto.getSrc()
-              + " wasn't found");
+    if (referencerAuthorizationWireTap.requiresOnUpdate().isDtoNeeded()) {
+      referencer = referencerService.getById(row.getSrc());
     } else {
-      referencer = buildDtoWithId(dto.getSrc());
+      referencer = buildDtoWithId(row.getSrc());
     }
     referencerAuthorizationWireTap.beforeUpdate(referencer, referencer);
   }
 
   @Override
-  public boolean requiresOnRead() throws NotAuthorizedException, ValidationException {
-    return referencerAuthorizationWireTap.requiresOnRead();
-  }
-
-  @Override
-  public void afterRead(ManyToManyDto<TId1, TId2> dto)
-      throws ValidationException, NotAuthorizedException {
+  public void afterRead(ManyToManyRow<TId1, TId2> row) {
     HasId<TId1> referencer;
-    if (referencerAuthRequiresFullDto) {
-      referencer = referencerService.findById(dto.getSrc());
+    if (referencerAuthorizationWireTap.requiresOnUpdate().isDtoNeeded()) {
+      referencer = referencerService.getById(row.getSrc());
     } else {
-      referencer = buildDtoWithId(dto.getSrc());
+      referencer = buildDtoWithId(row.getSrc());
     }
     referencerAuthorizationWireTap.afterRead(referencer);
-  }
-
-  public EasyCrudWireTap<TId1, HasId<TId1>> getReferencerAuthorizationWireTap() {
-    return referencerAuthorizationWireTap;
-  }
-
-  @Required
-  public void setReferencerAuthorizationWireTap(
-      EasyCrudWireTap<TId1, HasId<TId1>> referencerAuthorizationWireTap) {
-    this.referencerAuthorizationWireTap = referencerAuthorizationWireTap;
-  }
-
-  public EasyCrudService<TId1, HasId<TId1>> getReferencerService() {
-    return referencerService;
-  }
-
-  @Required
-  public void setReferencerService(EasyCrudService<TId1, HasId<TId1>> referencerService) {
-    this.referencerService = referencerService;
   }
 }

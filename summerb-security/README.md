@@ -1,1 +1,1 @@
-TBD
+This module is not intended for individual use. It has classes shared by several other modules.  

@@ -19,10 +19,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.summerb.easycrud.api.dto.HasId;
-import org.summerb.easycrud.api.dto.datapackage.DataSet;
-import org.summerb.easycrud.api.dto.relations.Ref;
 import org.summerb.easycrud.api.exceptions.EntityNotFoundException;
+import org.summerb.easycrud.api.row.HasId;
+import org.summerb.easycrud.api.row.datapackage.DataSet;
+import org.summerb.easycrud.api.row.relations.Ref;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
 
 /**
@@ -55,7 +55,7 @@ public interface DataSetLoader {
   /**
    * Loads all objects specified in ids param into provided dataSet (it might be empty).
    *
-   * <p>It will NOT load referenced objects. Use {@link #resolveReferencedObjects(DataSet, Ref...)}
+   * <p>It will NOT load referenced objects. Use {@link #loadReferencedObjects(DataSet, Ref...)}
    * if needed
    *
    * @param ids map of ids to load. Entitype is mapped to list of ids
@@ -77,6 +77,6 @@ public interface DataSetLoader {
    * @throws NotAuthorizedException in case user is not authorized to read certain objects
    * @throws IllegalArgumentException in case dataSet and/or references is null
    */
-  void resolveReferencedObjects(DataSet dataSet, Ref... references)
+  void loadReferencedObjects(DataSet dataSet, Ref... references)
       throws EntityNotFoundException, NotAuthorizedException;
 }

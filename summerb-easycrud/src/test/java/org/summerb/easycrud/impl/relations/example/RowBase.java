@@ -15,9 +15,9 @@
  ******************************************************************************/
 package org.summerb.easycrud.impl.relations.example;
 
-import org.summerb.easycrud.api.dto.HasAuthor;
-import org.summerb.easycrud.api.dto.HasAutoincrementId;
-import org.summerb.easycrud.api.dto.HasTimestamps;
+import org.summerb.easycrud.api.row.HasAuthor;
+import org.summerb.easycrud.api.row.HasAutoincrementId;
+import org.summerb.easycrud.api.row.HasTimestamps;
 import org.summerb.utils.DtoBase;
 
 public abstract class RowBase implements DtoBase, HasAutoincrementId, HasTimestamps, HasAuthor {

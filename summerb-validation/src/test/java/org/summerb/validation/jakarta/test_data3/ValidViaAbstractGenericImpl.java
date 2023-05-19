@@ -4,7 +4,7 @@ import org.summerb.i18n.HasMessageCode;
 import org.summerb.validation.ValidationContext;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import jakarta.validation.constraints.Min;
+import javax.validation.constraints.Min;
 
 public class ValidViaAbstractGenericImpl extends AbstractGenericImpl<Boolean>
     implements HasMessageCode {

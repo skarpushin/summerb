@@ -51,13 +51,13 @@
 
 		<junit.version>4.13.2</junit.version>
 		<junit-jupiter.version>5.9.3</junit-jupiter.version>
-		<mockito-all.version>1.9.5</mockito-all.version>
 		<dumbster.version>1.6</dumbster.version>
 
 		<servlet-api.version>4.0.1</servlet-api.version>
 		<slf4j.version>1.7.36</slf4j.version>
 		<spring-framework.version>5.3.26</spring-framework.version>
 		<spring-security.version>5.7.7</spring-security.version>
+		<mariadb.version>3.1.3</mariadb.version>
 		<mysql.version>8.0.33</mysql.version>
 		<postgresql.version>42.3.8</postgresql.version>
 		<commons-io.version>2.9.0</commons-io.version>
@@ -69,7 +69,7 @@
 		<encoder.version>1.2.3</encoder.version> <!-- OWASP encoder -->
 		<commons-fileupload.version>1.5</commons-fileupload.version>
 		<byte-buddy.version>1.14.4</byte-buddy.version>
-		<hibernate-validator.version>8.0.0.Final</hibernate-validator.version>
+		<hibernate-validator.version>6.2.5.Final</hibernate-validator.version>
 
 	</properties>
 
@@ -110,8 +110,8 @@
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
-			<version>${mockito-all.version}</version>
+			<artifactId>mockito-junit-jupiter</artifactId>
+			<version>5.3.1</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

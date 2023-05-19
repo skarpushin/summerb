@@ -15,14 +15,14 @@
  ******************************************************************************/
 package org.summerb.easycrud.impl.relations;
 
-import org.summerb.easycrud.api.dto.relations.Ref;
+import org.summerb.easycrud.api.row.relations.Ref;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
 public class ReferencesRegistryPredefinedImpl extends ReferencesRegistryPreconfiguredAbstract {
-  private Ref[] refs;
+  protected Ref[] refs;
 
   public ReferencesRegistryPredefinedImpl(Ref... refs) {
     Preconditions.checkArgument(refs != null);

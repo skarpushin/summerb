@@ -33,14 +33,14 @@ import org.summerb.validation.ValidationException;
  *     <p>TBD: Unify tables naming to have common prefix, like "users_"
  */
 public interface UserService {
-  User createUser(User user) throws ValidationException;
+  User createUser(User user);
 
   User getUserByUuid(String userUuid) throws UserNotFoundException;
 
   User getUserByEmail(String userEmail) throws ValidationException, UserNotFoundException;
 
   PaginatedList<User> findUsersByDisplayNamePartial(
-      String displayNamePartial, PagerParams pagerParams) throws ValidationException;
+      String displayNamePartial, PagerParams pagerParams);
 
   void updateUser(User user) throws ValidationException, UserNotFoundException;
 

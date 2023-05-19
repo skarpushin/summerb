@@ -18,15 +18,15 @@ package org.summerb.users.impl;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import java.util.LinkedList;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.dao.DuplicateKeyException;
 import org.summerb.easycrud.api.dto.PagerParams;
 import org.summerb.easycrud.api.dto.PaginatedList;
@@ -95,31 +95,27 @@ public class UserServiceImplTest {
     assertNotSame(template, result);
   }
 
-  @Test(expected = ValidationException.class)
+  @Test
   public void testCreateUser_blackbox_expectValidationExceptionOnInvalidEmail() throws Exception {
     UserServiceImpl fixture = UserServiceImplFactory.createUsersServiceImpl();
 
     User user = UserFactory.createNewUserTemplate();
     user.setEmail("abara-cadabara");
 
-    fixture.createUser(user);
-
-    fail();
+    assertThrows(ValidationException.class, () -> fixture.createUser(user));
   }
 
-  @Test(expected = ValidationException.class)
+  @Test
   public void testCreateUser_blackbox_expectValidationExceptionOnInvalidEmail1() throws Exception {
     UserServiceImpl fixture = UserServiceImplFactory.createUsersServiceImpl();
 
     User user = UserFactory.createNewUserTemplate();
     user.setEmail(null);
 
-    fixture.createUser(user);
-
-    fail();
+    assertThrows(ValidationException.class, () -> fixture.createUser(user));
   }
 
-  @Test(expected = ValidationException.class)
+  @Test
   public void testCreateUser_whitebox_expectDuplicateUserException() throws Exception {
     UserServiceImpl fixture = UserServiceImplFactory.createUsersServiceImpl();
 
@@ -128,12 +124,10 @@ public class UserServiceImplTest {
         .when(fixture.getUserDao())
         .createUser(any(User.class));
 
-    fixture.createUser(user);
-
-    fail();
+    assertThrows(ValidationException.class, () -> fixture.createUser(user));
   }
 
-  @Test(expected = UserServiceUnexpectedException.class)
+  @Test
   public void testCreateUser_whitebox_expectOurExceptionInsteadOfUnexpectedOne() throws Exception {
     UserServiceImpl fixture = UserServiceImplFactory.createUsersServiceImpl();
 
@@ -142,38 +136,32 @@ public class UserServiceImplTest {
         .when(fixture.getUserDao())
         .createUser(any(User.class));
 
-    fixture.createUser(user);
-
-    fail();
+    assertThrows(UserServiceUnexpectedException.class, () -> fixture.createUser(user));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testCreateUser_defensive_expectIllegalArgumentExceptionInsteadOfNpe()
       throws Exception {
     UserServiceImpl fixture = UserServiceImplFactory.createUsersServiceImpl();
 
-    fixture.createUser(null);
-
-    fail();
+    assertThrows(IllegalArgumentException.class, () -> fixture.createUser(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testGetUserByUuid_defensive_expectIllegalArgumentExceptionInsteadOfNpe1()
       throws Exception {
     UserServiceImpl fixture = UserServiceImplFactory.createUsersServiceImpl();
-    fixture.getUserByUuid(null);
-    fail();
+    assertThrows(IllegalArgumentException.class, () -> fixture.getUserByUuid(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testGetUserByUuid_defensive_expectIllegalArgumentExceptionInsteadOfNpe2()
       throws Exception {
     UserServiceImpl fixture = UserServiceImplFactory.createUsersServiceImpl();
-    fixture.getUserByUuid("");
-    fail();
+    assertThrows(IllegalArgumentException.class, () -> fixture.getUserByUuid(""));
   }
 
-  @Test(expected = UserServiceUnexpectedException.class)
+  @Test
   public void testGetUserByUuid_whitebox_expectOurExceptionInsteadOfUnexpectedOne()
       throws Exception {
     UserServiceImpl fixture = UserServiceImplFactory.createUsersServiceImpl();
@@ -182,20 +170,16 @@ public class UserServiceImplTest {
         .when(fixture.getUserDao())
         .findUserByUuid(any(String.class));
 
-    fixture.getUserByUuid("aaa");
-
-    fail();
+    assertThrows(UserServiceUnexpectedException.class, () -> fixture.getUserByUuid("aaa"));
   }
 
-  @Test(expected = UserNotFoundException.class)
+  @Test
   public void testGetUserByUuid_blackbox_expectUserNotFoundException() throws Exception {
     UserServiceImpl fixture = UserServiceImplFactory.createUsersServiceImpl();
 
     when(fixture.getUserDao().findUserByUuid(any(String.class))).thenReturn(null);
 
-    fixture.getUserByUuid("aaa");
-
-    fail();
+    assertThrows(UserNotFoundException.class, () -> fixture.getUserByUuid("aaa"));
   }
 
   @Test
@@ -208,48 +192,47 @@ public class UserServiceImplTest {
     assertNotNull(fixture.getUserByUuid("aaa"));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testGetUserByEmail_defensive_expectIllegalArgumentExceptionOnNull() throws Exception {
     UserServiceImpl fixture = UserServiceImplFactory.createUsersServiceImpl();
-    fixture.getUserByEmail(null);
-    fail();
+    assertThrows(IllegalArgumentException.class, () -> fixture.getUserByEmail(null));
   }
 
-  @Test(expected = ValidationException.class)
+  @Test
   public void testGetUserByEmail_blackbox_expectFieldValidationExceptionOnEmptyString()
       throws Exception {
     UserServiceImpl fixture = UserServiceImplFactory.createUsersServiceImpl();
-    fixture.getUserByEmail("");
-    fail();
+    assertThrows(ValidationException.class, () -> fixture.getUserByEmail(""));
   }
 
-  @Test(expected = ValidationException.class)
+  @Test
   public void testGetUserByEmail_blackbox_expectFieldValidationExceptionOnWrongFormat()
       throws Exception {
     UserServiceImpl fixture = UserServiceImplFactory.createUsersServiceImpl();
-    fixture.getUserByEmail("abara-cadabara");
-    fail();
+    assertThrows(ValidationException.class, () -> fixture.getUserByEmail("abara-cadabara"));
   }
 
-  @Test(expected = UserServiceUnexpectedException.class)
+  @Test
   public void testGetUserByEmail_whitebox_expectOurExceptionOnUnexpectedOne() throws Exception {
     UserServiceImpl fixture = UserServiceImplFactory.createUsersServiceImpl();
     doThrow(new IllegalArgumentException("test exception"))
         .when(fixture.getUserDao())
         .findUserByEmail(any(String.class));
 
-    fixture.getUserByEmail(UserFactory.createNewUserTemplate().getEmail());
-    fail();
+    assertThrows(
+        UserServiceUnexpectedException.class,
+        () -> fixture.getUserByEmail(UserFactory.createNewUserTemplate().getEmail()));
   }
 
-  @Test(expected = UserNotFoundException.class)
+  @Test
   public void testGetUserByEmail_blackbox_expectUserNotFoundException() throws Exception {
     UserServiceImpl fixture = UserServiceImplFactory.createUsersServiceImpl();
 
     when(fixture.getUserDao().findUserByEmail(any(String.class))).thenReturn(null);
 
-    fixture.getUserByEmail(UserFactory.createNewUserTemplate().getEmail());
-    fail();
+    assertThrows(
+        UserNotFoundException.class,
+        () -> fixture.getUserByEmail(UserFactory.createNewUserTemplate().getEmail()));
   }
 
   @Test
@@ -263,14 +246,14 @@ public class UserServiceImplTest {
     assertNotNull(user);
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void
       testFindUsersByDisplayNamePartial_defensive_shouldThrowIllegalArgumentExceptionForInvalidQuery()
           throws Exception {
     UserServiceImpl fixture = UserServiceImplFactory.createUsersServiceImpl();
 
-    fixture.findUsersByDisplayNamePartial(null, null);
-    fail();
+    assertThrows(
+        IllegalArgumentException.class, () -> fixture.findUsersByDisplayNamePartial(null, null));
   }
 
   @Test
@@ -297,62 +280,65 @@ public class UserServiceImplTest {
     assertEquals(1, results.getTotalResults());
   }
 
-  @Test(expected = UserServiceUnexpectedException.class)
+  @Test
   public void testFindUsersByDisplayNamePartial_whitebox_expectUserServiceUnexpectedException()
       throws Exception {
     UserServiceImpl fixture = UserServiceImplFactory.createUsersServiceImpl();
-    fixture.findUsersByDisplayNamePartial(UserFactory.EXISTENT_USER, new PagerParams(20, 40));
-    fail();
+    assertThrows(
+        UserServiceUnexpectedException.class,
+        () ->
+            fixture.findUsersByDisplayNamePartial(
+                UserFactory.EXISTENT_USER, new PagerParams(20, 40)));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testUpdateUser_defensive_iaeOnInvalidArgument() throws Exception {
     UserServiceImpl fixture = UserServiceImplFactory.createUsersServiceImpl();
-    fixture.updateUser(null);
-    fail();
+    assertThrows(IllegalArgumentException.class, () -> fixture.updateUser(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testUpdateUser_defensive_iaeOnInvalidUserInfo() throws Exception {
     UserServiceImpl fixture = UserServiceImplFactory.createUsersServiceImpl();
-    fixture.updateUser(UserFactory.createNewUserTemplate());
-    fail();
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> fixture.updateUser(UserFactory.createNewUserTemplate()));
   }
 
-  @Test(expected = ValidationException.class)
+  @Test
   public void testUpdateUser_blackbox_fveOnFailedValidation() throws Exception {
     UserServiceImpl fixture = UserServiceImplFactory.createUsersServiceImpl();
     User user = UserFactory.createExistingUser();
     user.setEmail("asdasd");
     when(fixture.getUserDao().updateUser(any(User.class))).thenReturn(true);
-    fixture.updateUser(user);
-    fail();
+    assertThrows(ValidationException.class, () -> fixture.updateUser(user));
   }
 
-  @Test(expected = ValidationException.class)
+  @Test
   public void testUpdateUser_blackbox_expectFieldValidationExceptionOnDuplicateUser()
       throws Exception {
     UserServiceImpl fixture = UserServiceImplFactory.createUsersServiceImpl();
-    fixture.updateUser(UserFactory.createDuplicateUser());
-    fail();
+    assertThrows(
+        ValidationException.class, () -> fixture.updateUser(UserFactory.createDuplicateUser()));
   }
 
-  @Test(expected = UserServiceUnexpectedException.class)
+  @Test
   public void testUpdateUser_whitebox_usueOnUnexexpectedException() throws Exception {
     UserServiceImpl fixture = UserServiceImplFactory.createUsersServiceImpl();
     doThrow(new IllegalArgumentException("test exception"))
         .when(fixture.getUserDao())
         .updateUser(any(User.class));
-    fixture.updateUser(UserFactory.createExistingUser());
-    fail();
+    assertThrows(
+        UserServiceUnexpectedException.class,
+        () -> fixture.updateUser(UserFactory.createExistingUser()));
   }
 
-  @Test(expected = UserNotFoundException.class)
+  @Test
   public void testUpdateUser_blackbox_unfeIfUserIsNotFound() throws Exception {
     UserServiceImpl fixture = UserServiceImplFactory.createUsersServiceImpl();
     when(fixture.getUserDao().updateUser(any(User.class))).thenReturn(false);
-    fixture.updateUser(UserFactory.createExistingUser());
-    fail();
+    assertThrows(
+        UserNotFoundException.class, () -> fixture.updateUser(UserFactory.createExistingUser()));
   }
 
   @Test
@@ -362,34 +348,34 @@ public class UserServiceImplTest {
     fixture.updateUser(UserFactory.createExistingUser());
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testDeleteUserByUuid_shouldThrowIaeOnNull() throws Exception {
     UserServiceImpl fixture = UserServiceImplFactory.createUsersServiceImpl();
-    fixture.deleteUserByUuid(null);
+    assertThrows(IllegalArgumentException.class, () -> fixture.deleteUserByUuid(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testDeleteUserByUuid_shouldThrowIaeOnEmpty() throws Exception {
     UserServiceImpl fixture = UserServiceImplFactory.createUsersServiceImpl();
-    fixture.deleteUserByUuid("");
+    assertThrows(IllegalArgumentException.class, () -> fixture.deleteUserByUuid(""));
   }
 
-  @Test(expected = UserServiceUnexpectedException.class)
+  @Test
   public void testDeleteUserByUuid_shouldThrowUsersServiceUnexpectedExceptionOnUnexpected()
       throws Exception {
     UserServiceImpl fixture = UserServiceImplFactory.createUsersServiceImpl();
     doThrow(new IllegalArgumentException("test exception"))
         .when(fixture.getUserDao())
         .findUserByUuid(any(String.class));
-    fixture.deleteUserByUuid("asdasdasd");
+    assertThrows(UserServiceUnexpectedException.class, () -> fixture.deleteUserByUuid("asdasdasd"));
   }
 
-  @Test(expected = UserNotFoundException.class)
+  @Test
   public void testDeleteUserByUuid_shouldThrowUserNotFoundException() throws Exception {
     UserServiceImpl fixture = UserServiceImplFactory.createUsersServiceImpl();
     when(fixture.getUserDao().deleteUser(any(String.class))).thenReturn(false);
     when(fixture.getUserDao().findUserByUuid(any(String.class))).thenReturn(null);
-    fixture.deleteUserByUuid("asdasdasd");
+    assertThrows(UserNotFoundException.class, () -> fixture.deleteUserByUuid("asdasdasd"));
   }
 
   @Test
@@ -398,6 +384,6 @@ public class UserServiceImplTest {
     when(fixture.getUserDao().deleteUser(any(String.class))).thenReturn(true);
     when(fixture.getUserDao().findUserByUuid(any(String.class)))
         .thenReturn(UserFactory.createNewUserTemplate());
-    fixture.deleteUserByUuid("asdasdasd");
+    assertThrows(IllegalArgumentException.class, () -> fixture.deleteUserByUuid("asdasdasd"));
   }
 }

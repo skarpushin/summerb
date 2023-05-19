@@ -29,7 +29,7 @@ import org.summerb.easycrud.api.query.Query;
 public class FilteringParamsToQueryConverterImpl implements FilteringParamsToQueryConverter {
 
   @Override
-  public Query convert(Map<String, FilteringParam> filterParams, Class<?> dtoClazz) {
+  public Query convert(Map<String, FilteringParam> filterParams, Class<?> rowClazz) {
     if (filterParams == null || filterParams.isEmpty()) {
       return null;
     }
@@ -39,7 +39,7 @@ public class FilteringParamsToQueryConverterImpl implements FilteringParamsToQue
       for (Entry<String, FilteringParam> entry : filterParams.entrySet()) {
         String fname = entry.getKey();
         String[] values = entry.getValue().getValues();
-        Class<?> type = getFieldType(dtoClazz, fname);
+        Class<?> type = getFieldType(rowClazz, fname);
         boolean isStringType = String.class.equals(type);
         boolean isNumericType =
             int.class.equals(type)
@@ -139,7 +139,7 @@ public class FilteringParamsToQueryConverterImpl implements FilteringParamsToQue
     }
   }
 
-  private static Class<?> getFieldType(Class<?> clazz, String fname) {
+  protected static Class<?> getFieldType(Class<?> clazz, String fname) {
     try {
       return clazz
           .getMethod("get" + fname.substring(0, 1).toUpperCase() + fname.substring(1))
@@ -149,7 +149,7 @@ public class FilteringParamsToQueryConverterImpl implements FilteringParamsToQue
     }
   }
 
-  private static Long[] convertToLongs(String[] values) {
+  protected static Long[] convertToLongs(String[] values) {
     Long[] ret = new Long[values.length];
     for (int i = 0; i < values.length; i++) {
       ret[i] = Long.parseLong(values[i]);

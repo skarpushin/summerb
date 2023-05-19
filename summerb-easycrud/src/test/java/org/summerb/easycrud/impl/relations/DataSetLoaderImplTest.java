@@ -17,8 +17,9 @@ package org.summerb.easycrud.impl.relations;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.argThat;
+import static org.junit.Assert.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -30,45 +31,42 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import org.hamcrest.Matcher;
-import org.hamcrest.core.IsEqual;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.api.EasyCrudServiceResolver;
-import org.summerb.easycrud.api.dto.HasId;
 import org.summerb.easycrud.api.dto.PagerParams;
 import org.summerb.easycrud.api.dto.PaginatedList;
-import org.summerb.easycrud.api.dto.datapackage.DataSet;
 import org.summerb.easycrud.api.exceptions.GenericEntityNotFoundException;
 import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.api.relations.ReferencesRegistry;
+import org.summerb.easycrud.api.row.HasId;
+import org.summerb.easycrud.api.row.datapackage.DataSet;
 
-import integr.org.summerb.easycrud.TestDto1;
-import integr.org.summerb.easycrud.TestDto2;
+import integr.org.summerb.easycrud.dtos.TestDto1;
+import integr.org.summerb.easycrud.dtos.TestDto2;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class DataSetLoaderImplTest {
 
   private DataSetLoaderImpl buildMockedInstance() {
-    DataSetLoaderImpl ret = new DataSetLoaderImpl();
     EasyCrudServiceResolver easyCrudServiceResolver = Mockito.mock(EasyCrudServiceResolver.class);
-    ret.setEasyCrudServiceResolver(easyCrudServiceResolver);
     ReferencesRegistry referencesRegistry = Mockito.mock(ReferencesRegistry.class);
-    ret.setReferencesRegistry(referencesRegistry);
-    return ret;
+    return new DataSetLoaderImpl(referencesRegistry, easyCrudServiceResolver);
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testLoadObjectsByIds_ExpectIaeForEmptyIds() throws Exception {
     DataSetLoaderImpl fixture = buildMockedInstance();
-    fixture.loadObjectsByIds(null, "asdasd");
+
+    assertThrows(IllegalArgumentException.class, () -> fixture.loadObjectsByIds(null, "asdasd"));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testLoadObjectsByIds_ExpectIaeForEmptyIds2() throws Exception {
     DataSetLoaderImpl fixture = buildMockedInstance();
-    fixture.loadObjectsByIds(new HashSet<>(), "asdasd");
+    assertThrows(
+        IllegalArgumentException.class, () -> fixture.loadObjectsByIds(new HashSet<>(), "asdasd"));
   }
 
   @Test
@@ -85,14 +83,15 @@ public class DataSetLoaderImplTest {
     assertEquals(dto, ret.get(0));
   }
 
-  @Test(expected = GenericEntityNotFoundException.class)
+  @Test
   public void testLoadObjectsByIds_ExpectOneLoadNfe() throws Exception {
     DataSetLoaderImpl fixture = buildMockedInstance();
     EasyCrudService service = Mockito.mock(EasyCrudService.class);
     when(fixture.getEasyCrudServiceResolver().resolveByRowMessageCode("dto1")).thenReturn(service);
     when(service.findById(1)).thenReturn(null);
 
-    fixture.loadObjectsByIds(ids(1), "dto1");
+    assertThrows(
+        GenericEntityNotFoundException.class, () -> fixture.loadObjectsByIds(ids(1), "dto1"));
   }
 
   private Set<Object> ids(Object... pids) {
@@ -106,17 +105,17 @@ public class DataSetLoaderImplTest {
     EasyCrudService service = Mockito.mock(EasyCrudService.class);
     when(fixture.getEasyCrudServiceResolver().resolveByRowMessageCode("dto1")).thenReturn(service);
 
-    Matcher<Query> matcher = IsEqual.equalTo(Query.n().in(HasId.FN_ID, new Long[] {1L, 2L}));
     PaginatedList mockret =
         new PaginatedList<>(new PagerParams(), Arrays.asList(new TestDto1(), new TestDto1()), 2);
-    when(service.find(any(PagerParams.class), argThat(matcher))).thenReturn(mockret);
+    when(service.find(any(PagerParams.class), eq(Query.n().in(HasId.FN_ID, new Long[] {1L, 2L}))))
+        .thenReturn(mockret);
 
     List<HasId> ret = fixture.loadObjectsByIds(ids(1L, 2L), "dto1");
     assertNotNull(ret);
     assertEquals(2, ret.size());
   }
 
-  @Test(expected = GenericEntityNotFoundException.class)
+  @Test
   public void testLoadObjectsByIds_ExpectManyLoadByLongsNfe() throws Exception {
     DataSetLoaderImpl fixture = buildMockedInstance();
     EasyCrudService service = Mockito.mock(EasyCrudService.class);
@@ -125,7 +124,8 @@ public class DataSetLoaderImplTest {
     PaginatedList mockret = new PaginatedList<>(new PagerParams(), Collections.emptyList(), 0);
     when(service.find(any(PagerParams.class), any(Query.class))).thenReturn(mockret);
 
-    fixture.loadObjectsByIds(ids(1L, 2L), "dto1");
+    assertThrows(
+        GenericEntityNotFoundException.class, () -> fixture.loadObjectsByIds(ids(1L, 2L), "dto1"));
   }
 
   @Test
@@ -134,10 +134,11 @@ public class DataSetLoaderImplTest {
     EasyCrudService service = Mockito.mock(EasyCrudService.class);
     when(fixture.getEasyCrudServiceResolver().resolveByRowMessageCode("dto1")).thenReturn(service);
 
-    Matcher<Query> matcher = IsEqual.equalTo(Query.n().in(HasId.FN_ID, new String[] {"s1", "s2"}));
     PaginatedList mockret =
         new PaginatedList<>(new PagerParams(), Arrays.asList(new TestDto1(), new TestDto1()), 2);
-    when(service.find(any(PagerParams.class), argThat(matcher))).thenReturn(mockret);
+    when(service.find(
+            any(PagerParams.class), eq(Query.n().in(HasId.FN_ID, new String[] {"s1", "s2"}))))
+        .thenReturn(mockret);
 
     List<HasId> ret = fixture.loadObjectsByIds(ids("s1", "s2"), "dto1");
     assertNotNull(ret);

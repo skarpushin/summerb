@@ -17,24 +17,24 @@ package org.summerb.easycrud.rest.dto;
 
 import java.util.Map;
 
-import org.summerb.easycrud.api.dto.HasId;
+import org.summerb.easycrud.api.row.HasId;
 
-public class SingleItemResult<TId, TDto extends HasId<TId>> extends CrudQueryResult<TId, TDto> {
-  private TDto row;
-  private Map<String, Boolean> permissions;
+public class SingleItemResult<TId, TRow extends HasId<TId>> extends CrudQueryResult<TId, TRow> {
+  protected TRow row;
+  protected Map<String, Boolean> permissions;
 
   public SingleItemResult() {}
 
-  public SingleItemResult(String entityMessageCode, TDto row) {
+  public SingleItemResult(String entityMessageCode, TRow row) {
     this.entityMessageCode = entityMessageCode;
     this.row = row;
   }
 
-  public TDto getRow() {
+  public TRow getRow() {
     return row;
   }
 
-  public void setRow(TDto row) {
+  public void setRow(TRow row) {
     this.row = row;
   }
 

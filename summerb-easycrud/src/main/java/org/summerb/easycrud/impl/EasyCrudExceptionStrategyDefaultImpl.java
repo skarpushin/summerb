@@ -34,7 +34,7 @@ import com.google.common.base.Throwables;
 
 /** @author sergey.karpushin */
 public class EasyCrudExceptionStrategyDefaultImpl<TId> implements EasyCrudExceptionStrategy<TId> {
-  private String entityCode;
+  protected String entityCode;
 
   public EasyCrudExceptionStrategyDefaultImpl(String entityTypeMessageCode) {
     Preconditions.checkArgument(StringUtils.hasText(entityTypeMessageCode));
@@ -43,14 +43,14 @@ public class EasyCrudExceptionStrategyDefaultImpl<TId> implements EasyCrudExcept
 
   @Override
   public RuntimeException handleExceptionAtCreate(Throwable t)
-      throws ValidationException, NotAuthorizedException {
+     {
     Throwables.throwIfInstanceOf(t, ValidationException.class);
     Throwables.throwIfInstanceOf(t, NotAuthorizedException.class);
 
     return buildUnexpectedAtCreate(t);
   }
 
-  protected RuntimeException buildUnexpectedAtCreate(Throwable t) throws ValidationException {
+  protected RuntimeException buildUnexpectedAtCreate(Throwable t){
     return new EasyCrudUnexpectedException(
         EasyCrudMessageCodes.UNEXPECTED_FAILED_TO_CREATE, entityCode, t);
   }
@@ -80,7 +80,7 @@ public class EasyCrudExceptionStrategyDefaultImpl<TId> implements EasyCrudExcept
    * key constraint fails (`cdb`.`badges`, CONSTRAINT `badges_FK_care_team_members` FOREIGN KEY
    * (`care_team_member_id`) REFERENCES `care_team_members` (`id`))"
    */
-  private ValidationException tryExtractConstraintViolation(Throwable t) {
+  protected ValidationException tryExtractConstraintViolation(Throwable t) {
     SQLIntegrityConstraintViolationException sqlExc =
         ExceptionUtils.findExceptionOfType(t, SQLIntegrityConstraintViolationException.class);
     if (sqlExc == null) {
@@ -113,7 +113,7 @@ public class EasyCrudExceptionStrategyDefaultImpl<TId> implements EasyCrudExcept
 
   @Override
   public RuntimeException handleExceptionAtUpdate(Throwable t)
-      throws ValidationException, NotAuthorizedException, EntityNotFoundException {
+      {
     Throwables.throwIfInstanceOf(t, ValidationException.class);
     Throwables.throwIfInstanceOf(t, NotAuthorizedException.class);
     Throwables.throwIfInstanceOf(t, EntityNotFoundException.class);

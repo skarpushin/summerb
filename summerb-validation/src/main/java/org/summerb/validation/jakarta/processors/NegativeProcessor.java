@@ -21,7 +21,7 @@ import org.summerb.validation.ValidationContext;
 import org.summerb.validation.errors.MustBeLess;
 import org.summerb.validation.jakarta.processors.abstracts.NumberProcessorNullableAbstract;
 
-import jakarta.validation.constraints.Negative;
+import javax.validation.constraints.Negative;
 
 public class NegativeProcessor extends NumberProcessorNullableAbstract<Negative> {
 

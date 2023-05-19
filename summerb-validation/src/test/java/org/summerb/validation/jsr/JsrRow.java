@@ -3,7 +3,7 @@ package org.summerb.validation.jsr;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import jakarta.validation.constraints.AssertTrue;
+import javax.validation.constraints.AssertTrue;
 
 public class JsrRow {
 

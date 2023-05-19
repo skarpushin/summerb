@@ -15,8 +15,8 @@
  ******************************************************************************/
 package org.summerb.users.jdbccrud;
 
-import org.summerb.easycrud.api.dto.HasAuthor;
 import org.summerb.easycrud.api.query.Query;
+import org.summerb.easycrud.api.row.HasAuthor;
 import org.summerb.easycrud.rest.commonpathvars.PathVariablesMap;
 import org.summerb.easycrud.rest.querynarrower.QueryNarrowerStrategyFieldBased;
 import org.summerb.spring.security.api.SecurityContextResolver;

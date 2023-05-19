@@ -25,8 +25,8 @@ import org.summerb.validation.jakarta.processors.abstracts.AnnotationProcessorNu
 
 import com.google.common.base.Preconditions;
 
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Pattern.Flag;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Pattern.Flag;
 
 public class PatternProcessor extends AnnotationProcessorNullableAbstract<Pattern> {
 

@@ -46,52 +46,37 @@ public class PropertiesConfig {
   // ================= Under-th-hood impl
   @Bean
   public StringIdAliasDao appAliasDao() {
-    return buildStringIdAliasDao(dataSource, "props_alias_app");
+    return new StringIdAliasDaoImpl(dataSource, "props_alias_app");
   }
 
   @Bean
   public StringIdAliasDao domainAliasDao() {
-    return buildStringIdAliasDao(dataSource, "props_alias_domain");
+    return new StringIdAliasDaoImpl(dataSource, "props_alias_domain");
   }
 
   @Bean
   public StringIdAliasDao propertyNameAliasDao() {
-    return buildStringIdAliasDao(dataSource, "props_alias_name");
-  }
-
-  private StringIdAliasDao buildStringIdAliasDao(DataSource dataSource, String tableName) {
-    StringIdAliasDaoImpl ret = new StringIdAliasDaoImpl();
-    ret.setDataSource(dataSource);
-    ret.setTableName(tableName);
-    return ret;
+    return new StringIdAliasDaoImpl(dataSource, "props_alias_name");
   }
 
   @Bean
   public StringIdAliasService appAliasService() {
-    StringIdAliasServiceEagerImpl ret = new StringIdAliasServiceEagerImpl();
-    ret.setStringIdAliasDao(appAliasDao());
-    return ret;
+    return new StringIdAliasServiceEagerImpl(appAliasDao());
   }
 
   @Bean
   public StringIdAliasService domainAliasService() {
-    StringIdAliasServiceEagerImpl ret = new StringIdAliasServiceEagerImpl();
-    ret.setStringIdAliasDao(domainAliasDao());
-    return ret;
+    return new StringIdAliasServiceEagerImpl(domainAliasDao());
   }
 
   @Bean
   public StringIdAliasService propertyNameAliasService() {
-    StringIdAliasServiceEagerImpl ret = new StringIdAliasServiceEagerImpl();
-    ret.setStringIdAliasDao(propertyNameAliasDao());
-    return ret;
+    return new StringIdAliasServiceEagerImpl(propertyNameAliasDao());
   }
 
   @Bean
   public PropertyDao propertyDao() {
-    PropertyDaoImpl ret = new PropertyDaoImpl();
-    ret.setDataSource(dataSource);
-    return ret;
+    return new PropertyDaoImpl(dataSource, "props_values");
   }
 
   @Bean

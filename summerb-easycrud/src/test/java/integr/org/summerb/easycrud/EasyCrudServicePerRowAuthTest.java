@@ -15,23 +15,40 @@
  ******************************************************************************/
 package integr.org.summerb.easycrud;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import static org.junit.Assert.assertThrows;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.annotation.ProfileValueSourceConfiguration;
 import org.springframework.test.annotation.SystemProfileValueSource;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("classpath:summerb-integr-test-context.xml")
+import integr.org.summerb.easycrud.config.EasyCrudIntegrTestConfig;
+import integr.org.summerb.easycrud.config.EmbeddedMariaDbConfig;
+import integr.org.summerb.easycrud.dtos.TestDto1;
+import integr.org.summerb.easycrud.dtos.TestDto2;
+
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {EmbeddedMariaDbConfig.class, EasyCrudIntegrTestConfig.class})
 @ProfileValueSourceConfiguration(SystemProfileValueSource.class)
 @Transactional
 public class EasyCrudServicePerRowAuthTest extends GenericCrudServiceTestTemplate {
+
+//  @BeforeAll
+//  static void setup(@Autowired DataSource dataSource) throws SQLException {
+//    try (Connection conn = dataSource.getConnection()) {
+//      // you'll have to make sure conn.autoCommit = true (default for e.g. H2)
+//      // e.g. url=jdbc:h2:mem:myDb;DB_CLOSE_DELAY=-1;MODE=MySQL
+//      ScriptUtils.executeSqlScript(conn, new ClassPathResource("mysql_init.sql"));
+//    }
+//  }
+
   @Autowired
   @Qualifier("testDto1ServiceBasicAuth")
   private EasyCrudService<String, TestDto1> testDto1Service;
@@ -59,7 +76,7 @@ public class EasyCrudServicePerRowAuthTest extends GenericCrudServiceTestTemplat
     return testDto1ServiceEb;
   }
 
-  @Test(expected = NotAuthorizedException.class)
+  @Test
   public void testCreateDto2ExpectNae() throws Exception {
     TestDto2 dto = new TestDto2();
     dto.setActive(true);
@@ -68,6 +85,6 @@ public class EasyCrudServicePerRowAuthTest extends GenericCrudServiceTestTemplat
     dto.setMajorVersion(5);
     dto.setMinorVersion(6);
 
-    testDto2ServiceBasicAuth.create(dto);
+    assertThrows(NotAuthorizedException.class, () -> testDto2ServiceBasicAuth.create(dto));
   }
 }

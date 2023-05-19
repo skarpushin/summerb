@@ -16,56 +16,59 @@
 package org.summerb.easycrud.impl.wireTaps;
 
 import org.summerb.easycrud.api.EasyCrudWireTap;
-import org.summerb.easycrud.api.dto.HasId;
-import org.summerb.security.api.exceptions.NotAuthorizedException;
-import org.summerb.validation.ValidationException;
+import org.summerb.easycrud.api.EasyCrudWireTapMode;
+import org.summerb.easycrud.impl.EasyCrudServiceImpl;
 
-public class EasyCrudWireTapNoOpImpl<TId, TDto extends HasId<TId>>
-    implements EasyCrudWireTap<TId, TDto> {
+/**
+ * This is just stub impl of {@link EasyCrudWireTap} to simplify {@link EasyCrudServiceImpl} logic
+ *
+ * @author Sergey Karpushin
+ * @param <TId>
+ * @param <TRow>
+ */
+public final class EasyCrudWireTapNoOpImpl<TRow> implements EasyCrudWireTap<TRow> {
 
   @Override
-  public boolean requiresFullDto() {
-    return true;
-  }
-
-  @Override
-  public boolean requiresOnCreate() throws ValidationException, NotAuthorizedException {
+  public boolean requiresOnCreate() {
     return false;
   }
 
   @Override
-  public void beforeCreate(TDto dto) throws NotAuthorizedException, ValidationException {}
+  public void beforeCreate(TRow row) {}
 
   @Override
-  public void afterCreate(TDto dto) throws ValidationException, NotAuthorizedException {}
+  public void afterCreate(TRow row) {}
 
   @Override
-  public boolean requiresOnUpdate() throws NotAuthorizedException, ValidationException {
+  public boolean requiresOnRead() {
     return false;
   }
 
   @Override
-  public void beforeUpdate(TDto from, TDto to) throws ValidationException, NotAuthorizedException {}
+  public void afterRead(TRow row) {}
 
   @Override
-  public void afterUpdate(TDto from, TDto to) throws NotAuthorizedException, ValidationException {}
+  public void beforeRead() {}
 
   @Override
-  public boolean requiresOnDelete() throws ValidationException, NotAuthorizedException {
-    return false;
+  public EasyCrudWireTapMode requiresOnUpdate() {
+    return EasyCrudWireTapMode.NOT_APPLICABLE;
   }
 
   @Override
-  public void beforeDelete(TDto dto) throws NotAuthorizedException, ValidationException {}
+  public void beforeUpdate(TRow from, TRow to) {}
 
   @Override
-  public void afterDelete(TDto dto) throws ValidationException, NotAuthorizedException {}
+  public void afterUpdate(TRow from, TRow to) {}
 
   @Override
-  public boolean requiresOnRead() throws NotAuthorizedException, ValidationException {
-    return false;
+  public EasyCrudWireTapMode requiresOnDelete() {
+    return EasyCrudWireTapMode.NOT_APPLICABLE;
   }
 
   @Override
-  public void afterRead(TDto dto) throws ValidationException, NotAuthorizedException {}
+  public void beforeDelete(TRow row) {}
+
+  @Override
+  public void afterDelete(TRow row) {}
 }

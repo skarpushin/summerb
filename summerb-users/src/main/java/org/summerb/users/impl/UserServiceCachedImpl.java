@@ -104,7 +104,7 @@ public class UserServiceCachedImpl implements UserService, InitializingBean {
       };
 
   @Override
-  public User createUser(User user) throws ValidationException {
+  public User createUser(User user){
     return userService.createUser(user);
   }
 
@@ -133,7 +133,7 @@ public class UserServiceCachedImpl implements UserService, InitializingBean {
 
   @Override
   public PaginatedList<User> findUsersByDisplayNamePartial(
-      String displayNamePartial, PagerParams pagerParams) throws ValidationException {
+      String displayNamePartial, PagerParams pagerParams){
     return userService.findUsersByDisplayNamePartial(displayNamePartial, pagerParams);
   }
 

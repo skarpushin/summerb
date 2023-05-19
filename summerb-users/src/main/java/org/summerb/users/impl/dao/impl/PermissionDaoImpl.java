@@ -22,13 +22,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jdbc.core.RowMapper;
-import org.summerb.easycrud.common.DaoBase;
+import org.summerb.easycrud.impl.dao.TableDaoBase;
 import org.summerb.users.impl.dao.PermissionDao;
 
-public class PermissionDaoImpl extends DaoBase implements InitializingBean, PermissionDao {
-  private String tableName = "users_permissions";
+public class PermissionDaoImpl extends TableDaoBase implements InitializingBean, PermissionDao {
   private String sqlGetUserPermissionsForSubject;
   private String sqlGetSubjectsUserHasPermissionFor;
   private String sqlGetSubjectsUserHasPermissionForFiltered;
@@ -38,24 +39,18 @@ public class PermissionDaoImpl extends DaoBase implements InitializingBean, Perm
   private String sqlSubjectPermissions;
   private String sqlGetSubjectUsersAndPermissions;
 
-  private RowMapper<String> permissionKeyRowMapper =
-      new RowMapper<String>() {
-        @Override
-        public String mapRow(ResultSet rs, int idx) throws SQLException {
-          return rs.getString("permission_key");
-        }
-      };
-
-  private RowMapper<String> subjectIdRowMapper =
-      new RowMapper<String>() {
-        @Override
-        public String mapRow(ResultSet rs, int idx) throws SQLException {
-          return rs.getString("subject_id");
-        }
-      };
+  /**
+   * @param dataSource dataSource
+   * @param tableName i.e. "users_permissions"
+   */
+  public PermissionDaoImpl(DataSource dataSource, String tableName) {
+    super(dataSource, tableName);
+  }
 
   @Override
   public void afterPropertiesSet() throws Exception {
+    super.afterPropertiesSet();
+
     sqlGetUserPermissionsForSubject =
         String.format(
             "SELECT permission_key FROM %s WHERE domain_name = :domainName AND subject_id = :subjectId AND user_uuid = :userUuid",
@@ -95,6 +90,22 @@ public class PermissionDaoImpl extends DaoBase implements InitializingBean, Perm
             "DELETE FROM %s WHERE domain_name = :domainName AND subject_id = :subjectId",
             tableName);
   }
+
+  private RowMapper<String> permissionKeyRowMapper =
+      new RowMapper<String>() {
+        @Override
+        public String mapRow(ResultSet rs, int idx) throws SQLException {
+          return rs.getString("permission_key");
+        }
+      };
+
+  private RowMapper<String> subjectIdRowMapper =
+      new RowMapper<String>() {
+        @Override
+        public String mapRow(ResultSet rs, int idx) throws SQLException {
+          return rs.getString("subject_id");
+        }
+      };
 
   @Override
   public void grantPermission(

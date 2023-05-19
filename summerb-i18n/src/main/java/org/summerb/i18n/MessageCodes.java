@@ -21,4 +21,3 @@ public abstract class MessageCodes {
 
   // TODO: Add known message code here
 }
-

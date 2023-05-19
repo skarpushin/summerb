@@ -94,8 +94,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Range;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 
 /**
  * Validation context provides you with convenience methods to validate Bean instance (DTOs, DOMs,
@@ -213,6 +213,16 @@ public class ValidationContext<T> {
 
     this.bean = bean;
     this.propertyNameObtainer = propertyNameObtainer;
+    this.jakartaValidator = jakartaValidator;
+    this.validationContextFactory = validationContextFactory;
+  }
+
+  public ValidationContext(
+      @Nullable JakartaValidator jakartaValidator,
+      @Nullable ValidationContextFactory validationContextFactory) {
+    Preconditions.checkArgument(propertyNameObtainer != null, "propertyNameObtainer required");
+
+    this.bean = null;
     this.jakartaValidator = jakartaValidator;
     this.validationContextFactory = validationContextFactory;
   }

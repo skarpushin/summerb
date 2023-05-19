@@ -22,7 +22,7 @@ import javax.annotation.Nullable;
 
 import org.summerb.validation.ValidationContext;
 
-import jakarta.validation.constraints.AssertTrue;
+import javax.validation.constraints.AssertTrue;
 
 /**
  * Impl of this interface is supposed to be statefull (instance created for each annotation on the

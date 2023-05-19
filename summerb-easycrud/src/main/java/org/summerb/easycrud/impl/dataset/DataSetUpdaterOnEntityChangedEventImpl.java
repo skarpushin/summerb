@@ -15,15 +15,16 @@
  ******************************************************************************/
 package org.summerb.easycrud.impl.dataset;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.api.EasyCrudServiceResolver;
 import org.summerb.easycrud.api.dataset.DataSetUpdaterOnEntityChangedEvent;
 import org.summerb.easycrud.api.dto.EntityChangedEvent;
 import org.summerb.easycrud.api.dto.EntityChangedEvent.ChangeType;
-import org.summerb.easycrud.api.dto.HasId;
-import org.summerb.easycrud.api.dto.datapackage.DataSet;
-import org.summerb.easycrud.api.dto.datapackage.DataTable;
+import org.summerb.easycrud.api.row.HasId;
+import org.summerb.easycrud.api.row.datapackage.DataSet;
+import org.summerb.easycrud.api.row.datapackage.DataTable;
+
+import com.google.common.base.Preconditions;
 
 /**
  * This impl will simply update dataSet tables with updated entities
@@ -35,7 +36,13 @@ import org.summerb.easycrud.api.dto.datapackage.DataTable;
  * @author sergeyk
  */
 public class DataSetUpdaterOnEntityChangedEventImpl implements DataSetUpdaterOnEntityChangedEvent {
-  private EasyCrudServiceResolver easyCrudServiceResolver;
+  protected EasyCrudServiceResolver easyCrudServiceResolver;
+
+  public DataSetUpdaterOnEntityChangedEventImpl(EasyCrudServiceResolver easyCrudServiceResolver) {
+    Preconditions.checkArgument(
+        easyCrudServiceResolver != null, "easyCrudServiceResolver required");
+    this.easyCrudServiceResolver = easyCrudServiceResolver;
+  }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   @Override
@@ -50,20 +57,11 @@ public class DataSetUpdaterOnEntityChangedEventImpl implements DataSetUpdaterOnE
     }
 
     DataTable table = dataSet.getTables().get(service.getRowMessageCode());
-    HasId dto = (HasId) e.getValue();
+    HasId rowto = (HasId) e.getValue();
     if (e.getChangeType() == ChangeType.REMOVED) {
-      table.getRows().remove(dto.getId());
+      table.getRows().remove(rowto.getId());
     } else {
-      table.put(dto);
+      table.put(rowto);
     }
-  }
-
-  public EasyCrudServiceResolver getEasyCrudServiceResolver() {
-    return easyCrudServiceResolver;
-  }
-
-  @Autowired
-  public void setEasyCrudServiceResolver(EasyCrudServiceResolver easyCrudServiceResolver) {
-    this.easyCrudServiceResolver = easyCrudServiceResolver;
   }
 }

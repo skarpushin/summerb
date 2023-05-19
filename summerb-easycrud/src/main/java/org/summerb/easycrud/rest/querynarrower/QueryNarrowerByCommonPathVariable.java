@@ -19,7 +19,7 @@ import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.rest.commonpathvars.PathVariablesMap;
 
 public class QueryNarrowerByCommonPathVariable extends QueryNarrowerStrategyFieldBased {
-  private String commonParamName;
+  protected String commonParamName;
 
   public QueryNarrowerByCommonPathVariable(String commonParamName) {
     super(commonParamName);

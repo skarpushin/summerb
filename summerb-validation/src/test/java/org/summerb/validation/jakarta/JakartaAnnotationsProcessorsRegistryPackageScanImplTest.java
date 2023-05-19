@@ -15,11 +15,11 @@ import org.summerb.validation.ValidationContext;
 import org.summerb.validation.errors.LengthMustBeGreater;
 import org.summerb.validation.testDtos.JakartaBean;
 
-import jakarta.validation.constraints.AssertFalse;
-import jakarta.validation.constraints.AssertTrue;
-import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
+import javax.validation.constraints.AssertFalse;
+import javax.validation.constraints.AssertTrue;
+import javax.validation.constraints.FutureOrPresent;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 class JakartaAnnotationsProcessorsRegistryPackageScanImplTest {
 

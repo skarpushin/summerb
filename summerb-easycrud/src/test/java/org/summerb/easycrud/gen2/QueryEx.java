@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.summerb.easycrud.api.EasyCrudService;
-import org.summerb.easycrud.api.dto.HasId;
+import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.gen2.restrictions.Between;
 import org.summerb.easycrud.gen2.restrictions.Empty;
 import org.summerb.easycrud.gen2.restrictions.Equals;

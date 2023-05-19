@@ -18,7 +18,7 @@ package org.summerb.easycrud.api.relations;
 import java.util.Collection;
 
 import org.summerb.easycrud.api.EasyCrudService;
-import org.summerb.easycrud.api.dto.relations.Ref;
+import org.summerb.easycrud.api.row.relations.Ref;
 
 /**
  * This interface provides information regarding references structure. It's used mostly for

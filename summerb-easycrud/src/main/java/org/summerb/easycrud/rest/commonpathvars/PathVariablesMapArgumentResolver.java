@@ -69,7 +69,7 @@ public class PathVariablesMapArgumentResolver implements HandlerMethodArgumentRe
     return ret;
   }
 
-  private void processCommonPathVariable(
+  protected void processCommonPathVariable(
       MethodParameter parameter,
       HasCommonPathVariable ann,
       NativeWebRequest webRequest,
@@ -84,7 +84,7 @@ public class PathVariablesMapArgumentResolver implements HandlerMethodArgumentRe
   }
 
   @SuppressWarnings("unchecked")
-  private Object findValue(
+  protected Object findValue(
       String paramName, NativeWebRequest webRequest, HasCommonPathVariable ann) {
     Map<String, String> uriTemplateVars =
         (Map<String, String>)
@@ -99,7 +99,7 @@ public class PathVariablesMapArgumentResolver implements HandlerMethodArgumentRe
     return value;
   }
 
-  private Object convertValueIfNeeded(
+  protected Object convertValueIfNeeded(
       String paramName,
       Object value,
       MethodParameter parameter,
@@ -120,7 +120,7 @@ public class PathVariablesMapArgumentResolver implements HandlerMethodArgumentRe
   }
 
   @SuppressWarnings("unchecked")
-  private void addToPathVariables(NativeWebRequest webRequest, String paramName, Object value) {
+  protected void addToPathVariables(NativeWebRequest webRequest, String paramName, Object value) {
     String key = View.PATH_VARIABLES;
     int scope = RequestAttributes.SCOPE_REQUEST;
     Map<String, Object> pathVars = (Map<String, Object>) webRequest.getAttribute(key, scope);

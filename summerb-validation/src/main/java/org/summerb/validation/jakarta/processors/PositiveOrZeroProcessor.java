@@ -21,7 +21,7 @@ import org.summerb.validation.ValidationContext;
 import org.summerb.validation.errors.MustBeGreaterOrEqual;
 import org.summerb.validation.jakarta.processors.abstracts.NumberProcessorNullableAbstract;
 
-import jakarta.validation.constraints.PositiveOrZero;
+import javax.validation.constraints.PositiveOrZero;
 
 public class PositiveOrZeroProcessor extends NumberProcessorNullableAbstract<PositiveOrZero> {
   public PositiveOrZeroProcessor(@Nonnull PositiveOrZero annotation, @Nonnull String propertyName) {

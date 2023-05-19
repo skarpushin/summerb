@@ -18,5 +18,5 @@ package org.summerb.easycrud.impl.relations.example;
 import org.summerb.easycrud.api.EasyCrudService;
 
 public interface DeviceService extends EasyCrudService<Long, DeviceRow> {
-  String ENTITY_TYPE_MESSAGE_CODE = "term.device";
+  String TERM = "term.device";
 }

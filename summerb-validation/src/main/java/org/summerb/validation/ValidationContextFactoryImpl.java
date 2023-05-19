@@ -52,6 +52,6 @@ public class ValidationContextFactoryImpl implements ValidationContextFactory {
 
   @Override
   public @Nonnull ValidationContext<?> build() {
-    return new ValidationContext<>();
+    return new ValidationContext<>(jakartaValidator, this);
   }
 }

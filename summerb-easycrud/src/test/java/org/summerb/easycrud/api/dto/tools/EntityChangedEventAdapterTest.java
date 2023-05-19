@@ -17,9 +17,9 @@ package org.summerb.easycrud.api.dto.tools;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.summerb.easycrud.api.dto.EntityChangedEvent;
 
 import com.google.gson.Gson;
@@ -33,7 +33,7 @@ public class EntityChangedEventAdapterTest {
 
     EntityChangedEvent evt =
         gson.fromJson(
-            "{\"ct\": \"asdasd\", \"vt\": \"org.summerb.easycrud.api.dto.tools.TestDto\", \"v\": {\"email\": \"asd\"}}",
+            "{\"ct\": \"ADDED\", \"vt\": \"org.summerb.easycrud.api.dto.tools.TestDto\", \"v\": {\"email\": \"asd\"}}",
             EntityChangedEvent.class);
 
     assertNotNull(evt);
@@ -47,16 +47,15 @@ public class EntityChangedEventAdapterTest {
     return gson;
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  @SuppressWarnings({"rawtypes", "unused"})
+  @Test
   public void testDeserializeExpectExceptionForNotAllowedClass() {
     Gson gson = getFixture();
 
-    EntityChangedEvent evt =
-        gson.fromJson(
-            "{\"ct\": \"asdasd\", \"vt\": \"javax.print.event.PrintEvent\", \"v\": {\"source\": \"asd\"}}",
-            EntityChangedEvent.class);
-
-    fail("We should be dead by now");
+    assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            gson.fromJson(
+                "{\"ct\": \"asdasd\", \"vt\": \"javax.print.event.PrintEvent\", \"v\": {\"source\": \"asd\"}}",
+                EntityChangedEvent.class));
   }
 }

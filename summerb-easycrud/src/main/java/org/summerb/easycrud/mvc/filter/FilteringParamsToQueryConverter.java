@@ -20,5 +20,5 @@ import java.util.Map;
 import org.summerb.easycrud.api.query.Query;
 
 public interface FilteringParamsToQueryConverter {
-  Query convert(Map<String, FilteringParam> filterParams, Class<?> dtoClazz);
+  Query convert(Map<String, FilteringParam> filterParams, Class<?> rowClazz);
 }

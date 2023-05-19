@@ -15,24 +15,23 @@
  ******************************************************************************/
 package org.summerb.easycrud.scaffold.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.summerb.easycrud.api.EasyCrudService;
+import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.scaffold.api.EasyCrudServiceProxyFactory;
 import org.summerb.easycrud.scaffold.api.ScaffoldedMethodFactory;
 
 public class EasyCrudServiceProxyFactoryImpl implements EasyCrudServiceProxyFactory {
-  private ScaffoldedMethodFactory scaffoldedMethodFactory;
+  protected ScaffoldedMethodFactory scaffoldedMethodFactory;
+
+  public EasyCrudServiceProxyFactoryImpl(ScaffoldedMethodFactory scaffoldedMethodFactory) {
+    this.scaffoldedMethodFactory = scaffoldedMethodFactory;
+  }
 
   @Override
-  public <TService> TService createImpl(Class<TService> serviceInterface) {
-    return EasyCrudServiceScaffoldedImpl.createImpl(serviceInterface, scaffoldedMethodFactory);
-  }
-
-  public ScaffoldedMethodFactory getScaffoldQueryImplFactory() {
-    return scaffoldedMethodFactory;
-  }
-
-  @Autowired(required = false)
-  public void setScaffoldQueryImplFactory(ScaffoldedMethodFactory scaffoldedMethodFactory) {
-    this.scaffoldedMethodFactory = scaffoldedMethodFactory;
+  public <TId, TDto extends HasId<TId>, TService extends EasyCrudService<TId, TDto>>
+      TService createProxy(
+          Class<TService> serviceInterface, EasyCrudService<TId, TDto> actualImpl) {
+    return EasyCrudServiceScaffoldedImpl.createImpl(
+        serviceInterface, actualImpl, scaffoldedMethodFactory);
   }
 }

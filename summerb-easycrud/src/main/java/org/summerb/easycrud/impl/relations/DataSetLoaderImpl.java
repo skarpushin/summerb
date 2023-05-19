@@ -28,25 +28,24 @@ import java.util.Set;
 
 import org.springframework.beans.PropertyAccessor;
 import org.springframework.beans.PropertyAccessorFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.api.EasyCrudServiceResolver;
-import org.summerb.easycrud.api.dto.HasId;
 import org.summerb.easycrud.api.dto.PagerParams;
 import org.summerb.easycrud.api.dto.PaginatedList;
-import org.summerb.easycrud.api.dto.datapackage.DataSet;
-import org.summerb.easycrud.api.dto.datapackage.DataTable;
-import org.summerb.easycrud.api.dto.datapackage.DataTable.RefToReferencedObjectsIdsMap;
-import org.summerb.easycrud.api.dto.datapackage.DataTable.RowIdToBackReferencesMap;
-import org.summerb.easycrud.api.dto.relations.Ref;
-import org.summerb.easycrud.api.dto.tools.EasyCrudDtoUtils;
 import org.summerb.easycrud.api.exceptions.EntityNotFoundException;
 import org.summerb.easycrud.api.exceptions.GenericEntityNotFoundException;
 import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.api.relations.DataSetLoader;
 import org.summerb.easycrud.api.relations.EasyCrudM2mService;
 import org.summerb.easycrud.api.relations.ReferencesRegistry;
+import org.summerb.easycrud.api.row.HasId;
+import org.summerb.easycrud.api.row.datapackage.DataSet;
+import org.summerb.easycrud.api.row.datapackage.DataTable;
+import org.summerb.easycrud.api.row.datapackage.DataTable.RefToReferencedObjectsIdsMap;
+import org.summerb.easycrud.api.row.datapackage.DataTable.RowIdToBackReferencesMap;
+import org.summerb.easycrud.api.row.relations.Ref;
+import org.summerb.easycrud.api.row.tools.EasyCrudDtoUtils;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
 
 import com.google.common.base.Preconditions;
@@ -66,8 +65,17 @@ import com.google.common.collect.Multimap;
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class DataSetLoaderImpl implements DataSetLoader {
-  private ReferencesRegistry referencesRegistry;
-  private EasyCrudServiceResolver easyCrudServiceResolver;
+  protected ReferencesRegistry referencesRegistry;
+  protected EasyCrudServiceResolver easyCrudServiceResolver;
+
+  public DataSetLoaderImpl(
+      ReferencesRegistry referencesRegistry, EasyCrudServiceResolver easyCrudServiceResolver) {
+    Preconditions.checkArgument(referencesRegistry != null);
+    Preconditions.checkArgument(easyCrudServiceResolver != null);
+
+    this.referencesRegistry = referencesRegistry;
+    this.easyCrudServiceResolver = easyCrudServiceResolver;
+  }
 
   @Override
   public List<HasId> loadObjectsByIds(Set<Object> ids, String entityTypeName)
@@ -107,7 +115,7 @@ public class DataSetLoaderImpl implements DataSetLoader {
     dataSet.get(entityTypeName).putAll(loaded);
   }
 
-  private HasId loadOne(Object id, EasyCrudService<Object, HasId> service)
+  protected HasId loadOne(Object id, EasyCrudService<Object, HasId<Object>> service)
       throws NotAuthorizedException, GenericEntityNotFoundException {
     HasId ret = service.findById(id);
     String entityTypeName = service.getRowMessageCode();
@@ -115,13 +123,13 @@ public class DataSetLoaderImpl implements DataSetLoader {
     return ret;
   }
 
-  private List<HasId> loadMultipleByQuery(Query query, EasyCrudService service)
+  protected List<HasId> loadMultipleByQuery(Query query, EasyCrudService service)
       throws NotAuthorizedException, GenericEntityNotFoundException {
     PaginatedList<HasId> result = service.find(PagerParams.ALL, query);
     return new ArrayList<>(result.getItems());
   }
 
-  private List<HasId> loadOneByOne(Collection ids, EasyCrudService<Object, HasId> service)
+  protected List<HasId> loadOneByOne(Collection ids, EasyCrudService<Object, HasId<Object>> service)
       throws NotAuthorizedException, GenericEntityNotFoundException {
     List<HasId> ret = new LinkedList<>();
     for (Object id : ids) {
@@ -131,7 +139,7 @@ public class DataSetLoaderImpl implements DataSetLoader {
     return ret;
   }
 
-  private void assertFound(
+  protected void assertFound(
       boolean expressionToBeTrue, String subjectTypeMessageCode, Object identifier)
       throws GenericEntityNotFoundException {
     if (!expressionToBeTrue) {
@@ -149,7 +157,7 @@ public class DataSetLoaderImpl implements DataSetLoader {
     addAllObjects(loadObjectsByIds, dataSet);
   }
 
-  private EntityTypeToObjectsMap loadObjectsByIds(Map<String, Set<Object>> ids)
+  protected EntityTypeToObjectsMap loadObjectsByIds(Map<String, Set<Object>> ids)
       throws EntityNotFoundException, NotAuthorizedException {
     Preconditions.checkArgument(!CollectionUtils.isEmpty(ids));
 
@@ -167,11 +175,11 @@ public class DataSetLoaderImpl implements DataSetLoader {
       throws EntityNotFoundException, NotAuthorizedException {
 
     loadObjectsByIds(new HashSet<>(Arrays.asList(id)), entityTypeName, dataSet);
-    resolveReferencedObjects(dataSet, references);
+    loadReferencedObjects(dataSet, references);
   }
 
   @Override
-  public void resolveReferencedObjects(DataSet dataSet, Ref... references)
+  public void loadReferencedObjects(DataSet dataSet, Ref... references)
       throws EntityNotFoundException, NotAuthorizedException {
     Preconditions.checkArgument(dataSet != null);
     Preconditions.checkArgument(references != null);
@@ -179,7 +187,7 @@ public class DataSetLoaderImpl implements DataSetLoader {
     DataSet nextDataSet = dataSet;
     while (nextDataSet != null) {
       DataSet curDataSet = nextDataSet;
-      nextDataSet = null;
+      nextDataSet = null; 
 
       DataSet newDataSet = new DataSet();
       Map<String, Set<Object>> idsToLoad =
@@ -214,12 +222,12 @@ public class DataSetLoaderImpl implements DataSetLoader {
 
       // next iteration
       if (!newDataSet.isEmpty()) {
-        nextDataSet = newDataSet;
+        nextDataSet =  newDataSet;
       }
     }
   }
 
-  private void populateBackReferencesMany2Many(
+  protected void populateBackReferencesMany2Many(
       ManyToManyRefToReferenceesMap manyToManyRefs, DataSet dataSet) {
     for (Entry<Ref, Map<Object, List<HasId>>> refToReferenceeListPair : manyToManyRefs.entrySet()) {
       DataTable sourceTable = dataSet.get(refToReferenceeListPair.getKey().getFromEntity());
@@ -246,7 +254,7 @@ public class DataSetLoaderImpl implements DataSetLoader {
     }
   }
 
-  private void addAllObjects(ManyToManyRefToReferenceesMap manyToManyRefs, DataSet dataSet) {
+  protected void addAllObjects(ManyToManyRefToReferenceesMap manyToManyRefs, DataSet dataSet) {
     for (Entry<Ref, Map<Object, List<HasId>>> refToReferenceeListPair : manyToManyRefs.entrySet()) {
       DataTable targetTable = dataSet.get(refToReferenceeListPair.getKey().getToEntity());
       for (Entry<Object, List<HasId>> referencerToReferencesListPair :
@@ -256,7 +264,7 @@ public class DataSetLoaderImpl implements DataSetLoader {
     }
   }
 
-  private ManyToManyRefToReferenceesMap loadManyToManyReferences(
+  protected ManyToManyRefToReferenceesMap loadManyToManyReferences(
       Map<Ref, Set<Object>> manyToManyReferences) {
     // NOTE: Queries to same types of referencees are not grouped. Should we
     // impl this like we did for one2many?
@@ -275,12 +283,12 @@ public class DataSetLoaderImpl implements DataSetLoader {
     return ret;
   }
 
-  private static class ManyToManyRefToReferenceesMap
+  protected static class ManyToManyRefToReferenceesMap
       extends HashMap<Ref, Map<Object, List<HasId>>> {
     private static final long serialVersionUID = 8251505694174701237L;
   }
 
-  private void populateBackReferencesOne2Many(
+  protected void populateBackReferencesOne2Many(
       EntityTypeToObjectsMap rowsMap, Map<Ref, Set<Object>> refs, DataSet dataSet) {
     for (Entry<String, List<HasId>> entry : rowsMap.entrySet()) {
       for (HasId row : entry.getValue()) {
@@ -323,19 +331,19 @@ public class DataSetLoaderImpl implements DataSetLoader {
    *
    * <p>value - is a list of objects
    */
-  private static class EntityTypeToObjectsMap extends HashMap<String, List<HasId>> {
-    private static final long serialVersionUID = -522735093281679526L;
+  protected static class EntityTypeToObjectsMap extends HashMap<String, List<HasId>> {
+    protected static final long serialVersionUID = -522735093281679526L;
   }
 
-  private void addAllObjects(EntityTypeToObjectsMap loadedObjects, DataSet dataSet) {
+  protected void addAllObjects(EntityTypeToObjectsMap loadedObjects, DataSet dataSet) {
     for (Entry<String, List<HasId>> entry : loadedObjects.entrySet()) {
       DataTable table = dataSet.get(entry.getKey());
       table.putAll(entry.getValue());
     }
   }
 
-  private EntityTypeToObjectsMap loadOneToManyReferences(Map<Ref, Set<Object>> refToReferencersIds)
-      throws NotAuthorizedException {
+  protected EntityTypeToObjectsMap loadOneToManyReferences(
+      Map<Ref, Set<Object>> refToReferencersIds) throws NotAuthorizedException {
     Multimap<String, Entry<Ref, Set<Object>>> targetEntityToRef = HashMultimap.create();
     for (Entry<Ref, Set<Object>> entry : refToReferencersIds.entrySet()) {
       targetEntityToRef.put(entry.getKey().getToEntity(), entry);
@@ -375,7 +383,7 @@ public class DataSetLoaderImpl implements DataSetLoader {
    * @param references references to use
    * @return map entityTypeCode to list of ids of these entities to be loaded
    */
-  private Map<String, Set<Object>> enumerateOutgoingReferences(
+  protected Map<String, Set<Object>> enumerateOutgoingReferences(
       DataSet scanForReferences, DataSet checkForExistence, Ref[] references) {
     Map<String, Set<Object>> ret = new HashMap<>();
     for (DataTable table : scanForReferences.getTables().values()) {
@@ -416,7 +424,7 @@ public class DataSetLoaderImpl implements DataSetLoader {
     return ret;
   }
 
-  private List<Ref> enumOutgoingRefsToTableOrNull(Ref[] references, String entityName) {
+  protected List<Ref> enumOutgoingRefsToTableOrNull(Ref[] references, String entityName) {
     List<Ref> ret = null;
     for (Ref ref : references) {
       if (!entityName.equals(ref.getFromEntity())) {
@@ -434,7 +442,7 @@ public class DataSetLoaderImpl implements DataSetLoader {
     return ret;
   }
 
-  private Map<Ref, Set<Object>> enumerateOneToManyReferences(DataSet dataSet, Ref[] references) {
+  protected Map<Ref, Set<Object>> enumerateOneToManyReferences(DataSet dataSet, Ref[] references) {
     Map<Ref, Set<Object>> ret = new HashMap<>();
     for (Ref ref : references) {
       if (!ref.isOneToMany()) {
@@ -450,7 +458,7 @@ public class DataSetLoaderImpl implements DataSetLoader {
     return ret;
   }
 
-  private Map<Ref, Set<Object>> enumerateManyToManyReferences(DataSet dataSet, Ref[] references) {
+  protected Map<Ref, Set<Object>> enumerateManyToManyReferences(DataSet dataSet, Ref[] references) {
     Map<Ref, Set<Object>> ret = new HashMap<>();
     for (Ref ref : references) {
       if (!ref.isManyToMany()) {
@@ -470,17 +478,7 @@ public class DataSetLoaderImpl implements DataSetLoader {
     return referencesRegistry;
   }
 
-  @Autowired
-  public void setReferencesRegistry(ReferencesRegistry referencesRegistry) {
-    this.referencesRegistry = referencesRegistry;
-  }
-
   public EasyCrudServiceResolver getEasyCrudServiceResolver() {
     return easyCrudServiceResolver;
-  }
-
-  @Autowired
-  public void setEasyCrudServiceResolver(EasyCrudServiceResolver easyCrudServiceResolver) {
-    this.easyCrudServiceResolver = easyCrudServiceResolver;
   }
 }

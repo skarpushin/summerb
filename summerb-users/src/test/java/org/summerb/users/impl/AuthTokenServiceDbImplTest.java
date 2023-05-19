@@ -17,13 +17,13 @@ package org.summerb.users.impl;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 
 import java.util.UUID;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.summerb.users.api.AuthTokenService;
 import org.summerb.users.api.dto.AuthToken;
 import org.summerb.users.api.dto.AuthTokenFactory;
@@ -37,46 +37,47 @@ import org.summerb.validation.ValidationException;
 
 public class AuthTokenServiceDbImplTest {
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testCreateAuthToken_defensive_userNull() throws Exception {
     AuthTokenService fixture = AuthTokenServiceDbImplFactory.createAuthTokenServiceDbImpl();
-    fixture.authenticate(null, "", "");
-    fail();
+    assertThrows(IllegalArgumentException.class, () -> fixture.authenticate(null, "", ""));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testCreateAuthToken_defensive_passwordNull() throws Exception {
     AuthTokenService fixture = AuthTokenServiceDbImplFactory.createAuthTokenServiceDbImpl();
-    fixture.authenticate("", null, "");
-    fail();
+    assertThrows(IllegalArgumentException.class, () -> fixture.authenticate("", null, ""));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testCreateAuthToken_defensive_clientIpNull() throws Exception {
     AuthTokenService fixture = AuthTokenServiceDbImplFactory.createAuthTokenServiceDbImpl();
-    fixture.authenticate("", "", null);
-    fail();
+    assertThrows(IllegalArgumentException.class, () -> fixture.authenticate("", "", null));
   }
 
-  @Test(expected = UserNotFoundException.class)
+  @Test
   public void testCreateAuthToken_blackbox_expectUserNotFoundExpcetion() throws Exception {
     AuthTokenService fixture = AuthTokenServiceDbImplFactory.createAuthTokenServiceDbImpl();
-    fixture.authenticate(UserFactory.NON_EXISTENT_USER_EMAIL, "", "");
-    fail();
+    assertThrows(
+        UserNotFoundException.class,
+        () -> fixture.authenticate(UserFactory.NON_EXISTENT_USER_EMAIL, "", ""));
   }
 
-  @Test(expected = ValidationException.class)
+  @Test
   public void testCreateAuthToken_blackbox_expectFieldValidationException() throws Exception {
     AuthTokenService fixture = AuthTokenServiceDbImplFactory.createAuthTokenServiceDbImpl();
-    fixture.authenticate("abra cadabra", "", "");
-    fail();
+    assertThrows(ValidationException.class, () -> fixture.authenticate("abra cadabra", "", ""));
   }
 
-  @Test(expected = InvalidPasswordException.class)
+  @Test
   public void testCreateAuthToken_blackbox_expectInvalidPasswordException() throws Exception {
     AuthTokenService fixture = AuthTokenServiceDbImplFactory.createAuthTokenServiceDbImpl();
     fixture.authenticate(UserFactory.EXISTENT_USER_EMAIL, UUID.randomUUID().toString(), "");
-    fail();
+    assertThrows(
+        InvalidPasswordException.class,
+        () ->
+            fixture.authenticate(
+                UserFactory.EXISTENT_USER_EMAIL, UUID.randomUUID().toString(), ""));
   }
 
   @Test
@@ -90,19 +91,19 @@ public class AuthTokenServiceDbImplTest {
     assertNotNull(result);
   }
 
-  @Test(expected = UserServiceUnexpectedException.class)
+  @Test
   public void testCreateAuthToken_whitebox_expectUserServiceUnexpectedExceptionOnDaoFail()
       throws Exception {
     AuthTokenService fixture = AuthTokenServiceDbImplFactory.createAuthTokenServiceDbImpl();
-    fixture.authenticate(UserFactory.USER_EMAIL_RESULT_IN_EXCEPTION, "", "0.0.0.0");
-    fail();
+    assertThrows(
+        UserServiceUnexpectedException.class,
+        () -> fixture.authenticate(UserFactory.USER_EMAIL_RESULT_IN_EXCEPTION, "", "0.0.0.0"));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testGetAuthTokenByUuid_defensive_nullAuthToken() throws Exception {
     AuthTokenServiceImpl fixture = AuthTokenServiceDbImplFactory.createAuthTokenServiceDbImpl();
-    fixture.getAuthTokenByUuid(null);
-    fail();
+    assertThrows(IllegalArgumentException.class, () -> fixture.getAuthTokenByUuid(null));
   }
 
   @Test
@@ -112,50 +113,54 @@ public class AuthTokenServiceDbImplTest {
     assertNotNull(result);
   }
 
-  @Test(expected = AuthTokenNotFoundException.class)
+  @Test
   public void testGetAuthTokenByUuid_blackbox_expectAuthTokenNotFoundException() throws Exception {
     AuthTokenServiceImpl fixture = AuthTokenServiceDbImplFactory.createAuthTokenServiceDbImpl();
-    fixture.getAuthTokenByUuid(AuthTokenFactory.AUTH_TOKEN_NOT_EXISTENT);
-    fail();
+    assertThrows(
+        AuthTokenNotFoundException.class,
+        () -> fixture.getAuthTokenByUuid(AuthTokenFactory.AUTH_TOKEN_NOT_EXISTENT));
   }
 
-  @Test(expected = UserServiceUnexpectedException.class)
+  @Test
   public void testGetAuthTokenByUuid_whitebox_expectUserServiceUnexpectedException()
       throws Exception {
     AuthTokenServiceImpl fixture = AuthTokenServiceDbImplFactory.createAuthTokenServiceDbImpl();
-    fixture.getAuthTokenByUuid(AuthTokenFactory.AUTH_TOKEN_EXCEPTION);
-    fail();
+    assertThrows(
+        UserServiceUnexpectedException.class,
+        () -> fixture.getAuthTokenByUuid(AuthTokenFactory.AUTH_TOKEN_EXCEPTION));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testIsAuthTokenValid_defensive_nullUserId() throws Exception {
     AuthTokenServiceImpl fixture = AuthTokenServiceDbImplFactory.createAuthTokenServiceDbImpl();
-    fixture.isAuthTokenValid(null, "...", "...");
-    fail();
+    assertThrows(
+        IllegalArgumentException.class, () -> fixture.isAuthTokenValid(null, "...", "..."));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testIsAuthTokenValid_defensive_nullAuthToken() throws Exception {
     AuthTokenServiceImpl fixture = AuthTokenServiceDbImplFactory.createAuthTokenServiceDbImpl();
-    fixture.isAuthTokenValid("...", null, null);
-    fail();
+    assertThrows(IllegalArgumentException.class, () -> fixture.isAuthTokenValid("...", null, null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testIsAuthTokenValid_defensive_nullAuthTokenValue() throws Exception {
     AuthTokenServiceImpl fixture = AuthTokenServiceDbImplFactory.createAuthTokenServiceDbImpl();
     fixture.isAuthTokenValid("...", "...", null);
-    fail();
+    assertThrows(
+        IllegalArgumentException.class, () -> fixture.isAuthTokenValid("...", "...", null));
   }
 
-  @Test(expected = UserNotFoundException.class)
+  @Test
   public void testIsAuthTokenValid_blackbox_expectUserNotFoundException() throws Exception {
     AuthTokenServiceImpl fixture = AuthTokenServiceDbImplFactory.createAuthTokenServiceDbImpl();
-    fixture.isAuthTokenValid(
-        UserFactory.NON_EXISTENT_USER,
-        AuthTokenFactory.AUTH_TOKEN_EXISTENT,
-        AuthTokenFactory.AUTH_TOKEN_EXISTENT_VALUE);
-    fail();
+    assertThrows(
+        UserNotFoundException.class,
+        () ->
+            fixture.isAuthTokenValid(
+                UserFactory.NON_EXISTENT_USER,
+                AuthTokenFactory.AUTH_TOKEN_EXISTENT,
+                AuthTokenFactory.AUTH_TOKEN_EXISTENT_VALUE));
   }
 
   @Test
@@ -189,7 +194,7 @@ public class AuthTokenServiceDbImplTest {
     assertNull(result);
   }
 
-  @Test(expected = UserServiceUnexpectedException.class)
+  @Test
   public void testIsAuthTokenValid_whitebox_expectUserServiceUnexpectedException()
       throws Exception {
     AuthTokenServiceImpl fixture = AuthTokenServiceDbImplFactory.createAuthTokenServiceDbImpl();
@@ -197,7 +202,13 @@ public class AuthTokenServiceDbImplTest {
         UserFactory.USER_RESULT_IN_EXCEPTION,
         AuthTokenFactory.AUTH_TOKEN_EXISTENT,
         AuthTokenFactory.AUTH_TOKEN_EXISTENT_VALUE);
-    fail();
+    assertThrows(
+        UserServiceUnexpectedException.class,
+        () ->
+            fixture.isAuthTokenValid(
+                UserFactory.USER_RESULT_IN_EXCEPTION,
+                AuthTokenFactory.AUTH_TOKEN_EXISTENT,
+                AuthTokenFactory.AUTH_TOKEN_EXISTENT_VALUE));
   }
 
   @Test
@@ -209,11 +220,10 @@ public class AuthTokenServiceDbImplTest {
     assertNull(result);
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testDeleteAuthToken_defensive_nullAuthToken() throws Exception {
     AuthTokenServiceImpl fixture = AuthTokenServiceDbImplFactory.createAuthTokenServiceDbImpl();
-    fixture.deleteAuthToken(null);
-    fail();
+    assertThrows(IllegalArgumentException.class, () -> fixture.deleteAuthToken(null));
   }
 
   @Test
@@ -228,33 +238,35 @@ public class AuthTokenServiceDbImplTest {
     fixture.deleteAuthToken(AuthTokenFactory.AUTH_TOKEN_NOT_EXISTENT);
   }
 
-  @Test(expected = UserServiceUnexpectedException.class)
+  @Test
   public void testDeleteAuthToken_whitebox_expectUserServiceUnexpectedException() throws Exception {
     AuthTokenServiceImpl fixture = AuthTokenServiceDbImplFactory.createAuthTokenServiceDbImpl();
-    fixture.deleteAuthToken(AuthTokenFactory.AUTH_TOKEN_EXCEPTION);
-    fail();
+    assertThrows(
+        UserServiceUnexpectedException.class,
+        () -> fixture.deleteAuthToken(AuthTokenFactory.AUTH_TOKEN_EXCEPTION));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testFindUserAuthTokens_defensive_nullUser() throws Exception {
     AuthTokenService fixture = AuthTokenServiceDbImplFactory.createAuthTokenServiceDbImpl();
-    fixture.findUserAuthTokens(null);
-    fail();
+    assertThrows(IllegalArgumentException.class, () -> fixture.findUserAuthTokens(null));
   }
 
-  @Test(expected = UserNotFoundException.class)
+  @Test
   public void testFindUserAuthTokens_whitebox_expectUserNotFoundExceptionForNonExistentUser()
       throws Exception {
     AuthTokenService fixture = AuthTokenServiceDbImplFactory.createAuthTokenServiceDbImpl();
-    fixture.findUserAuthTokens(UserFactory.NON_EXISTENT_USER);
-    fail();
+    assertThrows(
+        UserNotFoundException.class,
+        () -> fixture.findUserAuthTokens(UserFactory.NON_EXISTENT_USER));
   }
 
-  @Test(expected = UserServiceUnexpectedException.class)
+  @Test
   public void testFindUserAuthTokens_whitebox_expectUnexpectedException() throws Exception {
     AuthTokenService fixture = AuthTokenServiceDbImplFactory.createAuthTokenServiceDbImpl();
-    fixture.findUserAuthTokens(UserFactory.USER_RESULT_IN_EXCEPTION);
-    fail();
+    assertThrows(
+        UserServiceUnexpectedException.class,
+        () -> fixture.findUserAuthTokens(UserFactory.USER_RESULT_IN_EXCEPTION));
   }
 
   @Before

@@ -21,24 +21,56 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.summerb.easycrud.api.DaoExceptionTranslator;
-import org.summerb.easycrud.common.DaoBase;
-import org.summerb.easycrud.impl.mysql.DaoExceptionToFveTranslatorMySqlImpl;
+import org.summerb.easycrud.impl.dao.TableDaoBase;
+import org.summerb.easycrud.impl.dao.mysql.DaoExceptionTranslatorMySqlImpl;
 import org.summerb.properties.impl.dao.PropertyDao;
 import org.summerb.properties.impl.dto.NamedIdProperty;
 
-public class PropertyDaoImpl extends DaoBase implements PropertyDao, InitializingBean {
-  protected String tableName = "props_values";
+public class PropertyDaoImpl extends TableDaoBase implements PropertyDao, InitializingBean {
   protected String sqlPutProperty;
   protected String sqlFindSingleSubjectProperty;
   protected String sqlFindAllSubjectProperty;
   protected String sqlDeleAllSubjectProperties;
 
-  protected DaoExceptionTranslator daoExceptionTranslator =
-      new DaoExceptionToFveTranslatorMySqlImpl();
+  public PropertyDaoImpl(DataSource dataSource, String tableName /*"props_values"*/) {
+    super(dataSource, tableName);
+  }
+
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    super.afterPropertiesSet();
+    buildSqlStatements(tableName);
+  }
+
+  protected void buildSqlStatements(String tableName) {
+    sqlPutProperty =
+        String.format(
+            "INSERT INTO %s (app_id, domain_id, subject_id, name_id, value) VALUES (:app_id, :domain_id, :subject_id, :name_id, :value)  ON DUPLICATE KEY UPDATE value = :value",
+            tableName);
+
+    sqlFindSingleSubjectProperty =
+        String.format(
+            "SELECT name_id, value FROM %s WHERE app_id = :app_id AND domain_id = :domain_id AND subject_id = :subject_id AND name_id = :name_id",
+            tableName);
+
+    sqlFindAllSubjectProperty =
+        String.format(
+            "SELECT name_id, value FROM %s WHERE app_id = :app_id AND domain_id = :domain_id AND subject_id = :subject_id",
+            tableName);
+
+    sqlDeleAllSubjectProperties =
+        String.format(
+            "DELETE FROM %s WHERE app_id = :app_id AND domain_id = :domain_id AND subject_id = :subject_id",
+            tableName);
+  }
+
+  protected DaoExceptionTranslator daoExceptionTranslator = new DaoExceptionTranslatorMySqlImpl();
 
   protected RowMapper<String> propertyValueRowMapper =
       new RowMapper<String>() {
@@ -60,29 +92,6 @@ public class PropertyDaoImpl extends DaoBase implements PropertyDao, Initializin
               rs.getLong("name_id"), value == null ? null : new String(value));
         }
       };
-
-  @Override
-  public void afterPropertiesSet() throws Exception {
-    sqlPutProperty =
-        String.format(
-            "INSERT INTO %s (app_id, domain_id, subject_id, name_id, value) VALUES (:app_id, :domain_id, :subject_id, :name_id, :value)  ON DUPLICATE KEY UPDATE value = :value",
-            tableName);
-
-    sqlFindSingleSubjectProperty =
-        String.format(
-            "SELECT name_id, value FROM %s WHERE app_id = :app_id AND domain_id = :domain_id AND subject_id = :subject_id AND name_id = :name_id",
-            tableName);
-
-    sqlFindAllSubjectProperty =
-        String.format(
-            "SELECT name_id, value FROM %s WHERE app_id = :app_id AND domain_id = :domain_id AND subject_id = :subject_id",
-            tableName);
-
-    sqlDeleAllSubjectProperties =
-        String.format(
-            "DELETE FROM %s WHERE app_id = :app_id AND domain_id = :domain_id AND subject_id = :subject_id",
-            tableName);
-  }
 
   @Override
   public void putProperty(

@@ -30,7 +30,7 @@ public class GenericEntityNotFoundException extends EntityNotFoundException
     implements HasMessageArgsConverters {
   private static final long serialVersionUID = -953061537781444391L;
 
-  private String subjectTypeMessageCode;
+  protected String subjectTypeMessageCode;
 
   /**
    * @param subjectTypeMessageCode entity type message code

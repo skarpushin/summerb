@@ -29,8 +29,8 @@ public class FilteringParam {
   public static final String CMD_GREATER = "greater";
   public static final String CMD_GREATER_OR_EQUAL = "greater.or.equal";
 
-  private String command;
-  private String[] values;
+  protected String command;
+  protected String[] values;
 
   public static FilteringParam build(String command, String value) {
     FilteringParam ret = new FilteringParam();

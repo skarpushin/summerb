@@ -52,7 +52,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   @Transactional(rollbackFor = Throwable.class)
-  public User createUser(User userTemplate) throws ValidationException {
+  public User createUser(User userTemplate){
     Preconditions.checkArgument(userTemplate != null, "userTemplate is required");
 
     validateUser(userTemplate);
@@ -98,7 +98,7 @@ public class UserServiceImpl implements UserService {
     return userToCreate;
   }
 
-  private void validateUser(User user) throws ValidationException {
+  private void validateUser(User user){
     var ctx = validationContextFactory.buildFor(user);
 
     ctx.validEmail(User::getEmail);
@@ -151,7 +151,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public PaginatedList<User> findUsersByDisplayNamePartial(
-      String displayNamePartial, PagerParams pagerParams) throws ValidationException {
+      String displayNamePartial, PagerParams pagerParams){
     Preconditions.checkArgument(
         StringUtils.hasText(displayNamePartial), "Query text must be specified");
 
