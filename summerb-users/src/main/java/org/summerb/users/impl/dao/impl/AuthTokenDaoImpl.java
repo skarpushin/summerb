@@ -30,18 +30,18 @@ import org.summerb.users.api.dto.AuthToken;
 import org.summerb.users.impl.dao.AuthTokenDao;
 
 public class AuthTokenDaoImpl extends TableDaoBase implements InitializingBean, AuthTokenDao {
-  private static final String PARAM_LAST_VERIFIED_AT = "lastVerifiedAt";
-  private static final String PARAM_AUTH_TOKEN_UUID = "authTokenUuid";
-  private static final String PARAM_TOKEN_VALUE = "tokenValue";
-  private static final String PARAM_USER_UUID = "userUuid";
+  protected static final String PARAM_LAST_VERIFIED_AT = "lastVerifiedAt";
+  protected static final String PARAM_AUTH_TOKEN_UUID = "authTokenUuid";
+  protected static final String PARAM_TOKEN_VALUE = "tokenValue";
+  protected static final String PARAM_USER_UUID = "userUuid";
 
-  private SimpleJdbcInsert jdbcInsert;
-  private BeanPropertyRowMapper<AuthToken> rowMapper;
+  protected SimpleJdbcInsert jdbcInsert;
+  protected BeanPropertyRowMapper<AuthToken> rowMapper;
 
-  private String sqlSelectTokenByUuid;
-  private String sqlUpdateToken;
-  private String sqlDeleteTokenByUuid;
-  private String sqlSearchUserTokens;
+  protected String sqlSelectTokenByUuid;
+  protected String sqlUpdateToken;
+  protected String sqlDeleteTokenByUuid;
+  protected String sqlSearchUserTokens;
 
   /**
    * @param dataSource dataSource

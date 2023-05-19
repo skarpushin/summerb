@@ -21,12 +21,19 @@ import org.springframework.test.annotation.SystemProfileValueSource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
+import org.summerb.dbupgrade.config.TestPostgressConfig;
+
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase.DatabaseType;
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase.RefreshMode;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {TestPostgressConfig.class})
 @ProfileValueSourceConfiguration(SystemProfileValueSource.class)
 @Transactional
-public class DbUpgradePostgressTest extends DbUpgradeTestBase {
+@AutoConfigureEmbeddedDatabase(type = DatabaseType.POSTGRES, refresh = RefreshMode.AFTER_CLASS)
+public class DbUpgradePostgressTest extends DbUpgradeTestAbstract {
   // NOTE: All impl is in parnt. The only difference is config whether we use
   // MySql or Postgress specifics
+
 }

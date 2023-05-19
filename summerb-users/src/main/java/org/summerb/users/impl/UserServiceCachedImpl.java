@@ -20,7 +20,6 @@ import java.util.concurrent.ExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Required;
 import org.summerb.easycrud.api.dto.EntityChangedEvent;
 import org.summerb.easycrud.api.dto.PagerParams;
 import org.summerb.easycrud.api.dto.PaginatedList;
@@ -31,6 +30,7 @@ import org.summerb.utils.cache.CachesInvalidationNeeded;
 import org.summerb.utils.tx.TransactionBoundCache;
 import org.summerb.validation.ValidationException;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -39,13 +39,21 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 public class UserServiceCachedImpl implements UserService, InitializingBean {
-  private Logger log = LoggerFactory.getLogger(getClass());
+  protected Logger log = LoggerFactory.getLogger(getClass());
 
-  private UserService userService;
-  private EventBus eventBus;
+  protected UserService userService;
+  protected EventBus eventBus;
 
-  private LoadingCache<String, User> cacheByEmail;
-  private LoadingCache<String, User> cacheByUuid;
+  protected LoadingCache<String, User> cacheByEmail;
+  protected LoadingCache<String, User> cacheByUuid;
+
+  public UserServiceCachedImpl(UserService userService, EventBus eventBus) {
+    Preconditions.checkArgument(userService != null, "userService required");
+    Preconditions.checkArgument(eventBus != null, "eventBus required");
+
+    this.eventBus = eventBus;
+    this.userService = userService;
+  }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   @Override
@@ -79,7 +87,7 @@ public class UserServiceCachedImpl implements UserService, InitializingBean {
     cacheByUuid.invalidateAll();
   }
 
-  private CacheLoader<String, User> loaderByEmail =
+  protected CacheLoader<String, User> loaderByEmail =
       new CacheLoader<String, User>() {
         @Override
         public User load(String key) throws Exception {
@@ -91,7 +99,7 @@ public class UserServiceCachedImpl implements UserService, InitializingBean {
         }
       };
 
-  private CacheLoader<String, User> loaderByUuid =
+  protected CacheLoader<String, User> loaderByUuid =
       new CacheLoader<String, User>() {
         @Override
         public User load(String key) throws Exception {
@@ -104,7 +112,7 @@ public class UserServiceCachedImpl implements UserService, InitializingBean {
       };
 
   @Override
-  public User createUser(User user){
+  public User createUser(User user) {
     return userService.createUser(user);
   }
 
@@ -133,7 +141,7 @@ public class UserServiceCachedImpl implements UserService, InitializingBean {
 
   @Override
   public PaginatedList<User> findUsersByDisplayNamePartial(
-      String displayNamePartial, PagerParams pagerParams){
+      String displayNamePartial, PagerParams pagerParams) {
     return userService.findUsersByDisplayNamePartial(displayNamePartial, pagerParams);
   }
 
@@ -151,17 +159,7 @@ public class UserServiceCachedImpl implements UserService, InitializingBean {
     return userService;
   }
 
-  @Required
-  public void setUserService(UserService userService) {
-    this.userService = userService;
-  }
-
   public EventBus getEventBus() {
     return eventBus;
-  }
-
-  @Required
-  public void setEventBus(EventBus eventBus) {
-    this.eventBus = eventBus;
   }
 }

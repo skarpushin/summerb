@@ -72,7 +72,6 @@ public class AuthTokenServiceDbImplTest {
   @Test
   public void testCreateAuthToken_blackbox_expectInvalidPasswordException() throws Exception {
     AuthTokenService fixture = AuthTokenServiceDbImplFactory.createAuthTokenServiceDbImpl();
-    fixture.authenticate(UserFactory.EXISTENT_USER_EMAIL, UUID.randomUUID().toString(), "");
     assertThrows(
         InvalidPasswordException.class,
         () ->
@@ -146,7 +145,6 @@ public class AuthTokenServiceDbImplTest {
   @Test
   public void testIsAuthTokenValid_defensive_nullAuthTokenValue() throws Exception {
     AuthTokenServiceImpl fixture = AuthTokenServiceDbImplFactory.createAuthTokenServiceDbImpl();
-    fixture.isAuthTokenValid("...", "...", null);
     assertThrows(
         IllegalArgumentException.class, () -> fixture.isAuthTokenValid("...", "...", null));
   }
@@ -198,10 +196,6 @@ public class AuthTokenServiceDbImplTest {
   public void testIsAuthTokenValid_whitebox_expectUserServiceUnexpectedException()
       throws Exception {
     AuthTokenServiceImpl fixture = AuthTokenServiceDbImplFactory.createAuthTokenServiceDbImpl();
-    fixture.isAuthTokenValid(
-        UserFactory.USER_RESULT_IN_EXCEPTION,
-        AuthTokenFactory.AUTH_TOKEN_EXISTENT,
-        AuthTokenFactory.AUTH_TOKEN_EXISTENT_VALUE);
     assertThrows(
         UserServiceUnexpectedException.class,
         () ->

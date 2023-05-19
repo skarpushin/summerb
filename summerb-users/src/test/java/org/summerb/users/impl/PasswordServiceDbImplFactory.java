@@ -17,6 +17,7 @@ package org.summerb.users.impl;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.when;
 
 import org.mockito.Mockito;
@@ -26,19 +27,16 @@ import org.summerb.users.api.dto.PasswordFactory;
 import org.summerb.users.api.dto.UserFactory;
 import org.summerb.users.impl.dao.PasswordDao;
 
+@SuppressWarnings("deprecation")
 public class PasswordServiceDbImplFactory {
   private PasswordServiceDbImplFactory() {}
 
   public static PasswordServiceImpl createPasswordServiceDbImpl() {
-    PasswordServiceImpl ret = new PasswordServiceImpl();
-
-    ret.setPasswordEncoder(new StandardPasswordEncoder("test"));
-
     UserService userService = UserServiceImplFactory.createUsersServiceImpl();
-    ret.setUserService(userService);
-
     PasswordDao passwordDao = Mockito.mock(PasswordDao.class);
-    ret.setPasswordDao(passwordDao);
+
+    PasswordServiceImpl ret =
+        new PasswordServiceImpl(passwordDao, new StandardPasswordEncoder("test"), userService);
 
     when(passwordDao.findPasswordByUserUuid(UserFactory.EXISTENT_USER))
         .thenReturn(PasswordFactory.createExistentUserPassword());
@@ -55,6 +53,7 @@ public class PasswordServiceDbImplFactory {
             eq(UserFactory.EXISTENT_USER_WITH_MISSING_PASSWORD), anyString()))
         .thenReturn(0);
 
+    when(passwordDao.setRestorationToken(eq(UserFactory.EXISTENT_USER), isNull())).thenReturn(1);
     when(passwordDao.setRestorationToken(eq(UserFactory.EXISTENT_USER), anyString())).thenReturn(1);
     when(passwordDao.setRestorationToken(
             eq(UserFactory.EXISTENT_USER_WITH_MISSING_PASSWORD), anyString()))

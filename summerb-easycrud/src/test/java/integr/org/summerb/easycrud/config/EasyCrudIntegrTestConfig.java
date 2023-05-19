@@ -9,8 +9,6 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.jdbc.support.JdbcTransactionManager;
-import org.springframework.transaction.TransactionManager;
 import org.summerb.easycrud.api.DaoExceptionTranslator;
 import org.summerb.easycrud.api.EasyCrudDao;
 import org.summerb.easycrud.api.EasyCrudService;
@@ -45,11 +43,6 @@ import integr.org.summerb.easycrud.utils.EasyCrudPerRowAuthStrategyTestImpl;
 
 @Configuration
 public class EasyCrudIntegrTestConfig {
-
-  @Bean
-  TransactionManager transactionManager(DataSource dataSource) {
-    return new JdbcTransactionManager(dataSource);
-  }
 
   @Bean
   @Profile("postgres")

@@ -30,14 +30,14 @@ import org.summerb.easycrud.impl.dao.TableDaoBase;
 import org.summerb.users.impl.dao.PermissionDao;
 
 public class PermissionDaoImpl extends TableDaoBase implements InitializingBean, PermissionDao {
-  private String sqlGetUserPermissionsForSubject;
-  private String sqlGetSubjectsUserHasPermissionFor;
-  private String sqlGetSubjectsUserHasPermissionForFiltered;
-  private String sqlInsertPermission;
-  private String sqlDeletePermission;
-  private String sqlDeleteUserPermission;
-  private String sqlSubjectPermissions;
-  private String sqlGetSubjectUsersAndPermissions;
+  protected String sqlGetUserPermissionsForSubject;
+  protected String sqlGetSubjectsUserHasPermissionFor;
+  protected String sqlGetSubjectsUserHasPermissionForFiltered;
+  protected String sqlInsertPermission;
+  protected String sqlDeletePermission;
+  protected String sqlDeleteUserPermission;
+  protected String sqlSubjectPermissions;
+  protected String sqlGetSubjectUsersAndPermissions;
 
   /**
    * @param dataSource dataSource
@@ -91,7 +91,7 @@ public class PermissionDaoImpl extends TableDaoBase implements InitializingBean,
             tableName);
   }
 
-  private RowMapper<String> permissionKeyRowMapper =
+  protected RowMapper<String> permissionKeyRowMapper =
       new RowMapper<String>() {
         @Override
         public String mapRow(ResultSet rs, int idx) throws SQLException {
@@ -99,7 +99,7 @@ public class PermissionDaoImpl extends TableDaoBase implements InitializingBean,
         }
       };
 
-  private RowMapper<String> subjectIdRowMapper =
+  protected RowMapper<String> subjectIdRowMapper =
       new RowMapper<String>() {
         @Override
         public String mapRow(ResultSet rs, int idx) throws SQLException {

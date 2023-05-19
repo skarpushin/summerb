@@ -27,7 +27,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.summerb.dbupgrade.api.UpgradePackageBeanAbstract;
 import org.summerb.dbupgrade.impl.VersionTableDbDialect;
 
-public abstract class DbUpgradeTestBase {
+public abstract class DbUpgradeTestAbstract {
   protected Logger log = LoggerFactory.getLogger(getClass());
 
   @Autowired private DbUpgrade dbUpgrade;

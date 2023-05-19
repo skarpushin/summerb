@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package org.summerb.dbupgrade;
+package org.summerb.dbupgrade.config;
 
 import javax.sql.DataSource;
 
@@ -23,7 +23,9 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.summerb.dbupgrade.DbUpgradeTestBase.CustomUpgradeStep;
+import org.summerb.dbupgrade.DbUpgradeConfigAdapter;
+import org.summerb.dbupgrade.DbUpgradeTestAbstract;
+import org.summerb.dbupgrade.DbUpgradeTestAbstract.CustomUpgradeStep;
 
 public abstract class TestConfigBase extends DbUpgradeConfigAdapter {
   @Autowired protected ResourcePatternResolver resourcePatternResolver;

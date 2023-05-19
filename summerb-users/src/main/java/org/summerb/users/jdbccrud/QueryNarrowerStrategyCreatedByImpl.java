@@ -29,7 +29,7 @@ import org.summerb.users.api.dto.User;
  */
 public class QueryNarrowerStrategyCreatedByImpl<TUser extends User>
     extends QueryNarrowerStrategyFieldBased {
-  private SecurityContextResolver<TUser> securityContextResolver;
+  protected SecurityContextResolver<TUser> securityContextResolver;
 
   public QueryNarrowerStrategyCreatedByImpl(
       SecurityContextResolver<TUser> securityContextResolver) {

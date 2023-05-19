@@ -34,11 +34,14 @@ import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
 import org.summerb.users.api.PermissionService;
 
+import integr.org.summerb.easycrud.config.EmbeddedMariaDbConfig;
+import integr.org.summerb.users.impl.config.UserServicesTestConfig;
+
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration("classpath:test-users-app-context.xml")
+@ContextConfiguration(classes = {EmbeddedMariaDbConfig.class, UserServicesTestConfig.class})
 @ProfileValueSourceConfiguration(SystemProfileValueSource.class)
 @Transactional
-public class PermissionServiceImplTest {
+public class PermissionsTest {
 
   @Autowired private PermissionService permissionService;
 

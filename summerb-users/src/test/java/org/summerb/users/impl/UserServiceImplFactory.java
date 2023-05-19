@@ -22,20 +22,35 @@ import static org.mockito.Mockito.when;
 import org.mockito.Mockito;
 import org.springframework.dao.DuplicateKeyException;
 import org.summerb.easycrud.api.dto.PagerParams;
+import org.summerb.methodCapturers.MethodCapturerProxyClassFactory;
+import org.summerb.methodCapturers.MethodCapturerProxyClassFactoryImpl;
+import org.summerb.methodCapturers.PropertyNameObtainerFactory;
+import org.summerb.methodCapturers.PropertyNameObtainerFactoryImpl;
 import org.summerb.users.api.dto.User;
 import org.summerb.users.api.dto.UserFactory;
 import org.summerb.users.impl.dao.UserDao;
+import org.summerb.validation.ValidationContextFactory;
+import org.summerb.validation.ValidationContextFactoryImpl;
 
 import com.google.common.eventbus.EventBus;
 
 public class UserServiceImplFactory {
 
-  public static UserServiceImpl createUsersServiceImpl() {
-    UserServiceImpl ret = new UserServiceImpl();
+  public static MethodCapturerProxyClassFactory methodCapturerProxyClassFactory =
+      new MethodCapturerProxyClassFactoryImpl();
 
+  public static PropertyNameObtainerFactory propertyNameObtainerFactory =
+      new PropertyNameObtainerFactoryImpl(methodCapturerProxyClassFactory);
+
+  public static ValidationContextFactory validationContextFactory =
+      new ValidationContextFactoryImpl(propertyNameObtainerFactory, null);
+
+  public static UserServiceImpl createUsersServiceImpl() {
     UserDao userDao = Mockito.mock(UserDao.class);
-    ret.setUserDao(userDao);
-    ret.setEventBus(Mockito.mock(EventBus.class));
+
+    UserServiceImpl ret =
+        new UserServiceImpl(userDao, Mockito.mock(EventBus.class), validationContextFactory);
+    ret.afterPropertiesSet();
 
     User existingUser = UserFactory.createExistingUser();
 

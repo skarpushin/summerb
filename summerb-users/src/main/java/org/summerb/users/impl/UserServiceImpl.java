@@ -16,10 +16,9 @@
 package org.summerb.users.impl;
 
 import java.util.Calendar;
-import java.util.Date;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +35,8 @@ import org.summerb.users.api.exceptions.UserNotFoundException;
 import org.summerb.users.api.exceptions.UserServiceUnexpectedException;
 import org.summerb.users.api.validation.DuplicateUserValidationError;
 import org.summerb.users.impl.dao.UserDao;
+import org.summerb.utils.clock.NowResolver;
+import org.summerb.utils.clock.NowResolverImpl;
 import org.summerb.validation.ValidationContext;
 import org.summerb.validation.ValidationContextFactory;
 import org.summerb.validation.ValidationException;
@@ -44,15 +45,45 @@ import org.summerb.validation.errors.MustBeValidEmail;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.EventBus;
 
-public class UserServiceImpl implements UserService {
-  private UserDao userDao;
-  private EventBus eventBus;
-  private StringIdGenerator stringIdGenerator = new StringIdGeneratorUuidImpl();
-  @Autowired private ValidationContextFactory validationContextFactory;
+public class UserServiceImpl implements UserService, InitializingBean {
+  protected UserDao userDao;
+  protected EventBus eventBus;
+  protected ValidationContextFactory validationContextFactory;
+
+  protected StringIdGenerator stringIdGenerator;
+  protected NowResolver nowResolver;
+
+  /**
+   * This constructor only for subclasses. They have to be sure to initialize all required fields
+   */
+  protected UserServiceImpl() {}
+
+  public UserServiceImpl(
+      UserDao userDao, EventBus eventBus, ValidationContextFactory validationContextFactory) {
+    this.userDao = userDao;
+    this.validationContextFactory = validationContextFactory;
+    this.eventBus = eventBus;
+  }
+
+  @Override
+  public void afterPropertiesSet() {
+    Preconditions.checkArgument(userDao != null, "userDao required");
+    Preconditions.checkArgument(eventBus != null, "eventBus required");
+    Preconditions.checkArgument(
+        validationContextFactory != null, "validationContextFactory required");
+
+    if (stringIdGenerator == null) {
+      stringIdGenerator = new StringIdGeneratorUuidImpl();
+    }
+
+    if (nowResolver == null) {
+      nowResolver = new NowResolverImpl();
+    }
+  }
 
   @Override
   @Transactional(rollbackFor = Throwable.class)
-  public User createUser(User userTemplate){
+  public User createUser(User userTemplate) {
     Preconditions.checkArgument(userTemplate != null, "userTemplate is required");
 
     validateUser(userTemplate);
@@ -75,7 +106,7 @@ public class UserServiceImpl implements UserService {
       userToCreate.setUuid(stringIdGenerator.generateNewId(userTemplate));
     }
     if (userToCreate.getRegisteredAt() == 0) {
-      userToCreate.setRegisteredAt(new Date().getTime());
+      userToCreate.setRegisteredAt(nowResolver.clock().millis());
     }
     if (userToCreate.getLocale() == null) {
       userToCreate.setLocale(LocaleContextHolder.getLocale().toString());
@@ -98,7 +129,7 @@ public class UserServiceImpl implements UserService {
     return userToCreate;
   }
 
-  private void validateUser(User user){
+  protected void validateUser(User user) {
     var ctx = validationContextFactory.buildFor(user);
 
     ctx.validEmail(User::getEmail);
@@ -151,7 +182,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public PaginatedList<User> findUsersByDisplayNamePartial(
-      String displayNamePartial, PagerParams pagerParams){
+      String displayNamePartial, PagerParams pagerParams) {
     Preconditions.checkArgument(
         StringUtils.hasText(displayNamePartial), "Query text must be specified");
 
@@ -218,17 +249,8 @@ public class UserServiceImpl implements UserService {
     return userDao;
   }
 
-  public void setUserDao(UserDao userDao) {
-    this.userDao = userDao;
-  }
-
   public EventBus getEventBus() {
     return eventBus;
-  }
-
-  @Required
-  public void setEventBus(EventBus eventBus) {
-    this.eventBus = eventBus;
   }
 
   public StringIdGenerator getStringIdGenerator() {
@@ -238,5 +260,14 @@ public class UserServiceImpl implements UserService {
   @Autowired(required = false)
   public void setStringIdGenerator(StringIdGenerator stringIdGenerator) {
     this.stringIdGenerator = stringIdGenerator;
+  }
+
+  public NowResolver getNowResolver() {
+    return nowResolver;
+  }
+
+  @Autowired(required = false)
+  public void setNowResolver(NowResolver nowResolver) {
+    this.nowResolver = nowResolver;
   }
 }

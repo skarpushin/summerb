@@ -38,19 +38,30 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
 
 public class AuthTokenServiceImpl implements AuthTokenService {
-  // private static Logger log =
+  // protected static Logger log =
   // Logger.getLogger(AuthTokenServiceImpl.class);
 
-  private UserService userService;
-  private PasswordService passwordService;
-  private AuthTokenDao authTokenDao;
+  protected UserService userService;
+  protected PasswordService passwordService;
+  protected AuthTokenDao authTokenDao;
   /**
    * How long token may live even if it's frequently used. After that period of time token will be
    * deleted and user will have to re-login
    *
    * <p>14 days by default
    */
-  private long authTokenTimeToLiveSeconds = 60 * 60 * 24 * 14;
+  protected long authTokenTimeToLiveSeconds = 60 * 60 * 24 * 14;
+
+  public AuthTokenServiceImpl(
+      AuthTokenDao authTokenDao, UserService userService, PasswordService passwordService) {
+    Preconditions.checkArgument(authTokenDao != null, "authTokenDao required");
+    Preconditions.checkArgument(userService != null, "userService required");
+    Preconditions.checkArgument(passwordService != null, "passwordService required");
+
+    this.authTokenDao = authTokenDao;
+    this.userService = userService;
+    this.passwordService = passwordService;
+  }
 
   @Override
   @Transactional(rollbackFor = Throwable.class)
@@ -74,7 +85,7 @@ public class AuthTokenServiceImpl implements AuthTokenService {
     }
   }
 
-  private User validateAndGetUser(String userEmail, String passwordPlain)
+  protected User validateAndGetUser(String userEmail, String passwordPlain)
       throws UserNotFoundException, ValidationException, InvalidPasswordException {
     try {
       User user = userService.getUserByEmail(userEmail);
@@ -120,7 +131,7 @@ public class AuthTokenServiceImpl implements AuthTokenService {
     }
   }
 
-  private AuthToken buildNewAuthToken(
+  protected AuthToken buildNewAuthToken(
       User user, String clientIp, String tokenUuid, String tokenValueUuid) {
     long now = getNow();
     AuthToken ret = new AuthToken();
@@ -134,11 +145,12 @@ public class AuthTokenServiceImpl implements AuthTokenService {
     return ret;
   }
 
-  private long calculateAuthTokenExpirationPoint(long now) {
+  protected long calculateAuthTokenExpirationPoint(long now) {
     return now + authTokenTimeToLiveSeconds * 1000;
   }
 
-  private long getNow() {
+  // TODO: Use NowResolver
+  protected long getNow() {
     return new Date().getTime();
   }
 
@@ -267,24 +279,12 @@ public class AuthTokenServiceImpl implements AuthTokenService {
     return userService;
   }
 
-  public void setUserService(UserService userService) {
-    this.userService = userService;
-  }
-
   public PasswordService getPasswordService() {
     return passwordService;
   }
 
-  public void setPasswordService(PasswordService passwordService) {
-    this.passwordService = passwordService;
-  }
-
   public AuthTokenDao getAuthTokenDao() {
     return authTokenDao;
-  }
-
-  public void setAuthTokenDao(AuthTokenDao authTokenDao) {
-    this.authTokenDao = authTokenDao;
   }
 
   public long getAuthTokenTimeToLiveSeconds() {

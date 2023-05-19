@@ -17,8 +17,6 @@ package org.summerb.users.impl;
 
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -34,10 +32,21 @@ import org.summerb.validation.errors.MustNotBeNull;
 import com.google.common.base.Preconditions;
 
 public class PasswordServiceImpl implements PasswordService {
-  private static final String FN_PASSWORD = "password";
-  private UserService userService;
-  private PasswordDao passwordDao;
-  private PasswordEncoder passwordEncoder;
+  protected static final String FN_PASSWORD = "password";
+  protected UserService userService;
+  protected PasswordDao passwordDao;
+  protected PasswordEncoder passwordEncoder;
+
+  public PasswordServiceImpl(
+      PasswordDao passwordDao, PasswordEncoder passwordEncoder, UserService userService) {
+    Preconditions.checkArgument(userService != null, "userService required");
+    Preconditions.checkArgument(passwordDao != null, "passwordDao required");
+    Preconditions.checkArgument(passwordEncoder != null, "passwordEncoder required");
+
+    this.passwordDao = passwordDao;
+    this.passwordEncoder = passwordEncoder;
+    this.userService = userService;
+  }
 
   @Override
   public boolean isUserPasswordValid(String userUuid, String passwordPlain)
@@ -56,8 +65,8 @@ public class PasswordServiceImpl implements PasswordService {
         return false;
       }
     } catch (Throwable t) {
-      String msg = String.format("Failed to validate user '%s' password", userUuid);
-      throw new UserServiceUnexpectedException(msg, t);
+      throw new UserServiceUnexpectedException(
+          String.format("Failed to validate user '%s' password", userUuid), t);
     }
 
     return true;
@@ -70,7 +79,7 @@ public class PasswordServiceImpl implements PasswordService {
     return passwordEncoder.matches(providedPlainPassword, expectedHash);
   }
 
-  private void assertUserExists(String userUuid) throws UserNotFoundException {
+  protected void assertUserExists(String userUuid) throws UserNotFoundException {
     userService.getUserByUuid(userUuid);
   }
 
@@ -102,9 +111,8 @@ public class PasswordServiceImpl implements PasswordService {
             "updateUserPassword returned unexpected result = " + updateResult);
       }
     } catch (Throwable t) {
-      String msg =
-          String.format("Failed to set user '%s' passwordHash '%s'", userUuid, newPasswordHash);
-      throw new UserServiceUnexpectedException(msg, t);
+      throw new UserServiceUnexpectedException(
+          String.format("Failed to set user '%s' passwordHash '%s'", userUuid, newPasswordHash), t);
     }
   }
 
@@ -129,8 +137,8 @@ public class PasswordServiceImpl implements PasswordService {
 
       return restorationToken;
     } catch (Throwable t) {
-      String msg = String.format("Failed to create restoration token for user '%s'", userUuid);
-      throw new UserServiceUnexpectedException(msg, t);
+      throw new UserServiceUnexpectedException(
+          String.format("Failed to create restoration token for user '%s'", userUuid), t);
     }
   }
 
@@ -147,8 +155,8 @@ public class PasswordServiceImpl implements PasswordService {
         return false;
       }
     } catch (Throwable t) {
-      String msg = String.format("Failed to check user '%s' restoration token validity", userUuid);
-      throw new UserServiceUnexpectedException(msg, t);
+      throw new UserServiceUnexpectedException(
+          String.format("Failed to check user '%s' restoration token validity", userUuid), t);
     }
 
     return true;
@@ -167,8 +175,8 @@ public class PasswordServiceImpl implements PasswordService {
             "deleteRestorationToken returned unexpected result = " + updateResult);
       }
     } catch (Throwable t) {
-      String msg = String.format("Failed to delete restoration token for user '%s'", userUuid);
-      throw new UserServiceUnexpectedException(msg, t);
+      throw new UserServiceUnexpectedException(
+          String.format("Failed to delete restoration token for user '%s'", userUuid), t);
     }
   }
 
@@ -176,26 +184,11 @@ public class PasswordServiceImpl implements PasswordService {
     return userService;
   }
 
-  @Required
-  public void setUserService(UserService userService) {
-    this.userService = userService;
-  }
-
   public PasswordDao getPasswordDao() {
     return passwordDao;
   }
 
-  @Required
-  public void setPasswordDao(PasswordDao passwordDao) {
-    this.passwordDao = passwordDao;
-  }
-
   public PasswordEncoder getPasswordEncoder() {
     return passwordEncoder;
-  }
-
-  @Autowired
-  public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
-    this.passwordEncoder = passwordEncoder;
   }
 }

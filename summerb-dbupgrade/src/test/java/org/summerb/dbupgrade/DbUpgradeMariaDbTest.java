@@ -31,8 +31,8 @@ import io.zonky.test.db.AutoConfigureEmbeddedDatabase.RefreshMode;
 @ContextConfiguration(classes = {TestMySqlConfig.class})
 @ProfileValueSourceConfiguration(SystemProfileValueSource.class)
 @Transactional
-@AutoConfigureEmbeddedDatabase(type = DatabaseType.MYSQL, refresh = RefreshMode.AFTER_CLASS)
-public class DbUpgradeMySqlTest extends DbUpgradeTestAbstract {
+@AutoConfigureEmbeddedDatabase(type = DatabaseType.MARIADB, refresh = RefreshMode.AFTER_CLASS)
+public class DbUpgradeMariaDbTest extends DbUpgradeTestAbstract {
   // NOTE: All impl is in parnt. The only difference is config whether we use
   // MySql or Postgress specifics
 

@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.jdbc.support.JdbcTransactionManager;
+import org.springframework.transaction.TransactionManager;
 import org.summerb.utils.exceptions.ExceptionUtils;
 
 import ch.vorburger.exec.ManagedProcessException;
@@ -74,5 +76,10 @@ public class EmbeddedMariaDbConfig {
         .password(password)
         .url(inMemoryMariaDb.getConfiguration().getURL(DB_NAME))
         .build();
+  }
+
+  @Bean
+  TransactionManager transactionManager(DataSource dataSource) {
+    return new JdbcTransactionManager(dataSource);
   }
 }

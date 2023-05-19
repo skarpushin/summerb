@@ -13,22 +13,13 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package org.summerb.dbupgrade;
+package org.summerb.dbupgrade.config;
 
-import java.sql.Driver;
-
-import javax.sql.DataSource;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.summerb.dbupgrade.api.UpgradePackageMetaResolver;
 import org.summerb.dbupgrade.impl.UpgradePackageMetaResolverClasspathImpl;
 
 @Configuration
-@PropertySource("test-dbconnection.properties")
 public class TestMySqlConfig extends TestConfigBase {
   @Override
   protected UpgradePackageMetaResolver upgradePackageMetaResolver() throws Exception {
@@ -36,14 +27,4 @@ public class TestMySqlConfig extends TestConfigBase {
         resourcePatternResolver, "classpath:/db_mysql/*");
   }
 
-  @Bean
-  DataSource dataSource(
-      @Value("${mysql.driverClassName}") String driver,
-      @Value("${mysql.databaseurl}") String url,
-      @Value("${mysql.username}") String username,
-      @Value("${mysql.password}") String password)
-      throws Exception {
-    return new SimpleDriverDataSource(
-        (Driver) Class.forName(driver).newInstance(), url, username, password);
-  }
 }

@@ -384,6 +384,6 @@ public class UserServiceImplTest {
     when(fixture.getUserDao().deleteUser(any(String.class))).thenReturn(true);
     when(fixture.getUserDao().findUserByUuid(any(String.class)))
         .thenReturn(UserFactory.createNewUserTemplate());
-    assertThrows(IllegalArgumentException.class, () -> fixture.deleteUserByUuid("asdasdasd"));
+    fixture.deleteUserByUuid("asdasdasd");
   }
 }

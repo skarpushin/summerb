@@ -24,10 +24,10 @@ public class ValidationContextEmailValidatorTest {
         "mailhost!username@example.org",
         "user%example.com@example.org",
         "user-@example.org",
-        "postmaster@[123.123.123.123]"
+        "postmaster@[123.123.123.123]",
+        "veryMuchValid@email.com" // capital case characters
       })
-  public void testValidateEmailFormat_expectOkForUsualEmail(String email)
-     {
+  public void testValidateEmailFormat_expectOkForValidEmails(String email) {
     assertEquals(true, ValidationContext.isValidEmail(email));
   }
 
@@ -43,8 +43,7 @@ public class ValidationContextEmailValidatorTest {
         "this\\ still\\\"not\\\\allowed@example.com",
         "i_like_underscore@but_its_not_allowed_in_this_part.example.com"
       })
-  public void testValidateEmailFormat_expectFailForInvalidEmails(String email)
-     {
+  public void testValidateEmailFormat_expectFailForInvalidEmails(String email) {
     assertEquals(false, ValidationContext.isValidEmail(email));
   }
 }

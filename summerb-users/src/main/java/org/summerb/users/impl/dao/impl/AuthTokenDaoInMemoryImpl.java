@@ -43,14 +43,14 @@ import com.google.common.collect.Multimap;
 public class AuthTokenDaoInMemoryImpl implements AuthTokenDao, InitializingBean, DisposableBean {
   protected Logger log = LoggerFactory.getLogger(getClass());
 
-  private String pathNameToPersistedTokens;
+  protected String pathNameToPersistedTokens;
 
-  private Map<String, AuthToken> tokens = new HashMap<String, AuthToken>();
+  protected Map<String, AuthToken> tokens = new HashMap<String, AuthToken>();
 
   @SuppressWarnings("unused")
-  private MapSizeMXBean mxBean;
+  protected MapSizeMXBean mxBean;
 
-  private Multimap<String, AuthToken> idxByUser = HashMultimap.create();
+  protected Multimap<String, AuthToken> idxByUser = HashMultimap.create();
 
   @Override
   public synchronized void createAuthToken(AuthToken authToken) {
@@ -58,7 +58,7 @@ public class AuthTokenDaoInMemoryImpl implements AuthTokenDao, InitializingBean,
     internalAddToken(clonned);
   }
 
-  private void internalAddToken(AuthToken clonned) {
+  protected void internalAddToken(AuthToken clonned) {
     tokens.put(clonned.getUuid(), clonned);
     idxByUser.put(clonned.getUserUuid(), clonned);
   }
@@ -100,7 +100,7 @@ public class AuthTokenDaoInMemoryImpl implements AuthTokenDao, InitializingBean,
     return ret;
   }
 
-  private AuthToken clone(AuthToken b) {
+  protected AuthToken clone(AuthToken b) {
     AuthToken a = new AuthToken();
     a.setClientIp(b.getClientIp());
     a.setCreatedAt(b.getCreatedAt());
@@ -118,7 +118,7 @@ public class AuthTokenDaoInMemoryImpl implements AuthTokenDao, InitializingBean,
     loadPersistedTokens();
   }
 
-  private void loadPersistedTokens() {
+  protected void loadPersistedTokens() {
     try {
       if (pathNameToPersistedTokens == null) {
         log.info("No pathNameToPersistedTokens configured, no tokens will be loaded");
@@ -148,7 +148,7 @@ public class AuthTokenDaoInMemoryImpl implements AuthTokenDao, InitializingBean,
     }
   }
 
-  private AuthToken tryParseToken(String line) {
+  protected AuthToken tryParseToken(String line) {
     try {
       if (!StringUtils.hasText(line) || line.indexOf('\t') < 0) {
         return null;
@@ -178,7 +178,7 @@ public class AuthTokenDaoInMemoryImpl implements AuthTokenDao, InitializingBean,
     persistTokens();
   }
 
-  private void persistTokens() {
+  protected void persistTokens() {
     try {
       if (pathNameToPersistedTokens == null) {
         log.info("No pathNameToPersistedTokens configured, no tokens will be persisted");
@@ -206,7 +206,7 @@ public class AuthTokenDaoInMemoryImpl implements AuthTokenDao, InitializingBean,
     }
   }
 
-  private String formatToken(AuthToken t) {
+  protected String formatToken(AuthToken t) {
     StringBuilder sb = new StringBuilder();
     sb.append(t.getClientIp());
     sb.append("\t");

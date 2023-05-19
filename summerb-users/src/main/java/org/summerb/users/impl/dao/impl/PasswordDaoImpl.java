@@ -29,12 +29,12 @@ import org.summerb.users.impl.dao.PasswordDao;
 import org.summerb.users.impl.dom.Password;
 
 public class PasswordDaoImpl extends TableDaoBase implements InitializingBean, PasswordDao {
-  private static final String PARAM_RESTORATION_TOKEN = "restorationToken";
-  private static final String USER_UUID_PARAM = "userUuid";
-  private BeanPropertyRowMapper<Password> rowMapper;
-  private String sqlPutPassword;
-  private String sqlFindPasswordByUserUuid;
-  private String sqlSetRestorationToken;
+  protected static final String PARAM_RESTORATION_TOKEN = "restorationToken";
+  protected static final String USER_UUID_PARAM = "userUuid";
+  protected BeanPropertyRowMapper<Password> rowMapper;
+  protected String sqlPutPassword;
+  protected String sqlFindPasswordByUserUuid;
+  protected String sqlSetRestorationToken;
 
   /**
    * @param dataSource dataSource

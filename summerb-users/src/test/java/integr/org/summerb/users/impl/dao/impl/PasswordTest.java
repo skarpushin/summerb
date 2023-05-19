@@ -33,11 +33,14 @@ import org.summerb.users.api.UserService;
 import org.summerb.users.api.dto.User;
 import org.summerb.users.api.dto.UserFactory;
 
+import integr.org.summerb.easycrud.config.EmbeddedMariaDbConfig;
+import integr.org.summerb.users.impl.config.UserServicesTestConfig;
+
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration("classpath:test-users-app-context.xml")
+@ContextConfiguration(classes = {EmbeddedMariaDbConfig.class, UserServicesTestConfig.class})
 @ProfileValueSourceConfiguration(SystemProfileValueSource.class)
 @Transactional
-public class PasswordDaoImplTest {
+public class PasswordTest {
 
   @Autowired private PasswordService passwordService;
 

@@ -31,13 +31,13 @@ public class AuthTokenServiceDbImplFactory {
   public static final PagerParams pagerParamsUnexpectedException = new PagerParams(7, 9);
 
   public static AuthTokenServiceImpl createAuthTokenServiceDbImpl() {
-    AuthTokenServiceImpl ret = new AuthTokenServiceImpl();
-
-    ret.setPasswordService(PasswordServiceDbImplFactory.createPasswordServiceDbImpl());
-    ret.setUserService(UserServiceImplFactory.createUsersServiceImpl());
-
     AuthTokenDao authTokenDao = Mockito.mock(AuthTokenDao.class);
-    ret.setAuthTokenDao(authTokenDao);
+
+    AuthTokenServiceImpl ret =
+        new AuthTokenServiceImpl(
+            authTokenDao,
+            UserServiceImplFactory.createUsersServiceImpl(),
+            PasswordServiceDbImplFactory.createPasswordServiceDbImpl());
 
     when(authTokenDao.findAuthTokenByUuid(AuthTokenFactory.AUTH_TOKEN_EXCEPTION))
         .thenThrow(new IllegalStateException("test simulate exception"));

@@ -30,10 +30,15 @@ import org.summerb.users.impl.dao.PermissionDao;
 import com.google.common.base.Preconditions;
 
 public class PermissionServiceImpl implements PermissionService {
-  private static final String DEFAULT = "default";
-  private static Logger log = LoggerFactory.getLogger(PermissionServiceImpl.class);
+  protected static final String DEFAULT = "default";
+  protected static Logger log = LoggerFactory.getLogger(PermissionServiceImpl.class);
 
-  private PermissionDao permissionDao;
+  protected PermissionDao permissionDao;
+
+  public PermissionServiceImpl(PermissionDao permissionDao) {
+    Preconditions.checkArgument(permissionDao != null, "permissionDao required");
+    this.permissionDao = permissionDao;
+  }
 
   @Override
   @Transactional(rollbackFor = Throwable.class)
@@ -176,7 +181,7 @@ public class PermissionServiceImpl implements PermissionService {
     }
   }
 
-  private String getOptionalParamValue(String optionalParameterValue) {
+  protected String getOptionalParamValue(String optionalParameterValue) {
     if (StringUtils.hasText(optionalParameterValue)) {
       return optionalParameterValue;
     }
@@ -186,9 +191,5 @@ public class PermissionServiceImpl implements PermissionService {
 
   public PermissionDao getPermissionDao() {
     return permissionDao;
-  }
-
-  public void setPermissionDao(PermissionDao permissionDao) {
-    this.permissionDao = permissionDao;
   }
 }

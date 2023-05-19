@@ -34,11 +34,11 @@ import org.summerb.users.api.dto.User;
  */
 public class QueryNarrowerStrategyPermissionsBased<TUser extends User>
     extends QueryNarrowerStrategyFieldBased {
-  private PermissionService permissionService;
-  private String optionalDomain;
-  private String optionalRequiredPermission;
-  private SecurityContextResolver<TUser> securityContextResolver;
-  private Class<?> idClass;
+  protected PermissionService permissionService;
+  protected String optionalDomain;
+  protected String optionalRequiredPermission;
+  protected SecurityContextResolver<TUser> securityContextResolver;
+  protected Class<?> idClass;
 
   public QueryNarrowerStrategyPermissionsBased(
       PermissionService permissionService,
