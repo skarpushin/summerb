@@ -16,7 +16,6 @@
 package org.summerb.validation;
 
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.summerb.methodCapturers.MethodCapturerProxyClassFactory;
 import org.summerb.methodCapturers.MethodCapturerProxyClassFactoryImpl;
 import org.summerb.methodCapturers.PropertyNameObtainerFactory;
@@ -34,7 +33,7 @@ import org.summerb.validation.jakarta.JakartaValidatorImpl;
  *
  * @author Sergey Karpushin
  */
-@Configuration
+
 public class ValidationContextConfig {
 
   @Bean

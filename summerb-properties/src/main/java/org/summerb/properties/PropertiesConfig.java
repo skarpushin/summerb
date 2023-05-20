@@ -5,8 +5,8 @@ import java.util.Optional;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.summerb.properties.api.PropertyService;
 import org.summerb.properties.api.SimplePropertyService;
 import org.summerb.properties.impl.PropertyServiceImpl;
@@ -26,7 +26,6 @@ import com.google.common.eventbus.EventBus;
  *
  * @author Sergey Karpushin
  */
-@Configuration
 public class PropertiesConfig {
 
   public @Autowired DataSource dataSource;
@@ -44,33 +43,35 @@ public class PropertiesConfig {
 
   // ================= Under-th-hood impl
   @Bean
-  StringIdAliasDao appAliasDao() {
+  protected StringIdAliasDao appAliasDao() {
     return new StringIdAliasDaoImpl(dataSource, "props_alias_app");
   }
 
   @Bean
-  StringIdAliasDao domainAliasDao() {
+  protected StringIdAliasDao domainAliasDao() {
     return new StringIdAliasDaoImpl(dataSource, "props_alias_domain");
   }
 
   @Bean
-  StringIdAliasDao propertyNameAliasDao() {
+  protected StringIdAliasDao propertyNameAliasDao() {
     return new StringIdAliasDaoImpl(dataSource, "props_alias_name");
   }
 
   @Bean
-  StringIdAliasService appAliasService() {
-    return new StringIdAliasServiceEagerImpl(appAliasDao());
+  StringIdAliasService appAliasService(@Qualifier("appAliasDao") StringIdAliasDao appAliasDao) {
+    return new StringIdAliasServiceEagerImpl(appAliasDao);
   }
 
   @Bean
-  StringIdAliasService domainAliasService() {
-    return new StringIdAliasServiceEagerImpl(domainAliasDao());
+  StringIdAliasService domainAliasService(
+      @Qualifier("domainAliasDao") StringIdAliasDao domainAliasDao) {
+    return new StringIdAliasServiceEagerImpl(domainAliasDao);
   }
 
   @Bean
-  StringIdAliasService propertyNameAliasService() {
-    return new StringIdAliasServiceEagerImpl(propertyNameAliasDao());
+  StringIdAliasService propertyNameAliasService(
+      @Qualifier("propertyNameAliasDao") StringIdAliasDao propertyNameAliasDao) {
+    return new StringIdAliasServiceEagerImpl(propertyNameAliasDao);
   }
 
   @Bean
@@ -79,8 +80,12 @@ public class PropertiesConfig {
   }
 
   @Bean
-  PropertyService propertyService(PropertyDao propertyDao) {
+  PropertyService propertyService(
+      PropertyDao propertyDao,
+      @Qualifier("domainAliasService") StringIdAliasService domainAliasService,
+      @Qualifier("appAliasService") StringIdAliasService appAliasService,
+      @Qualifier("propertyNameAliasService") StringIdAliasService propertyNameAliasService) {
     return new PropertyServiceImpl(
-        propertyDao, domainAliasService(), appAliasService(), propertyNameAliasService());
+        propertyDao, domainAliasService, appAliasService, propertyNameAliasService);
   }
 }

@@ -4,7 +4,6 @@ import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.summerb.users.api.PermissionService;
 import org.summerb.users.api.UserService;
 import org.summerb.users.impl.PermissionServiceImpl;
@@ -18,16 +17,16 @@ import org.summerb.validation.ValidationContextFactory;
 
 import com.google.common.eventbus.EventBus;
 
-@Configuration
+
 public class UserServicesConfig {
 
   @Bean
-  UserDao userDao(DataSource dataSource) {
+  protected UserDao userDao(DataSource dataSource) {
     return new UserDaoImpl(dataSource, "users");
   }
 
   @Bean
-  UserService userServiceNoncached(
+  protected UserService userServiceNoncached(
       UserDao userDao, EventBus eventBus, ValidationContextFactory validationContextFactory) {
     return new UserServiceImpl(userDao, eventBus, validationContextFactory);
   }
@@ -42,7 +41,7 @@ public class UserServicesConfig {
   }
 
   @Bean
-  PermissionDao permissionDao(DataSource dataSource) {
+  protected PermissionDao permissionDao(DataSource dataSource) {
     return new PermissionDaoImpl(dataSource, "users_permissions");
   }
 
