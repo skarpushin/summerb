@@ -35,12 +35,12 @@ import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.api.EasyCrudValidationStrategy;
 import org.summerb.easycrud.api.EasyCrudWireTap;
 import org.summerb.easycrud.api.ParameterSourceBuilder;
-import org.summerb.easycrud.api.QueryToNativeSqlCompiler;
+import org.summerb.easycrud.api.QueryToSql;
 import org.summerb.easycrud.api.StringIdGenerator;
 import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.impl.EasyCrudServiceImpl;
 import org.summerb.easycrud.impl.dao.mysql.EasyCrudDaoMySqlImpl;
-import org.summerb.easycrud.impl.dao.mysql.QueryToNativeSqlCompilerMySqlImpl;
+import org.summerb.easycrud.impl.dao.mysql.QueryToSqlMySqlImpl;
 import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapDelegatingImpl;
 import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapEventBusImpl;
 import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapValidationImpl;
@@ -138,7 +138,7 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
   public <TId, TDto extends HasId<TId>> EasyCrudService<TId, TDto> fromRowClass(
       Class<TDto> rowClass) {
     String messageCode = rowClass.getSimpleName();
-    String tableName = QueryToNativeSqlCompilerMySqlImpl.underscore(messageCode);
+    String tableName = QueryToSqlMySqlImpl.underscore(messageCode);
     return fromRowClass(rowClass, messageCode, tableName);
   }
 
@@ -300,7 +300,7 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
       ret.setParameterSourceBuilder(parameterSourceBuilder);
     }
 
-    var queryToNativeSqlCompiler = find(injections, QueryToNativeSqlCompiler.class);
+    var queryToNativeSqlCompiler = find(injections, QueryToSql.class);
     if (queryToNativeSqlCompiler != null) {
       ret.setQueryToNativeSqlCompiler(queryToNativeSqlCompiler);
     }

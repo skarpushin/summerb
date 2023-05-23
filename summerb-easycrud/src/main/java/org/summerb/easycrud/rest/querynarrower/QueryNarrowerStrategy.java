@@ -26,8 +26,8 @@ import org.summerb.easycrud.rest.commonpathvars.PathVariablesMap;
  *
  * @author sergeyk
  */
-public class QueryNarrowerStrategy {
-  public Query narrow(Query optionalQuery, PathVariablesMap pathVariables) {
+public class QueryNarrowerStrategy<TRow> {
+  public Query<TRow> narrow(Query<TRow> optionalQuery, PathVariablesMap pathVariables) {
     return optionalQuery;
   }
 }

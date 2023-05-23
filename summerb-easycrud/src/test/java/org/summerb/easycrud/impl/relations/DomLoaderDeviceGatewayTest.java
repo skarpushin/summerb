@@ -17,7 +17,7 @@ package org.summerb.easycrud.impl.relations;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -30,6 +30,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.BeanUtils;
 import org.summerb.easycrud.api.EasyCrudServiceResolver;
+import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.api.relations.DataSetLoader;
 import org.summerb.easycrud.api.relations.ReferencesRegistry;
 import org.summerb.easycrud.api.row.HasId;
@@ -42,8 +43,6 @@ import org.summerb.easycrud.impl.relations.example.EnvService;
 import org.summerb.easycrud.impl.relations.example.EnvironmentRow;
 import org.summerb.easycrud.impl.relations.example.Refs;
 import org.summerb.utils.Pair;
-import org.summerb.utils.easycrud.api.dto.PagerParams;
-import org.summerb.utils.easycrud.api.dto.PaginatedList;
 
 public class DomLoaderDeviceGatewayTest {
 
@@ -96,33 +95,20 @@ public class DomLoaderDeviceGatewayTest {
 
     DomLoaderImpl f = new DomLoaderImpl(dataSetLoader, easyCrudServiceResolver);
 
-    // Setup DataSet
-    // DataSet ds = new DataSet();
-
     EnvironmentRow envRow = new EnvironmentRow();
     envRow.setId(1L);
     envRow.setName("Hurray");
-    when(envService.find(any(), any(), any()))
-        .thenReturn(new PaginatedList<>(PagerParams.ALL, Arrays.asList(envRow), 1));
     when(envService.findById(1L)).thenReturn(envRow);
-    // ds.get(EnvService.TERM).put(envRow);
 
     DeviceRow deviceRow = new DeviceRow();
     deviceRow.setId(2L);
     deviceRow.setEnvId(1);
     deviceRow.setName("Yes it is");
-    when(deviceService.find(any(), any()))
-        .thenReturn(new PaginatedList<>(PagerParams.ALL, Arrays.asList(deviceRow), 1));
-    when(deviceService.findById(2L)).thenReturn(deviceRow);
-    // ds.get(DeviceService.TERM).put(deviceRow);
-
-    // when(dataSetLoader.loadObjectsByIds(any(),
-    // anyString())).thenReturn(Arrays.asList(envRow));
+    var qDeviceRowForEnv1 = Query.n(DeviceRow.class).eq(DeviceRow::getEnvId, 1L);
+    when(deviceService.findAll(eq(qDeviceRowForEnv1))).thenReturn(Arrays.asList(deviceRow));
 
     // Now let's invoke it
     Env env = f.load(Env.class, 1L, Refs.envDevices, Refs.deviceEnv);
-    // verify(deviceService, times(1)).query(any(), any(), any());
-    // verify(envService, times(1)).query(any(), any(), any());
 
     // Verify
     assertNotNull(env);

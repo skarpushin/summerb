@@ -13,13 +13,13 @@ import org.summerb.easycrud.api.DaoExceptionTranslator;
 import org.summerb.easycrud.api.EasyCrudDao;
 import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.api.EasyCrudServiceResolver;
-import org.summerb.easycrud.api.QueryToNativeSqlCompiler;
+import org.summerb.easycrud.api.QueryToSql;
 import org.summerb.easycrud.impl.EasyCrudServiceImpl;
 import org.summerb.easycrud.impl.EasyCrudServiceResolverSpringImpl;
 import org.summerb.easycrud.impl.auth.EascyCrudAuthorizationPerRowStrategy;
 import org.summerb.easycrud.impl.dao.mysql.EasyCrudDaoMySqlImpl;
 import org.summerb.easycrud.impl.dao.postgres.DaoExceptionTranslatorPostgresImpl;
-import org.summerb.easycrud.impl.dao.postgres.QueryToNativeSqlCompilerPostgresImpl;
+import org.summerb.easycrud.impl.dao.postgres.QueryToSqlPostgresImpl;
 import org.summerb.easycrud.impl.relations.EasyCrudM2mDaoMySqlImpl;
 import org.summerb.easycrud.impl.relations.EasyCrudM2mServiceImpl;
 import org.summerb.easycrud.impl.relations.M2mAuthorizationWireTapImpl;
@@ -46,8 +46,8 @@ public class EasyCrudIntegrTestConfig {
 
   @Bean
   @Profile("postgres")
-  QueryToNativeSqlCompiler queryToNativeSqlCompiler() {
-    return new QueryToNativeSqlCompilerPostgresImpl();
+  QueryToSql queryToSql() {
+    return new QueryToSqlPostgresImpl();
   }
 
   @Bean

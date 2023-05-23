@@ -1,55 +1,26 @@
-/*******************************************************************************
- * Copyright 2015-2023 Sergey Karpushin
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License.  You may obtain a copy
- * of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
- * License for the specific language governing permissions and limitations under
- * the License.
- ******************************************************************************/
 package org.summerb.easycrud.api.query;
 
-import java.util.Arrays;
+import java.util.List;
 
-import org.springframework.beans.PropertyAccessor;
+import org.springframework.util.CollectionUtils;
 
-/**
- * By default {@link Query} adds all restrictions in conjunction. In order to use disjunction add
- * instance of this {@link DisjunctionCondition} to root {@link Query}
- *
- * @author sergey.karpushin
- */
-public class DisjunctionCondition implements Restriction<PropertyAccessor> {
-  private static final long serialVersionUID = -8190060986073922292L;
-  private Query[] queries;
+import com.google.common.base.Preconditions;
 
-  public DisjunctionCondition() {}
+public class DisjunctionCondition extends Condition {
 
-  public DisjunctionCondition(Query... queries) {
-    this.queries = queries;
+  private List<? extends QueryConditions> queries;
+
+  public DisjunctionCondition(List<? extends QueryConditions> disjunctions) {
+    Preconditions.checkArgument(
+        !CollectionUtils.isEmpty(disjunctions), "non-empty queries required");
+    this.queries = disjunctions;
   }
 
-  @Override
-  public boolean isMeet(PropertyAccessor subjectValue) {
-    for (int i = 0; i < queries.length; i++) {
-      if (queries[i].isMeet(subjectValue)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  public Query[] getQueries() {
+  public List<? extends QueryConditions> getQueries() {
     return queries;
   }
 
-  public void setQueries(Query[] queries) {
+  public void setQueries(List<? extends QueryConditions> queries) {
     this.queries = queries;
   }
 
@@ -57,17 +28,29 @@ public class DisjunctionCondition implements Restriction<PropertyAccessor> {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + Arrays.hashCode(queries);
+    result = prime * result + ((queries == null) ? 0 : queries.hashCode());
     return result;
   }
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj) return true;
-    if (obj == null) return false;
-    if (getClass() != obj.getClass()) return false;
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
     DisjunctionCondition other = (DisjunctionCondition) obj;
-    if (!Arrays.equals(queries, other.queries)) return false;
+    if (queries == null) {
+      if (other.queries != null) {
+        return false;
+      }
+    } else if (!queries.equals(other.queries)) {
+      return false;
+    }
     return true;
   }
 }

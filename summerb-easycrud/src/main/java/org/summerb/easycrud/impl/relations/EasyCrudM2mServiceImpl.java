@@ -26,7 +26,6 @@ import java.util.Set;
 
 import org.springframework.util.CollectionUtils;
 import org.summerb.easycrud.api.EasyCrudService;
-import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.api.relations.EasyCrudM2mService;
 import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.api.row.relations.ManyToManyRow;
@@ -34,13 +33,13 @@ import org.summerb.easycrud.api.row.relations.Ref;
 import org.summerb.easycrud.api.row.tools.EasyCrudDtoUtils;
 import org.summerb.easycrud.impl.EasyCrudServiceImpl;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
-import org.summerb.utils.easycrud.api.dto.PagerParams;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
 
 /**
- * This is default impl for {@link EasyCrudM2mService}.
+ * This is default impl for {@link EasyCrudM2mService}. This is supposed to be handy in cases when
+ * you need quick and simple service for Many-to-Many associations.
  *
  * <p>IMPORTANT: By default this impl will auto generate entity type message code based on
  * referencer and referencee, like referencer.to.referencee.
@@ -54,13 +53,10 @@ import com.google.common.base.Throwables;
  * referencer read, and changes to m2m collection is considered as update operation to referencer
  * object.
  *
- * <p>TBD: Consider providing default impl for cached wrapper for these m2m relationships
- *
- * @author sergeyk
  * @param <T1Id> T1Id
- * @param <T1Dto> T1Dto
+ * @param <T1Dto> T1Dto (A.K.A. Referencer, ServiceA, Src)
  * @param <T2Id> T2Id
- * @param <T2Dto> T2Dto
+ * @param <T2Dto> T2Dto (A.K.A. Referencee, ServiceB, Dst)
  */
 public class EasyCrudM2mServiceImpl<
         T1Id, T1Dto extends HasId<T1Id>, T2Id, T2Dto extends HasId<T2Id>>
@@ -105,13 +101,12 @@ public class EasyCrudM2mServiceImpl<
   public List<T2Dto> findReferenceeByReferencer(T1Id referencerId) {
     try {
       Preconditions.checkArgument(referencerId != null, "referencerId is required");
-      Query q = buildQueryToFindReferenceeByReferencerId(referencerId);
-      List<ManyToManyRow<T1Id, T2Id>> m2mPairs = findAll(q);
+      List<ManyToManyRow<T1Id, T2Id>> m2mPairs =
+          findAll(newQuery().eq(ManyToManyRow.FN_SRC, referencerId));
       if (m2mPairs.size() == 0) {
         return Collections.emptyList();
       }
-      Set<T2Id> referenceeIds = collectReferenceeIds(m2mPairs);
-      return serviceB.find(PagerParams.ALL, buildQueryToFindObjectsByIds(referenceeIds)).getItems();
+      return serviceB.findAll(serviceB.newQuery().in(HasId::getId, collectReferenceeIds(m2mPairs)));
     } catch (Throwable t) {
       throw new RuntimeException(
           "Failed to find "
@@ -124,19 +119,6 @@ public class EasyCrudM2mServiceImpl<
     }
   }
 
-  protected Query buildQueryToFindObjectsByIds(Set<T2Id> referenceeIds) {
-    T2Id referenceeId = referenceeIds.iterator().next();
-    Query q;
-    if (referenceeId instanceof String) {
-      q = Query.n().in(ManyToManyRow.FN_ID, referenceeIds.toArray(new String[0]));
-    } else if (referenceeId instanceof Long) {
-      q = Query.n().in(ManyToManyRow.FN_ID, referenceeIds.toArray(new Long[0]));
-    } else {
-      throw new RuntimeException("Unsupported type if Id = " + referenceeId.getClass());
-    }
-    return q;
-  }
-
   protected Set<T2Id> collectReferenceeIds(List<ManyToManyRow<T1Id, T2Id>> m2mPairs) {
     Set<T2Id> ret = new HashSet<>();
     for (ManyToManyRow<T1Id, T2Id> pair : m2mPairs) {
@@ -145,46 +127,19 @@ public class EasyCrudM2mServiceImpl<
     return ret;
   }
 
-  protected Query buildQueryToFindReferenceeByReferencerId(T1Id referencerId) {
-    Query q;
-    if (referencerId instanceof String) {
-      q = Query.n().eq(ManyToManyRow.FN_SRC, (String) referencerId);
-    } else if (referencerId instanceof Long) {
-      q = Query.n().eq(ManyToManyRow.FN_SRC, (Long) referencerId);
-    } else {
-      throw new RuntimeException("Unsupported type if Id = " + referencerId.getClass());
-    }
-    return q;
-  }
-
-  protected Query buildQueryToFindReferenceeByReferencerId(Set<T1Id> referencerIds) {
-    T1Id referenceeId = referencerIds.iterator().next();
-    Query q;
-    if (referenceeId instanceof String) {
-      q = Query.n().in(ManyToManyRow.FN_SRC, referencerIds.toArray(new String[0]));
-    } else if (referenceeId instanceof Long) {
-      q = Query.n().in(ManyToManyRow.FN_SRC, referencerIds.toArray(new Long[0]));
-    } else {
-      throw new RuntimeException("Unsupported type if Id = " + referenceeId.getClass());
-    }
-    return q;
-  }
-
   @Override
   public Map<T1Id, List<T2Dto>> findReferenceeByReferencers(Set<T1Id> referencerIds) {
     try {
       Preconditions.checkArgument(
           !CollectionUtils.isEmpty(referencerIds), "referencerId is required");
-      Query q = buildQueryToFindReferenceeByReferencerId(referencerIds);
-      List<ManyToManyRow<T1Id, T2Id>> m2mPairs = find(PagerParams.ALL, q).getItems();
+      List<ManyToManyRow<T1Id, T2Id>> m2mPairs =
+          findAll(newQuery().in(ManyToManyRow.FN_SRC, referencerIds));
       if (m2mPairs.size() == 0) {
         return Collections.emptyMap();
       }
-      Set<T2Id> referenceeIds = collectReferenceeIds(m2mPairs);
       List<T2Dto> referencee =
-          serviceB.find(PagerParams.ALL, buildQueryToFindObjectsByIds(referenceeIds)).getItems();
-      Map<T1Id, List<T2Dto>> ret = buildResultForFindReferenceeByReferencer(m2mPairs, referencee);
-      return ret;
+          serviceB.findAll(serviceB.newQuery().in(HasId::getId, collectReferenceeIds(m2mPairs)));
+      return buildResultForFindReferenceeByReferencer(m2mPairs, referencee);
     } catch (Throwable t) {
       throw new RuntimeException(
           "Failed to find "
@@ -236,9 +191,9 @@ public class EasyCrudM2mServiceImpl<
   @Override
   public void removeReferencee(T1Id referencerId, T2Id referenceeId) throws NotAuthorizedException {
     try {
-      Query q = Query.n();
-      addEqQuery(ManyToManyRow.FN_SRC, referencerId, q);
-      addEqQuery(ManyToManyRow.FN_DST, referenceeId, q);
+      var q = newQuery();
+      q.eq(ManyToManyRow.FN_SRC, referencerId);
+      q.eq(ManyToManyRow.FN_DST, referenceeId);
       ManyToManyRow<T1Id, T2Id> pair = findOneByQuery(q);
       if (pair != null) {
         deleteById(pair.getId());
@@ -255,16 +210,6 @@ public class EasyCrudM2mServiceImpl<
               + " identified by "
               + referenceeId,
           t);
-    }
-  }
-
-  protected void addEqQuery(String fnFrom, Object id, Query q) {
-    if (id instanceof String) {
-      q.eq(fnFrom, (String) id);
-    } else if (id instanceof Long) {
-      q.eq(fnFrom, (Long) id);
-    } else {
-      throw new RuntimeException("Unsupported type if Id = " + id.getClass());
     }
   }
 }

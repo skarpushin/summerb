@@ -22,9 +22,8 @@ import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.rest.commonpathvars.PathVariablesMap;
 import org.summerb.easycrud.rest.querynarrower.QueryNarrowerStrategyFieldBased;
-import org.summerb.spring.security.api.SecurityContextResolver;
+import org.summerb.security.api.CurrentUserUuidResolver;
 import org.summerb.users.api.PermissionService;
-import org.summerb.users.api.dto.User;
 
 /**
  * Default impl for narrower that finds objects user permitted to access.
@@ -32,39 +31,40 @@ import org.summerb.users.api.dto.User;
  * <p>WARNING: DO NOT USE it if you anticipate MANY objects of this type per user. As no pagination
  * is implemented here -- all ids retrieved at once
  */
-public class QueryNarrowerStrategyPermissionsBased<TUser extends User>
-    extends QueryNarrowerStrategyFieldBased {
+public class QueryNarrowerStrategyPermissionsBased<TRow extends HasId<?>>
+    extends QueryNarrowerStrategyFieldBased<TRow> {
   protected PermissionService permissionService;
   protected String optionalDomain;
   protected String optionalRequiredPermission;
-  protected SecurityContextResolver<TUser> securityContextResolver;
+  protected CurrentUserUuidResolver currentUserUuidResolver;
   protected Class<?> idClass;
 
   public QueryNarrowerStrategyPermissionsBased(
+      Class<TRow> rowClass,
       PermissionService permissionService,
-      SecurityContextResolver<TUser> securityContextResolver,
+      CurrentUserUuidResolver currentUserUuidResolver,
       Class<?> idClass,
       String optionalDomain,
       String optionalRequiredPermission) {
-    super(HasId.FN_ID);
+    super(rowClass, HasId.FN_ID);
     this.permissionService = permissionService;
-    this.securityContextResolver = securityContextResolver;
+    this.currentUserUuidResolver = currentUserUuidResolver;
     this.idClass = idClass;
     this.optionalDomain = optionalDomain;
     this.optionalRequiredPermission = optionalRequiredPermission;
   }
 
   @Override
-  protected Query doNarrow(Query ret, PathVariablesMap allRequestParams) {
+  protected Query<TRow> doNarrow(Query<TRow> ret, PathVariablesMap allRequestParams) {
     List<String> idsStrs =
         permissionService.findSubjectsUserHasPermissionsFor(
-            optionalDomain, securityContextResolver.getUserUuid(), optionalRequiredPermission);
+            optionalDomain, currentUserUuidResolver.getUserUuid(), optionalRequiredPermission);
 
     if (idClass.equals(String.class)) {
       if (idsStrs.size() == 0) {
         ret.eq(HasId.FN_ID, "NA");
       } else {
-        ret.in(HasId.FN_ID, idsStrs.toArray(new String[0]));
+        ret.in(HasId::getId, idsStrs);
       }
     } else {
       if (idsStrs.size() == 0) {
@@ -75,7 +75,7 @@ public class QueryNarrowerStrategyPermissionsBased<TUser extends User>
       } else {
         List<Long> idsLongs =
             idsStrs.stream().map(x -> Long.valueOf(x)).collect(Collectors.toList());
-        ret.in(HasId.FN_ID, idsLongs.toArray(new Long[0]));
+        ret.in(HasId.FN_ID, idsLongs);
       }
     }
 

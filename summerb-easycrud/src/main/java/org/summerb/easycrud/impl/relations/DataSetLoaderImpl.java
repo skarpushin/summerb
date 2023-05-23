@@ -45,8 +45,6 @@ import org.summerb.easycrud.api.row.datapackage.DataTable.RowIdToBackReferencesM
 import org.summerb.easycrud.api.row.relations.Ref;
 import org.summerb.easycrud.api.row.tools.EasyCrudDtoUtils;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
-import org.summerb.utils.easycrud.api.dto.PagerParams;
-import org.summerb.utils.easycrud.api.dto.PaginatedList;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultimap;
@@ -88,19 +86,11 @@ public class DataSetLoaderImpl implements DataSetLoader {
     if (ids.size() == 1) {
       HasId loaded = loadOne(firstId, service);
       ret.add(loaded);
-    } else if (firstId instanceof Long || firstId instanceof String) {
-      Query query;
-      if (firstId instanceof String) {
-        query = Query.n().in(HasId.FN_ID, ids.toArray(new String[0]));
-      } else {
-        query = Query.n().in(HasId.FN_ID, ids.toArray(new Long[0]));
-      }
+    } else {
+      Query<?> query = Query.n().in(HasId.FN_ID, ids);
       List loaded = loadMultipleByQuery(query, service);
       assertFound(
           loaded.size() == ids.size(), entityTypeName, "One of: " + Arrays.toString(ids.toArray()));
-      ret.addAll(loaded);
-    } else {
-      List<HasId> loaded = loadOneByOne(ids, service);
       ret.addAll(loaded);
     }
     return ret;
@@ -125,18 +115,7 @@ public class DataSetLoaderImpl implements DataSetLoader {
 
   protected List<HasId> loadMultipleByQuery(Query query, EasyCrudService service)
       throws NotAuthorizedException, GenericEntityNotFoundException {
-    PaginatedList<HasId> result = service.find(PagerParams.ALL, query);
-    return new ArrayList<>(result.getItems());
-  }
-
-  protected List<HasId> loadOneByOne(Collection ids, EasyCrudService<Object, HasId<Object>> service)
-      throws NotAuthorizedException, GenericEntityNotFoundException {
-    List<HasId> ret = new LinkedList<>();
-    for (Object id : ids) {
-      HasId loaded = loadOne(id, service);
-      ret.add(loaded);
-    }
-    return ret;
+    return new ArrayList<>(service.findAll(query));
   }
 
   protected void assertFound(
@@ -352,25 +331,17 @@ public class DataSetLoaderImpl implements DataSetLoader {
     EntityTypeToObjectsMap ret = new EntityTypeToObjectsMap();
     for (String entityTypeCode : targetEntityToRef.keySet()) {
       Collection<Entry<Ref, Set<Object>>> entries = targetEntityToRef.get(entityTypeCode);
-      List<Query> queries = new ArrayList<>(entries.size());
+      List<Query<?>> queries = new ArrayList<>(entries.size());
       for (Entry<Ref, Set<Object>> entry : entries) {
         Set<Object> ids = entry.getValue();
         Ref ref = entry.getKey();
 
-        Object firstId = ids.iterator().next();
-        if (firstId instanceof Long) {
-          queries.add(Query.n().in(ref.getToField(), ids.toArray(new Long[0])));
-        } else if (firstId instanceof String) {
-          queries.add(Query.n().in(ref.getToField(), ids.toArray(new String[0])));
-        } else {
-          throw new IllegalStateException("such id type is not supported: " + firstId.getClass());
-        }
+        queries.add(Query.FACTORY.build().in(ref.getToField(), ids));
       }
-      Query q = queries.size() == 1 ? queries.get(0) : Query.n().or(queries.toArray(new Query[0]));
+      Query<?> q = queries.size() == 1 ? queries.get(0) : (Query<?>) Query.n().or(queries);
 
       EasyCrudService service = easyCrudServiceResolver.resolveByRowMessageCode(entityTypeCode);
-      PaginatedList<HasId> results = service.find(PagerParams.ALL, q);
-      ret.put(entityTypeCode, new ArrayList<>(results.getItems()));
+      ret.put(entityTypeCode, new ArrayList<>(service.findAll(q)));
     }
 
     return ret;

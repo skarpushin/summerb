@@ -15,8 +15,8 @@
  ******************************************************************************/
 package org.summerb.easycrud.api;
 
-import org.summerb.easycrud.api.query.OrderBy;
-import org.summerb.easycrud.api.query.Query;
+import org.summerb.easycrud.api.dto.OrderBy;
+import org.summerb.easycrud.api.query.QueryConditions;
 import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.impl.dao.mysql.EasyCrudDaoMySqlImpl;
 import org.summerb.utils.easycrud.api.dto.PagerParams;
@@ -35,7 +35,7 @@ public interface EasyCrudDao<TId, TRow extends HasId<TId>> {
 
   TRow findById(TId id);
 
-  TRow findOneByQuery(Query query);
+  TRow findOneByQuery(QueryConditions query);
 
   int delete(TId id);
 
@@ -43,7 +43,8 @@ public interface EasyCrudDao<TId, TRow extends HasId<TId>> {
 
   int update(TRow row);
 
-  int deleteByQuery(Query query);
+  int deleteByQuery(QueryConditions query);
 
-  PaginatedList<TRow> query(PagerParams pagerParams, Query optionalQuery, OrderBy... orderBy);
+  PaginatedList<TRow> query(
+      PagerParams pagerParams, QueryConditions optionalQuery, OrderBy... orderBy);
 }

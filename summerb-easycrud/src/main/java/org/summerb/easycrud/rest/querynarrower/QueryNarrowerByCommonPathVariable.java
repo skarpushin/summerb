@@ -18,25 +18,15 @@ package org.summerb.easycrud.rest.querynarrower;
 import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.rest.commonpathvars.PathVariablesMap;
 
-public class QueryNarrowerByCommonPathVariable extends QueryNarrowerStrategyFieldBased {
-  protected String commonParamName;
+public class QueryNarrowerByCommonPathVariable<TRow> extends QueryNarrowerStrategyFieldBased<TRow> {
 
-  public QueryNarrowerByCommonPathVariable(String commonParamName) {
-    super(commonParamName);
-    this.commonParamName = commonParamName;
+  public QueryNarrowerByCommonPathVariable(Class<TRow> rowClazz, String commonParamName) {
+    super(rowClazz, commonParamName);
   }
 
   @Override
-  protected Query doNarrow(Query ret, PathVariablesMap allRequestParams) {
-    Object val = allRequestParams.get(commonParamName);
-    if (val instanceof String) {
-      ret.eq(commonParamName, (String) val);
-    } else if (val instanceof Long) {
-      ret.eq(commonParamName, (Long) val);
-    } else {
-      throw new IllegalStateException(
-          "Current impl doesn't support args of type: " + val.getClass());
-    }
+  protected Query<TRow> doNarrow(Query<TRow> ret, PathVariablesMap allRequestParams) {
+    ret.eq(fieldName, allRequestParams.get(fieldName));
     return ret;
   }
 }

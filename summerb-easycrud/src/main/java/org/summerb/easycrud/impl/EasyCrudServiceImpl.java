@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.summerb.easycrud.api.EasyCrudDao;
 import org.summerb.easycrud.api.EasyCrudExceptionStrategy;
@@ -27,16 +28,19 @@ import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.api.EasyCrudWireTap;
 import org.summerb.easycrud.api.EasyCrudWireTapMode;
 import org.summerb.easycrud.api.StringIdGenerator;
+import org.summerb.easycrud.api.dto.OrderBy;
 import org.summerb.easycrud.api.exceptions.EntityNotFoundException;
 import org.summerb.easycrud.api.exceptions.GenericEntityNotFoundException;
-import org.summerb.easycrud.api.query.OrderBy;
 import org.summerb.easycrud.api.query.Query;
+import org.summerb.easycrud.api.query.QueryConditions;
+import org.summerb.easycrud.api.query.QueryCommands;
 import org.summerb.easycrud.api.row.HasAuthor;
 import org.summerb.easycrud.api.row.HasAutoincrementId;
 import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.api.row.HasTimestamps;
 import org.summerb.easycrud.api.row.HasUuid;
 import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapNoOpImpl;
+import org.summerb.methodCapturers.PropertyNameObtainerFactory;
 import org.summerb.security.api.CurrentUserUuidResolver;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
 import org.summerb.utils.easycrud.api.dto.PagerParams;
@@ -77,6 +81,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
   protected EasyCrudWireTap<TRow> wireTap;
   protected CurrentUserUuidResolver currentUserUuidResolver;
   protected StringIdGenerator stringIdGenerator;
+  private PropertyNameObtainerFactory propertyNameObtainerFactory;
 
   /**
    * Constructor for cases when sub-class wants to take full responsibility on instantiation
@@ -221,6 +226,16 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
         !HasUuid.class.isAssignableFrom(rowClass) || stringIdGenerator != null,
         "stringIdGenerator required");
     this.stringIdGenerator = stringIdGenerator;
+  }
+
+  public PropertyNameObtainerFactory getPropertyNameObtainerFactory() {
+    return propertyNameObtainerFactory;
+  }
+
+  @Autowired(required = false)
+  public void setPropertyNameObtainerFactory(
+      PropertyNameObtainerFactory propertyNameObtainerFactory) {
+    this.propertyNameObtainerFactory = propertyNameObtainerFactory;
   }
 
   @Override
@@ -405,7 +420,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
   }
 
   @Override
-  public int deleteByQuery(Query query) throws NotAuthorizedException {
+  public int deleteByQuery(QueryConditions query) throws NotAuthorizedException {
     try {
       Preconditions.checkArgument(query != null);
 
@@ -476,7 +491,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
   }
 
   @Override
-  public TRow findOneByQuery(Query query) throws NotAuthorizedException {
+  public TRow findOneByQuery(QueryConditions query) throws NotAuthorizedException {
     try {
       Preconditions.checkArgument(query != null);
       if (wireTap.requiresOnRead()) {
@@ -494,7 +509,17 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
   }
 
   @Override
-  public PaginatedList<TRow> find(PagerParams pagerParams, Query optionalQuery, OrderBy... orderBy)
+  public TRow getOneByQuery(QueryConditions query) {
+    TRow ret = findOneByQuery(query);
+    if (ret == null) {
+      throw new GenericEntityNotFoundException(rowMessageCode, query);
+    }
+    return ret;
+  }
+
+  @Override
+  public PaginatedList<TRow> find(
+      PagerParams pagerParams, QueryConditions optionalQuery, OrderBy... orderBy)
       throws NotAuthorizedException {
     try {
       Preconditions.checkArgument(pagerParams != null, "PagerParams is a must");
@@ -515,7 +540,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
   }
 
   @Override
-  public List<TRow> findAll(Query optionalQuery, OrderBy... orderBy) {
+  public List<TRow> findAll(QueryConditions optionalQuery, OrderBy... orderBy) {
     return find(PagerParams.ALL, optionalQuery, orderBy).getItems();
   }
 
@@ -525,7 +550,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
   }
 
   @Override
-  public TRow findFirstByQuery(Query query, OrderBy... orderBy) {
+  public TRow findFirstByQuery(QueryConditions query, OrderBy... orderBy) {
     PaginatedList<TRow> results = find(TOP_ONE, null, orderBy);
     if (results.getItems().isEmpty()) {
       return null;
@@ -534,12 +559,35 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
   }
 
   @Override
-  public TRow getFirstByQuery(Query query, OrderBy... orderBy) {
+  public TRow getFirstByQuery(QueryConditions query, OrderBy... orderBy) {
     TRow result = findFirstByQuery(query, orderBy);
     if (result == null) {
       throw new GenericEntityNotFoundException(rowMessageCode, query);
     }
 
     return result;
+  }
+
+  @Override
+  public List<TRow> getAll(QueryConditions optionalQuery, OrderBy... orderBy) {
+    List<TRow> ret = findAll(optionalQuery, orderBy);
+    if (CollectionUtils.isEmpty(ret)) {
+      throw new GenericEntityNotFoundException(rowMessageCode, optionalQuery);
+    }
+
+    return ret;
+  }
+
+  @Override
+  public Query<TRow> newQuery() {
+    return Query.n(rowClass);
+  }
+
+  @Override
+  public QueryCommands<TId, TRow> query() {
+    Preconditions.checkState(
+        propertyNameObtainerFactory != null,
+        "propertyNameObtainerFactory is requried for this method to work");
+    return new QueryCommands<>(propertyNameObtainerFactory.getObtainer(rowClass), this);
   }
 }

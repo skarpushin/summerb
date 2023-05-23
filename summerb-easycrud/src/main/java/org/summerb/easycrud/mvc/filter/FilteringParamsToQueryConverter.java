@@ -19,6 +19,6 @@ import java.util.Map;
 
 import org.summerb.easycrud.api.query.Query;
 
-public interface FilteringParamsToQueryConverter {
-  Query convert(Map<String, FilteringParam> filterParams, Class<?> rowClazz);
+public interface FilteringParamsToQueryConverter<TRow> {
+  Query<TRow> convert(Map<String, FilteringParam> filterParams, Class<TRow> rowClazz);
 }

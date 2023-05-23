@@ -15,6 +15,9 @@
  ******************************************************************************/
 package org.summerb.easycrud.mvc.filter;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -26,16 +29,17 @@ import org.summerb.easycrud.api.query.Query;
  *     but don't want to over-engineer. In behavior needs to be changed one can override this class
  *     or provide other impl
  */
-public class FilteringParamsToQueryConverterImpl implements FilteringParamsToQueryConverter {
+public class FilteringParamsToQueryConverterImpl<TRow>
+    implements FilteringParamsToQueryConverter<TRow> {
 
   @Override
-  public Query convert(Map<String, FilteringParam> filterParams, Class<?> rowClazz) {
+  public Query<TRow> convert(Map<String, FilteringParam> filterParams, Class<TRow> rowClazz) {
     if (filterParams == null || filterParams.isEmpty()) {
       return null;
     }
 
     try {
-      Query ret = Query.n();
+      Query<TRow> ret = Query.FACTORY.buildFor(rowClazz);
       for (Entry<String, FilteringParam> entry : filterParams.entrySet()) {
         String fname = entry.getKey();
         String[] values = entry.getValue().getValues();
@@ -66,69 +70,73 @@ public class FilteringParamsToQueryConverterImpl implements FilteringParamsToQue
       boolean isStringType,
       boolean isNumericType,
       boolean isBooleanType,
-      Query ret) {
+      Query<TRow> ret) {
     switch (command) {
       case FilteringParam.CMD_BETWEEN:
-        ret.between(fname, Long.parseLong(values[0]), Long.parseLong(values[1]));
+        if (isNumericType) {
+          ret.between(fname, Long.parseLong(values[0]), Long.parseLong(values[1]));
+        } else {
+          ret.between(fname, values[0], values[1]);
+        }
         break;
       case FilteringParam.CMD_CONTAIN:
         ret.contains(fname, values[0]);
         break;
       case FilteringParam.CMD_EQUALS:
-        if (isNumericType) {
-          ret.eq(fname, Long.parseLong(values[0]));
-        } else if (isStringType) {
-          ret.eq(fname, values[0]);
-        } else {
-          throw new IllegalArgumentException(
-              "Field type " + type + " is not supported for predicate " + command);
-        }
+        ret.eq(fname, values[0]);
         break;
       case FilteringParam.CMD_GREATER:
-        ret.between(fname, Long.parseLong(values[0]) + 1, Long.MAX_VALUE);
+        if (isNumericType) {
+          ret.greater(fname, Long.parseLong(values[0]));
+        } else {
+          ret.greater(fname, values[0]);
+        }
         break;
       case FilteringParam.CMD_GREATER_OR_EQUAL:
-        ret.between(fname, Long.parseLong(values[0]), Long.MAX_VALUE);
+        ret.ge(fname, Long.parseLong(values[0]));
         break;
       case FilteringParam.CMD_IN:
         if (isNumericType) {
           ret.in(fname, convertToLongs(values));
         } else if (isStringType) {
-          ret.in(fname, values);
+          ret.in(fname, Arrays.asList(values));
         } else {
           throw new IllegalArgumentException(
               "Field type " + type + " is not supported for predicate " + command);
         }
         break;
       case FilteringParam.CMD_LESS:
-        ret.between(fname, Long.MIN_VALUE, Long.parseLong(values[0]) + 1);
+        if (isNumericType) {
+          ret.less(fname, Long.parseLong(values[0]));
+        } else {
+          ret.less(fname, values[0]);
+        }
         break;
       case FilteringParam.CMD_LESS_OR_EQUAL:
-        ret.between(fname, Long.MIN_VALUE, Long.parseLong(values[0]));
+        if (isNumericType) {
+          ret.le(fname, Long.parseLong(values[0]));
+        } else {
+          ret.le(fname, values[0]);
+        }
         break;
       case FilteringParam.CMD_NOT_BETWEEN:
-        ret.notBetween(fname, Long.parseLong(values[0]), Long.parseLong(values[1]));
+        if (isNumericType) {
+          ret.notBetween(fname, Long.parseLong(values[0]), Long.parseLong(values[1]));
+        } else {
+          ret.notBetween(fname, values[0], values[1]);
+        }
         break;
       case FilteringParam.CMD_NOT_CONTAIN:
         ret.notContains(fname, values[0]);
         break;
       case FilteringParam.CMD_NOT_EQUALS:
-        if (isNumericType) {
-          ret.ne(fname, Long.parseLong(values[0]));
-        } else if (isStringType) {
-          ret.ne(fname, values[0]);
-        } else if (isBooleanType) {
-          ret.ne(fname, Boolean.parseBoolean(values[0]));
-        } else {
-          throw new IllegalArgumentException(
-              "Field type " + type + " is not supported for predicate " + command);
-        }
+        ret.ne(fname, values[0]);
         break;
       case FilteringParam.CMD_NOT_IN:
         if (isNumericType) {
           ret.notIn(fname, convertToLongs(values));
         } else if (isStringType) {
-          ret.notIn(fname, values);
+          ret.notIn(fname, Arrays.asList(values));
         } else {
           throw new IllegalArgumentException(
               "Field type " + type + " is not supported for predicate " + command);
@@ -149,10 +157,10 @@ public class FilteringParamsToQueryConverterImpl implements FilteringParamsToQue
     }
   }
 
-  protected static Long[] convertToLongs(String[] values) {
-    Long[] ret = new Long[values.length];
+  protected static List<Long> convertToLongs(String[] values) {
+    List<Long> ret = new ArrayList<>(values.length);
     for (int i = 0; i < values.length; i++) {
-      ret[i] = Long.parseLong(values[i]);
+      ret.add(Long.parseLong(values[i]));
     }
     return ret;
   }

@@ -19,9 +19,12 @@ import java.util.List;
 
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.transaction.annotation.Transactional;
+import org.summerb.easycrud.api.dto.OrderBy;
 import org.summerb.easycrud.api.exceptions.EntityNotFoundException;
-import org.summerb.easycrud.api.query.OrderBy;
+import org.summerb.easycrud.api.exceptions.GenericEntityNotFoundException;
 import org.summerb.easycrud.api.query.Query;
+import org.summerb.easycrud.api.query.QueryConditions;
+import org.summerb.easycrud.api.query.QueryCommands;
 import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.api.row.HasTimestamps;
 import org.summerb.i18n.HasMessageCode;
@@ -49,6 +52,18 @@ import org.summerb.validation.ValidationException;
  * @param <TRow> type of row
  */
 public interface EasyCrudService<TId, TRow extends HasId<TId>> {
+
+  /** @return new Query for rows of this service */
+  Query<TRow> newQuery();
+
+  /**
+   * Another way how to query the data. Does not differ functionally from other quering methods, but
+   * could make a difference in terms of convenience ("coding-sugar"). You can simply chain query
+   * condition and then call one of search methods available in {@link QueryCommands}
+   *
+   * @return new instance of {@link QueryCommands}
+   */
+  QueryCommands<TId, TRow> query();
 
   /**
    * Create row
@@ -97,7 +112,14 @@ public interface EasyCrudService<TId, TRow extends HasId<TId>> {
    * @return Row or null if not found. If more than 1 row matched query exception will be thrown
    * @throws NotAuthorizedException if user is not authorized o perform this operation
    */
-  TRow findOneByQuery(Query query);
+  TRow findOneByQuery(QueryConditions query);
+
+  /**
+   * @param query query for locating row
+   * @return a Row. If more (or less) than 1 row matched query exception will be thrown
+   * @throws NotAuthorizedException if user is not authorized o perform this operation
+   */
+  TRow getOneByQuery(QueryConditions query);
 
   /**
    * @param query query for locating row
@@ -106,7 +128,7 @@ public interface EasyCrudService<TId, TRow extends HasId<TId>> {
    * @throws NotAuthorizedException if user is not authorized o perform this operation
    * @throws EntityNotFoundException in case entity does not exist
    */
-  TRow getFirstByQuery(Query query, OrderBy... orderBy);
+  TRow getFirstByQuery(QueryConditions query, OrderBy... orderBy);
 
   /**
    * @param query query for locating row
@@ -114,7 +136,7 @@ public interface EasyCrudService<TId, TRow extends HasId<TId>> {
    * @return row, or null if not found
    * @throws NotAuthorizedException if user is not authorized o perform this operation
    */
-  TRow findFirstByQuery(Query query, OrderBy... orderBy);
+  TRow findFirstByQuery(QueryConditions query, OrderBy... orderBy);
 
   /**
    * @param pagerParams pagination parameters
@@ -123,7 +145,8 @@ public interface EasyCrudService<TId, TRow extends HasId<TId>> {
    * @return results, might be empty, but never null
    * @throws NotAuthorizedException if user is not authorized o perform this operation
    */
-  PaginatedList<TRow> find(PagerParams pagerParams, Query optionalQuery, OrderBy... orderBy);
+  PaginatedList<TRow> find(
+      PagerParams pagerParams, QueryConditions optionalQuery, OrderBy... orderBy);
 
   /**
    * @param optionalQuery - optional {@link Query}. If null, then this call is same as {@link
@@ -132,7 +155,7 @@ public interface EasyCrudService<TId, TRow extends HasId<TId>> {
    * @return results, might be empty, but never null
    * @throws NotAuthorizedException if user is not authorized o perform this operation
    */
-  List<TRow> findAll(Query optionalQuery, OrderBy... orderBy);
+  List<TRow> findAll(QueryConditions optionalQuery, OrderBy... orderBy);
 
   /**
    * @param orderBy optional orderBy, might be missing/null
@@ -140,6 +163,16 @@ public interface EasyCrudService<TId, TRow extends HasId<TId>> {
    * @throws NotAuthorizedException if user is not authorized o perform this operation
    */
   List<TRow> findAll(OrderBy... orderBy);
+
+  /**
+   * Same as findAll, but will throw {@link GenericEntityNotFoundException} if nothing found
+   *
+   * @param queryCommands
+   * @param orderBy optional order by
+   * @return list of found items (at least one) or throws {@link GenericEntityNotFoundException} in
+   *     case nothing found
+   */
+  List<TRow> getAll(QueryConditions optionalQuery, OrderBy... orderBy);
 
   /**
    * Deletes row by id.
@@ -186,7 +219,7 @@ public interface EasyCrudService<TId, TRow extends HasId<TId>> {
    * @throws NotAuthorizedException if user is not authorized o perform this operation
    */
   @Transactional(rollbackFor = Throwable.class)
-  int deleteByQuery(Query query);
+  int deleteByQuery(QueryConditions query);
 
   /** @return class of Row served by this service */
   Class<TRow> getRowClass();

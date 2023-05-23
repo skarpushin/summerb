@@ -7,6 +7,7 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.summerb.properties.api.PropertyService;
 import org.summerb.properties.api.SimplePropertyService;
 import org.summerb.properties.impl.PropertyServiceImpl;
@@ -23,6 +24,9 @@ import com.google.common.eventbus.EventBus;
 
 /**
  * Template configuration for Properties Service beans
+ *
+ * <p>NOTE: This class by purpose does not have {@link Configuration} to avoid automatic
+ * instantiation by Spring
  *
  * @author Sergey Karpushin
  */

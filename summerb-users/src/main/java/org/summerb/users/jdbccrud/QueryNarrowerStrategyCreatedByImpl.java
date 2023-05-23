@@ -19,27 +19,30 @@ import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.api.row.HasAuthor;
 import org.summerb.easycrud.rest.commonpathvars.PathVariablesMap;
 import org.summerb.easycrud.rest.querynarrower.QueryNarrowerStrategyFieldBased;
-import org.summerb.spring.security.api.SecurityContextResolver;
-import org.summerb.users.api.dto.User;
+import org.summerb.security.api.CurrentUserUuidResolver;
+
+import com.google.common.base.Preconditions;
 
 /**
  * This narrower simply trims query to only those items which were created by current user
  *
- * <p>WARNING: It's assummed dto implemented interface {@link HasAuthor}
+ * <p>WARNING: It's assumed dto implemented interface {@link HasAuthor}
  */
-public class QueryNarrowerStrategyCreatedByImpl<TUser extends User>
-    extends QueryNarrowerStrategyFieldBased {
-  protected SecurityContextResolver<TUser> securityContextResolver;
+public class QueryNarrowerStrategyCreatedByImpl<TRow extends HasAuthor>
+    extends QueryNarrowerStrategyFieldBased<TRow> {
+  protected CurrentUserUuidResolver currentUserUuidResolver;
 
   public QueryNarrowerStrategyCreatedByImpl(
-      SecurityContextResolver<TUser> securityContextResolver) {
-    super(HasAuthor.FN_CREATED_BY);
-    this.securityContextResolver = securityContextResolver;
+      Class<TRow> rowClass, CurrentUserUuidResolver currentUserUuidResolver) {
+    super(rowClass, HasAuthor.FN_CREATED_BY);
+    Preconditions.checkArgument(
+        currentUserUuidResolver != null, "currentUserUuidResolver required");
+    this.currentUserUuidResolver = currentUserUuidResolver;
   }
 
   @Override
-  protected Query doNarrow(Query ret, PathVariablesMap allRequestParams) {
-    ret.eq(HasAuthor.FN_CREATED_BY, securityContextResolver.getUserUuid());
+  protected Query<TRow> doNarrow(Query<TRow> ret, PathVariablesMap allRequestParams) {
+    ret.eq(HasAuthor::getCreatedBy, currentUserUuidResolver.getUserUuid());
     return ret;
   }
 }

@@ -17,18 +17,17 @@ package integr.org.summerb.easycrud.dtos;
 
 import java.io.Serializable;
 
+import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.api.row.HasAuthor;
 import org.summerb.easycrud.api.row.HasTimestamps;
 import org.summerb.easycrud.api.row.HasUuid;
-import org.summerb.easycrud.gen2.QueryEx;
-import org.summerb.easycrud.gen2.QueryExFactory;
 
 public class TestDto1 implements HasUuid, HasAuthor, HasTimestamps, Serializable {
   private static final long serialVersionUID = -2954623750074589334L;
 
-  /** @return shortcut for building {@link QueryEx} for this DTO */
-  public static QueryEx<TestDto1> Q() {
-    return QueryExFactory.FACTORY.buildFor(TestDto1.class);
+  /** @return shortcut for building {@link Query} for this DTO */
+  public static Query<TestDto1> Q() {
+    return Query.FACTORY.buildFor(TestDto1.class);
   }
 
   private String id;

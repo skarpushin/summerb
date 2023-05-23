@@ -11,49 +11,48 @@ public class QueryTest {
 
   @Test
   public void testSameQueriesAreEqual() {
-    Query q1 = buildQuery(false);
-    Query q2 = buildQuery(false);
-    assertEquals(q1, q2);
+    assertEquals(buildQuery(false), buildQuery(false));
   }
 
   @Test
   public void testDifferentQueriesAreNotEqual() {
-    Query q1 = buildQuery(false);
-    Query q2 = buildQuery(true);
-    assertNotEquals(q1, q2);
+    assertNotEquals(buildQuery(false), buildQuery(true));
   }
 
-  protected Query buildQuery(boolean alternate) {
-    Query q = Query.n();
-    q.between("asd", 1, 2);
-    q.between("asdasd", "asd", "asd");
-    q.contains("asdad", "asd");
-    q.eq("asad", !alternate ? 2 : 1);
-    q.eq("asda", "asd");
-    q.ge("asda", 1);
-    q.in("asasd", 2L, 3L);
-    q.in("asad", "asd", "asd");
-    q.inLongs("asad", Arrays.asList(1L, 2L));
-    q.inStrings("asd", Arrays.asList("asd", "asd"));
-    q.isFalse("asd");
-    q.isNotNull("asad");
-    q.isNull("asdasd");
-    q.isTrue("asd");
-    q.le("asasd", 2L);
-    q.lengthBetween("asdasd", 1, 4);
-    q.ne("asdasd", false);
-    q.ne("asdasd", 5L);
-    q.ne("asdad", "asda");
-    q.notBetween("asdasd", 1, 5);
-    q.notContains("asdasd", "asdasd");
-    q.notIn("asasd", 2L, 3L);
-    q.notIn("asad", "asd", "asd");
-    q.notInLongs("asad", Arrays.asList(1L, 2L));
-    q.notInStrings("asd", Arrays.asList("asd", "asd"));
-    q.notLe("asda", 5L);
-    q.notStartsWith("asdasd", "asad");
-    q.or(Query.n().eq("asd", "asd"));
-    q.startsWith("asdasd", "asdasd");
+  protected Query<?> buildQuery(boolean alternate) {
+    Query<?> q = Query.n();
+
+    q.isNull("fn");
+    q.isNotNull("fn");
+    q.isTrue("fn");
+    q.isFalse("fn");
+    q.eq("fn", "value");
+    q.ne("fn", "value");
+    q.less("fn", alternate ? 55 : 5);
+    q.le("fn", 6);
+    q.greater("fn", 7);
+    q.ge("fn", 8);
+    q.in("fn", alternate ? Arrays.asList(1, 2, 3) : Arrays.asList(1, 2, 3, 4));
+    q.notIn("fn", Arrays.asList(1, 2, 3));
+    q.between("fn", 1, 8);
+    q.notBetween("fn", 4, 7);
+    q.stringLengthBetween("fn", 4, 9);
+    q.stringLengthNotBetween("fn", 3, 6);
+    q.like("fn", "asd");
+    q.notLike("fn", "asd");
+    q.contains("fn", "asd");
+    q.notContains("fn", "asd");
+    q.startsWith("fn", alternate ? "prefix" : "prefix2");
+    q.notStartsWith("fn", "prefix");
+    q.endsWith("fn", "suffix");
+    q.notEndsWith("fn", "suffix");
+    q.empty("fn");
+    q.notEmpty("fn");
+    q.lengthLe("fn", 400);
+    q.lengthLess("fn", 300);
+    q.lengthGe("fn", 200);
+    q.lengthGreater("fn", 100);
+
     return q;
   }
 }

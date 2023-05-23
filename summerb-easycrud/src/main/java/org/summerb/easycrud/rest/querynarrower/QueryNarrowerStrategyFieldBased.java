@@ -15,25 +15,33 @@
  ******************************************************************************/
 package org.summerb.easycrud.rest.querynarrower;
 
-import org.springframework.beans.PropertyAccessor;
+import org.springframework.util.StringUtils;
+import org.summerb.easycrud.api.query.Condition;
 import org.summerb.easycrud.api.query.DisjunctionCondition;
 import org.summerb.easycrud.api.query.FieldCondition;
 import org.summerb.easycrud.api.query.Query;
-import org.summerb.easycrud.api.query.Restriction;
+import org.summerb.easycrud.api.query.QueryConditions;
 import org.summerb.easycrud.rest.commonpathvars.PathVariablesMap;
 
-public abstract class QueryNarrowerStrategyFieldBased extends QueryNarrowerStrategy {
-  protected String fieldName;
+import com.google.common.base.Preconditions;
 
-  public QueryNarrowerStrategyFieldBased(String fieldName) {
+public abstract class QueryNarrowerStrategyFieldBased<TRow> extends QueryNarrowerStrategy<TRow> {
+  protected String fieldName;
+  protected Class<TRow> rowClazz;
+
+  public QueryNarrowerStrategyFieldBased(Class<TRow> rowClazz, String fieldName) {
+    Preconditions.checkArgument(rowClazz != null, "rowClazz required");
+    Preconditions.checkArgument(StringUtils.hasText(fieldName), "fieldName required");
+
     this.fieldName = fieldName;
+    this.rowClazz = rowClazz;
   }
 
   @Override
-  public Query narrow(Query optionalQuery, PathVariablesMap pathVariables) {
-    Query ret;
+  public Query<TRow> narrow(Query<TRow> optionalQuery, PathVariablesMap pathVariables) {
+    Query<TRow> ret;
     if (optionalQuery == null) {
-      ret = Query.n();
+      ret = Query.n(rowClazz);
     } else {
       if (hasRestrictionOnField(optionalQuery, fieldName)) {
         return optionalQuery;
@@ -46,14 +54,14 @@ public abstract class QueryNarrowerStrategyFieldBased extends QueryNarrowerStrat
     return ret;
   }
 
-  protected boolean hasRestrictionOnField(Query query, String fieldName) {
-    for (Restriction<PropertyAccessor> restriction : query.getRestrictions()) {
-      if (restriction instanceof FieldCondition) {
-        if (fieldName.equals(((FieldCondition) restriction).getFieldName())) {
+  protected boolean hasRestrictionOnField(QueryConditions query, String fieldName) {
+    for (Condition condition : query.getConditions()) {
+      if (condition instanceof FieldCondition) {
+        if (fieldName.equals(((FieldCondition) condition).getFieldName())) {
           return true;
         }
-      } else if (restriction instanceof DisjunctionCondition) {
-        for (Query subQuery : ((DisjunctionCondition) restriction).getQueries()) {
+      } else if (condition instanceof DisjunctionCondition) {
+        for (QueryConditions subQuery : ((DisjunctionCondition) condition).getQueries()) {
           if (hasRestrictionOnField(subQuery, fieldName)) {
             return true;
           }
@@ -63,5 +71,5 @@ public abstract class QueryNarrowerStrategyFieldBased extends QueryNarrowerStrat
     return false;
   }
 
-  protected abstract Query doNarrow(Query ret, PathVariablesMap allRequestParams);
+  protected abstract Query<TRow> doNarrow(Query<TRow> ret, PathVariablesMap allRequestParams);
 }

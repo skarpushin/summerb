@@ -15,7 +15,7 @@
  ******************************************************************************/
 package org.summerb.easycrud.impl.dao.mysql;
 
-import static org.summerb.easycrud.impl.dao.mysql.QueryToNativeSqlCompilerMySqlImpl.underscore;
+import static org.summerb.easycrud.impl.dao.mysql.QueryToSqlMySqlImpl.underscore;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,10 +37,10 @@ import org.springframework.util.StringUtils;
 import org.summerb.easycrud.api.DaoExceptionTranslator;
 import org.summerb.easycrud.api.EasyCrudDao;
 import org.summerb.easycrud.api.ParameterSourceBuilder;
-import org.summerb.easycrud.api.QueryToNativeSqlCompiler;
+import org.summerb.easycrud.api.QueryToSql;
 import org.summerb.easycrud.api.StringIdGenerator;
-import org.summerb.easycrud.api.query.OrderBy;
-import org.summerb.easycrud.api.query.Query;
+import org.summerb.easycrud.api.dto.OrderBy;
+import org.summerb.easycrud.api.query.QueryConditions;
 import org.summerb.easycrud.api.row.HasAuthor;
 import org.summerb.easycrud.api.row.HasAutoincrementId;
 import org.summerb.easycrud.api.row.HasId;
@@ -77,7 +77,7 @@ public class EasyCrudDaoMySqlImpl<TId, TRow extends HasId<TId>> extends TableDao
   protected RowMapper<TRow> rowMapper;
   protected ParameterSourceBuilder<TRow> parameterSourceBuilder;
   protected ConversionService conversionService;
-  protected QueryToNativeSqlCompiler queryToNativeSqlCompiler;
+  protected QueryToSql queryToSql;
   protected StringIdGenerator stringIdGenerator;
   protected DaoExceptionTranslator daoExceptionTranslator;
   protected NowResolver nowResolver;
@@ -145,21 +145,20 @@ public class EasyCrudDaoMySqlImpl<TId, TRow extends HasId<TId>> extends TableDao
     this.parameterSourceBuilder = parameterSourceBuilder;
   }
 
-  public QueryToNativeSqlCompiler getQueryToNativeSqlCompiler() {
-    return queryToNativeSqlCompiler;
+  public QueryToSql getQueryToNativeSqlCompiler() {
+    return queryToSql;
   }
 
   /**
-   * Set {@link QueryToNativeSqlCompiler}. Optionally autowired from application context. If nothing
-   * set, then {@link QueryToNativeSqlCompilerMySqlImpl} will be used
+   * Set {@link QueryToSql}. Optionally autowired from application context. If nothing set, then
+   * {@link QueryToSqlMySqlImpl} will be used
    *
-   * @param queryToNativeSqlCompiler queryToNativeSqlCompiler
+   * @param queryToSql queryToSql
    */
   @Autowired(required = false)
-  public void setQueryToNativeSqlCompiler(QueryToNativeSqlCompiler queryToNativeSqlCompiler) {
-    Preconditions.checkArgument(
-        queryToNativeSqlCompiler != null, "queryToNativeSqlCompiler required");
-    this.queryToNativeSqlCompiler = queryToNativeSqlCompiler;
+  public void setQueryToNativeSqlCompiler(QueryToSql queryToSql) {
+    Preconditions.checkArgument(queryToSql != null, "queryToSql required");
+    this.queryToSql = queryToSql;
   }
 
   public ConversionService getConversionService() {
@@ -245,8 +244,8 @@ public class EasyCrudDaoMySqlImpl<TId, TRow extends HasId<TId>> extends TableDao
       parameterSourceBuilder = buildDefaultParameterSourceBuilder();
     }
 
-    if (queryToNativeSqlCompiler == null) {
-      queryToNativeSqlCompiler = buildDefaultQueryToNativeSqlCompiler();
+    if (queryToSql == null) {
+      queryToSql = buildDefaultQueryToNativeSqlCompiler();
     }
 
     if (daoExceptionTranslator == null) {
@@ -278,8 +277,8 @@ public class EasyCrudDaoMySqlImpl<TId, TRow extends HasId<TId>> extends TableDao
     return new DaoExceptionTranslatorMySqlImpl();
   }
 
-  protected QueryToNativeSqlCompilerMySqlImpl buildDefaultQueryToNativeSqlCompiler() {
-    return new QueryToNativeSqlCompilerMySqlImpl();
+  protected QueryToSqlMySqlImpl buildDefaultQueryToNativeSqlCompiler() {
+    return new QueryToSqlMySqlImpl();
   }
 
   protected ParameterSourceBuilderBeanPropImpl<TRow> buildDefaultParameterSourceBuilder() {
@@ -327,10 +326,9 @@ public class EasyCrudDaoMySqlImpl<TId, TRow extends HasId<TId>> extends TableDao
     // Configure identification columns - how do we find right record for
     // update
     List<String> restrictingColumns = new ArrayList<String>();
-    restrictingColumns.add(QueryToNativeSqlCompilerMySqlImpl.underscore(HasId.FN_ID));
+    restrictingColumns.add(QueryToSqlMySqlImpl.underscore(HasId.FN_ID));
     if (HasTimestamps.class.isAssignableFrom(rowClass)) {
-      restrictingColumns.add(
-          QueryToNativeSqlCompilerMySqlImpl.underscore(HasTimestamps.FN_MODIFIED_AT));
+      restrictingColumns.add(QueryToSqlMySqlImpl.underscore(HasTimestamps.FN_MODIFIED_AT));
     }
     ret.setRestrictingColumns(restrictingColumns);
 
@@ -347,14 +345,10 @@ public class EasyCrudDaoMySqlImpl<TId, TRow extends HasId<TId>> extends TableDao
               new ArrayList<String>(tableMetaDataContext.createColumns());
           remove(HasId.FN_ID, updatingColumns);
           if (HasTimestamps.class.isAssignableFrom(rowClass)) {
-            remove(
-                QueryToNativeSqlCompilerMySqlImpl.underscore(HasTimestamps.FN_CREATED_AT),
-                updatingColumns);
+            remove(QueryToSqlMySqlImpl.underscore(HasTimestamps.FN_CREATED_AT), updatingColumns);
           }
           if (HasAuthor.class.isAssignableFrom(rowClass)) {
-            remove(
-                QueryToNativeSqlCompilerMySqlImpl.underscore(HasAuthor.FN_CREATED_BY),
-                updatingColumns);
+            remove(QueryToSqlMySqlImpl.underscore(HasAuthor.FN_CREATED_BY), updatingColumns);
           }
           return updatingColumns;
         }
@@ -449,9 +443,9 @@ public class EasyCrudDaoMySqlImpl<TId, TRow extends HasId<TId>> extends TableDao
   }
 
   @Override
-  public TRow findOneByQuery(Query query) {
+  public TRow findOneByQuery(QueryConditions query) {
     MapSqlParameterSource params = new MapSqlParameterSource();
-    String whereClause = queryToNativeSqlCompiler.buildWhereClauseAndPopulateParams(query, params);
+    String whereClause = queryToSql.buildWhereClauseAndPopulateParams(query, params);
 
     try {
       return jdbc.queryForObject(sqlFindByCustomQuery + "WHERE " + whereClause, params, rowMapper);
@@ -463,21 +457,20 @@ public class EasyCrudDaoMySqlImpl<TId, TRow extends HasId<TId>> extends TableDao
   }
 
   @Override
-  public int deleteByQuery(Query query) {
+  public int deleteByQuery(QueryConditions query) {
     MapSqlParameterSource params = new MapSqlParameterSource();
-    String whereClause = queryToNativeSqlCompiler.buildWhereClauseAndPopulateParams(query, params);
+    String whereClause = queryToSql.buildWhereClauseAndPopulateParams(query, params);
     return jdbc.update(sqlDeleteByCustomQuery + whereClause, params);
   }
 
   @Override
   public PaginatedList<TRow> query(
-      PagerParams pagerParams, Query optionalQuery, OrderBy... orderBy) {
+      PagerParams pagerParams, QueryConditions optionalQuery, OrderBy... orderBy) {
     MapSqlParameterSource params = new MapSqlParameterSource();
     String whereClause =
-        optionalQuery == null
+        optionalQuery == null || optionalQuery.isEmpty()
             ? ""
-            : "WHERE "
-                + queryToNativeSqlCompiler.buildWhereClauseAndPopulateParams(optionalQuery, params);
+            : "WHERE " + queryToSql.buildWhereClauseAndPopulateParams(optionalQuery, params);
     params.addValue(PARAM_OFFSET, pagerParams.getOffset());
     params.addValue(PARAM_MAX, pagerParams.getMax());
 

@@ -39,8 +39,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.filter.GenericFilterBean;
 import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.api.EasyCrudWireTap;
+import org.summerb.easycrud.api.dto.OrderBy;
 import org.summerb.easycrud.api.exceptions.EntityNotFoundException;
-import org.summerb.easycrud.api.query.OrderBy;
 import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.api.relations.DataSetLoader;
 import org.summerb.easycrud.api.relations.ReferencesRegistry;
@@ -99,10 +99,10 @@ public class EasyCrudRestControllerBase<
   protected ConvertBeforeReturnStrategy<TId, TRow> convertBeforeReturnStrategy =
       new ConvertBeforeReturnStrategy<TId, TRow>();
 
-  protected QueryNarrowerStrategy queryNarrowerStrategy = new QueryNarrowerStrategy();
+  protected QueryNarrowerStrategy<TRow> queryNarrowerStrategy = new QueryNarrowerStrategy<TRow>();
   protected PermissionsResolverStrategy<TId, TRow> permissionsResolverStrategy;
-  protected FilteringParamsToQueryConverter filteringParamsToQueryConverter =
-      new FilteringParamsToQueryConverterImpl();
+  protected FilteringParamsToQueryConverter<TRow> filteringParamsToQueryConverter =
+      new FilteringParamsToQueryConverterImpl<TRow>();
   protected OrderBy[] defaultOrderBy;
   protected PagerParams defaultPagerParams = new PagerParams();
 
@@ -183,7 +183,7 @@ public class EasyCrudRestControllerBase<
     OrderBy[] orderBy = clarifyOrderBy(optionalOrderBy);
     PagerParams pagerParams = clarifyPagerParams(optionalPagerParams);
 
-    Query query = narrowQuery(null, pathVariables);
+    Query<TRow> query = narrowQuery(null, pathVariables);
     PaginatedList<TRow> rows = queryRows(orderBy, pagerParams, query);
 
     MultipleItemsResult<TId, TRow> ret = buildMultipleItemsResult(rows);
@@ -248,20 +248,21 @@ public class EasyCrudRestControllerBase<
     return defaultOrderBy;
   }
 
-  protected PaginatedList<TRow> queryRows(OrderBy[] orderBy, PagerParams pagerParams, Query query)
-      throws NotAuthorizedException {
+  protected PaginatedList<TRow> queryRows(
+      OrderBy[] orderBy, PagerParams pagerParams, Query<TRow> query) throws NotAuthorizedException {
     return service.find(pagerParams, query, orderBy);
   }
 
-  protected Query buildQuery(EasyCrudQueryParams filteringParams, PathVariablesMap pathVariables) {
-    Query query =
+  protected Query<TRow> buildQuery(
+      EasyCrudQueryParams filteringParams, PathVariablesMap pathVariables) {
+    Query<TRow> query =
         filteringParamsToQueryConverter.convert(
             filteringParams.getFilterParams(), service.getRowClass());
     query = narrowQuery(query, pathVariables);
     return query;
   }
 
-  protected Query narrowQuery(Query query, PathVariablesMap pathVariables) {
+  protected Query<TRow> narrowQuery(Query<TRow> query, PathVariablesMap pathVariables) {
     return queryNarrowerStrategy.narrow(query, pathVariables);
   }
 
@@ -306,7 +307,7 @@ public class EasyCrudRestControllerBase<
     OrderBy[] orderBy = clarifyOrderBy(filteringParams.getOrderBy());
     PagerParams pagerParams = clarifyPagerParams(filteringParams.getPagerParams());
 
-    Query query = buildQuery(filteringParams, pathVariables);
+    Query<TRow> query = buildQuery(filteringParams, pathVariables);
     PaginatedList<TRow> rows = queryRows(orderBy, pagerParams, query);
 
     MultipleItemsResult<TId, TRow> ret = buildMultipleItemsResult(rows);

@@ -40,8 +40,6 @@ import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.api.relations.ReferencesRegistry;
 import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.api.row.datapackage.DataSet;
-import org.summerb.utils.easycrud.api.dto.PagerParams;
-import org.summerb.utils.easycrud.api.dto.PaginatedList;
 
 import integr.org.summerb.easycrud.dtos.TestDto1;
 import integr.org.summerb.easycrud.dtos.TestDto2;
@@ -105,10 +103,8 @@ public class DataSetLoaderImplTest {
     EasyCrudService service = Mockito.mock(EasyCrudService.class);
     when(fixture.getEasyCrudServiceResolver().resolveByRowMessageCode("dto1")).thenReturn(service);
 
-    PaginatedList mockret =
-        new PaginatedList<>(new PagerParams(), Arrays.asList(new TestDto1(), new TestDto1()), 2);
-    when(service.find(any(PagerParams.class), eq(Query.n().in(HasId.FN_ID, new Long[] {1L, 2L}))))
-        .thenReturn(mockret);
+    when(service.findAll(eq(Query.n().in(HasId.FN_ID, Arrays.asList(1L, 2L)))))
+        .thenReturn(Arrays.asList(new TestDto1(), new TestDto1()));
 
     List<HasId> ret = fixture.loadObjectsByIds(ids(1L, 2L), "dto1");
     assertNotNull(ret);
@@ -121,8 +117,7 @@ public class DataSetLoaderImplTest {
     EasyCrudService service = Mockito.mock(EasyCrudService.class);
     when(fixture.getEasyCrudServiceResolver().resolveByRowMessageCode("dto1")).thenReturn(service);
 
-    PaginatedList mockret = new PaginatedList<>(new PagerParams(), Collections.emptyList(), 0);
-    when(service.find(any(PagerParams.class), any(Query.class))).thenReturn(mockret);
+    when(service.findAll(any(Query.class))).thenReturn(Collections.emptyList());
 
     assertThrows(
         GenericEntityNotFoundException.class, () -> fixture.loadObjectsByIds(ids(1L, 2L), "dto1"));
@@ -134,11 +129,8 @@ public class DataSetLoaderImplTest {
     EasyCrudService service = Mockito.mock(EasyCrudService.class);
     when(fixture.getEasyCrudServiceResolver().resolveByRowMessageCode("dto1")).thenReturn(service);
 
-    PaginatedList mockret =
-        new PaginatedList<>(new PagerParams(), Arrays.asList(new TestDto1(), new TestDto1()), 2);
-    when(service.find(
-            any(PagerParams.class), eq(Query.n().in(HasId.FN_ID, new String[] {"s1", "s2"}))))
-        .thenReturn(mockret);
+    when(service.findAll(eq(Query.n().in(HasId.FN_ID, Arrays.asList("s1", "s2")))))
+        .thenReturn(Arrays.asList(new TestDto1(), new TestDto1()));
 
     List<HasId> ret = fixture.loadObjectsByIds(ids("s1", "s2"), "dto1");
     assertNotNull(ret);
@@ -154,8 +146,8 @@ public class DataSetLoaderImplTest {
     UUID d1 = UUID.randomUUID();
     UUID d2 = UUID.randomUUID();
 
-    when(service.findById(d1)).thenReturn(new TestDto1());
-    when(service.findById(d2)).thenReturn(new TestDto1());
+    when(service.findAll(TestDto1.Q().in(HasId::getId, Arrays.asList(d1, d2))))
+        .thenReturn(Arrays.asList(new TestDto1(), new TestDto1()));
 
     List<HasId> ret = fixture.loadObjectsByIds(ids(d1, d2), "dto1");
     assertNotNull(ret);

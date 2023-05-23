@@ -16,6 +16,7 @@
 package org.summerb.validation;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.summerb.methodCapturers.MethodCapturerProxyClassFactory;
 import org.summerb.methodCapturers.MethodCapturerProxyClassFactoryImpl;
 import org.summerb.methodCapturers.PropertyNameObtainerFactory;
@@ -31,9 +32,9 @@ import org.summerb.validation.jakarta.JakartaValidatorImpl;
 /**
  * Validations beans config template.
  *
- * @author Sergey Karpushin
+ * <p>NOTE: This class by purpose does not have {@link Configuration} to avoid automatic
+ * instantiation by Spring
  */
-
 public class ValidationContextConfig {
 
   @Bean
