@@ -551,7 +551,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
 
   @Override
   public TRow findFirstByQuery(QueryConditions query, OrderBy... orderBy) {
-    PaginatedList<TRow> results = find(TOP_ONE, null, orderBy);
+    PaginatedList<TRow> results = find(TOP_ONE, query, orderBy);
     if (results.getItems().isEmpty()) {
       return null;
     }

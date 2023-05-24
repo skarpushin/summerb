@@ -14,16 +14,13 @@ import com.google.common.base.Preconditions;
 public class QueryCommands<TId, TRow extends HasId<TId>>
     extends QueryShortcuts<TRow, QueryCommands<TId, TRow>> {
 
-  protected final PropertyNameObtainer<TRow> propertyNameObtainer;
   protected final EasyCrudService<TId, TRow> service;
 
   public QueryCommands(
       PropertyNameObtainer<TRow> propertyNameObtainer, EasyCrudService<TId, TRow> service) {
     super(propertyNameObtainer);
-    Preconditions.checkArgument(propertyNameObtainer != null, "fieldNameCapturer required");
     Preconditions.checkArgument(service != null, "service required");
 
-    this.propertyNameObtainer = propertyNameObtainer;
     this.service = service;
   }
 

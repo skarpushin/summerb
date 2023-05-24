@@ -167,7 +167,7 @@ public interface EasyCrudService<TId, TRow extends HasId<TId>> {
   /**
    * Same as findAll, but will throw {@link GenericEntityNotFoundException} if nothing found
    *
-   * @param queryCommands
+   * @param optionalQuery
    * @param orderBy optional order by
    * @return list of found items (at least one) or throws {@link GenericEntityNotFoundException} in
    *     case nothing found
