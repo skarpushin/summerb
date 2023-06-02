@@ -22,7 +22,7 @@
 	<parent>
 		<groupId>com.github.skarpushin</groupId>
 		<artifactId>summerb-parent</artifactId>
-		<version>6.3.1</version>
+		<version>6.3.2</version>
 		<relativePath>../summerb-parent</relativePath>
 	</parent>
 	<artifactId>summerb-easycrud</artifactId>
@@ -102,12 +102,20 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
 			<version>${spring-framework.version}</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.pitest</groupId>
+			<artifactId>pitest-junit5-plugin</artifactId>
+			<version>1.1.2</version>
+			<scope>test</scope>
+		</dependency>
+		
 		<!-- <dependency>
 			<groupId>io.zonky.test</groupId>
 			<artifactId>embedded-database-spring-test</artifactId>

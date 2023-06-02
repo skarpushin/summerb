@@ -144,8 +144,8 @@ public class QueryToSqlMySqlImpl implements QueryToSql {
     return result.toString();
   }
 
-  private static class ParamIdxIncrementer implements Supplier<Integer> {
-    private int idx = 0;
+  protected static class ParamIdxIncrementer implements Supplier<Integer> {
+    protected int idx = 0;
 
     @Override
     public Integer get() {

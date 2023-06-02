@@ -30,8 +30,8 @@ import org.summerb.security.api.dto.NotAuthorizedResult;
 public class EasyCrudAuthorizationRoleBasedImpl extends EascyCrudAuthorizationPerTableStrategy
     implements InitializingBean {
 
-  private Set<String> rolesAuthorizedToRead;
-  private Set<String> rolesAuthorizedToModify;
+  protected Set<String> rolesAuthorizedToRead;
+  protected Set<String> rolesAuthorizedToModify;
 
   /**
    * @param entityName entity name to be included in {@link NotAuthorizedResult}

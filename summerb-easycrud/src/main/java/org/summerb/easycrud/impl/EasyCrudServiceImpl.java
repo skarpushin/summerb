@@ -81,7 +81,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
   protected EasyCrudWireTap<TRow> wireTap;
   protected CurrentUserUuidResolver currentUserUuidResolver;
   protected StringIdGenerator stringIdGenerator;
-  private PropertyNameObtainerFactory propertyNameObtainerFactory;
+  protected PropertyNameObtainerFactory propertyNameObtainerFactory;
 
   /**
    * Constructor for cases when sub-class wants to take full responsibility on instantiation

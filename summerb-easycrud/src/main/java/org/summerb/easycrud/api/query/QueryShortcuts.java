@@ -61,10 +61,6 @@ public class QueryShortcuts<TRow, TypeOfThis extends QueryShortcuts<TRow, TypeOf
   }
 
   protected Collection<?> boilDownCollection(Collection<?> values) {
-    if (CollectionUtils.isEmpty(values)) {
-      return values;
-    }
-
     Object first = values instanceof List ? ((List<?>) values).get(0) : values.iterator().next();
     if (first instanceof Enum || first instanceof HasId) {
       return values.stream().map(this::boilDown).collect(Collectors.toList());
@@ -344,9 +340,8 @@ public class QueryShortcuts<TRow, TypeOfThis extends QueryShortcuts<TRow, TypeOf
 
   @SuppressWarnings("unchecked")
   public TypeOfThis in(String fieldName, Collection<?> values) {
-    if (CollectionUtils.isEmpty(values)) {
-      return (TypeOfThis) this;
-    }
+    Preconditions.checkArgument(
+        !CollectionUtils.isEmpty(values), "'in' constraint requires non-empty collection");
 
     if (values.size() == 1) {
       add(fieldName, new Equals(boilDown(values.iterator().next())));
@@ -366,9 +361,8 @@ public class QueryShortcuts<TRow, TypeOfThis extends QueryShortcuts<TRow, TypeOf
 
   @SuppressWarnings("unchecked")
   public TypeOfThis notIn(String fieldName, Collection<?> values) {
-    if (CollectionUtils.isEmpty(values)) {
-      return (TypeOfThis) this;
-    }
+    Preconditions.checkArgument(
+        !CollectionUtils.isEmpty(values), "'notIn' constraint requires non-empty collection");
 
     if (values.size() == 1) {
       add(fieldName, new Equals(boilDown(values.iterator().next())).not());

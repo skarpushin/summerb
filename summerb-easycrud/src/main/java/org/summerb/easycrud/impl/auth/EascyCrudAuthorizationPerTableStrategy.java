@@ -56,7 +56,7 @@ public abstract class EascyCrudAuthorizationPerTableStrategy extends EasyCrudWir
   @Autowired protected CurrentUserRolesResolver currentUserRolesResolver;
   @Autowired protected CurrentUserUuidResolver currentUserUuidResolver;
 
-  private String entityName;
+  protected String entityName;
 
   public EascyCrudAuthorizationPerTableStrategy(String entityName) {
     this.entityName = entityName;
