@@ -1,21 +1,22 @@
+**TBD**: Update this page as impl significantly evolved since this page was written
+
 # EasyCrud overview
 [![Maven](https://img.shields.io/maven-central/v/com.github.skarpushin/summerb-easycrud)](https://mvnrepository.com/artifact/com.github.skarpushin/summerb-easycrud)
 [![javadoc](https://javadoc.io/badge2/com.github.skarpushin/summerb-easycrud/javadoc.svg)](https://javadoc.io/doc/com.github.skarpushin/summerb-easycrud)
 [![Join the chat at https://gitter.im/summerb-community/community](https://badges.gitter.im/summerb-community/community.svg)](https://gitter.im/summerb-community/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ## What EasyCrud is offering?
-A way how to quickly boostrap your CRUD code and a way how to naturally evolve it later. 
+It is offering a way how to quickly boostrap your CRUD code and a how to naturally evolve it later. 
 
 It simplifies your usual CRUD implementations on **Facade**, **Service** and **Repository** layers and it gives an opinionated view on how **i18n**, **validation** and **authorization** should be handled.
 
-Although it provides many features built-in, it allows you to change many (almost all) aspects of it's implementation. All you need to do is to inject corresponding strategy. 
+Although it provides many features built-in, it allows you to change many (almost all) aspects of it's implementation. All you need to do is to inject corresponding strategy and/or subclass some default implementation. 
 
 ## How it compares to alternatives?
 To give you a quick outlook on where it belongs on a data access landscape:
  * It gives you more data-related features than **Spring Data Repositories**
- * But it gives you less data-related features than **Hibernate**
-
-But it gives you more than both (Spring Data Repositories and Hibernate) when it comes to **i18n**, **validation**, **authorization** and **extensibility**
+ * It gives you less data-related features than **Hibernate**
+ * It gives you more than both (Spring Data Repositories and Hibernate) when it comes to **i18n**, **validation**, **authorization** and **extensibility**
 
 ## Tested with
  * MariaDB (MySQL)
@@ -32,13 +33,13 @@ But it gives you more than both (Spring Data Repositories and Hibernate) when it
  * Baseline infrastructure for authorizations at different data lifecycle steps (for both per-Table and per-Row)
  * Extension points (Wire Taps) for adding any of your custom pre/post-processors
  * Automatically handle timestamps and author fields when data is created and updated
- * Super simple Query DSL (that is unfortunately relying on String literals, but still allows you to stay away from raw SQL in your service layer)
+ * Super simple Query DSL (which is both Good and Bad), that has killer-feature -- it allows you to use method references to provide field name instead of using String literals
  * Facilities to implement Security-trimmed UI
  * Loading of object graphs
  * Object graphs can be mapped to POJOs instead of bulky `DataSet`
 
 ## What is out of scope?
- * It's not a full-blown ORM framework. Although there are some facilities to load referenced objects (through `DataSetLoader`), there are no facilities to serialize object graphs. 
+ * It is not an ORM framework. Although there are some facilities to load referenced objects (through `DataSetLoader`), there are no facilities to serialize object graphs. 
  * You'll need to create DB schema somehow else, EasyCrud is not doing this for you. 
 
 # Usage
@@ -48,10 +49,10 @@ There are 2 ways on how to initialize EasyCrud for a particular DTO (Data Transf
 
 If you want to have maximum control over EasyCrud, you'll need to create several interfaces and classes for each entity:
 * DTO class
-* DAO interface and class
-* Service interface and class
+* DAO interface **and** class
+* Service interface **and** class
 * Optional. Validation class
-* Optional. Authorization interface and class
+* Optional. Authorization interface **and** class
 * Setup wiring of all created beans
 * Optional. REST controller class
 
@@ -61,7 +62,7 @@ Please read below for detailed description of each building block.
 ## Data Transfer Object (DTO)
 * DTO is a simple java bean with properties and getters/setters.
 * It's basically should mimic row in a table, all the same fields
-* You can have non-standard field types but then you'll need to customize `RowMapper` which is used by `DAO`
+* You can have non-standard field types but then you'll need to customize `RowMapper` which is used by `DAO` (TBD: provide more examples on how ConversionService and SqlTypeOverride are used)
 * There must be no business logic in this class. 
 * When you need to put a reference to other entity then you need to add a field that resembles a foreign key. I.e. if `Document` refers to `User` then `Document` DTO will have field `private long userId`
 * For security reasons it's advised to implement interface `DtoBase` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-utils/latest/org/summerb/utils/DtoBase.html)), because then upon deserialization you can limit number of allowed classes (when using construct `Class.forName`)
@@ -85,6 +86,9 @@ This is particularly useful for optimistic locking logic (which is provided by E
 Important to note that date and time is serialized here as `long` (milliseconds from Epoch in UTC timezone). This way you'll avoid all problems with time zone conversions which happens on all borders (including, jdbc driver, jdbc driver -> database, database, etc...)
 
 ### DTO Example:
+
+**TBD**: Remove field names as String Literals - we now can use method references instead
+
 ```java
 public class DeviceRow implements DtoBase, HasAutoincrementId, HasTimestamps, HasAuthor {
 	// you'll understand how these constants are used later
@@ -206,13 +210,18 @@ findOneByQuery(Query.n().eq("envId", envId).eq("deviceId", deviceId));
 ```
 
 ## Validation logic
+**TBD**: Correct class names
+
 * Validation logic is considered to be a part of business logic when code verifies if data is valid
 * It's optional, you don't have to provide it
+* **TBD**: Add info regarding ability to use JSR-303 alone and together with imperative validations
 * Validation is supposed to be invoked before creating and/or updating row in a database
 * Validation logic is implemented manually for each entity by providing impl of `EasyCrudValidationStrategy` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/api/EasyCrudValidationStrategy.html))
 * This logic is supposed to be injected into Service by using `EasyCrudWireTapValidationImpl` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/impl/wireTaps/EasyCrudWireTapValidationImpl.html)) adapter (see example below)
 * Validation process is basically a process of accumulating list of `ValidationError` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-validation/latest/org/summerb/validation/ValidationError.html)) instances in `ValidationContext` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-validation/latest/org/summerb/validation/ValidationContext.html)). The latter one contains utility methods for common validation operations.
 * List of validation errors are designed to be serialized and transmitted to front-end for rendering. `ValidationErrors` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-validation/latest/org/summerb/validation/ValidationErrors.html)) DTO can be used as a parent object when serializing
+
+**TBD**: Update example: use method references instead of String literals
 
 Example:
 ```java
@@ -317,6 +326,9 @@ public class EnvAuthStrategyImpl extends EasyCrudPerRowAuthStrategyAbstract<Envi
 ```
 
 ## Wiring it all together
+
+**TBD**: Provide example as Java-config
+
 Here is an example of Spring XML configuration in root context
 ```xml
 <bean id="deviceAuthStrategy" class="ru.skarpushin.smarthome.devicesgate.services.envconfig.impl.device.DeviceAuthStrategyImpl" />
