@@ -40,6 +40,7 @@ import org.summerb.easycrud.api.ParameterSourceBuilder;
 import org.summerb.easycrud.api.QueryToSql;
 import org.summerb.easycrud.api.StringIdGenerator;
 import org.summerb.easycrud.api.dto.OrderBy;
+import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.api.query.QueryConditions;
 import org.summerb.easycrud.api.row.HasAuthor;
 import org.summerb.easycrud.api.row.HasAutoincrementId;
@@ -51,6 +52,8 @@ import org.summerb.easycrud.impl.SimpleJdbcUpdate.SimpleJdbcUpdate;
 import org.summerb.easycrud.impl.SimpleJdbcUpdate.TableMetaDataContext;
 import org.summerb.easycrud.impl.SimpleJdbcUpdate.UpdateColumnsEnlisterStrategy;
 import org.summerb.easycrud.impl.dao.ParameterSourceBuilderBeanPropImpl;
+import org.summerb.easycrud.impl.dao.SqlTypeOverrides;
+import org.summerb.easycrud.impl.dao.SqlTypeOverridesDefaultImpl;
 import org.summerb.easycrud.impl.dao.TableDaoBase;
 import org.summerb.utils.clock.NowResolver;
 import org.summerb.utils.clock.NowResolverImpl;
@@ -75,6 +78,7 @@ public class EasyCrudDaoMySqlImpl<TId, TRow extends HasId<TId>> extends TableDao
   protected Class<TRow> rowClass;
 
   protected RowMapper<TRow> rowMapper;
+  protected SqlTypeOverrides sqlTypeOverrides;
   protected ParameterSourceBuilder<TRow> parameterSourceBuilder;
   protected ConversionService conversionService;
   protected QueryToSql queryToSql;
@@ -143,6 +147,24 @@ public class EasyCrudDaoMySqlImpl<TId, TRow extends HasId<TId>> extends TableDao
   public void setParameterSourceBuilder(ParameterSourceBuilder<TRow> parameterSourceBuilder) {
     Preconditions.checkArgument(parameterSourceBuilder != null, "parameterSourceBuilder required");
     this.parameterSourceBuilder = parameterSourceBuilder;
+  }
+
+  public SqlTypeOverrides getSqlTypeOverrides() {
+    return sqlTypeOverrides;
+  }
+
+  /**
+   * When your DTO has fields of custom types you'll need to explicitly tell DAO layer what SQL
+   * types must be used and how to convert values of those types to SQL-friendly values. Use this
+   * class to describe such conversion.
+   *
+   * @param sqlTypeOverrides overrides for SQL types for {@link #create(HasId)}, {@link
+   *     #update(HasId)}, {@link #query(PagerParams, QueryConditions, OrderBy...)} (and other
+   *     methods which uses {@link Query})
+   */
+  @Autowired(required = false)
+  public void setSqlTypeOverrides(SqlTypeOverrides sqlTypeOverrides) {
+    this.sqlTypeOverrides = sqlTypeOverrides;
   }
 
   public QueryToSql getQueryToNativeSqlCompiler() {
@@ -240,6 +262,10 @@ public class EasyCrudDaoMySqlImpl<TId, TRow extends HasId<TId>> extends TableDao
       rowMapper = buildDefaultRowMapper(this.rowClass, this.conversionService);
     }
 
+    if (sqlTypeOverrides == null) {
+      sqlTypeOverrides = new SqlTypeOverridesDefaultImpl();
+    }
+
     if (parameterSourceBuilder == null) {
       parameterSourceBuilder = buildDefaultParameterSourceBuilder();
     }
@@ -278,11 +304,11 @@ public class EasyCrudDaoMySqlImpl<TId, TRow extends HasId<TId>> extends TableDao
   }
 
   protected QueryToSqlMySqlImpl buildDefaultQueryToNativeSqlCompiler() {
-    return new QueryToSqlMySqlImpl();
+    return new QueryToSqlMySqlImpl(sqlTypeOverrides);
   }
 
   protected ParameterSourceBuilderBeanPropImpl<TRow> buildDefaultParameterSourceBuilder() {
-    return new ParameterSourceBuilderBeanPropImpl<TRow>();
+    return new ParameterSourceBuilderBeanPropImpl<TRow>(sqlTypeOverrides);
   }
 
   protected RowMapper<TRow> buildDefaultRowMapper(

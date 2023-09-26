@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.summerb.easycrud.api.query.restrictions.Like;
+import org.summerb.easycrud.impl.dao.SqlTypeOverrides;
 
 public class LikeRestrictionToNativeSql implements RestrictionToNativeSql<Like> {
 
@@ -14,7 +15,8 @@ public class LikeRestrictionToNativeSql implements RestrictionToNativeSql<Like> 
       Like restriction,
       MapSqlParameterSource params,
       Supplier<Integer> nextParameterIndex,
-      String underscoredFieldName) {
+      String underscoredFieldName,
+      SqlTypeOverrides sqlTypeOverrides) {
 
     String pn = buildNextParamName(nextParameterIndex);
     params.addValue(

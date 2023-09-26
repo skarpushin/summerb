@@ -1,23 +1,22 @@
 package org.summerb.easycrud.impl.dao.mysql.restrictions;
 
-import static org.summerb.easycrud.impl.dao.mysql.QueryToSqlMySqlImpl.buildNextParamName;
-
 import java.util.function.Supplier;
 
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.summerb.easycrud.api.query.restrictions.Less;
+import org.summerb.easycrud.impl.dao.SqlTypeOverrides;
 
-public class LessRestrictionToNativeSql implements RestrictionToNativeSql<Less> {
+public class LessRestrictionToNativeSql extends RestrictionToNativeSqlTemplate<Less> {
 
   @Override
   public String convert(
       Less restriction,
       MapSqlParameterSource params,
       Supplier<Integer> nextParameterIndex,
-      String underscoredFieldName) {
+      String underscoredFieldName,
+      SqlTypeOverrides sqlTypeOverrides) {
 
-    String pn = buildNextParamName(nextParameterIndex);
-    params.addValue(pn, restriction.getValue());
+    String pn = addValue(params, nextParameterIndex, restriction.getValue(), sqlTypeOverrides);
 
     if (restriction.isNot()) {
       if (!restriction.isIncludeBoundary()) {

@@ -19,10 +19,13 @@ import org.summerb.easycrud.api.QueryToSql;
 import org.summerb.easycrud.api.query.restrictions.Equals;
 import org.summerb.easycrud.api.query.restrictions.In;
 import org.summerb.easycrud.api.query.restrictions.Like;
+import org.summerb.easycrud.impl.dao.SqlTypeOverrides;
 import org.summerb.easycrud.impl.dao.mysql.QueryToSqlMySqlImpl;
 import org.summerb.easycrud.impl.dao.postgres.restrictions.EqualsRestrictionToNativeSql;
 import org.summerb.easycrud.impl.dao.postgres.restrictions.InRestrictionToNativeSql;
 import org.summerb.easycrud.impl.dao.postgres.restrictions.LikeRestrictionToNativeSql;
+
+import com.google.common.base.Preconditions;
 
 /**
  * Postgress specific impl of {@link QueryToSql}
@@ -38,5 +41,11 @@ public class QueryToSqlPostgresImpl extends QueryToSqlMySqlImpl {
     converters.put(Equals.class, new EqualsRestrictionToNativeSql());
     converters.put(In.class, new InRestrictionToNativeSql());
     converters.put(Like.class, new LikeRestrictionToNativeSql());
+  }
+
+  public QueryToSqlPostgresImpl(SqlTypeOverrides sqlTypeOverrides) {
+    this();
+    Preconditions.checkNotNull(sqlTypeOverrides, "sqlTypeOverrides required");
+    this.sqlTypeOverrides = sqlTypeOverrides;
   }
 }

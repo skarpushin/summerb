@@ -36,6 +36,8 @@ import org.summerb.easycrud.api.query.restrictions.Like;
 import org.summerb.easycrud.api.query.restrictions.StringLengthBetween;
 import org.summerb.easycrud.api.query.restrictions.StringLengthLess;
 import org.summerb.easycrud.api.query.restrictions.base.Restriction;
+import org.summerb.easycrud.impl.dao.SqlTypeOverrides;
+import org.summerb.easycrud.impl.dao.SqlTypeOverridesDefaultImpl;
 import org.summerb.easycrud.impl.dao.mysql.restrictions.BetweenRestrictionToNativeSql;
 import org.summerb.easycrud.impl.dao.mysql.restrictions.EmptyRestrictionToNativeSql;
 import org.summerb.easycrud.impl.dao.mysql.restrictions.EqualsRestrictionToNativeSql;
@@ -47,6 +49,8 @@ import org.summerb.easycrud.impl.dao.mysql.restrictions.RestrictionToNativeSql;
 import org.summerb.easycrud.impl.dao.mysql.restrictions.StringLengthBetweenRestrictionToNativeSql;
 import org.summerb.easycrud.impl.dao.mysql.restrictions.StringLengthLessRestrictionToNativeSql;
 
+import com.google.common.base.Preconditions;
+
 /**
  * MySQL specific impl of {@link QueryToSql}
  *
@@ -56,6 +60,14 @@ public class QueryToSqlMySqlImpl implements QueryToSql {
 
   protected Map<Class<? extends Restriction>, RestrictionToNativeSql<? extends Restriction>>
       converters = new HashMap<>();
+
+  protected SqlTypeOverrides sqlTypeOverrides = new SqlTypeOverridesDefaultImpl();
+
+  public QueryToSqlMySqlImpl(SqlTypeOverrides sqlTypeOverrides) {
+    this();
+    Preconditions.checkNotNull(sqlTypeOverrides, "sqlTypeOverrides required");
+    this.sqlTypeOverrides = sqlTypeOverrides;
+  }
 
   public QueryToSqlMySqlImpl() {
     converters.put(Between.class, new BetweenRestrictionToNativeSql());
@@ -120,7 +132,8 @@ public class QueryToSqlMySqlImpl implements QueryToSql {
       throw new IllegalStateException("Unsupported restriction: " + c);
     }
 
-    return converter.convert(c.getRestriction(), params, paramIdx, underscoredFieldName);
+    return converter.convert(
+        c.getRestriction(), params, paramIdx, underscoredFieldName, sqlTypeOverrides);
   }
 
   public static String buildNextParamName(Supplier<Integer> nextParameterIndex) {
@@ -142,6 +155,15 @@ public class QueryToSqlMySqlImpl implements QueryToSql {
       }
     }
     return result.toString();
+  }
+
+  public SqlTypeOverrides getOverrides() {
+    return sqlTypeOverrides;
+  }
+
+  public void setOverrides(SqlTypeOverrides overrides) {
+    Preconditions.checkNotNull(overrides, "sqlTypeOverrides required");
+    this.sqlTypeOverrides = overrides;
   }
 
   protected static class ParamIdxIncrementer implements Supplier<Integer> {

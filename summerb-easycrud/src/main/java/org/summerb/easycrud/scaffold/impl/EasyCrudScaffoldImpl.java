@@ -39,6 +39,7 @@ import org.summerb.easycrud.api.QueryToSql;
 import org.summerb.easycrud.api.StringIdGenerator;
 import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.impl.EasyCrudServiceImpl;
+import org.summerb.easycrud.impl.dao.SqlTypeOverrides;
 import org.summerb.easycrud.impl.dao.mysql.EasyCrudDaoMySqlImpl;
 import org.summerb.easycrud.impl.dao.mysql.QueryToSqlMySqlImpl;
 import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapDelegatingImpl;
@@ -283,6 +284,11 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
     var conversionService = find(injections, ConversionService.class);
     if (conversionService != null) {
       ret.setConversionService(conversionService);
+    }
+
+    var sqlTypeOverrides = find(injections, SqlTypeOverrides.class);
+    if (sqlTypeOverrides != null) {
+      ret.setSqlTypeOverrides(sqlTypeOverrides);
     }
 
     var stringIdGenerator = find(injections, StringIdGenerator.class);

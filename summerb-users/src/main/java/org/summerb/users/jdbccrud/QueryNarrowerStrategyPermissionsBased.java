@@ -64,7 +64,7 @@ public class QueryNarrowerStrategyPermissionsBased<TRow extends HasId<?>>
       if (idsStrs.size() == 0) {
         ret.eq(HasId.FN_ID, "NA");
       } else {
-        ret.in(HasId::getId, idsStrs);
+        ret.in(HasId.FN_ID, idsStrs);
       }
     } else {
       if (idsStrs.size() == 0) {

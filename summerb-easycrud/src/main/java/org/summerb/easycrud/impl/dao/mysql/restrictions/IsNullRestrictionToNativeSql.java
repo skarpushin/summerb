@@ -4,6 +4,7 @@ import java.util.function.Supplier;
 
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.summerb.easycrud.api.query.restrictions.IsNull;
+import org.summerb.easycrud.impl.dao.SqlTypeOverrides;
 
 public class IsNullRestrictionToNativeSql implements RestrictionToNativeSql<IsNull> {
 
@@ -12,7 +13,8 @@ public class IsNullRestrictionToNativeSql implements RestrictionToNativeSql<IsNu
       IsNull restriction,
       MapSqlParameterSource params,
       Supplier<Integer> nextParameterIndex,
-      String underscoredFieldName) {
+      String underscoredFieldName,
+      SqlTypeOverrides sqlTypeOverrides) {
 
     return underscoredFieldName + (restriction.isNot() ? " IS NOT NULL" : " IS NULL");
   }

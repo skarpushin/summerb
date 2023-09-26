@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.summerb.easycrud.api.query.restrictions.Equals;
+import org.summerb.easycrud.impl.dao.SqlTypeOverrides;
 
 /** Case-insensitive for Strings, workaround Postgress specifics */
 public class EqualsRestrictionToNativeSql
@@ -16,10 +17,12 @@ public class EqualsRestrictionToNativeSql
       Equals restriction,
       MapSqlParameterSource params,
       Supplier<Integer> nextParameterIndex,
-      String underscoredFieldName) {
+      String underscoredFieldName,
+      SqlTypeOverrides sqlTypeOverrides) {
 
     if (!(restriction.getValue() instanceof CharSequence)) {
-      return super.convert(restriction, params, nextParameterIndex, underscoredFieldName);
+      return super.convert(
+          restriction, params, nextParameterIndex, underscoredFieldName, sqlTypeOverrides);
     }
 
     String pn = buildNextParamName(nextParameterIndex);
