@@ -6,7 +6,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.summerb.easycrud.api.query.restrictions.base.Restriction;
 import org.summerb.easycrud.impl.dao.SqlTypeOverride;
@@ -47,10 +46,14 @@ public abstract class RestrictionToNativeSqlTemplate<T extends Restriction>
     if (sqlTypeOverride == null) {
       params.addValue(parameterName, values);
     } else {
-      params.addValue(
-          parameterName,
-          values.stream().map(sqlTypeOverride::convert).collect(Collectors.toSet()),
-          sqlTypeOverride.getSqlType());
+      if (!sqlTypeOverride.isConversionRequired()) {
+        params.addValue(parameterName, values, sqlTypeOverride.getSqlType());
+      } else {
+        params.addValue(
+            parameterName,
+            values.stream().map(sqlTypeOverride::convert).collect(Collectors.toSet()),
+            sqlTypeOverride.getSqlType());
+      }
     }
 
     return parameterName;

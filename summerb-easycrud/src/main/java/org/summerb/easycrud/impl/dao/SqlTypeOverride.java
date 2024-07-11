@@ -1,9 +1,8 @@
 package org.summerb.easycrud.impl.dao;
 
+import com.google.common.base.Preconditions;
 import java.sql.Types;
 import java.util.function.Function;
-
-import com.google.common.base.Preconditions;
 
 /**
  * When your DTO has fields of custom types you'll need to explicitly tell DAO layer what SQL types
@@ -23,7 +22,8 @@ public class SqlTypeOverride {
    * @param <TSqlFriendlyType> SQL-friendlyName
    * @param valueClass class of the value
    * @param type one of {@link Types}
-   * @param valueConverter function to convert DTO's field value to sql friendly value
+   * @param valueConverter function to convert DTO's field value to sql friendly value. Provide null
+   *     here if no conversion needed
    * @return new instance of SqlTypeOverride for given parameters
    */
   public static <TValueType, TSqlFriendlyType> SqlTypeOverride of(
@@ -38,7 +38,8 @@ public class SqlTypeOverride {
    * @param <TSqlFriendlyType> SQL-friendlyName
    * @param valueClass class of the value
    * @param type one of {@link Types}
-   * @param valueConverter function to convert DTO's field value to sql friendly value
+   * @param valueConverter function to convert DTO's field value to sql friendly value. Provide null
+   *     here if no conversion needed
    * @param supportsSubclasses if true then impl will also match subclasses of valueClass
    * @return new instance of SqlTypeOverride for given parameters
    */
@@ -48,7 +49,6 @@ public class SqlTypeOverride {
       int type,
       boolean supportsSubclasses,
       Function<TValueType, TSqlFriendlyType> valueConverter) {
-    Preconditions.checkNotNull(valueConverter, "valueConverter required");
     Preconditions.checkNotNull(valueClass, "valueClass required");
 
     SqlTypeOverride ret = new SqlTypeOverride();
@@ -57,6 +57,10 @@ public class SqlTypeOverride {
     ret.supportsSubclasses = supportsSubclasses;
     ret.valueClass = (Class<Object>) valueClass;
     return ret;
+  }
+
+  public boolean isConversionRequired() {
+    return valueConverter != null;
   }
 
   public boolean supportsType(Class<?> valueClass) {
@@ -68,8 +72,8 @@ public class SqlTypeOverride {
   }
 
   public Object convert(Object value) {
-    if (value == null) {
-      return null;
+    if (value == null || valueConverter == null) {
+      return value;
     }
     return valueConverter.apply(value);
   }
