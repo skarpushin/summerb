@@ -15,9 +15,10 @@
  ******************************************************************************/
 package org.summerb.easycrud.impl;
 
+import com.google.common.base.Preconditions;
 import java.io.NotSerializableException;
 import java.util.List;
-
+import java.util.function.Function;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
@@ -32,14 +33,15 @@ import org.summerb.easycrud.api.dto.OrderBy;
 import org.summerb.easycrud.api.exceptions.EntityNotFoundException;
 import org.summerb.easycrud.api.exceptions.GenericEntityNotFoundException;
 import org.summerb.easycrud.api.query.Query;
-import org.summerb.easycrud.api.query.QueryConditions;
 import org.summerb.easycrud.api.query.QueryCommands;
+import org.summerb.easycrud.api.query.QueryConditions;
 import org.summerb.easycrud.api.row.HasAuthor;
 import org.summerb.easycrud.api.row.HasAutoincrementId;
 import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.api.row.HasTimestamps;
 import org.summerb.easycrud.api.row.HasUuid;
 import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapNoOpImpl;
+import org.summerb.methodCapturers.PropertyNameObtainer;
 import org.summerb.methodCapturers.PropertyNameObtainerFactory;
 import org.summerb.security.api.CurrentUserUuidResolver;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
@@ -48,8 +50,6 @@ import org.summerb.utils.easycrud.api.dto.PaginatedList;
 import org.summerb.utils.easycrud.api.dto.Top;
 import org.summerb.utils.objectcopy.Clonnable;
 import org.summerb.utils.objectcopy.DeepCopy;
-
-import com.google.common.base.Preconditions;
 
 /**
  * Default impl of EasyCrudService, with focus on OOD:OCP principle. In case some logic needs to be
@@ -80,6 +80,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
   protected CurrentUserUuidResolver currentUserUuidResolver;
   protected StringIdGenerator stringIdGenerator;
   protected PropertyNameObtainerFactory propertyNameObtainerFactory;
+  protected PropertyNameObtainer<TRow> nameObtainer;
 
   /**
    * Constructor for cases when sub-class wants to take full responsibility on instantiation
@@ -585,9 +586,26 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
 
   @Override
   public QueryCommands<TId, TRow> query() {
-    Preconditions.checkState(
-        propertyNameObtainerFactory != null,
-        "propertyNameObtainerFactory is requried for this method to work");
-    return new QueryCommands<>(propertyNameObtainerFactory.getObtainer(rowClass), this);
+    return new QueryCommands<>(getNameObtainer(), this);
+  }
+
+  @Override
+  public String name(Function<TRow, ?> getter) {
+    return getNameObtainer().obtainFrom(getter);
+  }
+
+  @Override
+  public OrderByBuilder<TRow> orderBy(Function<TRow, ?> getter) {
+    return new OrderByBuilder<>(getNameObtainer(), getter);
+  }
+
+  protected PropertyNameObtainer<TRow> getNameObtainer() {
+    if (nameObtainer == null) {
+      Preconditions.checkState(
+          propertyNameObtainerFactory != null,
+          "propertyNameObtainerFactory is required for this method to work");
+      nameObtainer = propertyNameObtainerFactory.getObtainer(rowClass);
+    }
+    return nameObtainer;
   }
 }

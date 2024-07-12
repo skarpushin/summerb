@@ -15,12 +15,13 @@
  ******************************************************************************/
 package org.summerb.easycrud.rest;
 
+import com.google.common.base.Preconditions;
+import io.swagger.v3.oas.annotations.Parameter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,16 +68,12 @@ import org.summerb.security.api.exceptions.NotAuthorizedException;
 import org.summerb.utils.easycrud.api.dto.PagerParams;
 import org.summerb.utils.easycrud.api.dto.PaginatedList;
 
-import com.google.common.base.Preconditions;
-
-import io.swagger.v3.oas.annotations.Parameter;
-
 /**
  * Base class for EasyCrud REST API controllers which main responsibility is to serve CRUD requests
  * for entities managed by {@link EasyCrudService}.
  *
- * <p>It designed to be sub-classed. See
- * https://github.com/skarpushin/summerb/wiki/Easy-CRUD#rest-api-controller for details.
+ * <p>It designed to be sub-classed. See <a
+ * href="https://github.com/skarpushin/summerb/wiki/Easy-CRUD#rest-api-controller">for details</a> .
  *
  * <p>NOTE: Exception handling is not implemented here because we rely on RestExceptionTranslator,
  * which is subclass of {@link GenericFilterBean} (Spring approach on filtering requests).
@@ -97,12 +94,12 @@ public class EasyCrudRestControllerBase<
   protected ReferencesRegistry referencesRegistry;
 
   protected ConvertBeforeReturnStrategy<TId, TRow> convertBeforeReturnStrategy =
-      new ConvertBeforeReturnStrategy<TId, TRow>();
+      new ConvertBeforeReturnStrategy<>();
 
-  protected QueryNarrowerStrategy<TRow> queryNarrowerStrategy = new QueryNarrowerStrategy<TRow>();
+  protected QueryNarrowerStrategy<TRow> queryNarrowerStrategy = new QueryNarrowerStrategy<>();
   protected PermissionsResolverStrategy<TId, TRow> permissionsResolverStrategy;
   protected FilteringParamsToQueryConverter<TRow> filteringParamsToQueryConverter =
-      new FilteringParamsToQueryConverterImpl<TRow>();
+      new FilteringParamsToQueryConverterImpl<>();
   protected OrderBy[] defaultOrderBy;
   protected PagerParams defaultPagerParams = new PagerParams();
 
@@ -326,8 +323,7 @@ public class EasyCrudRestControllerBase<
       throws Exception {
 
     TRow row = service.findById(id);
-    SingleItemResult<TId, TRow> ret =
-        new SingleItemResult<TId, TRow>(service.getRowMessageCode(), row);
+    SingleItemResult<TId, TRow> ret = new SingleItemResult<>(service.getRowMessageCode(), row);
 
     if (needPerms && row != null) {
       Preconditions.checkArgument(permissionsResolverStrategy != null, PERM_RESOLVER_REQ);

@@ -23,6 +23,7 @@ import com.google.common.cache.LoadingCache;
 public class PropertyNameObtainerFactoryImpl implements PropertyNameObtainerFactory {
   protected MethodCapturerProxyClassFactory methodCapturerProxyClassFactory;
   protected LoadingCache<Class<?>, PropertyNameObtainer<?>> propertyNameObtainers;
+  protected CacheLoader<Class<?>, PropertyNameObtainer<?>> loader;
 
   public PropertyNameObtainerFactoryImpl(
       MethodCapturerProxyClassFactory methodCapturerProxyClassFactory) {
@@ -30,19 +31,21 @@ public class PropertyNameObtainerFactoryImpl implements PropertyNameObtainerFact
         methodCapturerProxyClassFactory != null, "methodCapturerProxyClassFactory required");
     this.methodCapturerProxyClassFactory = methodCapturerProxyClassFactory;
 
+    loader = buildLoader(methodCapturerProxyClassFactory);
     propertyNameObtainers = CacheBuilder.newBuilder().build(loader);
   }
 
-  protected CacheLoader<Class<?>, PropertyNameObtainer<?>> loader =
-      new CacheLoader<Class<?>, PropertyNameObtainer<?>>() {
-        @SuppressWarnings({"unchecked", "rawtypes"})
-        @Override
-        public PropertyNameObtainer<?> load(Class<?> key) throws Exception {
-          return new PropertyNameObtainerCachedImpl(
-              new PropertyNameObtainerImpl(
-                  () -> methodCapturerProxyClassFactory.buildProxyFor(key)));
-        }
-      };
+  protected CacheLoader<Class<?>, PropertyNameObtainer<?>> buildLoader(
+      MethodCapturerProxyClassFactory methodCapturerProxyClassFactory) {
+    return new CacheLoader<>() {
+      @SuppressWarnings({"unchecked", "rawtypes"})
+      @Override
+      public PropertyNameObtainer<?> load(Class<?> rowClass) {
+        return new PropertyNameObtainerCachedImpl(
+            new PropertyNameObtainerImpl(() -> methodCapturerProxyClassFactory.buildProxyFor(rowClass)));
+      }
+    };
+  }
 
   @SuppressWarnings("unchecked")
   @Override

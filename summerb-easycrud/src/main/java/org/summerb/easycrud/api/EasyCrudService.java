@@ -16,6 +16,7 @@
 package org.summerb.easycrud.api;
 
 import java.util.List;
+import java.util.function.Function;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.transaction.annotation.Transactional;
 import org.summerb.easycrud.api.dto.OrderBy;
@@ -26,6 +27,7 @@ import org.summerb.easycrud.api.query.QueryCommands;
 import org.summerb.easycrud.api.query.QueryConditions;
 import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.api.row.HasTimestamps;
+import org.summerb.easycrud.impl.OrderByBuilder;
 import org.summerb.i18n.HasMessageCode;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
 import org.summerb.utils.easycrud.api.dto.PagerParams;
@@ -66,6 +68,25 @@ public interface EasyCrudService<TId, TRow extends HasId<TId>> {
    * @return new instance of {@link QueryCommands}
    */
   QueryCommands<TId, TRow> query();
+
+  /**
+   * This is a short convenient method for obtaining field name from getter
+   *
+   * @param getter to obtain field name from
+   * @return field name
+   */
+  String name(Function<TRow, ?> getter);
+
+  /**
+   * A short convenience method for building {@link OrderBy} instance without having to deal with
+   * string literals for field names
+   *
+   * @param getter to obtain field name from
+   * @return instance of {@link OrderByBuilder}, just call one of it's methods {@link
+   *     OrderByBuilder#asc()} or {@link OrderByBuilder#desc()} to needed instance of {@link
+   *     OrderBy}
+   */
+  OrderByBuilder<TRow> orderBy(Function<TRow, ?> getter);
 
   /**
    * Create row

@@ -15,12 +15,10 @@
  ******************************************************************************/
 package org.summerb.methodCapturers;
 
+import com.google.common.base.Preconditions;
 import java.lang.reflect.Method;
 import java.util.function.Function;
 import java.util.function.Supplier;
-
-import com.google.common.base.Preconditions;
-
 import net.bytebuddy.ByteBuddy;
 
 /**
@@ -49,7 +47,7 @@ public class PropertyNameObtainerImpl<T> implements PropertyNameObtainer<T> {
 
   @Override
   @SuppressWarnings("unchecked")
-  public String obtainFrom(Function<T, ?> methodReference) {
+  public synchronized String obtainFrom(Function<T, ?> methodReference) {
     Preconditions.checkArgument(methodReference != null, "methodReference required");
 
     // NOTE: Caching is not possible because even for the same field we get different instance of
@@ -67,6 +65,7 @@ public class PropertyNameObtainerImpl<T> implements PropertyNameObtainer<T> {
     Method method = methodCapturer.get__Method();
     Preconditions.checkState(method != null, "Method was not captured");
 
+    //noinspection ConstantValue
     Preconditions.checkArgument(
         method.getParameterTypes().length == 0 && method.getReturnType() != null,
         "Only getters allowed here");

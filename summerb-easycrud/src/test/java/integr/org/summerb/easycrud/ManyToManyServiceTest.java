@@ -72,7 +72,7 @@ public class ManyToManyServiceTest {
   private EasyCrudM2mService<Long, TestDto2, String, TestDto1> m2mService;
 
   @Test
-  public void testAddReferenceeExpectFoundAfterAddition() throws Exception {
+  public void testAddReferenceeExpectFoundAfterAddition() {
     TestDto2 d2i1 = new TestDto2();
     d2i1.setEnv("required");
     d2i1.setLinkToFullDownload("required");
@@ -102,7 +102,7 @@ public class ManyToManyServiceTest {
   }
 
   @Test
-  public void testAddReferenceeExpectNaeIfNotAllowedToUpdateSrc() throws Exception {
+  public void testAddReferenceeExpectNaeIfNotAllowedToUpdateSrc() {
     TestDto2 d2i1n = new TestDto2();
     d2i1n.setEnv("throwNaeOnUpdate");
     d2i1n.setLinkToFullDownload("required");
@@ -118,7 +118,7 @@ public class ManyToManyServiceTest {
   }
 
   @Test
-  public void testAddReferenceeExpectMultipleFoundAfterAddition() throws Exception {
+  public void testAddReferenceeExpectMultipleFoundAfterAddition() {
     TestDto2 d2i1 = new TestDto2();
     d2i1.setEnv("required");
     d2i1.setLinkToFullDownload("required");
@@ -165,7 +165,7 @@ public class ManyToManyServiceTest {
   }
 
   @Test
-  public void testAddReferenceeExpectGracefullResponseIfReferencesNotFound() throws Exception {
+  public void testAddReferenceeExpectGracefullResponseIfReferencesNotFound() {
     TestDto2 d2i1 = new TestDto2();
     d2i1.setEnv("required");
     d2i1.setLinkToFullDownload("required");
@@ -195,7 +195,7 @@ public class ManyToManyServiceTest {
   }
 
   @Test
-  public void testAddReferenceeExpectNotFoundAfterDeleted() throws Exception {
+  public void testAddReferenceeExpectNotFoundAfterDeleted() {
     TestDto2 d2i1 = new TestDto2();
     d2i1.setEnv("required");
     d2i1.setLinkToFullDownload("required");

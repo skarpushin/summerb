@@ -19,13 +19,17 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import integr.org.summerb.easycrud.config.EasyCrudIntegrTestConfig;
+import integr.org.summerb.easycrud.config.EmbeddedMariaDbConfig;
+import integr.org.summerb.easycrud.dtos.TestDto1;
+import integr.org.summerb.easycrud.dtos.TestDto2;
+import integr.org.summerb.easycrud.dtos.TestDto3;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,12 +53,6 @@ import org.summerb.easycrud.impl.relations.DataSetLoaderImpl;
 import org.summerb.easycrud.impl.relations.ReferencesRegistryPredefinedImpl;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
 import org.summerb.validation.ValidationException;
-
-import integr.org.summerb.easycrud.config.EasyCrudIntegrTestConfig;
-import integr.org.summerb.easycrud.config.EmbeddedMariaDbConfig;
-import integr.org.summerb.easycrud.dtos.TestDto1;
-import integr.org.summerb.easycrud.dtos.TestDto2;
-import integr.org.summerb.easycrud.dtos.TestDto3;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {EmbeddedMariaDbConfig.class, EasyCrudIntegrTestConfig.class})
@@ -106,7 +104,7 @@ public class DataSetLoaderTest {
     d3i1 = testDto3Service.create(d3i1);
 
     DataSet result = new DataSet();
-    Map<String, Set<Object>> idsToLoad = new HashMap<String, Set<Object>>();
+    Map<String, Set<Object>> idsToLoad = new HashMap<>();
     idsToLoad.put(testDto2Service.getRowMessageCode(), ids(d2i1.getId()));
     idsToLoad.put(testDto3Service.getRowMessageCode(), ids(d3i1.getId()));
     loader.loadObjectsByIds(idsToLoad, result);
@@ -166,7 +164,7 @@ public class DataSetLoaderTest {
     d3i1 = testDto3Service.create(d3i1);
 
     DataSet result = new DataSet();
-    Map<String, Set<Object>> idsToLoad = new HashMap<String, Set<Object>>();
+    Map<String, Set<Object>> idsToLoad = new HashMap<>();
     idsToLoad.put(testDto3Service.getRowMessageCode(), ids(d3i1.getId()));
     loader.loadObjectsByIds(idsToLoad, result);
 
@@ -195,7 +193,7 @@ public class DataSetLoaderTest {
     d3i1 = testDto3Service.create(d3i1);
 
     DataSet result = new DataSet();
-    Map<String, Set<Object>> idsToLoad = new HashMap<String, Set<Object>>();
+    Map<String, Set<Object>> idsToLoad = new HashMap<>();
     idsToLoad.put(testDto3Service.getRowMessageCode(), ids(d3i1.getId()));
     loader.loadObjectsByIds(idsToLoad, result);
 

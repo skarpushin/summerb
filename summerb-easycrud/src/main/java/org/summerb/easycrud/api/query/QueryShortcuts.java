@@ -1,10 +1,10 @@
 package org.summerb.easycrud.api.query;
 
+import com.google.common.base.Preconditions;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
-
 import org.springframework.util.CollectionUtils;
 import org.summerb.easycrud.api.query.restrictions.Between;
 import org.summerb.easycrud.api.query.restrictions.Empty;
@@ -19,8 +19,6 @@ import org.summerb.easycrud.api.query.restrictions.base.Restriction;
 import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.api.row.tools.EasyCrudDtoUtils;
 import org.summerb.methodCapturers.PropertyNameObtainer;
-
-import com.google.common.base.Preconditions;
 
 public class QueryShortcuts<TRow, TypeOfThis extends QueryShortcuts<TRow, TypeOfThis>>
     extends QueryConditions {
@@ -50,11 +48,17 @@ public class QueryShortcuts<TRow, TypeOfThis extends QueryShortcuts<TRow, TypeOf
   }
 
   public void add(Function<TRow, ?> getter, Restriction restriction) {
-    String fieldName = getPropertyName(getter);
+    String fieldName = name(getter);
     add(fieldName, restriction);
   }
 
-  public String getPropertyName(Function<TRow, ?> getter) {
+  /**
+   * This is a short convenient method for obtaining field name from getter
+   *
+   * @param getter to obtain name from
+   * @return field name
+   */
+  public String name(Function<TRow, ?> getter) {
     Preconditions.checkState(propertyNameObtainer != null, "propertyNameObtainer is not provided");
     Preconditions.checkArgument(getter != null, "getter required");
     return propertyNameObtainer.obtainFrom(getter);
@@ -62,73 +66,73 @@ public class QueryShortcuts<TRow, TypeOfThis extends QueryShortcuts<TRow, TypeOf
 
   @SuppressWarnings("unchecked")
   public TypeOfThis isNull(Function<TRow, ?> getter) {
-    isNull(getPropertyName(getter));
+    isNull(name(getter));
     return (TypeOfThis) this;
   }
 
   @SuppressWarnings("unchecked")
   public TypeOfThis isNotNull(Function<TRow, ?> getter) {
-    isNotNull(getPropertyName(getter));
+    isNotNull(name(getter));
     return (TypeOfThis) this;
   }
 
   @SuppressWarnings("unchecked")
   public TypeOfThis isTrue(Function<TRow, Boolean> getter) {
-    isTrue(getPropertyName(getter));
+    isTrue(name(getter));
     return (TypeOfThis) this;
   }
 
   @SuppressWarnings("unchecked")
   public TypeOfThis isFalse(Function<TRow, Boolean> getter) {
-    isFalse(getPropertyName(getter));
+    isFalse(name(getter));
     return (TypeOfThis) this;
   }
 
   @SuppressWarnings("unchecked")
   public <T> TypeOfThis eq(Function<TRow, T> getter, T value) {
-    eq(getPropertyName(getter), value);
+    eq(name(getter), value);
     return (TypeOfThis) this;
   }
 
   @SuppressWarnings("unchecked")
   public <T> TypeOfThis ne(Function<TRow, T> getter, T value) {
-    ne(getPropertyName(getter), value);
+    ne(name(getter), value);
     return (TypeOfThis) this;
   }
 
   @SuppressWarnings("unchecked")
   public <T> TypeOfThis less(Function<TRow, T> getter, T value) {
-    less(getPropertyName(getter), value);
+    less(name(getter), value);
     return (TypeOfThis) this;
   }
 
   @SuppressWarnings("unchecked")
   public <T> TypeOfThis le(Function<TRow, T> getter, T value) {
-    le(getPropertyName(getter), value);
+    le(name(getter), value);
     return (TypeOfThis) this;
   }
 
   @SuppressWarnings("unchecked")
   public <T> TypeOfThis greater(Function<TRow, T> getter, T value) {
-    greater(getPropertyName(getter), value);
+    greater(name(getter), value);
     return (TypeOfThis) this;
   }
 
   @SuppressWarnings("unchecked")
   public <T> TypeOfThis ge(Function<TRow, T> getter, T value) {
-    ge(getPropertyName(getter), value);
+    ge(name(getter), value);
     return (TypeOfThis) this;
   }
 
   @SuppressWarnings("unchecked")
   public <T> TypeOfThis in(Function<TRow, T> getter, Collection<T> values) {
-    in(getPropertyName(getter), values);
+    in(name(getter), values);
     return (TypeOfThis) this;
   }
 
   @SuppressWarnings("unchecked")
   public <T> TypeOfThis inIds(Function<TRow, T> getter, Collection<? extends HasId<T>> values) {
-    in(getPropertyName(getter), EasyCrudDtoUtils.enumerateIds(values));
+    in(name(getter), EasyCrudDtoUtils.enumerateIds(values));
     return (TypeOfThis) this;
   }
 
@@ -150,13 +154,13 @@ public class QueryShortcuts<TRow, TypeOfThis extends QueryShortcuts<TRow, TypeOf
 
   @SuppressWarnings("unchecked")
   public <T> TypeOfThis notIn(Function<TRow, T> getter, Collection<? extends T> values) {
-    notIn(getPropertyName(getter), values);
+    notIn(name(getter), values);
     return (TypeOfThis) this;
   }
 
   @SuppressWarnings("unchecked")
   public <T> TypeOfThis notInIds(Function<TRow, T> getter, Collection<? extends HasId<T>> values) {
-    notIn(getPropertyName(getter), EasyCrudDtoUtils.enumerateIds(values));
+    notIn(name(getter), EasyCrudDtoUtils.enumerateIds(values));
     return (TypeOfThis) this;
   }
 
@@ -168,112 +172,112 @@ public class QueryShortcuts<TRow, TypeOfThis extends QueryShortcuts<TRow, TypeOf
   @SuppressWarnings("unchecked")
   public <A extends Comparable<A>> TypeOfThis between(
       Function<TRow, A> getter, A lowerBoundary, A upperBoundary) {
-    between(getPropertyName(getter), lowerBoundary, upperBoundary);
+    between(name(getter), lowerBoundary, upperBoundary);
     return (TypeOfThis) this;
   }
 
   @SuppressWarnings("unchecked")
   public <A extends Comparable<A>> TypeOfThis notBetween(
       Function<TRow, A> getter, A lowerBoundary, A upperBoundary) {
-    notBetween(getPropertyName(getter), lowerBoundary, upperBoundary);
+    notBetween(name(getter), lowerBoundary, upperBoundary);
     return (TypeOfThis) this;
   }
 
   @SuppressWarnings("unchecked")
   public TypeOfThis stringLengthBetween(
       Function<TRow, String> getter, int lowerBoundary, int upperBoundary) {
-    stringLengthBetween(getPropertyName(getter), lowerBoundary, upperBoundary);
+    stringLengthBetween(name(getter), lowerBoundary, upperBoundary);
     return (TypeOfThis) this;
   }
 
   @SuppressWarnings("unchecked")
   public TypeOfThis stringLengthNotBetween(
       Function<TRow, String> getter, int lowerBoundary, int upperBoundary) {
-    stringLengthNotBetween(getPropertyName(getter), lowerBoundary, upperBoundary);
+    stringLengthNotBetween(name(getter), lowerBoundary, upperBoundary);
     return (TypeOfThis) this;
   }
 
   @SuppressWarnings("unchecked")
   public TypeOfThis like(Function<TRow, String> getter, String subString) {
-    like(getPropertyName(getter), subString);
+    like(name(getter), subString);
     return (TypeOfThis) this;
   }
 
   @SuppressWarnings("unchecked")
   public TypeOfThis notLike(Function<TRow, String> getter, String subString) {
-    notLike(getPropertyName(getter), subString);
+    notLike(name(getter), subString);
     return (TypeOfThis) this;
   }
 
   @SuppressWarnings("unchecked")
   public TypeOfThis contains(Function<TRow, String> getter, String subString) {
-    contains(getPropertyName(getter), subString);
+    contains(name(getter), subString);
     return (TypeOfThis) this;
   }
 
   @SuppressWarnings("unchecked")
   public TypeOfThis notContains(Function<TRow, String> getter, String subString) {
-    notContains(getPropertyName(getter), subString);
+    notContains(name(getter), subString);
     return (TypeOfThis) this;
   }
 
   @SuppressWarnings("unchecked")
   public TypeOfThis startsWith(Function<TRow, String> getter, String subString) {
-    startsWith(getPropertyName(getter), subString);
+    startsWith(name(getter), subString);
     return (TypeOfThis) this;
   }
 
   @SuppressWarnings("unchecked")
   public TypeOfThis notStartsWith(Function<TRow, String> getter, String subString) {
-    notStartsWith(getPropertyName(getter), subString);
+    notStartsWith(name(getter), subString);
     return (TypeOfThis) this;
   }
 
   @SuppressWarnings("unchecked")
   public TypeOfThis endsWith(Function<TRow, String> getter, String subString) {
-    endsWith(getPropertyName(getter), subString);
+    endsWith(name(getter), subString);
     return (TypeOfThis) this;
   }
 
   @SuppressWarnings("unchecked")
   public TypeOfThis notEndsWith(Function<TRow, String> getter, String subString) {
-    notEndsWith(getPropertyName(getter), subString);
+    notEndsWith(name(getter), subString);
     return (TypeOfThis) this;
   }
 
   @SuppressWarnings("unchecked")
   public TypeOfThis empty(Function<TRow, Object> getter) {
-    empty(getPropertyName(getter));
+    empty(name(getter));
     return (TypeOfThis) this;
   }
 
   @SuppressWarnings("unchecked")
   public TypeOfThis notEmpty(Function<TRow, Object> getter) {
-    notEmpty(getPropertyName(getter));
+    notEmpty(name(getter));
     return (TypeOfThis) this;
   }
 
   @SuppressWarnings("unchecked")
   public TypeOfThis lengthLe(Function<TRow, Object> getter, int value) {
-    lengthLe(getPropertyName(getter), value);
+    lengthLe(name(getter), value);
     return (TypeOfThis) this;
   }
 
   @SuppressWarnings("unchecked")
   public TypeOfThis lengthLess(Function<TRow, Object> getter, int value) {
-    lengthLess(getPropertyName(getter), value);
+    lengthLess(name(getter), value);
     return (TypeOfThis) this;
   }
 
   @SuppressWarnings("unchecked")
   public TypeOfThis lengthGe(Function<TRow, Object> getter, int value) {
-    lengthGe(getPropertyName(getter), value);
+    lengthGe(name(getter), value);
     return (TypeOfThis) this;
   }
 
   @SuppressWarnings("unchecked")
   public TypeOfThis lengthGreater(Function<TRow, Object> getter, int value) {
-    lengthGreater(getPropertyName(getter), value);
+    lengthGreater(name(getter), value);
     return (TypeOfThis) this;
   }
 

@@ -32,7 +32,7 @@ import net.bytebuddy.matcher.ElementMatchers;
 
 public class MethodCapturerProxyClassFactoryImpl implements MethodCapturerProxyClassFactory {
 
-  protected Object syncRoot = new Object();
+  protected final Object syncRoot = new Object();
   protected volatile Map<Class<?>, Class<MethodCapturer>> beanClassToProxyType =
       Collections.unmodifiableMap(new HashMap<>());
 
@@ -40,7 +40,7 @@ public class MethodCapturerProxyClassFactoryImpl implements MethodCapturerProxyC
   @Override
   public MethodCapturer buildProxyFor(Class<?> clazz) {
     try {
-      return (MethodCapturer) getProxyType(clazz).newInstance();
+      return getProxyType(clazz).newInstance();
     } catch (Exception e) {
       throw new RuntimeException("Failed to instantiate MethodCapturer for class " + clazz, e);
     }

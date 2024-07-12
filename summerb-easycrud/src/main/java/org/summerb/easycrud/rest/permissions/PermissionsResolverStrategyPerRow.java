@@ -38,7 +38,7 @@ public class PermissionsResolverStrategyPerRow<TId, TRow extends HasId<TId>>
 
     ret.setRowPermissions(
         ret.getRows().stream()
-            .collect(Collectors.toMap(k -> k.getId(), v -> buildRowPermissions((TRow) v))));
+            .collect(Collectors.toMap(HasId::getId, v -> buildRowPermissions((TRow) v))));
   }
 
   @SuppressWarnings("unchecked")

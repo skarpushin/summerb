@@ -1,8 +1,7 @@
 package org.summerb.easycrud.api.query.restrictions;
 
-import org.summerb.easycrud.api.query.restrictions.base.NegateableRestriction;
-
 import com.google.common.base.Preconditions;
+import org.summerb.easycrud.api.query.restrictions.base.NegateableRestriction;
 
 public class Between extends NegateableRestriction<Between> {
   protected Object lowerBoundary;
@@ -18,7 +17,7 @@ public class Between extends NegateableRestriction<Between> {
 
     if (lowerBoundary instanceof Comparable) {
       Preconditions.checkArgument(
-          ((Comparable) lowerBoundary).compareTo((Comparable) upperBoundary) < 0,
+          ((Comparable) lowerBoundary).compareTo(upperBoundary) < 0,
           "lowerBoundary must be less than upperBoundary");
     }
 

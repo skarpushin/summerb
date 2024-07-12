@@ -17,6 +17,7 @@ package org.summerb.easycrud.impl;
 
 import com.google.common.base.Preconditions;
 import java.util.List;
+import java.util.function.Function;
 import org.summerb.easycrud.api.EasyCrudExceptionStrategy;
 import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.api.EasyCrudWireTap;
@@ -146,6 +147,11 @@ public class EasyCrudServiceWrapper<
   @Override
   public QueryCommands<TId, TRow> query() {
     return actual.query();
+  }
+
+  @Override
+  public String name(Function<TRow, ?> getter) {
+    return actual.name(getter);
   }
 
   @Override
