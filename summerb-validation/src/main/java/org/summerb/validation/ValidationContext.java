@@ -792,7 +792,7 @@ public class ValidationContext<T> {
   }
 
   public boolean contains(String value, String subString, String propertyName) {
-    Preconditions.checkArgument(subString != null && subString.length() > 0, "subString required");
+    Preconditions.checkArgument(subString != null && !subString.isEmpty(), "subString required");
 
     if (!notNull(value, propertyName)) {
       return false;
@@ -811,7 +811,7 @@ public class ValidationContext<T> {
   }
 
   public boolean notContains(String value, String subString, String propertyName) {
-    Preconditions.checkArgument(subString != null && subString.length() > 0, "subString required");
+    Preconditions.checkArgument(subString != null && !subString.isEmpty(), "subString required");
 
     if (!notNull(value, propertyName)) {
       return false;
@@ -830,7 +830,7 @@ public class ValidationContext<T> {
   }
 
   public boolean startsWith(String value, String subString, String propertyName) {
-    Preconditions.checkArgument(subString != null && subString.length() > 0, "subString required");
+    Preconditions.checkArgument(subString != null && !subString.isEmpty(), "subString required");
 
     if (!notNull(value, propertyName)) {
       return false;
@@ -849,7 +849,7 @@ public class ValidationContext<T> {
   }
 
   public boolean notStartsWith(String value, String subString, String propertyName) {
-    Preconditions.checkArgument(subString != null && subString.length() > 0, "subString required");
+    Preconditions.checkArgument(subString != null && !subString.isEmpty(), "subString required");
 
     if (!notNull(value, propertyName)) {
       return false;
@@ -868,7 +868,7 @@ public class ValidationContext<T> {
   }
 
   public boolean endsWith(String value, String subString, String propertyName) {
-    Preconditions.checkArgument(subString != null && subString.length() > 0, "subString required");
+    Preconditions.checkArgument(subString != null && !subString.isEmpty(), "subString required");
 
     if (!notNull(value, propertyName)) {
       return false;
@@ -887,7 +887,7 @@ public class ValidationContext<T> {
   }
 
   public boolean notEndsWith(String value, String subString, String propertyName) {
-    Preconditions.checkArgument(subString != null && subString.length() > 0, "subString required");
+    Preconditions.checkArgument(subString != null && !subString.isEmpty(), "subString required");
 
     if (!notNull(value, propertyName)) {
       return false;
@@ -1160,7 +1160,7 @@ public class ValidationContext<T> {
       V value) {
     Preconditions.checkArgument(value != null, "value required");
     Function<NowResolver, V> builder = getTemporalBuilderOfType(value.getClass());
-    return (V) builder.apply(nowResolver);
+    return builder.apply(nowResolver);
   }
 
   @SuppressWarnings({"unchecked"})
