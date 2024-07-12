@@ -1,9 +1,15 @@
 package integr.org.summerb.easycrud.config;
 
+import com.google.common.eventbus.EventBus;
+import integr.org.summerb.easycrud.dtos.TestDto1;
+import integr.org.summerb.easycrud.dtos.TestDto2;
+import integr.org.summerb.easycrud.dtos.TestDto3;
+import integr.org.summerb.easycrud.testbeans.TestDto1Service;
+import integr.org.summerb.easycrud.testbeans.TestDto2PerRowAuthImpl;
+import integr.org.summerb.easycrud.utils.CurrentUserResolverTestImpl;
+import integr.org.summerb.easycrud.utils.EasyCrudPerRowAuthStrategyTestImpl;
 import java.util.Arrays;
-
 import javax.sql.DataSource;
-
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.annotation.Bean;
@@ -31,16 +37,6 @@ import org.summerb.easycrud.scaffold.impl.EasyCrudScaffoldImpl;
 import org.summerb.easycrud.scaffold.impl.ScaffoldedMethodFactoryMySqlImpl;
 import org.summerb.security.api.CurrentUserUuidResolver;
 
-import com.google.common.eventbus.EventBus;
-
-import integr.org.summerb.easycrud.dtos.TestDto1;
-import integr.org.summerb.easycrud.dtos.TestDto2;
-import integr.org.summerb.easycrud.dtos.TestDto3;
-import integr.org.summerb.easycrud.testbeans.TestDto1Service;
-import integr.org.summerb.easycrud.testbeans.TestDto2PerRowAuthImpl;
-import integr.org.summerb.easycrud.utils.CurrentUserResolverTestImpl;
-import integr.org.summerb.easycrud.utils.EasyCrudPerRowAuthStrategyTestImpl;
-
 @Configuration
 public class EasyCrudIntegrTestConfig {
 
@@ -67,8 +63,8 @@ public class EasyCrudIntegrTestConfig {
   }
 
   @Bean
-  ScaffoldedMethodFactory scaffoldedMethodFactory(DataSource dataSource) {
-    return new ScaffoldedMethodFactoryMySqlImpl(dataSource);
+  ScaffoldedMethodFactory scaffoldedMethodFactory() {
+    return new ScaffoldedMethodFactoryMySqlImpl();
   }
 
   @Bean
@@ -102,22 +98,14 @@ public class EasyCrudIntegrTestConfig {
   @Bean
   EasyCrudService<String, TestDto1> testDto1Service(
       @Qualifier("testDto1Dao") EasyCrudDao<String, TestDto1> testDto1Dao) {
-    var ret = new EasyCrudServiceImpl<>(testDto1Dao, TestDto1.class);
-    // NOTE: Not setting currentUserUuidResolver as it is supposed to be optionally autowired
-    // ret.setCurrentUserResolver(currentUserUuidResolver);
-    return ret;
+    return new EasyCrudServiceImpl<>(testDto1Dao, TestDto1.class);
   }
 
   @Bean
   EasyCrudService<String, TestDto1> testDto1ServiceEb(
       @Qualifier("testDto1Dao") EasyCrudDao<String, TestDto1> testDto1Dao, EventBus eventBus) {
     var ret = new EasyCrudServiceImpl<>(testDto1Dao, TestDto1.class);
-
     ret.setWireTap(new EasyCrudWireTapEventBusImpl<>(eventBus));
-
-    // NOTE: Not setting currentUserUuidResolver as it is supposed to be optionally autowired
-    // ret.setCurrentUserResolver(currentUserUuidResolver);
-
     return ret;
   }
 

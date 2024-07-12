@@ -16,8 +16,9 @@
 package org.summerb.easycrud.scaffold.api;
 
 import java.lang.reflect.Method;
-
 import org.summerb.easycrud.api.EasyCrudService;
+import org.summerb.easycrud.api.row.HasId;
+import org.summerb.easycrud.impl.dao.mysql.EasyCrudDaoInjections;
 
 /**
  * Impl of this interface will be responsible for creating impls for methods of sub-interfaces of
@@ -28,5 +29,6 @@ import org.summerb.easycrud.api.EasyCrudService;
  */
 public interface ScaffoldedMethodFactory {
 
-  CallableMethod create(Method key);
+  CallableMethod create(
+      EasyCrudService<?, HasId<?>> service, EasyCrudDaoInjections<?, HasId<?>> dao, Method method);
 }

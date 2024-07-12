@@ -70,8 +70,6 @@ import com.google.common.base.Preconditions;
 public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends EasyCrudDao<TId, TRow>>
     implements EasyCrudService<TId, TRow>, InitializingBean {
 
-  public static final String OPTIMISTIC_LOCK_FAILED_TECH_MESSAGE =
-      "Optimistic lock failed, record was already updated but someone else";
   protected static final PagerParams TOP_ONE = new Top(1);
 
   protected TDao dao;
@@ -129,7 +127,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
   }
 
   protected EasyCrudWireTap<TRow> buildDefaultWireTap() {
-    return new EasyCrudWireTapNoOpImpl<TRow>();
+    return new EasyCrudWireTapNoOpImpl<>();
   }
 
   protected StringIdGeneratorUuidImpl buildDefaultStringIdGenerator() {
@@ -138,7 +136,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
 
   protected EasyCrudExceptionStrategyDefaultImpl<TId> buildDefaultEasyCrudExceptionStrategy(
       String rowMessageCode) {
-    return new EasyCrudExceptionStrategyDefaultImpl<TId>(rowMessageCode);
+    return new EasyCrudExceptionStrategyDefaultImpl<>(rowMessageCode);
   }
 
   public TDao getDao() {
@@ -169,6 +167,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
     return rowClass;
   }
 
+  @Override
   public EasyCrudExceptionStrategy<TId> getExceptionStrategy() {
     return exceptionStrategy;
   }
@@ -195,6 +194,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
     this.rowMessageCode = rowMessageCode;
   }
 
+  @Override
   public EasyCrudWireTap<TRow> getWireTap() {
     return wireTap;
   }

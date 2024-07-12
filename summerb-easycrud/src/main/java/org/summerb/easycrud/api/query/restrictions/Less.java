@@ -5,8 +5,8 @@ import org.summerb.easycrud.api.query.restrictions.base.NegateableRestriction;
 import com.google.common.base.Preconditions;
 
 public class Less extends NegateableRestriction<Less> {
-  private Object value;
-  private boolean includeBoundary;
+  protected Object value;
+  protected boolean includeBoundary;
 
   public Less(Object value, boolean includeBoundary) {
     Preconditions.checkArgument(value != null, "Non null value expected");

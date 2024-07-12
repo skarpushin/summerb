@@ -81,7 +81,7 @@ public class EasyCrudServicePerRowAuthTest extends GenericCrudServiceTestTemplat
     TestDto2 dto = new TestDto2();
     dto.setActive(true);
     dto.setEnv("throwNaeOnCreate");
-    dto.setLinkToFullDonwload("link-to-full-download1");
+    dto.setLinkToFullDownload("link-to-full-download1");
     dto.setMajorVersion(5);
     dto.setMinorVersion(6);
 

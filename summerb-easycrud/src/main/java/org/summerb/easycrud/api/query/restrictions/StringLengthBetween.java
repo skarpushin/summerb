@@ -6,8 +6,8 @@ import com.google.common.base.Preconditions;
 
 public class StringLengthBetween extends NegateableRestriction<StringLengthBetween> {
 
-  private int lowerBoundary;
-  private int upperBoundary;
+  protected int lowerBoundary;
+  protected int upperBoundary;
 
   public StringLengthBetween(int lowerBoundary, int upperBoundary) {
     Preconditions.checkArgument(

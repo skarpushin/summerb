@@ -160,6 +160,9 @@ http://www.apache.org/licenses/LICENSE-2.0
 				<configuration>
 					<source>11</source>
 					<target>11</target>
+					<compilerArgs>
+						<arg>-parameters</arg>
+					</compilerArgs>
 				</configuration>
 			</plugin>
 			<plugin>

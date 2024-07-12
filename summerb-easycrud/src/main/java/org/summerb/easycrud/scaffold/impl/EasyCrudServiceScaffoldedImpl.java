@@ -15,26 +15,25 @@
  ******************************************************************************/
 package org.summerb.easycrud.scaffold.impl;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-
-import org.summerb.easycrud.api.EasyCrudService;
-import org.summerb.easycrud.api.row.HasId;
-import org.summerb.easycrud.scaffold.api.CallableMethod;
-import org.summerb.easycrud.scaffold.api.ScaffoldedMethodFactory;
-import org.summerb.easycrud.scaffold.api.ScaffoldedQuery;
-
 import com.google.common.base.Preconditions;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import org.summerb.easycrud.api.EasyCrudService;
+import org.summerb.easycrud.api.row.HasId;
+import org.summerb.easycrud.impl.dao.mysql.EasyCrudDaoInjections;
+import org.summerb.easycrud.scaffold.api.CallableMethod;
+import org.summerb.easycrud.scaffold.api.ScaffoldedMethodFactory;
+import org.summerb.easycrud.scaffold.api.ScaffoldedQuery;
 
 public class EasyCrudServiceScaffoldedImpl implements java.lang.reflect.InvocationHandler {
 
   protected ScaffoldedMethodFactory scaffoldedMethodFactory;
   protected Class<?> interfaceType;
-  protected EasyCrudService<?, HasId<?>> actual;
+  protected EasyCrudService<?, HasId<?>> service;
+  protected EasyCrudDaoInjections<?, HasId<?>> optionalDao;
 
   /**
    * We'd better cache method callers so that we don't need to do rather expensive reflection-based
@@ -45,33 +44,17 @@ public class EasyCrudServiceScaffoldedImpl implements java.lang.reflect.Invocati
   protected EasyCrudServiceScaffoldedImpl(
       ScaffoldedMethodFactory scaffoldedMethodFactory,
       Class<?> interfaceType,
-      EasyCrudService<?, HasId<?>> actual) {
-    Preconditions.checkArgument(interfaceType != null, "interfaceType required");
-    Preconditions.checkArgument(actual != null, "actual required");
+      EasyCrudService<?, HasId<?>> service,
+      EasyCrudDaoInjections<?, HasId<?>> optionalDao) {
+    Preconditions.checkNotNull(interfaceType, "interfaceType required");
+    Preconditions.checkNotNull(service, "service required");
 
     this.scaffoldedMethodFactory = scaffoldedMethodFactory;
     this.interfaceType = interfaceType;
-    this.actual = actual;
+    this.service = service;
+    this.optionalDao = optionalDao;
 
     methodCallers = CacheBuilder.newBuilder().build(methodCallerFactory);
-  }
-
-  @SuppressWarnings("unchecked")
-  public static <TId, TDto extends HasId<TId>, TService extends EasyCrudService<TId, TDto>>
-      TService createImpl(
-          Class<TService> interfaceType,
-          EasyCrudService<TId, TDto> actualImpl,
-          ScaffoldedMethodFactory scaffoldedMethodFactory) {
-
-    Preconditions.checkArgument(interfaceType != null, "interfaceType required");
-    Preconditions.checkArgument(actualImpl != null, "actualImpl required");
-
-    ClassLoader cl = interfaceType.getClassLoader();
-    Class<?>[] target = new Class<?>[] {interfaceType};
-    EasyCrudServiceScaffoldedImpl proxyImpl =
-        new EasyCrudServiceScaffoldedImpl(
-            scaffoldedMethodFactory, interfaceType, (EasyCrudService<?, HasId<?>>) actualImpl);
-    return (TService) Proxy.newProxyInstance(cl, target, proxyImpl);
   }
 
   @Override
@@ -82,12 +65,12 @@ public class EasyCrudServiceScaffoldedImpl implements java.lang.reflect.Invocati
         return ret.call(args);
       }
 
-      if (method.isDefault()) {
-        invokeDefault(proxy, method, args);
+      if (Object.class.equals(method.getDeclaringClass())) {
+        return method.invoke(service, args);
       }
 
-      if (Object.class.equals(method.getDeclaringClass())) {
-        return method.invoke(actual, args);
+      if (method.isDefault()) {
+        invokeDefault(proxy, method, args);
       }
 
       return methodCallers.get(method).call(args);
@@ -96,41 +79,47 @@ public class EasyCrudServiceScaffoldedImpl implements java.lang.reflect.Invocati
     }
   }
 
-  protected void invokeDefault(Object proxy, Method method, Object[] args) {
-    throw new IllegalArgumentException(
-        "default methods invocation is not supported yet. In Java 17 this will be easily implemented");
-  }
-
   protected CacheLoader<Method, CallableMethod> methodCallerFactory =
-      new CacheLoader<Method, CallableMethod>() {
+      new CacheLoader<>() {
         @Override
-        public CallableMethod load(Method key) throws Exception {
-          if (EasyCrudService.class.equals(key.getDeclaringClass())) {
-            return new CallableMethodLocalImpl(key);
+        public CallableMethod load(Method method) {
+          if (EasyCrudService.class.equals(method.getDeclaringClass())) {
+            return new CallableMethodEasyCrudServiceImpl(method);
           }
 
-          if (key.isAnnotationPresent(ScaffoldedQuery.class)) {
+          if (method.isAnnotationPresent(ScaffoldedQuery.class)) {
+            Preconditions.checkState(
+                optionalDao != null, "Scaffolded methods require DAO to be provided");
             Preconditions.checkState(
                 scaffoldedMethodFactory != null,
-                "scaffoldedMethodFactory is required if you want to call scaffoldedmethods");
-            return scaffoldedMethodFactory.create(key);
+                "scaffoldedMethodFactory is required if you want to call scaffolded methods");
+            return scaffoldedMethodFactory.create(service, optionalDao, method);
           }
 
           throw new IllegalStateException(
-              "Cannot invoke method " + key.getName() + " -- case not supported");
+              "Cannot invoke method "
+                  + method.getDeclaringClass().getName()
+                  + "::"
+                  + method.getName()
+                  + "(...) -- case not supported");
         }
       };
 
-  public class CallableMethodLocalImpl implements CallableMethod {
+  public class CallableMethodEasyCrudServiceImpl implements CallableMethod {
     protected Method method;
 
-    public CallableMethodLocalImpl(Method method) {
+    public CallableMethodEasyCrudServiceImpl(Method method) {
       this.method = method;
     }
 
     @Override
     public Object call(Object[] args) throws Exception {
-      return method.invoke(actual, args);
+      return method.invoke(service, args);
     }
+  }
+
+  protected void invokeDefault(Object proxy, Method method, Object[] args) {
+    throw new IllegalArgumentException(
+        "default methods invocation is not supported yet. Once we migrate to Java 17+ we can add support for that");
   }
 }

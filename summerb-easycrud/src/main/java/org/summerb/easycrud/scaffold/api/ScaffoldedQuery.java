@@ -19,7 +19,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.RowMapper;
 import org.summerb.easycrud.api.EasyCrudService;
@@ -30,9 +29,30 @@ import org.summerb.easycrud.scaffold.impl.ScaffoldedMethodFactoryMySqlImpl;
  * Use it when you don't want to impl the whole stack of interfaces and classes of Easy CRUD, when
  * you just need to execute one custom query.
  *
- * <p>Add this attribute to the method of custom sub-interface of {@link EasyCrudService}, impl of
+ * <p>Add this annotation to the method of custom sub-interface of {@link EasyCrudService}, impl of
  * which is instantiated by @link EasyCrudScaffold} (instead of defining class that implements this
  * interface)
+ *
+ * <p>Use named parameters which names will be resolved against method argument names. Make sure
+ * parameter names are included in bytecode! Add "-parameters" to compiler args. With maven do it
+ * like this:
+ *
+ * <pre>
+ * {@code
+ * <plugins>
+ *   <plugin>
+ *     <groupId>org.apache.maven.plugins</groupId>
+ *     <artifactId>maven-compiler-plugin</artifactId>
+ *     <version>3.8.0</version>
+ *     <configuration>
+ *       <compilerArgs>
+ *         <arg>-parameters</arg>
+ *       </compilerArgs>
+ *     </configuration>
+ *   </plugin>
+ * </plugins>
+ * }
+ * </pre>
  *
  * <p>Then you can easily define new query to the underlying database.
  *
@@ -48,10 +68,14 @@ import org.summerb.easycrud.scaffold.impl.ScaffoldedMethodFactoryMySqlImpl;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface ScaffoldedQuery {
-  /** @return SQL query to be used to perform the query */
+  /**
+   * @return SQL query to be used to perform the query
+   */
   String value();
 
-  /** @return Customize row mapper if needed. Default will be used {@link BeanPropertyRowMapper} */
-  @SuppressWarnings("rawtypes")
-  Class<? extends RowMapper> rowMapper() default BeanPropertyRowMapper.class;
+  /**
+   * @return Customize row mapper if needed. If none specified, then EasyCrud will attempt to guess.
+   *     For objects by default will be used {@link BeanPropertyRowMapper}
+   */
+  Class<? extends RowMapper> rowMapper() default RowMapper.class;
 }

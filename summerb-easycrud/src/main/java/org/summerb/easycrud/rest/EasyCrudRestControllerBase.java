@@ -132,7 +132,7 @@ public class EasyCrudRestControllerBase<
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
-  private PermissionsResolverStrategy<TId, TRow> tryGetPermissionsResolverFromWireTap(
+  protected PermissionsResolverStrategy<TId, TRow> tryGetPermissionsResolverFromWireTap(
       EasyCrudWireTap wireTap) {
 
     if (wireTap instanceof EascyCrudAuthorizationPerTableStrategy) {

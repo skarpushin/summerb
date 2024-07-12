@@ -20,8 +20,8 @@ public class OrderBy {
   private static final String ORDER_DESC = "DESC";
   private static final String ORDER_ASC = "ASC";
 
-  private String direction;
-  private String fieldName;
+  protected String direction;
+  protected String fieldName;
 
   /**
    * @param fieldName field name

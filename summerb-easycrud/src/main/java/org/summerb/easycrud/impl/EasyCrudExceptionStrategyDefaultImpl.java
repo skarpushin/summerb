@@ -110,7 +110,7 @@ public class EasyCrudExceptionStrategyDefaultImpl<TId> implements EasyCrudExcept
 
   @Override
   public RuntimeException buildOptimisticLockException() {
-    return new OptimisticLockingFailureException("No records were affected");
+    return new OptimisticLockingFailureException("Optimistic lock failed, record was already updated but someone else");
   }
 
   @Override

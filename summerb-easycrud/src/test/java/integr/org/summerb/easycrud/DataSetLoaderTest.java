@@ -97,7 +97,7 @@ public class DataSetLoaderTest {
 
     TestDto2 d2i1 = new TestDto2();
     d2i1.setEnv("d2i1");
-    d2i1.setLinkToFullDonwload("asdad");
+    d2i1.setLinkToFullDownload("asdad");
     d2i1 = testDto2Service.create(d2i1);
 
     TestDto3 d3i1 = new TestDto3();
@@ -122,12 +122,12 @@ public class DataSetLoaderTest {
 
     TestDto2 d2i1 = new TestDto2();
     d2i1.setEnv("d2i1");
-    d2i1.setLinkToFullDonwload("asdad");
+    d2i1.setLinkToFullDownload("asdad");
     d2i1 = testDto2Service.create(d2i1);
 
     TestDto2 d2i2 = new TestDto2();
     d2i2.setEnv("d2i2");
-    d2i2.setLinkToFullDonwload("asdad");
+    d2i2.setLinkToFullDownload("asdad");
     d2i2 = testDto2Service.create(d2i2);
 
     List<HasId> result =
@@ -143,7 +143,7 @@ public class DataSetLoaderTest {
 
     TestDto2 d2i1 = new TestDto2();
     d2i1.setEnv("d2i1");
-    d2i1.setLinkToFullDonwload("asdad");
+    d2i1.setLinkToFullDownload("asdad");
     d2i1 = testDto2Service.create(d2i1);
 
     List<HasId> result = loader.loadObjectsByIds(ids(d2i1), testDto2Service.getRowMessageCode());
@@ -158,7 +158,7 @@ public class DataSetLoaderTest {
 
     TestDto2 d2i1 = new TestDto2();
     d2i1.setEnv("required");
-    d2i1.setLinkToFullDonwload("required");
+    d2i1.setLinkToFullDownload("required");
     d2i1 = testDto2Service.create(d2i1);
 
     TestDto3 d3i1 = new TestDto3();
@@ -182,12 +182,12 @@ public class DataSetLoaderTest {
 
     TestDto1 d1i1 = new TestDto1();
     d1i1.setEnv("d1i1");
-    d1i1.setLinkToFullDonwload("required");
+    d1i1.setLinkToFullDownload("required");
     d1i1 = testDto1Service.create(d1i1);
 
     TestDto2 d2i1 = new TestDto2();
     d2i1.setEnv(d1i1.getId());
-    d2i1.setLinkToFullDonwload("required");
+    d2i1.setLinkToFullDownload("required");
     d2i1 = testDto2Service.create(d2i1);
 
     TestDto3 d3i1 = new TestDto3();
@@ -212,7 +212,7 @@ public class DataSetLoaderTest {
 
     TestDto2 d2i1 = new TestDto2();
     d2i1.setEnv("required");
-    d2i1.setLinkToFullDonwload("required");
+    d2i1.setLinkToFullDownload("required");
     d2i1 = testDto2Service.create(d2i1);
 
     TestDto3 d3i1 = new TestDto3();
@@ -239,7 +239,7 @@ public class DataSetLoaderTest {
 
     TestDto2 d2i1 = new TestDto2();
     d2i1.setEnv("required");
-    d2i1.setLinkToFullDonwload("required");
+    d2i1.setLinkToFullDownload("required");
     d2i1 = testDto2Service.create(d2i1);
 
     TestDto3 d3i1 = new TestDto3();
@@ -248,7 +248,7 @@ public class DataSetLoaderTest {
 
     TestDto1 d1i1 = new TestDto1();
     d1i1.setEnv("d1i1");
-    d1i1.setLinkToFullDonwload("required");
+    d1i1.setLinkToFullDownload("required");
     d1i1 = testDto1Service.create(d1i1);
 
     TestDto3 d3i2 = new TestDto3();
@@ -273,12 +273,12 @@ public class DataSetLoaderTest {
 
     TestDto2 d2i1 = new TestDto2();
     d2i1.setEnv("required");
-    d2i1.setLinkToFullDonwload("required");
+    d2i1.setLinkToFullDownload("required");
     d2i1 = testDto2Service.create(d2i1);
 
     TestDto1 d1i1 = new TestDto1();
     d1i1.setEnv("required");
-    d1i1.setLinkToFullDonwload("required");
+    d1i1.setLinkToFullDownload("required");
     d1i1 = testDto1Service.create(d1i1);
 
     TestDto3 d3i1 = new TestDto3();
@@ -307,12 +307,12 @@ public class DataSetLoaderTest {
 
     TestDto2 d2i1 = new TestDto2();
     d2i1.setEnv("required");
-    d2i1.setLinkToFullDonwload("required");
+    d2i1.setLinkToFullDownload("required");
     d2i1 = testDto2Service.create(d2i1);
 
     TestDto1 d1i1 = new TestDto1();
     d1i1.setEnv("required");
-    d1i1.setLinkToFullDonwload("required");
+    d1i1.setLinkToFullDownload("required");
     d1i1 = testDto1Service.create(d1i1);
 
     TestDto3 d3i1 = new TestDto3();
@@ -355,17 +355,17 @@ public class DataSetLoaderTest {
 
     TestDto1 d1i1 = new TestDto1();
     d1i1.setEnv(d3i1.getId());
-    d1i1.setLinkToFullDonwload("required");
+    d1i1.setLinkToFullDownload("required");
     d1i1 = testDto1Service.create(d1i1);
 
     TestDto1 d1i2 = new TestDto1();
     d1i2.setEnv(d3i1.getId());
-    d1i2.setLinkToFullDonwload("required");
+    d1i2.setLinkToFullDownload("required");
     d1i2 = testDto1Service.create(d1i2);
 
     TestDto2 d2i1 = new TestDto2();
     d2i1.setEnv("required");
-    d2i1.setLinkToFullDonwload("required");
+    d2i1.setLinkToFullDownload("required");
     d2i1 = testDto2Service.create(d2i1);
 
     m2mService.addReferencee(d2i1.getId(), d1i1.getId());
@@ -428,8 +428,8 @@ public class DataSetLoaderTest {
       ref1to3 = new Ref("1to3", et1, "env", et3, "id", RefQuantity.Many2One);
       // 2.env to 3.id => many2one // check one round trip to Dto2
       ref2to1 = new Ref("2to1", et2, "env", et1, "id", RefQuantity.Many2One);
-      // 2.linkToFullDonwload to 1.id => many2many
-      ref2to1m2m = new Ref("2to1m2m", et2, "linkToFullDonwload", et1, "id", RefQuantity.Many2Many);
+      // 2.linkToFullDownload to 1.id => many2many
+      ref2to1m2m = new Ref("2to1m2m", et2, "linkToFullDownload", et1, "id", RefQuantity.Many2Many);
       // 3.linkToDto2 to 2.id => many2one // check subsequent refs
       // resolution
       ref3to2mand = new Ref("3to2mand", et3, "linkToDtoTwo", et2, "id", RefQuantity.Many2One);

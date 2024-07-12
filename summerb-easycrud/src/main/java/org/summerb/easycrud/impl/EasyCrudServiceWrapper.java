@@ -15,20 +15,20 @@
  ******************************************************************************/
 package org.summerb.easycrud.impl;
 
+import com.google.common.base.Preconditions;
 import java.util.List;
-
+import org.summerb.easycrud.api.EasyCrudExceptionStrategy;
 import org.summerb.easycrud.api.EasyCrudService;
+import org.summerb.easycrud.api.EasyCrudWireTap;
 import org.summerb.easycrud.api.dto.OrderBy;
 import org.summerb.easycrud.api.exceptions.EntityNotFoundException;
 import org.summerb.easycrud.api.query.Query;
-import org.summerb.easycrud.api.query.QueryConditions;
 import org.summerb.easycrud.api.query.QueryCommands;
+import org.summerb.easycrud.api.query.QueryConditions;
 import org.summerb.easycrud.api.row.HasId;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
 import org.summerb.utils.easycrud.api.dto.PagerParams;
 import org.summerb.utils.easycrud.api.dto.PaginatedList;
-
-import com.google.common.base.Preconditions;
 
 public class EasyCrudServiceWrapper<
         TId, TRow extends HasId<TId>, TActual extends EasyCrudService<TId, TRow>>
@@ -89,8 +89,18 @@ public class EasyCrudServiceWrapper<
   }
 
   @Override
+  public EasyCrudExceptionStrategy<TId> getExceptionStrategy() {
+    return actual.getExceptionStrategy();
+  }
+
+  @Override
   public String getRowMessageCode() {
     return actual.getRowMessageCode();
+  }
+
+  @Override
+  public EasyCrudWireTap<TRow> getWireTap() {
+    return actual.getWireTap();
   }
 
   @Override
@@ -120,7 +130,7 @@ public class EasyCrudServiceWrapper<
 
   @Override
   public List<TRow> getAll(QueryConditions optionalQuery, OrderBy... orderBy) {
-    return getAll(optionalQuery, orderBy);
+    return actual.getAll(optionalQuery, orderBy);
   }
 
   @Override

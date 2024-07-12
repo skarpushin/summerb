@@ -15,11 +15,9 @@
  ******************************************************************************/
 package org.summerb.easycrud.impl.dao;
 
-import javax.sql.DataSource;
-
-import org.springframework.beans.factory.InitializingBean;
-
 import com.google.common.base.Preconditions;
+import javax.sql.DataSource;
+import org.springframework.beans.factory.InitializingBean;
 
 /**
  * Simple base class for all DAOs
@@ -37,6 +35,7 @@ public abstract class DaoBase implements InitializingBean {
    * @deprecated when using this constructor please make sure you're properly initializing required
    *     dependencies: {@link #dataSource}
    */
+  @SuppressWarnings("DeprecatedIsStillUsed")
   public DaoBase() {}
 
   public DaoBase(DataSource dataSource) {

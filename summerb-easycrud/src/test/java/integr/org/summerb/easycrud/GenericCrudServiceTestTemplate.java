@@ -15,16 +15,19 @@
  ******************************************************************************/
 package integr.org.summerb.easycrud;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import integr.org.summerb.easycrud.dtos.TestDto1;
+import integr.org.summerb.easycrud.dtos.TestDto2;
+import integr.org.summerb.easycrud.dtos.TestEnumFieldType;
+import integr.org.summerb.easycrud.utils.CurrentUserResolverTestImpl;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,13 +40,6 @@ import org.summerb.utils.easycrud.api.dto.EntityChangedEvent;
 import org.summerb.utils.easycrud.api.dto.EntityChangedEvent.ChangeType;
 import org.summerb.utils.easycrud.api.dto.PagerParams;
 import org.summerb.utils.easycrud.api.dto.PaginatedList;
-
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
-
-import integr.org.summerb.easycrud.dtos.TestDto1;
-import integr.org.summerb.easycrud.dtos.TestDto2;
-import integr.org.summerb.easycrud.utils.CurrentUserResolverTestImpl;
 
 @Transactional
 public abstract class GenericCrudServiceTestTemplate {
@@ -64,52 +60,52 @@ public abstract class GenericCrudServiceTestTemplate {
   public void testServiceResolver_expectOneServicesFound() {
     EasyCrudService service =
         easyCrudServiceResolver.resolveByRowMessageCode(TestDto1.class.getCanonicalName());
-    assertNotNull(service);
-    assertEquals(TestDto1.class.getCanonicalName(), service.getRowMessageCode());
+    Assertions.assertNotNull(service);
+    Assertions.assertEquals(TestDto1.class.getCanonicalName(), service.getRowMessageCode());
   }
 
   @Test
-  public void testBeanWrapper() throws Exception {
+  public void testBeanWrapper() {
     TestDto1 dto = new TestDto1();
     dto.setActive(true);
     dto.setEnv("uat");
-    dto.setLinkToFullDonwload("link-to-full-download");
+    dto.setLinkToFullDownload("link-to-full-download");
     dto.setMajorVersion(2);
     dto.setMinorVersion(1);
 
     BeanWrapperImpl w = new BeanWrapperImpl(dto);
-    assertTrue(Integer.valueOf(2).equals(w.getPropertyValue("majorVersion")));
-    assertTrue("link-to-full-download".equals(w.getPropertyValue("linkToFullDonwload")));
+    assertEquals(2, w.getPropertyValue("majorVersion"));
+    assertEquals("link-to-full-download", w.getPropertyValue("linkToFullDownload"));
   }
 
   @Test
-  public void testCreateDto1() throws Exception {
+  public void testCreateDto1() {
     TestDto1 dto = new TestDto1();
     dto.setActive(true);
     dto.setEnv("uat");
-    dto.setLinkToFullDonwload("link-to-full-download");
+    dto.setLinkToFullDownload("link-to-full-download");
     dto.setMajorVersion(2);
     dto.setMinorVersion(1);
 
     TestDto1 result = getTestDto1Service().create(dto);
 
-    assertNotNull(result);
-    assertNotNull(result.getId());
+    Assertions.assertNotNull(result);
+    Assertions.assertNotNull(result.getId());
 
     TestDto1 found = getTestDto1Service().findById(result.getId());
-    assertNotNull(found);
-    assertEquals("uat", found.getEnv());
-    assertEquals("link-to-full-download", found.getLinkToFullDonwload());
+    Assertions.assertNotNull(found);
+    Assertions.assertEquals("uat", found.getEnv());
+    Assertions.assertEquals("link-to-full-download", found.getLinkToFullDownload());
     assertEquals(2, found.getMajorVersion());
     assertEquals(1, found.getMinorVersion());
   }
 
   @Test
-  public void testEventBus_expectEventOnCreate() throws Exception {
+  public void testEventBus_expectEventOnCreate() {
     final TestDto1 dto = new TestDto1();
     dto.setActive(true);
     dto.setEnv("uat");
-    dto.setLinkToFullDonwload("link-to-full-download");
+    dto.setLinkToFullDownload("link-to-full-download");
     dto.setMajorVersion(2);
     dto.setMinorVersion(1);
 
@@ -125,16 +121,16 @@ public abstract class GenericCrudServiceTestTemplate {
         });
 
     TestDto1 result = getTestDto1ServiceEb().create(dto);
-    assertNotNull(result);
+    Assertions.assertNotNull(result);
     assertEquals(1, flag.get());
   }
 
   @Test
-  public void testDeleteById() throws Exception {
+  public void testDeleteById() {
     TestDto1 dto = new TestDto1();
     dto.setActive(true);
     dto.setEnv("uat");
-    dto.setLinkToFullDonwload("link-to-full-download");
+    dto.setLinkToFullDownload("link-to-full-download");
     dto.setMajorVersion(2);
     dto.setMinorVersion(1);
 
@@ -142,15 +138,15 @@ public abstract class GenericCrudServiceTestTemplate {
     getTestDto1Service().deleteById(result.getId());
 
     TestDto1 found = getTestDto1Service().findById(result.getId());
-    assertNull(found);
+    Assertions.assertNull(found);
   }
 
   @Test
-  public void testEventBus_expectEventOnDeleteById() throws Exception {
+  public void testEventBus_expectEventOnDeleteById() {
     final TestDto1 v0 = new TestDto1();
     v0.setActive(true);
     v0.setEnv("uat");
-    v0.setLinkToFullDonwload("link-to-full-download");
+    v0.setLinkToFullDownload("link-to-full-download");
     v0.setMajorVersion(2);
     v0.setMinorVersion(1);
 
@@ -173,11 +169,11 @@ public abstract class GenericCrudServiceTestTemplate {
   }
 
   @Test
-  public void testDeleteByIdOptimistic() throws Exception {
+  public void testDeleteByIdOptimistic() {
     TestDto1 dto = new TestDto1();
     dto.setActive(true);
     dto.setEnv("uat");
-    dto.setLinkToFullDonwload("link-to-full-download");
+    dto.setLinkToFullDownload("link-to-full-download");
     dto.setMajorVersion(2);
     dto.setMinorVersion(1);
 
@@ -185,15 +181,15 @@ public abstract class GenericCrudServiceTestTemplate {
     getTestDto1Service().deleteByIdOptimistic(result.getId(), result.getModifiedAt());
 
     TestDto1 found = getTestDto1Service().findById(result.getId());
-    assertNull(found);
+    Assertions.assertNull(found);
   }
 
   @Test
-  public void testEventBus_expectEventOnDeleteByIdOptimistic() throws Exception {
+  public void testEventBus_expectEventOnDeleteByIdOptimistic() {
     final TestDto1 v0 = new TestDto1();
     v0.setActive(true);
     v0.setEnv("uat");
-    v0.setLinkToFullDonwload("link-to-full-download");
+    v0.setLinkToFullDownload("link-to-full-download");
     v0.setMajorVersion(2);
     v0.setMinorVersion(1);
 
@@ -216,11 +212,11 @@ public abstract class GenericCrudServiceTestTemplate {
   }
 
   @Test
-  public void testEventBus_expectEventOnDeleteByIdOptimisticFail() throws Exception {
+  public void testEventBus_expectEventOnDeleteByIdOptimisticFail() {
     final TestDto1 v0 = new TestDto1();
     v0.setActive(true);
     v0.setEnv("uat");
-    v0.setLinkToFullDonwload("link-to-full-download");
+    v0.setLinkToFullDownload("link-to-full-download");
     v0.setMajorVersion(2);
     v0.setMinorVersion(1);
 
@@ -247,72 +243,72 @@ public abstract class GenericCrudServiceTestTemplate {
   }
 
   @Test
-  public void testCreateDto2() throws Exception {
+  public void testCreateDto2() {
     TestDto2 dto = new TestDto2();
     dto.setActive(true);
     dto.setEnv("uat1");
-    dto.setLinkToFullDonwload("link-to-full-download1");
+    dto.setLinkToFullDownload("link-to-full-download1");
     dto.setMajorVersion(5);
     dto.setMinorVersion(6);
 
     TestDto2 result = getTestDto2Service().create(dto);
 
-    assertNotNull(result);
-    assertNotNull(result.getId());
+    Assertions.assertNotNull(result);
+    Assertions.assertNotNull(result.getId());
 
     TestDto2 found = getTestDto2Service().findById(result.getId());
-    assertNotNull(found);
-    assertEquals("uat1", found.getEnv());
-    assertEquals("link-to-full-download1", found.getLinkToFullDonwload());
+    Assertions.assertNotNull(found);
+    Assertions.assertEquals("uat1", found.getEnv());
+    Assertions.assertEquals("link-to-full-download1", found.getLinkToFullDownload());
     assertEquals(5, found.getMajorVersion());
     assertEquals(6, found.getMinorVersion());
   }
 
   @Test
-  public void testFindByQueryString() throws Exception {
+  public void testFindByQueryString() {
     createTestData();
 
     TestDto1 result =
         getTestDto1Service().findOneByQuery(Query.n(TestDto1.class).eq("env", "env-UAT"));
-    assertNotNull(result);
-    assertEquals("link-to-full-download123", result.getLinkToFullDonwload());
+    Assertions.assertNotNull(result);
+    Assertions.assertEquals("link-to-full-download123", result.getLinkToFullDownload());
 
     result = getTestDto1Service().findOneByQuery(Query.n(TestDto1.class).eq("env", "env-PILOT"));
-    assertNotNull(result);
-    assertEquals("link-to-full-download456", result.getLinkToFullDonwload());
+    Assertions.assertNotNull(result);
+    Assertions.assertEquals("link-to-full-download456", result.getLinkToFullDownload());
   }
 
   @Test
-  public void testFindByQueryStringNe() throws Exception {
+  public void testFindByQueryStringNe() {
     createTestData();
 
     PaginatedList<TestDto1> result =
         getTestDto1Service()
             .find(new PagerParams(0, 100), Query.n(TestDto1.class).ne("env", "env-uat"));
-    assertEquals(2, result.getTotalResults());
+    Assertions.assertEquals(2, result.getTotalResults());
   }
 
   @Test
-  public void testFindByQueryContains() throws Exception {
+  public void testFindByQueryContains() {
     createTestData();
 
     PaginatedList<TestDto1> result =
         getTestDto1Service().find(new PagerParams(0, 100), TestDto1.Q().contains("env", "env-p"));
-    assertEquals(2, result.getTotalResults());
+    Assertions.assertEquals(2, result.getTotalResults());
   }
 
   @Test
-  public void testFindByQueryNotContains() throws Exception {
+  public void testFindByQueryNotContains() {
     createTestData();
 
     PaginatedList<TestDto1> result =
         getTestDto1Service()
             .find(new PagerParams(0, 100), Query.n(TestDto1.class).notContains("env", "env-P"));
-    assertEquals(1, result.getTotalResults());
+    Assertions.assertEquals(1, result.getTotalResults());
   }
 
   @Test
-  public void testFindByQueryIn() throws Exception {
+  public void testFindByQueryIn() {
     createTestData();
 
     PaginatedList<TestDto1> result =
@@ -320,11 +316,11 @@ public abstract class GenericCrudServiceTestTemplate {
             .find(
                 new PagerParams(0, 100),
                 Query.n(TestDto1.class).in("env", Arrays.asList("env-UAT", "env-pilot")));
-    assertEquals(2, result.getTotalResults());
+    Assertions.assertEquals(2, result.getTotalResults());
   }
 
   @Test
-  public void testFindByQueryNotIn() throws Exception {
+  public void testFindByQueryNotIn() {
     createTestData();
 
     PaginatedList<TestDto1> result =
@@ -332,11 +328,11 @@ public abstract class GenericCrudServiceTestTemplate {
             .find(
                 new PagerParams(0, 100),
                 Query.n(TestDto1.class).notIn("env", Arrays.asList("env-UAT", "env-pilot")));
-    assertEquals(1, result.getTotalResults());
+    Assertions.assertEquals(1, result.getTotalResults());
   }
 
   @Test
-  public void testFindByQueryOr() throws Exception {
+  public void testFindByQueryOr() {
     createTestData();
 
     PaginatedList<TestDto1> result =
@@ -348,52 +344,52 @@ public abstract class GenericCrudServiceTestTemplate {
                     .or(
                         Query.n(TestDto1.class).eq("minorVersion", 4L),
                         Query.n(TestDto1.class).eq("minorVersion", 5L)));
-    assertEquals(2, result.getTotalResults());
+    Assertions.assertEquals(2, result.getTotalResults());
   }
 
   @Test
-  public void testFindByQueryNumericNe() throws Exception {
+  public void testFindByQueryNumericNe() {
     createTestData();
 
     PaginatedList<TestDto1> result =
         getTestDto1Service()
             .find(new PagerParams(0, 100), Query.n(TestDto1.class).ne("majorVersion", 3));
-    assertEquals(1, result.getTotalResults());
+    Assertions.assertEquals(1, result.getTotalResults());
   }
 
   @Test
-  public void testFindByQueryNumericGe() throws Exception {
+  public void testFindByQueryNumericGe() {
     createTestData();
 
     PaginatedList<TestDto1> result =
         getTestDto1Service()
             .find(new PagerParams(0, 100), Query.n(TestDto1.class).ge("majorVersion", 3));
-    assertEquals(2, result.getTotalResults());
+    Assertions.assertEquals(2, result.getTotalResults());
   }
 
   @Test
-  public void testFindByQueryBetween() throws Exception {
+  public void testFindByQueryBetween() {
     createTestData();
 
     PaginatedList<TestDto1> result =
         getTestDto1Service()
             .find(new PagerParams(0, 100), Query.n(TestDto1.class).between("minorVersion", 4, 5));
-    assertEquals(2, result.getTotalResults());
+    Assertions.assertEquals(2, result.getTotalResults());
   }
 
   @Test
-  public void testFindByQueryOutside() throws Exception {
+  public void testFindByQueryOutside() {
     createTestData();
 
     PaginatedList<TestDto1> result =
         getTestDto1Service()
             .find(
                 new PagerParams(0, 100), Query.n(TestDto1.class).notBetween("minorVersion", 4, 5));
-    assertEquals(1, result.getTotalResults());
+    Assertions.assertEquals(1, result.getTotalResults());
   }
 
   @Test
-  public void testFindByQueryNumberOneOf() throws Exception {
+  public void testFindByQueryNumberOneOf() {
     createTestData();
 
     PaginatedList<TestDto1> result =
@@ -401,11 +397,11 @@ public abstract class GenericCrudServiceTestTemplate {
             .find(
                 new PagerParams(0, 100),
                 Query.n(TestDto1.class).in("minorVersion", Arrays.asList(4L, 5L)));
-    assertEquals(2, result.getTotalResults());
+    Assertions.assertEquals(2, result.getTotalResults());
   }
 
   @Test
-  public void testFindByQueryNumberNotIn() throws Exception {
+  public void testFindByQueryNumberNotIn() {
     createTestData();
 
     PaginatedList<TestDto1> result =
@@ -413,11 +409,11 @@ public abstract class GenericCrudServiceTestTemplate {
             .find(
                 new PagerParams(0, 100),
                 Query.n(TestDto1.class).notIn("minorVersion", Arrays.asList(4L, 5L)));
-    assertEquals(1, result.getTotalResults());
+    Assertions.assertEquals(1, result.getTotalResults());
   }
 
   @Test
-  public void testFindByQueryIsNull() throws Exception {
+  public void testFindByQueryIsNull() {
     createTestData();
 
     PaginatedList<TestDto1> result =
@@ -425,11 +421,11 @@ public abstract class GenericCrudServiceTestTemplate {
             .find(
                 new PagerParams(0, 100),
                 Query.n(TestDto1.class).isNull("linkToPatchToNextVersion"));
-    assertEquals(2, result.getTotalResults());
+    Assertions.assertEquals(2, result.getTotalResults());
   }
 
   @Test
-  public void testFindByQueryIsNotNull() throws Exception {
+  public void testFindByQueryIsNotNull() {
     createTestData();
 
     PaginatedList<TestDto1> result =
@@ -437,52 +433,52 @@ public abstract class GenericCrudServiceTestTemplate {
             .find(
                 new PagerParams(0, 100),
                 Query.n(TestDto1.class).isNotNull("linkToPatchToNextVersion"));
-    assertEquals(1, result.getTotalResults());
+    Assertions.assertEquals(1, result.getTotalResults());
   }
 
   @Test
-  public void testFindByQueryBooleanFalse() throws Exception {
+  public void testFindByQueryBooleanFalse() {
     createTestData();
 
     PaginatedList<TestDto1> result =
         getTestDto1Service()
             .find(new PagerParams(0, 100), Query.n(TestDto1.class).isFalse("active"));
-    assertEquals(1, result.getTotalResults());
+    Assertions.assertEquals(1, result.getTotalResults());
 
     result =
         getTestDto1Service()
             .find(new PagerParams(0, 100), Query.n(TestDto1.class).ne("active", true));
-    assertEquals(1, result.getTotalResults());
+    Assertions.assertEquals(1, result.getTotalResults());
   }
 
   @Test
-  public void testFindByQueryBooleanTrue() throws Exception {
+  public void testFindByQueryBooleanTrue() {
     createTestData();
 
     PaginatedList<TestDto1> result =
         getTestDto1Service()
             .find(new PagerParams(0, 100), Query.n(TestDto1.class).isTrue("active"));
-    assertEquals(2, result.getTotalResults());
+    Assertions.assertEquals(2, result.getTotalResults());
 
     result =
         getTestDto1Service()
             .find(new PagerParams(0, 100), Query.n(TestDto1.class).ne("active", false));
-    assertEquals(2, result.getTotalResults());
+    Assertions.assertEquals(2, result.getTotalResults());
   }
 
   @Test
-  public void testFindByQueryStringLengthBetween() throws Exception {
+  public void testFindByQueryStringLengthBetween() {
     createTestData();
 
     PaginatedList<TestDto1> result =
         getTestDto1Service()
             .find(
                 new PagerParams(0, 100), Query.n(TestDto1.class).stringLengthBetween("env", 6, 7));
-    assertEquals(2, result.getTotalResults());
+    Assertions.assertEquals(2, result.getTotalResults());
   }
 
   @Test
-  public void testDeleteByQuery() throws Exception {
+  public void testDeleteByQuery() {
     createTestData();
 
     int result =
@@ -492,11 +488,11 @@ public abstract class GenericCrudServiceTestTemplate {
   }
 
   @Test
-  public void testEventBus_expectEventOnDeleteByQuery() throws Exception {
+  public void testEventBus_expectEventOnDeleteByQuery() {
     createTestData();
 
     List<String> ids = Arrays.asList("env-uat", "env-prd");
-    final List<String> envs = new ArrayList<String>(ids);
+    final List<String> envs = new ArrayList<>(ids);
     final AtomicInteger flag = new AtomicInteger(0);
     eventBus.register(
         new Object() {
@@ -517,28 +513,28 @@ public abstract class GenericCrudServiceTestTemplate {
   }
 
   @Test
-  public void testFindOneByQuery_expectNullForNotFound() throws Exception {
+  public void testFindOneByQuery_expectNullForNotFound() {
     createTestData();
 
     TestDto1 result =
         getTestDto1Service()
             .findOneByQuery(Query.n(TestDto1.class).stringLengthBetween("env", 1, 2));
-    assertNull(result);
+    Assertions.assertNull(result);
   }
 
   @Test
-  public void testQuery_expectPaginationWorksCorrectly() throws Exception {
+  public void testQuery_expectPaginationWorksCorrectly() {
     createTestData();
 
     PaginatedList<TestDto1> result =
         getTestDto1Service()
             .find(new PagerParams(0, 2), Query.n(TestDto1.class).contains("env", "env-"));
-    assertEquals(3, result.getTotalResults());
+    Assertions.assertEquals(3, result.getTotalResults());
     assertEquals(2, result.getItems().size());
   }
 
   @Test
-  public void testQuery_expectOrderingWorksCorrectly() throws Exception {
+  public void testQuery_expectOrderingWorksCorrectly() {
     createTestData();
 
     PaginatedList<TestDto1> result =
@@ -547,9 +543,9 @@ public abstract class GenericCrudServiceTestTemplate {
                 new PagerParams(0, 100),
                 Query.n(TestDto1.class).contains("env", "env-"),
                 OrderBy.Asc("minorVersion"));
-    assertEquals("env-prd", result.getItems().get(2).getEnv());
-    assertEquals("env-pilot", result.getItems().get(1).getEnv());
-    assertEquals("env-uat", result.getItems().get(0).getEnv());
+    Assertions.assertEquals("env-prd", result.getItems().get(2).getEnv());
+    Assertions.assertEquals("env-pilot", result.getItems().get(1).getEnv());
+    Assertions.assertEquals("env-uat", result.getItems().get(0).getEnv());
 
     result =
         getTestDto1Service()
@@ -557,17 +553,17 @@ public abstract class GenericCrudServiceTestTemplate {
                 new PagerParams(0, 100),
                 Query.n(TestDto1.class).contains("env", "env-"),
                 OrderBy.Desc("minorVersion"));
-    assertEquals("env-prd", result.getItems().get(0).getEnv());
-    assertEquals("env-pilot", result.getItems().get(1).getEnv());
-    assertEquals("env-uat", result.getItems().get(2).getEnv());
+    Assertions.assertEquals("env-prd", result.getItems().get(0).getEnv());
+    Assertions.assertEquals("env-pilot", result.getItems().get(1).getEnv());
+    Assertions.assertEquals("env-uat", result.getItems().get(2).getEnv());
   }
 
   @Test
-  public void testFindById_expectNullForNotFound() throws Exception {
+  public void testFindById_expectNullForNotFound() {
     createTestData();
 
     TestDto1 result = getTestDto1Service().findById("asdasdasd");
-    assertNull(result);
+    Assertions.assertNull(result);
   }
 
   @Test
@@ -575,8 +571,8 @@ public abstract class GenericCrudServiceTestTemplate {
     createTestData();
 
     TestDto1 r1 = getTestDto1Service().findOneByQuery(Query.n(TestDto1.class).eq("env", "env-uat"));
-    assertNotNull(r1);
-    assertEquals(currentUserResolver.user1.getUsername(), r1.getModifiedBy());
+    Assertions.assertNotNull(r1);
+    Assertions.assertEquals(currentUserResolver.user1.getUsername(), r1.getModifiedBy());
     Thread.sleep(20);
 
     r1.setEnv("env-uat2");
@@ -585,27 +581,27 @@ public abstract class GenericCrudServiceTestTemplate {
       currentUserResolver.user = currentUserResolver.user2;
 
       r2 = getTestDto1Service().update(r1);
-      assertNotNull(r2);
+      Assertions.assertNotNull(r2);
       assertTrue(r2.getModifiedAt() > r1.getModifiedAt());
-      assertEquals(currentUserResolver.user2.getUsername(), r2.getModifiedBy());
-      assertEquals("env-uat2", r2.getEnv());
+      Assertions.assertEquals(currentUserResolver.user2.getUsername(), r2.getModifiedBy());
+      Assertions.assertEquals("env-uat2", r2.getEnv());
     } finally {
       currentUserResolver.user = currentUserResolver.user1;
     }
 
     TestDto1 r3 = getTestDto1Service().findById(r1.getId());
-    assertNotNull(r2);
+    Assertions.assertNotNull(r2);
     assertTrue(r3.getModifiedAt() > r1.getModifiedAt());
-    assertEquals("env-uat2", r3.getEnv());
-    assertEquals(currentUserResolver.user2.getUsername(), r3.getModifiedBy());
+    Assertions.assertEquals("env-uat2", r3.getEnv());
+    Assertions.assertEquals(currentUserResolver.user2.getUsername(), r3.getModifiedBy());
   }
 
   @Test
-  public void testEventBus_expectEventOnUpdate() throws Exception {
+  public void testEventBus_expectEventOnUpdate() {
     final TestDto1 v1 = new TestDto1();
     v1.setActive(true);
     v1.setEnv("uat");
-    v1.setLinkToFullDonwload("link-to-full-download");
+    v1.setLinkToFullDownload("link-to-full-download");
     v1.setMajorVersion(2);
     v1.setMinorVersion(1);
 
@@ -622,23 +618,23 @@ public abstract class GenericCrudServiceTestTemplate {
         });
 
     TestDto1 result = getTestDto1ServiceEb().create(v1);
-    result.setLinkToFullDonwload("asdasdasd");
+    result.setLinkToFullDownload("asdasdasd");
     getTestDto1ServiceEb().update(result);
     assertEquals(1, flag.get());
   }
 
   @Test
-  public void testUpdate_expectNotChangeableColumnsAreNotChanged() throws Exception {
+  public void testUpdate_expectNotChangeableColumnsAreNotChanged() throws InterruptedException {
     TestDto1 dto = new TestDto1();
     dto.setActive(true);
     dto.setEnv("env-uat");
-    dto.setLinkToFullDonwload("link-to-full-download123");
+    dto.setLinkToFullDownload("link-to-full-download123");
     dto.setMajorVersion(1);
     dto.setMinorVersion(2);
     dto = getTestDto1Service().create(dto);
 
     assertTrue(dto.getCreatedAt() > 0);
-    assertNotNull(dto.getCreatedBy());
+    Assertions.assertNotNull(dto.getCreatedBy());
 
     long initialCreateAt = dto.getCreatedAt();
     String initialCreatedBy = dto.getCreatedBy();
@@ -646,18 +642,19 @@ public abstract class GenericCrudServiceTestTemplate {
     dto.setCreatedAt(20);
     dto.setCreatedBy("by");
 
+    Thread.sleep(50);
     getTestDto1Service().update(dto);
     dto = getTestDto1Service().findById(dto.getId());
 
-    assertEquals(initialCreateAt, dto.getCreatedAt());
-    assertEquals(initialCreatedBy, dto.getCreatedBy());
+    Assertions.assertEquals(initialCreateAt, dto.getCreatedAt());
+    Assertions.assertEquals(initialCreatedBy, dto.getCreatedBy());
   }
 
   private void createTestData() {
     TestDto1 dto = new TestDto1();
     dto.setActive(true);
     dto.setEnv("env-uat");
-    dto.setLinkToFullDonwload("link-to-full-download123");
+    dto.setLinkToFullDownload("link-to-full-download123");
     dto.setMajorVersion(1);
     dto.setMinorVersion(2);
     getTestDto1Service().create(dto);
@@ -665,7 +662,7 @@ public abstract class GenericCrudServiceTestTemplate {
     dto = new TestDto1();
     dto.setActive(true);
     dto.setEnv("env-pilot");
-    dto.setLinkToFullDonwload("link-to-full-download456");
+    dto.setLinkToFullDownload("link-to-full-download456");
     dto.setMajorVersion(3);
     dto.setMinorVersion(4);
     getTestDto1Service().create(dto);
@@ -673,8 +670,8 @@ public abstract class GenericCrudServiceTestTemplate {
     dto = new TestDto1();
     dto.setActive(false);
     dto.setEnv("env-prd");
-    dto.setLinkToFullDonwload("link-to-full-download456");
-    dto.setLinkToPatchToNextVersion("link-to-patch");
+    dto.setLinkToFullDownload("link-to-full-download456");
+    dto.setLinkToPatchToNextVersion(TestEnumFieldType.ACTIVE);
     dto.setMajorVersion(3);
     dto.setMinorVersion(5);
     getTestDto1Service().create(dto);

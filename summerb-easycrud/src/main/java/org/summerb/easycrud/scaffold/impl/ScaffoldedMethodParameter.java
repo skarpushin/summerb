@@ -13,24 +13,15 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package org.summerb.easycrud.scaffold.api;
+package org.summerb.easycrud.scaffold.impl;
 
-import org.summerb.easycrud.api.EasyCrudService;
-import org.summerb.easycrud.api.row.HasId;
-import org.summerb.easycrud.impl.dao.mysql.EasyCrudDaoInjections;
+import org.summerb.easycrud.impl.dao.SqlTypeOverride;
 
-/**
- * Factory for Proxies of custom sub-interfaces of {@link EasyCrudService}
- *
- * @author sergeyk
- */
-public interface EasyCrudServiceProxyFactory {
-
-  /**
-   * @param optionalDao needs to be provided only if {@link ScaffoldedQuery} are used
-   */
-  <TId, TDto extends HasId<TId>, TService extends EasyCrudService<TId, TDto>> TService createProxy(
-      Class<TService> serviceInterface,
-      EasyCrudService<TId, TDto> service,
-      EasyCrudDaoInjections<TId, TDto> optionalDao);
+public class ScaffoldedMethodParameter {
+  protected SqlTypeOverride sqlTypeOverride;
+  protected boolean sqlTypeOverrideResolved;
+  protected String name;
+  protected boolean array;
+  protected boolean iterable;
+  protected int idx;
 }

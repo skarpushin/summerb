@@ -8,7 +8,7 @@ CREATE  TABLE forms_test_1 (
   modified_at BIGINT NOT NULL ,
   created_by VARCHAR(36) NOT NULL ,
   modified_by VARCHAR(36) NOT NULL ,
-  link_to_full_donwload VARCHAR(512) NOT NULL ,
+  link_to_full_download VARCHAR(512) NOT NULL ,
   link_to_patch_to_next_version VARCHAR(512) NULL ,
   PRIMARY KEY (id) 
 );
@@ -23,7 +23,7 @@ CREATE  TABLE forms_test_2 (
   modified_at BIGINT NOT NULL ,
   created_by VARCHAR(36) NOT NULL ,
   modified_by VARCHAR(36) NOT NULL ,
-  link_to_full_donwload VARCHAR(512) NOT NULL ,
+  link_to_full_download VARCHAR(512) NOT NULL ,
   link_to_patch_to_next_version VARCHAR(512) NULL ,
   PRIMARY KEY (id) 
 );

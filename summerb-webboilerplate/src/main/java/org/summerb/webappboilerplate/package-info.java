@@ -14,14 +14,6 @@
  * the License.
  ******************************************************************************/
 
-// TODO: Replace Spring XML config with Spring Java config
-
-// TODO: Switch to constructor dependencies injection - as opposite of @Autowired and @Required
-
-// TODO: Remove redundant exceptions throws (like NAE and FVE)
-
-// TODO: Make all private fields protected for increased extensibility
-
 /**
  * SummerB offers an ready-to-use and easily extensible/customizable design and impl for working
  * with simple CRUD repositories.

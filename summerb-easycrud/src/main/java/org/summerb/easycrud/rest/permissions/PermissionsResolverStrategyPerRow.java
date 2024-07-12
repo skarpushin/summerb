@@ -23,7 +23,7 @@ import com.google.common.base.Preconditions;
 public class PermissionsResolverStrategyPerRow<TId, TRow extends HasId<TId>>
     implements PermissionsResolverStrategy<TId, HasId<TId>> {
 
-  private EascyCrudAuthorizationPerRowStrategy<TRow> perRowAuthStrategy;
+  protected EascyCrudAuthorizationPerRowStrategy<TRow> perRowAuthStrategy;
 
   public PermissionsResolverStrategyPerRow(
       EascyCrudAuthorizationPerRowStrategy<TRow> perRowAuthStrategy) {

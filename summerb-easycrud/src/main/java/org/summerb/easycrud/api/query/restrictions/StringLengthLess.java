@@ -6,8 +6,8 @@ import com.google.common.base.Preconditions;
 
 public class StringLengthLess extends NegateableRestriction<StringLengthLess> {
 
-  private int value;
-  private boolean includeBoundary;
+  protected int value;
+  protected boolean includeBoundary;
 
   public StringLengthLess(int value, boolean includeBoundary) {
     if (includeBoundary) {

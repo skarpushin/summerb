@@ -11,7 +11,7 @@ import com.google.common.base.Preconditions;
 
 public class In extends NegateableRestriction<In> {
 
-  private Set<?> values;
+  protected Set<?> values;
 
   public In(Collection<?> values) {
     Preconditions.checkArgument(!CollectionUtils.isEmpty(values), "Non empty collection expected");

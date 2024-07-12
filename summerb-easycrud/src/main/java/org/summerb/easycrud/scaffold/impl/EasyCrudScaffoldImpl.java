@@ -15,15 +15,15 @@
  ******************************************************************************/
 package org.summerb.easycrud.scaffold.impl;
 
+import com.google.common.base.Preconditions;
+import com.google.common.eventbus.EventBus;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
 import javax.sql.DataSource;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.core.convert.ConversionService;
@@ -40,6 +40,7 @@ import org.summerb.easycrud.api.StringIdGenerator;
 import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.impl.EasyCrudServiceImpl;
 import org.summerb.easycrud.impl.dao.SqlTypeOverrides;
+import org.summerb.easycrud.impl.dao.mysql.EasyCrudDaoInjections;
 import org.summerb.easycrud.impl.dao.mysql.EasyCrudDaoMySqlImpl;
 import org.summerb.easycrud.impl.dao.mysql.QueryToSqlMySqlImpl;
 import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapDelegatingImpl;
@@ -51,9 +52,6 @@ import org.summerb.easycrud.scaffold.api.ScaffoldedMethodFactory;
 import org.summerb.easycrud.scaffold.api.ScaffoldedQuery;
 import org.summerb.security.api.CurrentUserUuidResolver;
 import org.summerb.utils.DtoBase;
-
-import com.google.common.base.Preconditions;
-import com.google.common.eventbus.EventBus;
 
 /**
  * Default impl of {@link EasyCrudScaffold}
@@ -218,7 +216,7 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
             .map(this::tryMapServiceInjectionToWireTap)
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
-    if (wireTaps.size() > 0) {
+    if (!wireTaps.isEmpty()) {
       return (EasyCrudWireTap<TRow>) new EasyCrudWireTapDelegatingImpl(wireTaps);
     }
 
@@ -237,12 +235,17 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
       Class<TDto> rowClass = discoverRowClassFromServiceInterface(serviceInterface);
       EasyCrudDao<TId, TDto> dao = buildDao(rowClass, tableName, injections);
 
-      var actualService = instantiateAndAutowireService(dao, rowClass);
+      EasyCrudServiceImpl<TId, TDto, EasyCrudDao<TId, TDto>> actualService =
+          instantiateAndAutowireService(dao, rowClass);
       actualService.setRowMessageCode(messageCode);
       setServiceInjectionsIfAny(actualService, injections);
       actualService.afterPropertiesSet();
 
-      return getEasyCrudServiceProxyFactory().createProxy(serviceInterface, actualService);
+      //noinspection unchecked
+      EasyCrudDaoInjections<TId, TDto> daoInjections = (EasyCrudDaoInjections<TId, TDto>) dao;
+
+      return getEasyCrudServiceProxyFactory()
+          .createProxy(serviceInterface, actualService, daoInjections);
     } catch (Throwable t) {
       throw new RuntimeException("Failed to scaffold EasyCrudService for " + serviceInterface, t);
     }
@@ -308,7 +311,7 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
 
     var queryToNativeSqlCompiler = find(injections, QueryToSql.class);
     if (queryToNativeSqlCompiler != null) {
-      ret.setQueryToNativeSqlCompiler(queryToNativeSqlCompiler);
+      ret.setQueryToSql(queryToNativeSqlCompiler);
     }
 
     var daoExceptionTranslator = find(injections, DaoExceptionTranslator.class);

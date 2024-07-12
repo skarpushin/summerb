@@ -7,9 +7,9 @@ import com.google.common.base.Preconditions;
 
 public class Like extends NegateableRestriction<Like> {
 
-  private String subString;
-  private boolean addPrefixWildcard;
-  private boolean addPostfixWildcard;
+  protected String subString;
+  protected boolean addPrefixWildcard;
+  protected boolean addPostfixWildcard;
 
   public Like(String subString, boolean addPrefixWildcard, boolean addPostfixWildcard) {
     Preconditions.checkArgument(StringUtils.hasText(subString), "subString required");

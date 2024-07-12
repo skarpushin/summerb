@@ -33,7 +33,7 @@ public class TestDto2 implements HasAutoincrementId, HasAuthor, HasTimestamps, S
   private long modifiedAt;
   private String createdBy;
   private String modifiedBy;
-  private String linkToFullDonwload;
+  private String linkToFullDownload;
   private String linkToPatchToNextVersion;
 
   @Override
@@ -118,12 +118,12 @@ public class TestDto2 implements HasAutoincrementId, HasAuthor, HasTimestamps, S
     this.modifiedBy = modifiedBy;
   }
 
-  public String getLinkToFullDonwload() {
-    return linkToFullDonwload;
+  public String getLinkToFullDownload() {
+    return linkToFullDownload;
   }
 
-  public void setLinkToFullDonwload(String linkToFullDonwload) {
-    this.linkToFullDonwload = linkToFullDonwload;
+  public void setLinkToFullDownload(String linkToFullDownload) {
+    this.linkToFullDownload = linkToFullDownload;
   }
 
   public String getLinkToPatchToNextVersion() {

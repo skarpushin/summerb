@@ -16,7 +16,13 @@
 package org.summerb.easycrud.impl.relations.example;
 
 import org.summerb.easycrud.api.EasyCrudService;
+import org.summerb.easycrud.scaffold.api.ScaffoldedQuery;
+
+import java.util.List;
 
 public interface DeviceService extends EasyCrudService<Long, DeviceRow> {
   String TERM = "term.device";
+
+  @ScaffoldedQuery(value = "SELECT serial_number FROM devices")
+  List<String> getAllSerialNumbers();
 }

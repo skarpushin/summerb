@@ -15,8 +15,32 @@
  ******************************************************************************/
 package integr.org.summerb.easycrud.testbeans;
 
-import org.summerb.easycrud.api.EasyCrudService;
-
 import integr.org.summerb.easycrud.dtos.TestDto1;
+import integr.org.summerb.easycrud.dtos.TestDto2;
+import java.util.List;
+import java.util.Set;
+import org.summerb.easycrud.api.EasyCrudService;
+import org.summerb.easycrud.scaffold.api.ScaffoldedQuery;
 
-public interface TestDto1Service extends EasyCrudService<String, TestDto1> {}
+public interface TestDto1Service extends EasyCrudService<String, TestDto1> {
+
+  @ScaffoldedQuery("SELECT max(env) FROM forms_test_1 WHERE major_version >= :majorVersion")
+  String getEnvMaxWithScalarParam(int majorVersion);
+
+  @ScaffoldedQuery("SELECT count(env) FROM forms_test_1")
+  int getEnvCountNoParams();
+
+  @ScaffoldedQuery("SELECT env FROM forms_test_1 WHERE major_version IN (:majorVersions) ORDER BY env ASC")
+  List<String> getEnvsWithArray(int[] majorVersions);
+
+  @ScaffoldedQuery("SELECT env FROM forms_test_1 WHERE major_version IN (:majorVersions) ORDER BY env ASC")
+  List<String> getEnvsWithSet(Set<Integer> majorVersions);
+
+  @ScaffoldedQuery("SELECT * FROM forms_test_1 WHERE major_version IN (:majorVersions) ORDER BY env ASC")
+  List<TestDto1> getDtosWithSet(Set<Integer> majorVersions);
+
+  @ScaffoldedQuery(
+      value = "SELECT * FROM forms_test_1 WHERE major_version IN (:majorVersions) ORDER BY env ASC",
+      rowMapper = CustomMapperToTestDto2.class)
+  List<TestDto2> getDtosWithSetAndCustomMapper(Set<Integer> majorVersions);
+}

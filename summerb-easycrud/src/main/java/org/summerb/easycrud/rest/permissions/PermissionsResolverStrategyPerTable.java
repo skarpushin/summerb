@@ -23,7 +23,7 @@ import com.google.common.base.Preconditions;
 public class PermissionsResolverStrategyPerTable<TId, TRow extends HasId<TId>>
     implements PermissionsResolverStrategy<TId, HasId<TId>> {
 
-  private EascyCrudAuthorizationPerTableStrategy authStrategy;
+  protected EascyCrudAuthorizationPerTableStrategy authStrategy;
 
   public PermissionsResolverStrategyPerTable(EascyCrudAuthorizationPerTableStrategy authStrategy) {
     Preconditions.checkArgument(authStrategy != null, "authStrategy required");

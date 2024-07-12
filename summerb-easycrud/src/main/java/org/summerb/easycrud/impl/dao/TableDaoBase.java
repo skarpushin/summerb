@@ -15,11 +15,9 @@
  ******************************************************************************/
 package org.summerb.easycrud.impl.dao;
 
-import javax.sql.DataSource;
-
-import org.springframework.util.StringUtils;
-
 import com.google.common.base.Preconditions;
+import javax.sql.DataSource;
+import org.springframework.util.StringUtils;
 
 /**
  * Simple base class for all DAOs
@@ -36,6 +34,7 @@ public abstract class TableDaoBase extends DaoBase {
    * @deprecated when using this constructor please make sure you're properly initializing required
    *     dependencies: {@link #dataSource} and {@link #tableName}
    */
+  @SuppressWarnings("DeprecatedIsStillUsed")
   @Deprecated
   protected TableDaoBase() {}
 

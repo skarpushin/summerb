@@ -16,15 +16,14 @@
 package org.summerb.easycrud.api;
 
 import java.util.List;
-
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.transaction.annotation.Transactional;
 import org.summerb.easycrud.api.dto.OrderBy;
 import org.summerb.easycrud.api.exceptions.EntityNotFoundException;
 import org.summerb.easycrud.api.exceptions.GenericEntityNotFoundException;
 import org.summerb.easycrud.api.query.Query;
-import org.summerb.easycrud.api.query.QueryConditions;
 import org.summerb.easycrud.api.query.QueryCommands;
+import org.summerb.easycrud.api.query.QueryConditions;
 import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.api.row.HasTimestamps;
 import org.summerb.i18n.HasMessageCode;
@@ -53,13 +52,16 @@ import org.summerb.validation.ValidationException;
  */
 public interface EasyCrudService<TId, TRow extends HasId<TId>> {
 
-  /** @return new Query for rows of this service */
+  /**
+   * @return new Query for rows of this service
+   * @deprecated Use {@link #query()} which is more powerful and provides additional "coding sugar"
+   */
   Query<TRow> newQuery();
 
   /**
-   * Another way how to query the data. Does not differ functionally from other quering methods, but
-   * could make a difference in terms of convenience ("coding-sugar"). You can simply chain query
-   * condition and then call one of search methods available in {@link QueryCommands}
+   * Another way how to query the data. Does not differ from other querying methods, but could make
+   * a difference in terms of convenience ("coding-sugar"). You can simply chain query condition and
+   * then call one of search methods available in {@link QueryCommands}
    *
    * @return new instance of {@link QueryCommands}
    */
@@ -221,12 +223,21 @@ public interface EasyCrudService<TId, TRow extends HasId<TId>> {
   @Transactional(rollbackFor = Throwable.class)
   int deleteByQuery(QueryConditions query);
 
-  /** @return class of Row served by this service */
+  /**
+   * @return class of Row served by this service
+   */
   Class<TRow> getRowClass();
+
+  EasyCrudExceptionStrategy<TId> getExceptionStrategy();
 
   /**
    * @return entityTypeMessageCode. Same is used in exception messages codes {@link HasMessageCode}
    *     if thrown
    */
   String getRowMessageCode();
+
+  /**
+   * @return WireTap if any that is used by this service
+   */
+  EasyCrudWireTap<TRow> getWireTap();
 }

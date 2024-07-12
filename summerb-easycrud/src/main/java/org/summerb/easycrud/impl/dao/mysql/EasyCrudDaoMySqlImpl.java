@@ -17,20 +17,20 @@ package org.summerb.easycrud.impl.dao.mysql;
 
 import static org.summerb.easycrud.impl.dao.mysql.QueryToSqlMySqlImpl.underscore;
 
+import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-
 import javax.sql.DataSource;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.util.StringUtils;
@@ -47,10 +47,10 @@ import org.summerb.easycrud.api.row.HasAutoincrementId;
 import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.api.row.HasTimestamps;
 import org.summerb.easycrud.api.row.HasUuid;
-import org.summerb.easycrud.impl.StringIdGeneratorUuidImpl;
 import org.summerb.easycrud.impl.SimpleJdbcUpdate.SimpleJdbcUpdate;
 import org.summerb.easycrud.impl.SimpleJdbcUpdate.TableMetaDataContext;
 import org.summerb.easycrud.impl.SimpleJdbcUpdate.UpdateColumnsEnlisterStrategy;
+import org.summerb.easycrud.impl.StringIdGeneratorUuidImpl;
 import org.summerb.easycrud.impl.dao.ParameterSourceBuilderBeanPropImpl;
 import org.summerb.easycrud.impl.dao.SqlTypeOverrides;
 import org.summerb.easycrud.impl.dao.SqlTypeOverridesDefaultImpl;
@@ -61,8 +61,6 @@ import org.summerb.utils.easycrud.api.dto.PagerParams;
 import org.summerb.utils.easycrud.api.dto.PaginatedList;
 import org.summerb.utils.easycrud.api.dto.Top;
 
-import com.google.common.base.Preconditions;
-
 /**
  * Although this is a MySQL-specific impl of {@link EasyCrudDao} it has common things for all
  * SQL-like databases.
@@ -70,7 +68,7 @@ import com.google.common.base.Preconditions;
  * @author sergey.karpushin
  */
 public class EasyCrudDaoMySqlImpl<TId, TRow extends HasId<TId>> extends TableDaoBase
-    implements EasyCrudDao<TId, TRow> {
+    implements EasyCrudDao<TId, TRow>, EasyCrudDaoInjections<TId, TRow> {
   protected static final List<String> allowedSortDirections = Arrays.asList("asc", "desc");
   protected static final String PARAM_MAX = "max";
   protected static final String PARAM_OFFSET = "offset";
@@ -104,152 +102,12 @@ public class EasyCrudDaoMySqlImpl<TId, TRow extends HasId<TId>> extends TableDao
    *     dependencies: {@link #dataSource}, {@link #tableName} and {@link #rowClass}
    */
   @Deprecated
+  @SuppressWarnings("DeprecatedIsStillUsed")
   protected EasyCrudDaoMySqlImpl() {}
 
   public EasyCrudDaoMySqlImpl(DataSource dataSource, String tableName, Class<TRow> rowClass) {
     super(dataSource, tableName);
     this.rowClass = rowClass;
-  }
-
-  public String getTableName() {
-    return tableName;
-  }
-
-  public Class<TRow> getRowClass() {
-    return rowClass;
-  }
-
-  public RowMapper<TRow> getRowMapper() {
-    return rowMapper;
-  }
-
-  /**
-   * Set {@link RowMapper}. Optional. if nothing set, then {@link BeanPropertyRowMapper} will be
-   * used
-   *
-   * @param rowMapper rowMapper
-   */
-  public void setRowMapper(RowMapper<TRow> rowMapper) {
-    Preconditions.checkArgument(rowMapper != null, "parameterSourceBuilder required");
-    this.rowMapper = rowMapper;
-  }
-
-  public ParameterSourceBuilder<TRow> getParameterSourceBuilder() {
-    return parameterSourceBuilder;
-  }
-
-  /**
-   * Set {@link ParameterSourceBuilder}. Optional. If nothing set, then {@link
-   * ParameterSourceBuilderBeanPropImpl} will be used
-   *
-   * @param parameterSourceBuilder parameterSourceBuilder
-   */
-  public void setParameterSourceBuilder(ParameterSourceBuilder<TRow> parameterSourceBuilder) {
-    Preconditions.checkArgument(parameterSourceBuilder != null, "parameterSourceBuilder required");
-    this.parameterSourceBuilder = parameterSourceBuilder;
-  }
-
-  public SqlTypeOverrides getSqlTypeOverrides() {
-    return sqlTypeOverrides;
-  }
-
-  /**
-   * When your DTO has fields of custom types you'll need to explicitly tell DAO layer what SQL
-   * types must be used and how to convert values of those types to SQL-friendly values. Use this
-   * class to describe such conversion.
-   *
-   * @param sqlTypeOverrides overrides for SQL types for {@link #create(HasId)}, {@link
-   *     #update(HasId)}, {@link #query(PagerParams, QueryConditions, OrderBy...)} (and other
-   *     methods which uses {@link Query})
-   */
-  @Autowired(required = false)
-  public void setSqlTypeOverrides(SqlTypeOverrides sqlTypeOverrides) {
-    this.sqlTypeOverrides = sqlTypeOverrides;
-  }
-
-  public QueryToSql getQueryToNativeSqlCompiler() {
-    return queryToSql;
-  }
-
-  /**
-   * Set {@link QueryToSql}. Optionally autowired from application context. If nothing set, then
-   * {@link QueryToSqlMySqlImpl} will be used
-   *
-   * @param queryToSql queryToSql
-   */
-  @Autowired(required = false)
-  public void setQueryToNativeSqlCompiler(QueryToSql queryToSql) {
-    Preconditions.checkArgument(queryToSql != null, "queryToSql required");
-    this.queryToSql = queryToSql;
-  }
-
-  public ConversionService getConversionService() {
-    return conversionService;
-  }
-
-  /**
-   * Set {@link ConversionService}. Optionally autowired from application context. if nothing set,
-   * then nothing used.
-   *
-   * @param conversionService conversionService
-   */
-  @Autowired(required = false)
-  public void setConversionService(ConversionService conversionService) {
-    Preconditions.checkArgument(conversionService != null, "conversionService required");
-    this.conversionService = conversionService;
-  }
-
-  public StringIdGenerator getStringIdGenerator() {
-    return stringIdGenerator;
-  }
-
-  /**
-   * Set {@link StringIdGenerator}. Required only when rowClass implements {@link HasUuid}. If
-   * nothing set, then {@link StringIdGeneratorUuidImpl} will be used.
-   *
-   * @param stringIdGenerator stringIdGenerator
-   */
-  public void setStringIdGenerator(StringIdGenerator stringIdGenerator) {
-    Preconditions.checkState(rowClass != null, "please set rowClass before callign this method");
-    Preconditions.checkArgument(
-        !HasUuid.class.isAssignableFrom(rowClass) || stringIdGenerator != null,
-        "stringIdGenerator required");
-    this.stringIdGenerator = stringIdGenerator;
-  }
-
-  public DaoExceptionTranslator getDaoExceptionTranslator() {
-    return daoExceptionTranslator;
-  }
-
-  /**
-   * Set {@link DaoExceptionTranslator}. Optionally autowired from application context. if nothing
-   * set, then default {@link DaoExceptionTranslatorMySqlImpl} will be used
-   *
-   * @param daoExceptionTranslator daoExceptionTranslator
-   */
-  @Autowired(required = false)
-  public void setDaoExceptionTranslator(DaoExceptionTranslator daoExceptionTranslator) {
-    Preconditions.checkArgument(daoExceptionTranslator != null, "daoExceptionTranslator required");
-    this.daoExceptionTranslator = daoExceptionTranslator;
-  }
-
-  public NowResolver getNowResolver() {
-    return nowResolver;
-  }
-
-  /**
-   * Set {@link NowResolver}. This is required only when Row class implements {@link HasTimestamps}.
-   * If nothing set, then default {@link NowResolverImpl} will be used
-   *
-   * @param nowResolver nowResolver
-   */
-  @Autowired(required = false)
-  public void setNowResolver(NowResolver nowResolver) {
-    Preconditions.checkState(rowClass != null, "please set rowClass before callign this method");
-    Preconditions.checkArgument(
-        !HasTimestamps.class.isAssignableFrom(rowClass) || nowResolver != null,
-        "nowResolver required");
-    this.nowResolver = nowResolver;
   }
 
   @Override
@@ -308,15 +166,15 @@ public class EasyCrudDaoMySqlImpl<TId, TRow extends HasId<TId>> extends TableDao
   }
 
   protected ParameterSourceBuilderBeanPropImpl<TRow> buildDefaultParameterSourceBuilder() {
-    return new ParameterSourceBuilderBeanPropImpl<TRow>(sqlTypeOverrides);
+    return new ParameterSourceBuilderBeanPropImpl<>(sqlTypeOverrides);
   }
 
   protected RowMapper<TRow> buildDefaultRowMapper(
       Class<TRow> rowClass, ConversionService conversionService) {
-    RowMapper<TRow> ret = new BeanPropertyRowMapper<TRow>(rowClass);
+    BeanPropertyRowMapper<TRow> ret = new BeanPropertyRowMapper<>(rowClass);
 
     if (conversionService != null) {
-      ((BeanPropertyRowMapper<TRow>) ret).setConversionService(conversionService);
+      ret.setConversionService(conversionService);
     }
 
     return ret;
@@ -351,7 +209,7 @@ public class EasyCrudDaoMySqlImpl<TId, TRow extends HasId<TId>> extends TableDao
 
     // Configure identification columns - how do we find right record for
     // update
-    List<String> restrictingColumns = new ArrayList<String>();
+    List<String> restrictingColumns = new ArrayList<>();
     restrictingColumns.add(QueryToSqlMySqlImpl.underscore(HasId.FN_ID));
     if (HasTimestamps.class.isAssignableFrom(rowClass)) {
       restrictingColumns.add(QueryToSqlMySqlImpl.underscore(HasTimestamps.FN_MODIFIED_AT));
@@ -367,8 +225,7 @@ public class EasyCrudDaoMySqlImpl<TId, TRow extends HasId<TId>> extends TableDao
         @Override
         public Collection<? extends String> getColumnsForUpdate(
             TableMetaDataContext tableMetaDataContext) {
-          List<String> updatingColumns =
-              new ArrayList<String>(tableMetaDataContext.createColumns());
+          List<String> updatingColumns = new ArrayList<>(tableMetaDataContext.createColumns());
           remove(HasId.FN_ID, updatingColumns);
           if (HasTimestamps.class.isAssignableFrom(rowClass)) {
             remove(QueryToSqlMySqlImpl.underscore(HasTimestamps.FN_CREATED_AT), updatingColumns);
@@ -379,7 +236,7 @@ public class EasyCrudDaoMySqlImpl<TId, TRow extends HasId<TId>> extends TableDao
           return updatingColumns;
         }
 
-        protected void remove(String str, Iterable<String> iterable) {
+        private void remove(String str, Iterable<String> iterable) {
           for (Iterator<String> iter = iterable.iterator(); iter.hasNext(); ) {
             if (str.equalsIgnoreCase(iter.next())) {
               iter.remove();
@@ -518,7 +375,7 @@ public class EasyCrudDaoMySqlImpl<TId, TRow extends HasId<TId>> extends TableDao
       totalResultsCount = jdbc.queryForInt(sqlFindByCustomQueryForCount + whereClause, params);
     }
 
-    return new PaginatedList<TRow>(pagerParams, list, totalResultsCount);
+    return new PaginatedList<>(pagerParams, list, totalResultsCount);
   }
 
   protected String buildOrderBySubclause(OrderBy[] orderByArr) {
@@ -527,12 +384,11 @@ public class EasyCrudDaoMySqlImpl<TId, TRow extends HasId<TId>> extends TableDao
     }
 
     StringBuilder ret = new StringBuilder();
-    for (int i = 0; i < orderByArr.length; i++) {
+    for (OrderBy orderBy : orderByArr) {
       if (ret.length() > 0) {
         ret.append(", ");
       }
 
-      OrderBy orderBy = orderByArr[i];
       if (orderBy == null
           || !StringUtils.hasText(orderBy.getDirection())
           || !StringUtils.hasText(orderBy.getFieldName())) {
@@ -547,6 +403,167 @@ public class EasyCrudDaoMySqlImpl<TId, TRow extends HasId<TId>> extends TableDao
           orderBy.getDirection());
       ret.append(orderBy.getDirection());
     }
-    return ret.length() == 0 ? "" : " ORDER BY " + ret.toString();
+    return ret.length() == 0 ? "" : " ORDER BY " + ret;
+  }
+
+  @Override
+  public String getTableName() {
+    return tableName;
+  }
+
+  @Override
+  public NamedParameterJdbcTemplate getJdbc() {
+    return jdbc;
+  }
+
+  @Override
+  public DataSource getDataSource() {
+    return dataSource;
+  }
+
+  @Override
+  public Class<TRow> getRowClass() {
+    return rowClass;
+  }
+
+  @Override
+  public RowMapper<TRow> getRowMapper() {
+    return rowMapper;
+  }
+
+  /**
+   * Set {@link RowMapper}. Optional. if nothing set, then {@link BeanPropertyRowMapper} will be
+   * used
+   *
+   * @param rowMapper rowMapper
+   */
+  public void setRowMapper(RowMapper<TRow> rowMapper) {
+    Preconditions.checkArgument(rowMapper != null, "parameterSourceBuilder required");
+    this.rowMapper = rowMapper;
+  }
+
+  @Override
+  public ParameterSourceBuilder<TRow> getParameterSourceBuilder() {
+    return parameterSourceBuilder;
+  }
+
+  /**
+   * Set {@link ParameterSourceBuilder}. Optional. If nothing set, then {@link
+   * ParameterSourceBuilderBeanPropImpl} will be used
+   *
+   * @param parameterSourceBuilder parameterSourceBuilder
+   */
+  public void setParameterSourceBuilder(ParameterSourceBuilder<TRow> parameterSourceBuilder) {
+    Preconditions.checkArgument(parameterSourceBuilder != null, "parameterSourceBuilder required");
+    this.parameterSourceBuilder = parameterSourceBuilder;
+  }
+
+  @Override
+  public SqlTypeOverrides getSqlTypeOverrides() {
+    return sqlTypeOverrides;
+  }
+
+  /**
+   * When your DTO has fields of custom types you'll need to explicitly tell DAO layer what SQL
+   * types must be used and how to convert values of those types to SQL-friendly values. Use this
+   * class to describe such conversion.
+   *
+   * @param sqlTypeOverrides overrides for SQL types for {@link #create(HasId)}, {@link
+   *     #update(HasId)}, {@link #query(PagerParams, QueryConditions, OrderBy...)} (and other
+   *     methods which uses {@link Query})
+   */
+  @Autowired(required = false)
+  public void setSqlTypeOverrides(SqlTypeOverrides sqlTypeOverrides) {
+    this.sqlTypeOverrides = sqlTypeOverrides;
+  }
+
+  @Override
+  public QueryToSql getQueryToSql() {
+    return queryToSql;
+  }
+
+  /**
+   * Set {@link QueryToSql}. Optionally autowired from application context. If nothing set, then
+   * {@link QueryToSqlMySqlImpl} will be used
+   *
+   * @param queryToSql queryToSql
+   */
+  @Autowired(required = false)
+  public void setQueryToSql(QueryToSql queryToSql) {
+    Preconditions.checkArgument(queryToSql != null, "queryToSql required");
+    this.queryToSql = queryToSql;
+  }
+
+  @Override
+  public ConversionService getConversionService() {
+    return conversionService;
+  }
+
+  /**
+   * Set {@link ConversionService}. Optionally autowired from application context. if nothing set,
+   * then nothing used.
+   *
+   * @param conversionService conversionService
+   */
+  @Autowired(required = false)
+  public void setConversionService(ConversionService conversionService) {
+    Preconditions.checkArgument(conversionService != null, "conversionService required");
+    this.conversionService = conversionService;
+  }
+
+  @Override
+  public StringIdGenerator getStringIdGenerator() {
+    return stringIdGenerator;
+  }
+
+  /**
+   * Set {@link StringIdGenerator}. Required only when rowClass implements {@link HasUuid}. If
+   * nothing set, then {@link StringIdGeneratorUuidImpl} will be used.
+   *
+   * @param stringIdGenerator stringIdGenerator
+   */
+  public void setStringIdGenerator(StringIdGenerator stringIdGenerator) {
+    Preconditions.checkState(rowClass != null, "please set rowClass before callign this method");
+    Preconditions.checkArgument(
+        !HasUuid.class.isAssignableFrom(rowClass) || stringIdGenerator != null,
+        "stringIdGenerator required");
+    this.stringIdGenerator = stringIdGenerator;
+  }
+
+  @Override
+  public DaoExceptionTranslator getDaoExceptionTranslator() {
+    return daoExceptionTranslator;
+  }
+
+  /**
+   * Set {@link DaoExceptionTranslator}. Optionally autowired from application context. if nothing
+   * set, then default {@link DaoExceptionTranslatorMySqlImpl} will be used
+   *
+   * @param daoExceptionTranslator daoExceptionTranslator
+   */
+  @Autowired(required = false)
+  public void setDaoExceptionTranslator(DaoExceptionTranslator daoExceptionTranslator) {
+    Preconditions.checkArgument(daoExceptionTranslator != null, "daoExceptionTranslator required");
+    this.daoExceptionTranslator = daoExceptionTranslator;
+  }
+
+  @Override
+  public NowResolver getNowResolver() {
+    return nowResolver;
+  }
+
+  /**
+   * Set {@link NowResolver}. This is required only when Row class implements {@link HasTimestamps}.
+   * If nothing set, then default {@link NowResolverImpl} will be used
+   *
+   * @param nowResolver nowResolver
+   */
+  @Autowired(required = false)
+  public void setNowResolver(NowResolver nowResolver) {
+    Preconditions.checkState(rowClass != null, "please set rowClass before callign this method");
+    Preconditions.checkArgument(
+        !HasTimestamps.class.isAssignableFrom(rowClass) || nowResolver != null,
+        "nowResolver required");
+    this.nowResolver = nowResolver;
   }
 }

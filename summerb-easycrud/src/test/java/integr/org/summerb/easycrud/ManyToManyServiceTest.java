@@ -75,12 +75,12 @@ public class ManyToManyServiceTest {
   public void testAddReferenceeExpectFoundAfterAddition() throws Exception {
     TestDto2 d2i1 = new TestDto2();
     d2i1.setEnv("required");
-    d2i1.setLinkToFullDonwload("required");
+    d2i1.setLinkToFullDownload("required");
     d2i1 = testDto2ServiceBasicAuth.create(d2i1);
 
     TestDto1 d3i1 = new TestDto1();
     d3i1.setEnv("required");
-    d3i1.setLinkToFullDonwload("required");
+    d3i1.setLinkToFullDownload("required");
     d3i1 = testDto1Service.create(d3i1);
 
     m2mService.addReferencee(d2i1.getId(), d3i1.getId());
@@ -93,7 +93,7 @@ public class ManyToManyServiceTest {
     // add another
     TestDto1 d3i2 = new TestDto1();
     d3i2.setEnv("required");
-    d3i2.setLinkToFullDonwload("required");
+    d3i2.setLinkToFullDownload("required");
     d3i2 = testDto1Service.create(d3i2);
     m2mService.addReferencee(d2i1.getId(), d3i2.getId());
     ree = m2mService.findReferenceeByReferencer(d2i1.getId());
@@ -105,12 +105,12 @@ public class ManyToManyServiceTest {
   public void testAddReferenceeExpectNaeIfNotAllowedToUpdateSrc() throws Exception {
     TestDto2 d2i1n = new TestDto2();
     d2i1n.setEnv("throwNaeOnUpdate");
-    d2i1n.setLinkToFullDonwload("required");
+    d2i1n.setLinkToFullDownload("required");
     TestDto2 d2i1 = testDto2ServiceBasicAuth.create(d2i1n);
 
     TestDto1 d3i1n = new TestDto1();
     d3i1n.setEnv("required");
-    d3i1n.setLinkToFullDonwload("required");
+    d3i1n.setLinkToFullDownload("required");
     TestDto1 d3i1 = testDto1Service.create(d3i1n);
 
     assertThrows(
@@ -121,24 +121,24 @@ public class ManyToManyServiceTest {
   public void testAddReferenceeExpectMultipleFoundAfterAddition() throws Exception {
     TestDto2 d2i1 = new TestDto2();
     d2i1.setEnv("required");
-    d2i1.setLinkToFullDonwload("required");
+    d2i1.setLinkToFullDownload("required");
     d2i1 = testDto2ServiceBasicAuth.create(d2i1);
     TestDto2 d2i2 = new TestDto2();
     d2i2.setEnv("required");
-    d2i2.setLinkToFullDonwload("required");
+    d2i2.setLinkToFullDownload("required");
     d2i2 = testDto2ServiceBasicAuth.create(d2i2);
 
     TestDto1 d3i1 = new TestDto1();
     d3i1.setEnv("required");
-    d3i1.setLinkToFullDonwload("required");
+    d3i1.setLinkToFullDownload("required");
     d3i1 = testDto1Service.create(d3i1);
     TestDto1 d3i2 = new TestDto1();
     d3i2.setEnv("required");
-    d3i2.setLinkToFullDonwload("required");
+    d3i2.setLinkToFullDownload("required");
     d3i2 = testDto1Service.create(d3i2);
     TestDto1 d3i3 = new TestDto1();
     d3i3.setEnv("required");
-    d3i3.setLinkToFullDonwload("required");
+    d3i3.setLinkToFullDownload("required");
     d3i3 = testDto1Service.create(d3i3);
 
     m2mService.addReferencee(d2i1.getId(), d3i1.getId());
@@ -168,16 +168,16 @@ public class ManyToManyServiceTest {
   public void testAddReferenceeExpectGracefullResponseIfReferencesNotFound() throws Exception {
     TestDto2 d2i1 = new TestDto2();
     d2i1.setEnv("required");
-    d2i1.setLinkToFullDonwload("required");
+    d2i1.setLinkToFullDownload("required");
     d2i1 = testDto2ServiceBasicAuth.create(d2i1);
     TestDto2 d2i2 = new TestDto2();
     d2i2.setEnv("required");
-    d2i2.setLinkToFullDonwload("required");
+    d2i2.setLinkToFullDownload("required");
     d2i2 = testDto2ServiceBasicAuth.create(d2i2);
 
     TestDto1 d3i1 = new TestDto1();
     d3i1.setEnv("required");
-    d3i1.setLinkToFullDonwload("required");
+    d3i1.setLinkToFullDownload("required");
     d3i1 = testDto1Service.create(d3i1);
 
     m2mService.addReferencee(d2i1.getId(), d3i1.getId());
@@ -198,12 +198,12 @@ public class ManyToManyServiceTest {
   public void testAddReferenceeExpectNotFoundAfterDeleted() throws Exception {
     TestDto2 d2i1 = new TestDto2();
     d2i1.setEnv("required");
-    d2i1.setLinkToFullDonwload("required");
+    d2i1.setLinkToFullDownload("required");
     d2i1 = testDto2ServiceBasicAuth.create(d2i1);
 
     TestDto1 d3i1 = new TestDto1();
     d3i1.setEnv("required");
-    d3i1.setLinkToFullDonwload("required");
+    d3i1.setLinkToFullDownload("required");
     d3i1 = testDto1Service.create(d3i1);
 
     m2mService.addReferencee(d2i1.getId(), d3i1.getId());

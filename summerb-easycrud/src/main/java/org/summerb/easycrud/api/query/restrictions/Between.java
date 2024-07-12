@@ -5,8 +5,8 @@ import org.summerb.easycrud.api.query.restrictions.base.NegateableRestriction;
 import com.google.common.base.Preconditions;
 
 public class Between extends NegateableRestriction<Between> {
-  private Object lowerBoundary;
-  private Object upperBoundary;
+  protected Object lowerBoundary;
+  protected Object upperBoundary;
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   public Between(Object lowerBoundary, Object upperBoundary) {

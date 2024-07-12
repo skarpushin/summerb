@@ -6,7 +6,7 @@ import com.google.common.base.Preconditions;
 
 public class Equals extends NegateableRestriction<Equals> {
 
-  private Object value;
+  protected Object value;
 
   public Equals(Object value) {
     Preconditions.checkArgument(value != null, "value required");

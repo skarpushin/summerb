@@ -8,7 +8,7 @@ import com.google.common.base.Preconditions;
 
 public class DisjunctionCondition extends Condition {
 
-  private List<? extends QueryConditions> queries;
+  protected List<? extends QueryConditions> queries;
 
   public DisjunctionCondition(List<? extends QueryConditions> disjunctions) {
     Preconditions.checkArgument(

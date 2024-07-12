@@ -15,8 +15,11 @@
  ******************************************************************************/
 package org.summerb.easycrud.scaffold.impl;
 
+import com.google.common.base.Preconditions;
+import java.lang.reflect.Proxy;
 import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.api.row.HasId;
+import org.summerb.easycrud.impl.dao.mysql.EasyCrudDaoInjections;
 import org.summerb.easycrud.scaffold.api.EasyCrudServiceProxyFactory;
 import org.summerb.easycrud.scaffold.api.ScaffoldedMethodFactory;
 
@@ -28,10 +31,24 @@ public class EasyCrudServiceProxyFactoryImpl implements EasyCrudServiceProxyFact
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   public <TId, TDto extends HasId<TId>, TService extends EasyCrudService<TId, TDto>>
       TService createProxy(
-          Class<TService> serviceInterface, EasyCrudService<TId, TDto> actualImpl) {
-    return EasyCrudServiceScaffoldedImpl.createImpl(
-        serviceInterface, actualImpl, scaffoldedMethodFactory);
+          Class<TService> serviceInterface,
+          EasyCrudService<TId, TDto> service,
+          EasyCrudDaoInjections<TId, TDto> optionalDao) {
+
+    Preconditions.checkArgument(serviceInterface != null, "interfaceType required");
+    Preconditions.checkArgument(service != null, "service required");
+
+    ClassLoader cl = serviceInterface.getClassLoader();
+    Class<?>[] target = new Class<?>[] {serviceInterface};
+    EasyCrudServiceScaffoldedImpl proxyImpl =
+        new EasyCrudServiceScaffoldedImpl(
+            scaffoldedMethodFactory,
+            serviceInterface,
+            (EasyCrudService<?, HasId<?>>) service,
+            (EasyCrudDaoInjections<?, HasId<?>>) optionalDao);
+    return (TService) Proxy.newProxyInstance(cl, target, proxyImpl);
   }
 }

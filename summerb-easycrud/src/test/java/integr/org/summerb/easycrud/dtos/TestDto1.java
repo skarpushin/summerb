@@ -39,8 +39,8 @@ public class TestDto1 implements HasUuid, HasAuthor, HasTimestamps, Serializable
   private long modifiedAt;
   private String createdBy;
   private String modifiedBy;
-  private String linkToFullDonwload;
-  private String linkToPatchToNextVersion;
+  private String linkToFullDownload;
+  private TestEnumFieldType linkToPatchToNextVersion;
 
   @Override
   public String getId() {
@@ -124,19 +124,19 @@ public class TestDto1 implements HasUuid, HasAuthor, HasTimestamps, Serializable
     this.modifiedBy = modifiedBy;
   }
 
-  public String getLinkToFullDonwload() {
-    return linkToFullDonwload;
+  public String getLinkToFullDownload() {
+    return linkToFullDownload;
   }
 
-  public void setLinkToFullDonwload(String linkToFullDonwload) {
-    this.linkToFullDonwload = linkToFullDonwload;
+  public void setLinkToFullDownload(String linkToFullDownload) {
+    this.linkToFullDownload = linkToFullDownload;
   }
 
-  public String getLinkToPatchToNextVersion() {
+  public TestEnumFieldType getLinkToPatchToNextVersion() {
     return linkToPatchToNextVersion;
   }
 
-  public void setLinkToPatchToNextVersion(String linkToPatchToNextVersion) {
+  public void setLinkToPatchToNextVersion(TestEnumFieldType linkToPatchToNextVersion) {
     this.linkToPatchToNextVersion = linkToPatchToNextVersion;
   }
 }
