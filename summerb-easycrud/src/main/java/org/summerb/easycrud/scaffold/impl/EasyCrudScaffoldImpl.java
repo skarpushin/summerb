@@ -28,6 +28,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.util.StringUtils;
 import org.summerb.easycrud.api.DaoExceptionTranslator;
 import org.summerb.easycrud.api.EasyCrudDao;
 import org.summerb.easycrud.api.EasyCrudExceptionStrategy;
@@ -246,6 +247,38 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
 
       return getEasyCrudServiceProxyFactory()
           .createProxy(serviceInterface, actualService, daoInjections);
+    } catch (Throwable t) {
+      throw new RuntimeException("Failed to scaffold EasyCrudService for " + serviceInterface, t);
+    }
+  }
+
+  // TODO: Test this
+  @SuppressWarnings("unchecked")
+  @Override
+  public <
+          TId,
+          TRow extends HasId<TId>,
+          TService extends EasyCrudService<TId, TRow>,
+          TServiceImpl extends EasyCrudServiceImpl<TId, TRow, EasyCrudDao<TId, TRow>>>
+      TService fromService(
+          Class<TService> serviceInterface,
+          TServiceImpl serviceImpl,
+          String tableName,
+          Object... injections) {
+    try {
+      Preconditions.checkNotNull(serviceInterface, "serviceInterface required");
+      Preconditions.checkNotNull(serviceImpl, "serviceImpl must not be null");
+      Preconditions.checkNotNull(serviceImpl.getRowClass(), "serviceImplRowClass must not be null");
+      Preconditions.checkArgument(StringUtils.hasText(tableName), "tableName required");
+
+      EasyCrudDao<TId, TRow> dao = buildDao(serviceImpl.getRowClass(), tableName, injections);
+
+      serviceImpl.setDao(dao);
+      beanFactory.autowireBean(serviceImpl);
+      setServiceInjectionsIfAny(serviceImpl, injections);
+      serviceImpl.afterPropertiesSet();
+
+      return (TService) serviceImpl;
     } catch (Throwable t) {
       throw new RuntimeException("Failed to scaffold EasyCrudService for " + serviceInterface, t);
     }

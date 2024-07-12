@@ -268,8 +268,7 @@ public abstract class GenericCrudServiceTestTemplate {
   public void testFindByQueryString() {
     createTestData();
 
-    TestDto1 result =
-        getTestDto1Service().findOneByQuery(Query.n(TestDto1.class).eq("env", "env-UAT"));
+    TestDto1 result = getTestDto1Service().query().eq("env", "env-UAT").findOne();
     Assertions.assertNotNull(result);
     Assertions.assertEquals("link-to-full-download123", result.getLinkToFullDownload());
 

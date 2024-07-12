@@ -6,6 +6,8 @@ import integr.org.summerb.easycrud.dtos.TestDto2;
 import integr.org.summerb.easycrud.dtos.TestDto3;
 import integr.org.summerb.easycrud.testbeans.TestDto1Service;
 import integr.org.summerb.easycrud.testbeans.TestDto2PerRowAuthImpl;
+import integr.org.summerb.easycrud.testbeans.TestDto2Service;
+import integr.org.summerb.easycrud.testbeans.TestDto2ServiceImpl;
 import integr.org.summerb.easycrud.utils.CurrentUserResolverTestImpl;
 import integr.org.summerb.easycrud.utils.EasyCrudPerRowAuthStrategyTestImpl;
 import java.util.Arrays;
@@ -20,12 +22,14 @@ import org.summerb.easycrud.api.EasyCrudDao;
 import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.api.EasyCrudServiceResolver;
 import org.summerb.easycrud.api.QueryToSql;
+import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.impl.EasyCrudServiceImpl;
 import org.summerb.easycrud.impl.EasyCrudServiceResolverSpringImpl;
 import org.summerb.easycrud.impl.auth.EascyCrudAuthorizationPerRowStrategy;
 import org.summerb.easycrud.impl.dao.mysql.EasyCrudDaoMySqlImpl;
 import org.summerb.easycrud.impl.dao.postgres.DaoExceptionTranslatorPostgresImpl;
 import org.summerb.easycrud.impl.dao.postgres.QueryToSqlPostgresImpl;
+import org.summerb.easycrud.impl.query.QueryFactoryImpl;
 import org.summerb.easycrud.impl.relations.EasyCrudM2mDaoMySqlImpl;
 import org.summerb.easycrud.impl.relations.EasyCrudM2mServiceImpl;
 import org.summerb.easycrud.impl.relations.M2mAuthorizationWireTapImpl;
@@ -35,6 +39,9 @@ import org.summerb.easycrud.scaffold.api.EasyCrudScaffold;
 import org.summerb.easycrud.scaffold.api.ScaffoldedMethodFactory;
 import org.summerb.easycrud.scaffold.impl.EasyCrudScaffoldImpl;
 import org.summerb.easycrud.scaffold.impl.ScaffoldedMethodFactoryMySqlImpl;
+import org.summerb.methodCapturers.MethodCapturerProxyClassFactoryImpl;
+import org.summerb.methodCapturers.PropertyNameResolverFactory;
+import org.summerb.methodCapturers.PropertyNameResolverFactoryImpl;
 import org.summerb.security.api.CurrentUserUuidResolver;
 
 @Configuration
@@ -60,6 +67,14 @@ public class EasyCrudIntegrTestConfig {
   @Bean
   EasyCrudWireTapEventBusImpl<?> easyCrudWireTapEventBus(EventBus eventBus) {
     return new EasyCrudWireTapEventBusImpl<>(eventBus);
+  }
+
+  @Bean
+  PropertyNameResolverFactory propertyNameResolverFactory() {
+    PropertyNameResolverFactoryImpl ret =
+        new PropertyNameResolverFactoryImpl(new MethodCapturerProxyClassFactoryImpl());
+    Query.FACTORY = new QueryFactoryImpl(ret);
+    return ret;
   }
 
   @Bean
@@ -204,5 +219,11 @@ public class EasyCrudIntegrTestConfig {
   EasyCrudService<Long, TestDto2> testDto2ServiceScaffolded(EasyCrudScaffold easyCrudScaffold) {
     return easyCrudScaffold.fromRowClass(
         TestDto2.class, TestDto2.class.getCanonicalName(), "forms_test_2");
+  }
+
+  @Bean
+  TestDto2Service testDto2ServiceCustom(EasyCrudScaffold easyCrudScaffold) {
+    return easyCrudScaffold.fromService(
+        TestDto2Service.class, new TestDto2ServiceImpl(), "forms_test_2");
   }
 }

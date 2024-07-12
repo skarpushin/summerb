@@ -83,14 +83,21 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
   protected PropertyNameResolver<TRow> nameResolver;
 
   /**
-   * Constructor for cases when sub-class wants to take full responsibility on instantiation
-   * process.
+   * Constructor for cases when subclass wants to take full responsibility on instantiation process.
    *
-   * @deprecated when using this constructor please make sure you're properly initializing required
-   *     dependencies: {@link #dao} and {@link #rowClass}
+   * <p>When using this constructor please make sure you're properly initializing required
+   * dependencies: {@link #dao} and {@link #rowClass}
    */
-  @Deprecated
   protected EasyCrudServiceImpl() {}
+
+  /**
+   * This is also for subclasses, mostly for cases when used in conunction with {@link
+   * org.summerb.easycrud.scaffold.api.EasyCrudScaffold#fromService(Class, EasyCrudServiceImpl,
+   * String, Object...)}
+   */
+  protected EasyCrudServiceImpl(Class<TRow> rowClass) {
+    this.rowClass = rowClass;
+  }
 
   public EasyCrudServiceImpl(TDao dao, Class<TRow> rowClass) {
     this.dao = dao;
@@ -607,5 +614,9 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
       nameResolver = propertyNameResolverFactory.getResolver(rowClass);
     }
     return nameResolver;
+  }
+
+  public void setDao(TDao dao) {
+    this.dao = dao;
   }
 }

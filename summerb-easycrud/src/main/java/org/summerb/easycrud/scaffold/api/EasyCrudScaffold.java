@@ -15,8 +15,10 @@
  ******************************************************************************/
 package org.summerb.easycrud.scaffold.api;
 
+import org.summerb.easycrud.api.EasyCrudDao;
 import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.api.row.HasId;
+import org.summerb.easycrud.impl.EasyCrudServiceImpl;
 
 /**
  * This gives you a quick start for EasyCrud back-end functionality. It will bootstrap Dao and
@@ -37,7 +39,7 @@ public interface EasyCrudScaffold {
    *
    * @param serviceInterface custom service interface
    * @param messageCode entity message code
-   * @param tableName name of the datble in the database
+   * @param tableName name of the table in the database
    * @param injections optional list of injections you want to make into service. Scaffolder will
    *     automatically detect supported types and will wrap it into wire taps if needed (or other
    *     way, depending on impl)
@@ -48,6 +50,34 @@ public interface EasyCrudScaffold {
    */
   <TId, TRow extends HasId<TId>, TService extends EasyCrudService<TId, TRow>> TService fromService(
       Class<TService> serviceInterface, String messageCode, String tableName, Object... injections);
+
+  /**
+   * Initialize given impl of a service with scaffolded DAO. This is useful in case when you want to
+   * add own methods to service, but do not want/need to deal with DAO specifics
+   *
+   * @param serviceInterface service interface
+   * @param serviceImpl implementation. Expected to be partially initialized (namely - rowClass is
+   *     set, but afterPropertiesSet() is not called yet)
+   * @param tableName name of the table in the database
+   * @param injections optional list of injections you want to make into service. Scaffolder will
+   *     automatically detect supported types and will wrap it into wire taps if needed (or other
+   *     way, depending on impl)
+   * @return implementation itself cast to given interface
+   * @param <TId> type of id
+   * @param <TRow> row type
+   * @param <TService> service type
+   * @param <TServiceImpl> type of the service impl
+   */
+  <
+          TId,
+          TRow extends HasId<TId>,
+          TService extends EasyCrudService<TId, TRow>,
+          TServiceImpl extends EasyCrudServiceImpl<TId, TRow, EasyCrudDao<TId, TRow>>>
+      TService fromService(
+          Class<TService> serviceInterface,
+          TServiceImpl serviceImpl,
+          String tableName,
+          Object... injections);
 
   /**
    * Build impl of {@link EasyCrudService} based on the provided DTO class

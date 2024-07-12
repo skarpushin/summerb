@@ -155,6 +155,11 @@ public class EasyCrudServiceWrapper<
   }
 
   @Override
+  public OrderByBuilder<TRow> orderBy(Function<TRow, ?> getter) {
+    return actual.orderBy(getter);
+  }
+
+  @Override
   public TRow getOneByQuery(QueryConditions query) {
     return actual.getOneByQuery(query);
   }

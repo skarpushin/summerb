@@ -1,7 +1,7 @@
 package org.summerb.easycrud.api.query;
 
 import org.summerb.easycrud.api.EasyCrudService;
-import org.summerb.easycrud.impl.query.QueryExFactoryImpl;
+import org.summerb.easycrud.impl.query.QueryFactoryImpl;
 import org.summerb.methodCapturers.MethodCapturerProxyClassFactoryImpl;
 import org.summerb.methodCapturers.PropertyNameResolver;
 import org.summerb.methodCapturers.PropertyNameResolverFactoryImpl;
@@ -32,7 +32,7 @@ public class Query<T> extends QueryShortcuts<T, Query<T>> {
    * configuration initialization
    */
   public static QueryFactory FACTORY =
-      new QueryExFactoryImpl(
+      new QueryFactoryImpl(
           new PropertyNameResolverFactoryImpl(new MethodCapturerProxyClassFactoryImpl()));
 
   protected final PropertyNameResolver<T> propertyNameResolver;

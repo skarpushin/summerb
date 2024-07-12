@@ -6,11 +6,11 @@ import org.summerb.methodCapturers.PropertyNameResolverFactory;
 
 import com.google.common.base.Preconditions;
 
-public class QueryExFactoryImpl implements QueryFactory {
+public class QueryFactoryImpl implements QueryFactory {
 
   protected PropertyNameResolverFactory propertyNameResolverFactory;
 
-  public QueryExFactoryImpl(PropertyNameResolverFactory propertyNameResolverFactory) {
+  public QueryFactoryImpl(PropertyNameResolverFactory propertyNameResolverFactory) {
     Preconditions.checkArgument(
         propertyNameResolverFactory != null, "propertyNameResolverFactory required");
     this.propertyNameResolverFactory = propertyNameResolverFactory;
@@ -20,7 +20,7 @@ public class QueryExFactoryImpl implements QueryFactory {
   @Override
   public <T, F extends Query<T>> F buildFor(Class<T> clazz) {
     try {
-      return (F) new Query<T>(propertyNameResolverFactory.getResolver(clazz));
+      return (F) new Query<>(propertyNameResolverFactory.getResolver(clazz));
     } catch (Exception e) {
       throw new RuntimeException("Failed to build Query for class " + clazz, e);
     }
