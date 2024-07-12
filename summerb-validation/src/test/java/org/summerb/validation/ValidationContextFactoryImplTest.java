@@ -10,8 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.summerb.methodCapturers.MethodCapturerProxyClassFactory;
 import org.summerb.methodCapturers.MethodCapturerProxyClassFactoryImpl;
-import org.summerb.methodCapturers.PropertyNameObtainerFactory;
-import org.summerb.methodCapturers.PropertyNameObtainerFactoryImpl;
+import org.summerb.methodCapturers.PropertyNameResolverFactory;
+import org.summerb.methodCapturers.PropertyNameResolverFactoryImpl;
 import org.summerb.validation.testDtos.Bean;
 
 class ValidationContextFactoryImplTest {
@@ -19,8 +19,8 @@ class ValidationContextFactoryImplTest {
   MethodCapturerProxyClassFactory methodCapturerProxyClassFactory =
       new MethodCapturerProxyClassFactoryImpl();
 
-  PropertyNameObtainerFactory propertyNameObtainerFactory =
-      new PropertyNameObtainerFactoryImpl(methodCapturerProxyClassFactory);
+  PropertyNameResolverFactory propertyNameResolverFactory =
+      new PropertyNameResolverFactoryImpl(methodCapturerProxyClassFactory);
 
   // NOTE: Other tests are not created here because same functionality is already covered by
   // ValidationContextTest -- so we only add tests that are needed to complete coverage/mutational
@@ -34,17 +34,17 @@ class ValidationContextFactoryImplTest {
         IllegalArgumentException.class, () -> new ValidationContextFactoryImpl(null, null));
 
     ValidationContext<Bean> ctx =
-        new ValidationContextFactoryImpl(propertyNameObtainerFactory, null).buildFor(new Bean());
+        new ValidationContextFactoryImpl(propertyNameResolverFactory, null).buildFor(new Bean());
 
     assertTrue(ctx.isNull(Bean::getString1));
   }
 
   @Test
   void test_buildFor_ExpectExceptionHandling() {
-    var propertyNameObtainerFactoryMock = Mockito.mock(PropertyNameObtainerFactory.class);
+    var propertyNameObtainerFactoryMock = Mockito.mock(PropertyNameResolverFactory.class);
     doThrow(new IllegalStateException("test"))
         .when(propertyNameObtainerFactoryMock)
-        .getObtainer(Bean.class);
+        .getResolver(Bean.class);
 
     ValidationContextFactoryImpl f =
         new ValidationContextFactoryImpl(propertyNameObtainerFactoryMock, null);
@@ -55,7 +55,7 @@ class ValidationContextFactoryImplTest {
 
   @Test
   void test_buildFor() {
-    var f = new ValidationContextFactoryImpl(propertyNameObtainerFactory, null);
+    var f = new ValidationContextFactoryImpl(propertyNameResolverFactory, null);
 
     // check illegal args
     assertThrows(IllegalArgumentException.class, () -> f.buildFor(null));
@@ -63,7 +63,7 @@ class ValidationContextFactoryImplTest {
     // check builder without bean
     ValidationContext<?> result = f.build();
     assertNotNull(result);
-    assertNull(result.propertyNameObtainer);
+    assertNull(result.propertyNameResolver);
     assertNull(result.bean);
     assertThrows(IllegalStateException.class, () -> result.notNull(Object::hashCode));
   }

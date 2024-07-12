@@ -15,8 +15,8 @@
  ******************************************************************************/
 package org.summerb.validation;
 
-import org.summerb.methodCapturers.PropertyNameObtainer;
-import org.summerb.methodCapturers.PropertyNameObtainerFactory;
+import org.summerb.methodCapturers.PropertyNameResolver;
+import org.summerb.methodCapturers.PropertyNameResolverFactory;
 import org.summerb.validation.jakarta.JakartaValidator;
 
 import com.google.common.base.Preconditions;
@@ -24,12 +24,12 @@ import com.google.common.base.Preconditions;
 public class ValidationContextFactoryImpl implements ValidationContextFactory {
 
   protected final JakartaValidator jakartaValidator;
-  protected final PropertyNameObtainerFactory propertyNameObtainerFactory;
+  protected final PropertyNameResolverFactory propertyNameResolverFactory;
 
   public ValidationContextFactoryImpl(
-      PropertyNameObtainerFactory propertyNameObtainerFactory, JakartaValidator jakartaValidator) {
-    Preconditions.checkArgument(propertyNameObtainerFactory != null);
-    this.propertyNameObtainerFactory = propertyNameObtainerFactory;
+          PropertyNameResolverFactory propertyNameResolverFactory, JakartaValidator jakartaValidator) {
+    Preconditions.checkArgument(propertyNameResolverFactory != null);
+    this.propertyNameResolverFactory = propertyNameResolverFactory;
     this.jakartaValidator = jakartaValidator;
   }
 
@@ -38,8 +38,8 @@ public class ValidationContextFactoryImpl implements ValidationContextFactory {
   public <T, F extends ValidationContext<T>> F buildFor(T bean) {
     Preconditions.checkArgument(bean != null);
     try {
-      PropertyNameObtainer<T> obtainer =
-          propertyNameObtainerFactory.getObtainer((Class<T>) bean.getClass());
+      PropertyNameResolver<T> obtainer =
+          propertyNameResolverFactory.getResolver((Class<T>) bean.getClass());
       return (F) new ValidationContext<T>(bean, obtainer, jakartaValidator, this);
     } catch (Exception e) {
       throw new RuntimeException("Failed to build ValidationContext for " + bean, e);

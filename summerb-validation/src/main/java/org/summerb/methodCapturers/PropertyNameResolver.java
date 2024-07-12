@@ -20,18 +20,18 @@ import java.util.function.Function;
 /**
  * Impl of this interface will be capable of the obtaining method name from method reference for
  * some <b>particular</b> POJO. If you need to obtain field names from different POJO classes, then
- * you need to obtain separate instances of {@link PropertyNameObtainer}
+ * you need to obtain separate instances of {@link PropertyNameResolver}
  *
- * <p>Specific instances are supposed to be obtained via {@link PropertyNameObtainerFactory}
+ * <p>Specific instances are supposed to be obtained via {@link PropertyNameResolverFactory}
  *
  * @author Sergey Karpushin
  * @param <T> type of the bean
  */
-public interface PropertyNameObtainer<T> {
+public interface PropertyNameResolver<T> {
 
   /**
    * @param methodReference method reference, i.e. SomePojo::getName
    * @return name of the method which is used for method reference
    */
-  String obtainFrom(Function<T, ?> methodReference);
+  String resolve(Function<T, ?> methodReference);
 }

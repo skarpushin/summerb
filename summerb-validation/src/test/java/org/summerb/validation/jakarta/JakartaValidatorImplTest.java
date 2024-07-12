@@ -52,8 +52,8 @@ import org.junit.function.ThrowingRunnable;
 import org.junit.jupiter.api.Test;
 import org.summerb.methodCapturers.MethodCapturerProxyClassFactory;
 import org.summerb.methodCapturers.MethodCapturerProxyClassFactoryImpl;
-import org.summerb.methodCapturers.PropertyNameObtainerFactory;
-import org.summerb.methodCapturers.PropertyNameObtainerFactoryImpl;
+import org.summerb.methodCapturers.PropertyNameResolverFactory;
+import org.summerb.methodCapturers.PropertyNameResolverFactoryImpl;
 import org.summerb.utils.clock.NowResolverImpl;
 import org.summerb.validation.ValidationContext;
 import org.summerb.validation.ValidationContextFactory;
@@ -102,8 +102,8 @@ public class JakartaValidatorImplTest {
   MethodCapturerProxyClassFactory methodCapturerProxyClassFactory =
       new MethodCapturerProxyClassFactoryImpl();
 
-  PropertyNameObtainerFactory propertyNameObtainerFactory =
-      new PropertyNameObtainerFactoryImpl(methodCapturerProxyClassFactory);
+  PropertyNameResolverFactory propertyNameResolverFactory =
+      new PropertyNameResolverFactoryImpl(methodCapturerProxyClassFactory);
 
   JakartaAnnotationsProcessorsRegistry jakartaAnnotationsProcessorsRegistry =
       new JakartaAnnotationsProcessorsRegistryPackageScanImpl();
@@ -114,7 +114,7 @@ public class JakartaValidatorImplTest {
 
   ValidationContextFactory validationContextFactory =
       new ValidationContextFactoryImpl(
-          propertyNameObtainerFactory, new JakartaValidatorImpl(jakartaValidationBeanProcessor));
+              propertyNameResolverFactory, new JakartaValidatorImpl(jakartaValidationBeanProcessor));
 
   protected <T extends Annotation> T annotation(
       Class<?> clazz, String field, Class<T> annotationClass) throws NoSuchFieldException {

@@ -8,33 +8,33 @@ import java.lang.reflect.Method;
 import org.junit.jupiter.api.Test;
 import org.summerb.validation.testDtos.Bean;
 
-class PropertyNameObtainerImplTest {
+class PropertyNameResolverImplTest {
 
   MethodCapturerProxyClassFactory methodCapturerProxyClassFactory =
       new MethodCapturerProxyClassFactoryImpl();
 
   @Test
   void test_constructor() {
-    assertThrows(IllegalArgumentException.class, () -> new PropertyNameObtainerImpl<Bean>(null));
+    assertThrows(IllegalArgumentException.class, () -> new PropertyNameResolverImpl<Bean>(null));
     assertThrows(
-        IllegalArgumentException.class, () -> new PropertyNameObtainerCachedImpl<Bean>(null));
-    assertThrows(IllegalArgumentException.class, () -> new PropertyNameObtainerFactoryImpl(null));
+        IllegalArgumentException.class, () -> new PropertyNameResolverCachedImpl<Bean>(null));
+    assertThrows(IllegalArgumentException.class, () -> new PropertyNameResolverFactoryImpl(null));
   }
 
   @Test
   void test_iae() {
     assertThrows(
         IllegalArgumentException.class,
-        () -> PropertyNameObtainerImpl.getPropertyNameFromGetterName(null));
+        () -> PropertyNameResolverImpl.getPropertyNameFromGetterName(null));
 
     var f =
-        new PropertyNameObtainerImpl<Bean>(
+        new PropertyNameResolverImpl<Bean>(
             () -> methodCapturerProxyClassFactory.buildProxyFor(Bean.class));
-    assertThrows(IllegalArgumentException.class, () -> f.obtainFrom(null));
+    assertThrows(IllegalArgumentException.class, () -> f.resolve(null));
   }
 
   @Test
-  void test_obtainFrom() {
+  void test_resolve() {
     MethodCapturer methodCapturer = methodCapturerProxyClassFactory.buildProxyFor(Bean.class);
 
     // simulate previous method acquisition
@@ -43,12 +43,12 @@ class PropertyNameObtainerImplTest {
     assertEquals(method1, methodCapturer.get__Method());
 
     // now simulate failure - expect method name was not captured
-    var f = new PropertyNameObtainerImpl<Bean>(() -> methodCapturer);
+    var f = new PropertyNameResolverImpl<Bean>(() -> methodCapturer);
     IllegalStateException ex =
         assertThrows(
             IllegalStateException.class,
             () ->
-                f.obtainFrom(
+                f.resolve(
                     x -> {
                       throw new IllegalStateException("test");
                     }));
@@ -58,19 +58,19 @@ class PropertyNameObtainerImplTest {
     assertThrows(
         IllegalArgumentException.class,
         () ->
-            f.obtainFrom(
+            f.resolve(
                 x -> {
                   x.getWrongMethod(1);
                   return null;
                 }));
 
     // now simulate usage of a method with non-getter name
-    assertThrows(IllegalArgumentException.class, () -> f.obtainFrom(Bean::toString));
+    assertThrows(IllegalArgumentException.class, () -> f.resolve(Bean::toString));
 
     // valid - get
-    assertEquals("iValue1", f.obtainFrom(Bean::getiValue1));
+    assertEquals("iValue1", f.resolve(Bean::getiValue1));
 
     // valid - is
-    assertEquals("bValue1", f.obtainFrom(Bean::isbValue1));
+    assertEquals("bValue1", f.resolve(Bean::isbValue1));
   }
 }

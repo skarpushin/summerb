@@ -19,8 +19,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.summerb.methodCapturers.MethodCapturerProxyClassFactory;
 import org.summerb.methodCapturers.MethodCapturerProxyClassFactoryImpl;
-import org.summerb.methodCapturers.PropertyNameObtainerFactory;
-import org.summerb.methodCapturers.PropertyNameObtainerFactoryImpl;
+import org.summerb.methodCapturers.PropertyNameResolverFactory;
+import org.summerb.methodCapturers.PropertyNameResolverFactoryImpl;
 import org.summerb.validation.jakarta.JakartaAnnotationsProcessorsRegistry;
 import org.summerb.validation.jakarta.JakartaAnnotationsProcessorsRegistryPackageScanImpl;
 import org.summerb.validation.jakarta.JakartaValidationBeanProcessor;
@@ -63,14 +63,14 @@ public class ValidationContextConfig {
   }
 
   @Bean
-  PropertyNameObtainerFactory propertyNameObtainerFactory(
+  PropertyNameResolverFactory propertyNameObtainerFactory(
       MethodCapturerProxyClassFactory methodCapturerProxyClassFactory) {
-    return new PropertyNameObtainerFactoryImpl(methodCapturerProxyClassFactory);
+    return new PropertyNameResolverFactoryImpl(methodCapturerProxyClassFactory);
   }
 
   @Bean
   ValidationContextFactory validationContextFactory(
-      JakartaValidator jakartaValidator, PropertyNameObtainerFactory propertyNameObtainerFactory) {
-    return new ValidationContextFactoryImpl(propertyNameObtainerFactory, jakartaValidator);
+      JakartaValidator jakartaValidator, PropertyNameResolverFactory propertyNameResolverFactory) {
+    return new ValidationContextFactoryImpl(propertyNameResolverFactory, jakartaValidator);
   }
 }

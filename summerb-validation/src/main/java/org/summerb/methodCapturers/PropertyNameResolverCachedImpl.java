@@ -22,19 +22,19 @@ import com.google.common.cache.LoadingCache;
 import java.util.function.Function;
 
 /**
- * Cached impl of {@link PropertyNameObtainer}
+ * Cached impl of {@link PropertyNameResolver}
  *
  * <p>Lambda that is created is tied to a place where it was created, so when same code is executed
  * again and again it will reuse same lambda, which means we can use it to cache results.
  *
  * @param <T> type of bean for which we can retrieve propertyNames from method references
  */
-public class PropertyNameObtainerCachedImpl<T> implements PropertyNameObtainer<T> {
-  protected final PropertyNameObtainer<T> actual;
+public class PropertyNameResolverCachedImpl<T> implements PropertyNameResolver<T> {
+  protected final PropertyNameResolver<T> actual;
 
   protected LoadingCache<Function<?, ?>, String> cache;
 
-  public PropertyNameObtainerCachedImpl(PropertyNameObtainer<T> actual) {
+  public PropertyNameResolverCachedImpl(PropertyNameResolver<T> actual) {
     Preconditions.checkArgument(actual != null, "actual required");
     this.actual = actual;
     cache = CacheBuilder.newBuilder().build(loader);
@@ -45,12 +45,12 @@ public class PropertyNameObtainerCachedImpl<T> implements PropertyNameObtainer<T
         @SuppressWarnings("unchecked")
         @Override
         public String load(Function<?, ?> key) {
-          return actual.obtainFrom((Function<T, ?>) key);
+          return actual.resolve((Function<T, ?>) key);
         }
       };
 
   @Override
-  public String obtainFrom(Function<T, ?> methodReference) {
+  public String resolve(Function<T, ?> methodReference) {
     return cache.getUnchecked(methodReference);
   }
 }

@@ -18,21 +18,21 @@ import org.summerb.easycrud.api.query.restrictions.StringLengthLess;
 import org.summerb.easycrud.api.query.restrictions.base.Restriction;
 import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.api.row.tools.EasyCrudDtoUtils;
-import org.summerb.methodCapturers.PropertyNameObtainer;
+import org.summerb.methodCapturers.PropertyNameResolver;
 
 public class QueryShortcuts<TRow, TypeOfThis extends QueryShortcuts<TRow, TypeOfThis>>
     extends QueryConditions {
 
-  protected final PropertyNameObtainer<TRow> propertyNameObtainer;
+  protected final PropertyNameResolver<TRow> propertyNameResolver;
 
   public QueryShortcuts() {
-    this.propertyNameObtainer = null;
+    this.propertyNameResolver = null;
   }
 
-  public QueryShortcuts(PropertyNameObtainer<TRow> propertyNameObtainer) {
+  public QueryShortcuts(PropertyNameResolver<TRow> propertyNameResolver) {
     super();
-    Preconditions.checkArgument(propertyNameObtainer != null, "propertyNameObtainer required");
-    this.propertyNameObtainer = propertyNameObtainer;
+    Preconditions.checkArgument(propertyNameResolver != null, "propertyNameResolver required");
+    this.propertyNameResolver = propertyNameResolver;
   }
 
   @SuppressWarnings("unchecked")
@@ -59,9 +59,9 @@ public class QueryShortcuts<TRow, TypeOfThis extends QueryShortcuts<TRow, TypeOf
    * @return field name
    */
   public String name(Function<TRow, ?> getter) {
-    Preconditions.checkState(propertyNameObtainer != null, "propertyNameObtainer is not provided");
+    Preconditions.checkState(propertyNameResolver != null, "propertyNameResolver is not provided");
     Preconditions.checkArgument(getter != null, "getter required");
-    return propertyNameObtainer.obtainFrom(getter);
+    return propertyNameResolver.resolve(getter);
   }
 
   @SuppressWarnings("unchecked")

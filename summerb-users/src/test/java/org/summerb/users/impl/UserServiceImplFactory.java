@@ -23,8 +23,8 @@ import org.mockito.Mockito;
 import org.springframework.dao.DuplicateKeyException;
 import org.summerb.methodCapturers.MethodCapturerProxyClassFactory;
 import org.summerb.methodCapturers.MethodCapturerProxyClassFactoryImpl;
-import org.summerb.methodCapturers.PropertyNameObtainerFactory;
-import org.summerb.methodCapturers.PropertyNameObtainerFactoryImpl;
+import org.summerb.methodCapturers.PropertyNameResolverFactory;
+import org.summerb.methodCapturers.PropertyNameResolverFactoryImpl;
 import org.summerb.users.api.dto.User;
 import org.summerb.users.api.dto.UserFactory;
 import org.summerb.users.impl.dao.UserDao;
@@ -39,11 +39,11 @@ public class UserServiceImplFactory {
   public static MethodCapturerProxyClassFactory methodCapturerProxyClassFactory =
       new MethodCapturerProxyClassFactoryImpl();
 
-  public static PropertyNameObtainerFactory propertyNameObtainerFactory =
-      new PropertyNameObtainerFactoryImpl(methodCapturerProxyClassFactory);
+  public static PropertyNameResolverFactory propertyNameResolverFactory =
+      new PropertyNameResolverFactoryImpl(methodCapturerProxyClassFactory);
 
   public static ValidationContextFactory validationContextFactory =
-      new ValidationContextFactoryImpl(propertyNameObtainerFactory, null);
+      new ValidationContextFactoryImpl(propertyNameResolverFactory, null);
 
   public static UserServiceImpl createUsersServiceImpl() {
     UserDao userDao = Mockito.mock(UserDao.class);

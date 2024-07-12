@@ -22,7 +22,7 @@ package org.summerb.methodCapturers;
  *
  * @author Sergey Karpushin
  */
-public interface PropertyNameObtainerFactory {
+public interface PropertyNameResolverFactory {
 
-  <T> PropertyNameObtainer<T> getObtainer(Class<T> beanClass);
+  <T> PropertyNameResolver<T> getResolver(Class<T> beanClass);
 }

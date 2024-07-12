@@ -12,18 +12,18 @@ class MethodCapturingInterceptorTest {
   @Test
   void test() {
     var f =
-        new PropertyNameObtainerImpl<RowWithAllTypes>(
+        new PropertyNameResolverImpl<RowWithAllTypes>(
             () -> methodCapturerProxyClassFactory.buildProxyFor(RowWithAllTypes.class));
 
-    assertEquals("booleanValue", f.obtainFrom(RowWithAllTypes::isBooleanValue));
-    assertEquals("byteValue", f.obtainFrom(RowWithAllTypes::getByteValue));
-    assertEquals("charValue", f.obtainFrom(RowWithAllTypes::getCharValue));
-    assertEquals("shortValue", f.obtainFrom(RowWithAllTypes::getShortValue));
-    assertEquals("intValue", f.obtainFrom(RowWithAllTypes::getIntValue));
-    assertEquals("longValue", f.obtainFrom(RowWithAllTypes::getLongValue));
-    assertEquals("floatValue", f.obtainFrom(RowWithAllTypes::getFloatValue));
-    assertEquals("doubleValue", f.obtainFrom(RowWithAllTypes::getDoubleValue));
-    assertEquals("stringValue", f.obtainFrom(RowWithAllTypes::getStringValue));
+    assertEquals("booleanValue", f.resolve(RowWithAllTypes::isBooleanValue));
+    assertEquals("byteValue", f.resolve(RowWithAllTypes::getByteValue));
+    assertEquals("charValue", f.resolve(RowWithAllTypes::getCharValue));
+    assertEquals("shortValue", f.resolve(RowWithAllTypes::getShortValue));
+    assertEquals("intValue", f.resolve(RowWithAllTypes::getIntValue));
+    assertEquals("longValue", f.resolve(RowWithAllTypes::getLongValue));
+    assertEquals("floatValue", f.resolve(RowWithAllTypes::getFloatValue));
+    assertEquals("doubleValue", f.resolve(RowWithAllTypes::getDoubleValue));
+    assertEquals("stringValue", f.resolve(RowWithAllTypes::getStringValue));
   }
 
   public static class RowWithAllTypes {

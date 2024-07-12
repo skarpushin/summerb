@@ -2,25 +2,25 @@ package org.summerb.easycrud.impl.query;
 
 import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.api.query.QueryFactory;
-import org.summerb.methodCapturers.PropertyNameObtainerFactory;
+import org.summerb.methodCapturers.PropertyNameResolverFactory;
 
 import com.google.common.base.Preconditions;
 
 public class QueryExFactoryImpl implements QueryFactory {
 
-  protected PropertyNameObtainerFactory propertyNameObtainerFactory;
+  protected PropertyNameResolverFactory propertyNameResolverFactory;
 
-  public QueryExFactoryImpl(PropertyNameObtainerFactory propertyNameObtainerFactory) {
+  public QueryExFactoryImpl(PropertyNameResolverFactory propertyNameResolverFactory) {
     Preconditions.checkArgument(
-        propertyNameObtainerFactory != null, "propertyNameObtainerFactory required");
-    this.propertyNameObtainerFactory = propertyNameObtainerFactory;
+        propertyNameResolverFactory != null, "propertyNameResolverFactory required");
+    this.propertyNameResolverFactory = propertyNameResolverFactory;
   }
 
   @SuppressWarnings({"unchecked"})
   @Override
   public <T, F extends Query<T>> F buildFor(Class<T> clazz) {
     try {
-      return (F) new Query<T>(propertyNameObtainerFactory.getObtainer(clazz));
+      return (F) new Query<T>(propertyNameResolverFactory.getResolver(clazz));
     } catch (Exception e) {
       throw new RuntimeException("Failed to build Query for class " + clazz, e);
     }

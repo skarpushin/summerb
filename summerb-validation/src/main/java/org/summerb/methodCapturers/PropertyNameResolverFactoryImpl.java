@@ -20,12 +20,12 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
-public class PropertyNameObtainerFactoryImpl implements PropertyNameObtainerFactory {
+public class PropertyNameResolverFactoryImpl implements PropertyNameResolverFactory {
   protected MethodCapturerProxyClassFactory methodCapturerProxyClassFactory;
-  protected LoadingCache<Class<?>, PropertyNameObtainer<?>> propertyNameObtainers;
-  protected CacheLoader<Class<?>, PropertyNameObtainer<?>> loader;
+  protected LoadingCache<Class<?>, PropertyNameResolver<?>> propertyNameObtainers;
+  protected CacheLoader<Class<?>, PropertyNameResolver<?>> loader;
 
-  public PropertyNameObtainerFactoryImpl(
+  public PropertyNameResolverFactoryImpl(
       MethodCapturerProxyClassFactory methodCapturerProxyClassFactory) {
     Preconditions.checkArgument(
         methodCapturerProxyClassFactory != null, "methodCapturerProxyClassFactory required");
@@ -35,21 +35,21 @@ public class PropertyNameObtainerFactoryImpl implements PropertyNameObtainerFact
     propertyNameObtainers = CacheBuilder.newBuilder().build(loader);
   }
 
-  protected CacheLoader<Class<?>, PropertyNameObtainer<?>> buildLoader(
+  protected CacheLoader<Class<?>, PropertyNameResolver<?>> buildLoader(
       MethodCapturerProxyClassFactory methodCapturerProxyClassFactory) {
     return new CacheLoader<>() {
       @SuppressWarnings({"unchecked", "rawtypes"})
       @Override
-      public PropertyNameObtainer<?> load(Class<?> rowClass) {
-        return new PropertyNameObtainerCachedImpl(
-            new PropertyNameObtainerImpl(() -> methodCapturerProxyClassFactory.buildProxyFor(rowClass)));
+      public PropertyNameResolver<?> load(Class<?> rowClass) {
+        return new PropertyNameResolverCachedImpl(
+            new PropertyNameResolverImpl(() -> methodCapturerProxyClassFactory.buildProxyFor(rowClass)));
       }
     };
   }
 
   @SuppressWarnings("unchecked")
   @Override
-  public <T> PropertyNameObtainer<T> getObtainer(Class<T> beanClass) {
-    return (PropertyNameObtainer<T>) propertyNameObtainers.getUnchecked(beanClass);
+  public <T> PropertyNameResolver<T> getResolver(Class<T> beanClass) {
+    return (PropertyNameResolver<T>) propertyNameObtainers.getUnchecked(beanClass);
   }
 }

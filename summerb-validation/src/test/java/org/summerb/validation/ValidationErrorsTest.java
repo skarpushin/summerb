@@ -15,8 +15,8 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.summerb.methodCapturers.MethodCapturerProxyClassFactory;
 import org.summerb.methodCapturers.MethodCapturerProxyClassFactoryImpl;
-import org.summerb.methodCapturers.PropertyNameObtainerFactory;
-import org.summerb.methodCapturers.PropertyNameObtainerFactoryImpl;
+import org.summerb.methodCapturers.PropertyNameResolverFactory;
+import org.summerb.methodCapturers.PropertyNameResolverFactoryImpl;
 import org.summerb.validation.errors.LengthMustBeGreater;
 import org.summerb.validation.errors.MustBeEmpty;
 import org.summerb.validation.errors.MustHaveText;
@@ -31,10 +31,10 @@ class ValidationErrorsTest {
 
   MethodCapturerProxyClassFactory methodCapturerProxyClassFactory =
       new MethodCapturerProxyClassFactoryImpl();
-  PropertyNameObtainerFactory propertyNameObtainerFactory =
-      new PropertyNameObtainerFactoryImpl(methodCapturerProxyClassFactory);
+  PropertyNameResolverFactory propertyNameResolverFactory =
+      new PropertyNameResolverFactoryImpl(methodCapturerProxyClassFactory);
   ValidationContextFactory validationContextFactory =
-      new ValidationContextFactoryImpl(propertyNameObtainerFactory, null);
+      new ValidationContextFactoryImpl(propertyNameResolverFactory, null);
 
   @Test
   void test() {

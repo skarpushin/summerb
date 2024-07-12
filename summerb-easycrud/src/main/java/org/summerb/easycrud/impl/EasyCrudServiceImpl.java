@@ -41,8 +41,8 @@ import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.api.row.HasTimestamps;
 import org.summerb.easycrud.api.row.HasUuid;
 import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapNoOpImpl;
-import org.summerb.methodCapturers.PropertyNameObtainer;
-import org.summerb.methodCapturers.PropertyNameObtainerFactory;
+import org.summerb.methodCapturers.PropertyNameResolver;
+import org.summerb.methodCapturers.PropertyNameResolverFactory;
 import org.summerb.security.api.CurrentUserUuidResolver;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
 import org.summerb.utils.easycrud.api.dto.PagerParams;
@@ -79,8 +79,8 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
   protected EasyCrudWireTap<TRow> wireTap;
   protected CurrentUserUuidResolver currentUserUuidResolver;
   protected StringIdGenerator stringIdGenerator;
-  protected PropertyNameObtainerFactory propertyNameObtainerFactory;
-  protected PropertyNameObtainer<TRow> nameObtainer;
+  protected PropertyNameResolverFactory propertyNameResolverFactory;
+  protected PropertyNameResolver<TRow> nameResolver;
 
   /**
    * Constructor for cases when sub-class wants to take full responsibility on instantiation
@@ -229,14 +229,14 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
     this.stringIdGenerator = stringIdGenerator;
   }
 
-  public PropertyNameObtainerFactory getPropertyNameObtainerFactory() {
-    return propertyNameObtainerFactory;
+  public PropertyNameResolverFactory getPropertyNameResolverFactory() {
+    return propertyNameResolverFactory;
   }
 
   @Autowired(required = false)
-  public void setPropertyNameObtainerFactory(
-      PropertyNameObtainerFactory propertyNameObtainerFactory) {
-    this.propertyNameObtainerFactory = propertyNameObtainerFactory;
+  public void setPropertyNameResolverFactory(
+      PropertyNameResolverFactory propertyNameResolverFactory) {
+    this.propertyNameResolverFactory = propertyNameResolverFactory;
   }
 
   @Override
@@ -586,26 +586,26 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
 
   @Override
   public QueryCommands<TId, TRow> query() {
-    return new QueryCommands<>(getNameObtainer(), this);
+    return new QueryCommands<>(getNameResolver(), this);
   }
 
   @Override
   public String name(Function<TRow, ?> getter) {
-    return getNameObtainer().obtainFrom(getter);
+    return getNameResolver().resolve(getter);
   }
 
   @Override
   public OrderByBuilder<TRow> orderBy(Function<TRow, ?> getter) {
-    return new OrderByBuilder<>(getNameObtainer(), getter);
+    return new OrderByBuilder<>(getNameResolver(), getter);
   }
 
-  protected PropertyNameObtainer<TRow> getNameObtainer() {
-    if (nameObtainer == null) {
+  protected PropertyNameResolver<TRow> getNameResolver() {
+    if (nameResolver == null) {
       Preconditions.checkState(
-          propertyNameObtainerFactory != null,
-          "propertyNameObtainerFactory is required for this method to work");
-      nameObtainer = propertyNameObtainerFactory.getObtainer(rowClass);
+          propertyNameResolverFactory != null,
+          "propertyNameResolverFactory is required for this method to work");
+      nameResolver = propertyNameResolverFactory.getResolver(rowClass);
     }
-    return nameObtainer;
+    return nameResolver;
   }
 }

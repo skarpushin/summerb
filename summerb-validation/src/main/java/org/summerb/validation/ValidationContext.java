@@ -50,7 +50,7 @@ import javax.validation.constraints.NotEmpty;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
-import org.summerb.methodCapturers.PropertyNameObtainer;
+import org.summerb.methodCapturers.PropertyNameResolver;
 import org.summerb.utils.clock.NowResolver;
 import org.summerb.utils.clock.NowResolverImpl;
 import org.summerb.validation.errors.LengthMustBeBetween;
@@ -165,7 +165,7 @@ public class ValidationContext<T> {
   public static final Map<Class<?>, Function<NowResolver, Comparable<?>>> ALLOWED_TEMPORAL_TYPES;
 
   protected final T bean;
-  protected PropertyNameObtainer<T> propertyNameObtainer;
+  protected PropertyNameResolver<T> propertyNameResolver;
   protected JakartaValidator jakartaValidator;
   protected ValidationContextFactory validationContextFactory;
 
@@ -195,7 +195,7 @@ public class ValidationContext<T> {
    * ValidationContextFactoryImpl#buildFor(Object)} to build such instance
    *
    * @param bean instance of a bean that is being validated in this context
-   * @param propertyNameObtainer impl of {@link PropertyNameObtainer} for translating method
+   * @param propertyNameResolver impl of {@link PropertyNameResolver} for translating method
    *     references to property names
    * @param jakartaValidator optional -- validator that is capable of processing jakarta validations
    *     annotations. I.e. {@link NotEmpty} and others in same package
@@ -205,14 +205,14 @@ public class ValidationContext<T> {
    */
   public ValidationContext(
       T bean,
-      PropertyNameObtainer<T> propertyNameObtainer,
+      PropertyNameResolver<T> propertyNameResolver,
       JakartaValidator jakartaValidator,
       ValidationContextFactory validationContextFactory) {
     Preconditions.checkArgument(bean != null, "bean required");
-    Preconditions.checkArgument(propertyNameObtainer != null, "propertyNameObtainer required");
+    Preconditions.checkArgument(propertyNameResolver != null, "propertyNameResolver required");
 
     this.bean = bean;
-    this.propertyNameObtainer = propertyNameObtainer;
+    this.propertyNameResolver = propertyNameResolver;
     this.jakartaValidator = jakartaValidator;
     this.validationContextFactory = validationContextFactory;
   }
@@ -372,9 +372,9 @@ public class ValidationContext<T> {
   }
 
   public String getPropertyName(Function<T, ?> getter) {
-    Preconditions.checkState(propertyNameObtainer != null, "propertyNameObtainer is not provided");
+    Preconditions.checkState(propertyNameResolver != null, "propertyNameResolver is not provided");
     Preconditions.checkArgument(getter != null, "getPropertyName: getter required");
-    return propertyNameObtainer.obtainFrom(getter);
+    return propertyNameResolver.resolve(getter);
   }
 
   protected <V> V getValue(Function<T, V> getter) {

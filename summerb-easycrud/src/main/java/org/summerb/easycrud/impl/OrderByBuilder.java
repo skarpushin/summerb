@@ -2,17 +2,17 @@ package org.summerb.easycrud.impl;
 
 import java.util.function.Function;
 import org.summerb.easycrud.api.dto.OrderBy;
-import org.summerb.methodCapturers.PropertyNameObtainer;
+import org.summerb.methodCapturers.PropertyNameResolver;
 
 public class OrderByBuilder<TRow> {
-  protected PropertyNameObtainer<TRow> propertyNameObtainer;
+  protected PropertyNameResolver<TRow> propertyNameResolver;
   protected Function<TRow, ?> getter;
   protected String fieldName;
 
-  public OrderByBuilder(PropertyNameObtainer<TRow> propertyNameObtainer, Function<TRow, ?> getter) {
-    this.propertyNameObtainer = propertyNameObtainer;
+  public OrderByBuilder(PropertyNameResolver<TRow> propertyNameResolver, Function<TRow, ?> getter) {
+    this.propertyNameResolver = propertyNameResolver;
     this.getter = getter;
-    this.fieldName = propertyNameObtainer.obtainFrom(getter);
+    this.fieldName = propertyNameResolver.resolve(getter);
   }
 
   public OrderBy asc() {

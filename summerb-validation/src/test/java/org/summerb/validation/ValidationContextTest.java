@@ -36,9 +36,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.summerb.methodCapturers.MethodCapturerProxyClassFactory;
 import org.summerb.methodCapturers.MethodCapturerProxyClassFactoryImpl;
-import org.summerb.methodCapturers.PropertyNameObtainer;
-import org.summerb.methodCapturers.PropertyNameObtainerFactory;
-import org.summerb.methodCapturers.PropertyNameObtainerFactoryImpl;
+import org.summerb.methodCapturers.PropertyNameResolver;
+import org.summerb.methodCapturers.PropertyNameResolverFactory;
+import org.summerb.methodCapturers.PropertyNameResolverFactoryImpl;
 import org.summerb.utils.clock.NowResolverImpl;
 import org.summerb.validation.errors.LengthMustBeBetween;
 import org.summerb.validation.errors.LengthMustBeGreater;
@@ -87,11 +87,11 @@ class ValidationContextTest {
   MethodCapturerProxyClassFactory methodCapturerProxyClassFactory =
       new MethodCapturerProxyClassFactoryImpl();
 
-  PropertyNameObtainerFactory propertyNameObtainerFactory =
-      new PropertyNameObtainerFactoryImpl(methodCapturerProxyClassFactory);
+  PropertyNameResolverFactory propertyNameResolverFactory =
+      new PropertyNameResolverFactoryImpl(methodCapturerProxyClassFactory);
 
   ValidationContextFactory validationContextFactory =
-      new ValidationContextFactoryImpl(propertyNameObtainerFactory, null);
+      new ValidationContextFactoryImpl(propertyNameResolverFactory, null);
 
   @Test
   void test_Constructor_ExpectDefaultConstructorWorks() {
@@ -103,7 +103,7 @@ class ValidationContextTest {
   @Test
   void test_Constructor_ExpectIaeOnNullArgs() {
     ValidationErrors arg1 = new ValidationErrors();
-    PropertyNameObtainer<Object> arg2 = Mockito.mock(PropertyNameObtainer.class);
+    PropertyNameResolver<Object> arg2 = Mockito.mock(PropertyNameResolver.class);
     JakartaValidator arg3 = Mockito.mock(JakartaValidator.class);
     ValidationContextFactory arg4 = validationContextFactory;
 

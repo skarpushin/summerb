@@ -30,7 +30,7 @@ import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.summerb.methodCapturers.PropertyNameObtainerImpl;
+import org.summerb.methodCapturers.PropertyNameResolverImpl;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
@@ -153,7 +153,7 @@ public class JakartaValidationBeanProcessorImpl implements JakartaValidationBean
       return;
     }
 
-    String propertyName = PropertyNameObtainerImpl.getPropertyNameFromGetterName(getter);
+    String propertyName = PropertyNameResolverImpl.getPropertyNameFromGetterName(getter);
     Function<Object, Object> valueGetter = null;
 
     for (Annotation annotation : annotations) {

@@ -3,8 +3,8 @@ package org.summerb.easycrud.api.query;
 import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.impl.query.QueryExFactoryImpl;
 import org.summerb.methodCapturers.MethodCapturerProxyClassFactoryImpl;
-import org.summerb.methodCapturers.PropertyNameObtainer;
-import org.summerb.methodCapturers.PropertyNameObtainerFactoryImpl;
+import org.summerb.methodCapturers.PropertyNameResolver;
+import org.summerb.methodCapturers.PropertyNameResolverFactoryImpl;
 
 /**
  * A lightweight and simple way for building queries for {@link EasyCrudService}. It provides usual
@@ -33,18 +33,18 @@ public class Query<T> extends QueryShortcuts<T, Query<T>> {
    */
   public static QueryFactory FACTORY =
       new QueryExFactoryImpl(
-          new PropertyNameObtainerFactoryImpl(new MethodCapturerProxyClassFactoryImpl()));
+          new PropertyNameResolverFactoryImpl(new MethodCapturerProxyClassFactoryImpl()));
 
-  protected final PropertyNameObtainer<T> propertyNameObtainer;
+  protected final PropertyNameResolver<T> propertyNameResolver;
 
   public Query() {
     super();
-    this.propertyNameObtainer = null;
+    this.propertyNameResolver = null;
   }
 
-  public Query(PropertyNameObtainer<T> propertyNameObtainer) {
-    super(propertyNameObtainer);
-    this.propertyNameObtainer = propertyNameObtainer;
+  public Query(PropertyNameResolver<T> propertyNameResolver) {
+    super(propertyNameResolver);
+    this.propertyNameResolver = propertyNameResolver;
   }
 
   public static Query<?> n() {

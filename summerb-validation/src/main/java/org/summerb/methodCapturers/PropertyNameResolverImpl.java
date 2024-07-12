@@ -22,13 +22,13 @@ import java.util.function.Supplier;
 import net.bytebuddy.ByteBuddy;
 
 /**
- * Reference impl of {@link PropertyNameObtainer} is based on {@link ByteBuddy} that creates proxy
+ * Reference impl of {@link PropertyNameResolver} is based on {@link ByteBuddy} that creates proxy
  * and intercepts methods calls using {@link MethodCapturer} "mix-in".
  *
  * @param <T> type of POJO for which the instance of this class will be able to determine names of
  *     properties invoked via getters
  */
-public class PropertyNameObtainerImpl<T> implements PropertyNameObtainer<T> {
+public class PropertyNameResolverImpl<T> implements PropertyNameResolver<T> {
   // private Logger log = LoggerFactory.getLogger(getClass());
 
   protected final Supplier<MethodCapturer> methodCapturerSupplier;
@@ -40,14 +40,14 @@ public class PropertyNameObtainerImpl<T> implements PropertyNameObtainer<T> {
    *     to enable caching logic as instantiation of MethodCapturer is somewhat expensive operation
    *     and in some cases we don't even need it
    */
-  public PropertyNameObtainerImpl(Supplier<MethodCapturer> methodCapturerSupplier) {
+  public PropertyNameResolverImpl(Supplier<MethodCapturer> methodCapturerSupplier) {
     Preconditions.checkArgument(methodCapturerSupplier != null);
     this.methodCapturerSupplier = methodCapturerSupplier;
   }
 
   @Override
   @SuppressWarnings("unchecked")
-  public synchronized String obtainFrom(Function<T, ?> methodReference) {
+  public synchronized String resolve(Function<T, ?> methodReference) {
     Preconditions.checkArgument(methodReference != null, "methodReference required");
 
     // NOTE: Caching is not possible because even for the same field we get different instance of

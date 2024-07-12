@@ -5,7 +5,7 @@ import java.util.List;
 import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.api.dto.OrderBy;
 import org.summerb.easycrud.api.row.HasId;
-import org.summerb.methodCapturers.PropertyNameObtainer;
+import org.summerb.methodCapturers.PropertyNameResolver;
 import org.summerb.utils.easycrud.api.dto.PagerParams;
 import org.summerb.utils.easycrud.api.dto.PaginatedList;
 
@@ -17,8 +17,8 @@ public class QueryCommands<TId, TRow extends HasId<TId>>
   protected final EasyCrudService<TId, TRow> service;
 
   public QueryCommands(
-      PropertyNameObtainer<TRow> propertyNameObtainer, EasyCrudService<TId, TRow> service) {
-    super(propertyNameObtainer);
+          PropertyNameResolver<TRow> propertyNameResolver, EasyCrudService<TId, TRow> service) {
+    super(propertyNameResolver);
     Preconditions.checkArgument(service != null, "service required");
 
     this.service = service;
