@@ -16,7 +16,6 @@
 package org.summerb.easycrud.impl;
 
 import com.google.common.base.Preconditions;
-import java.io.NotSerializableException;
 import java.util.List;
 import java.util.function.Function;
 import org.springframework.beans.factory.InitializingBean;
@@ -28,6 +27,7 @@ import org.summerb.easycrud.api.EasyCrudExceptionStrategy;
 import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.api.EasyCrudWireTap;
 import org.summerb.easycrud.api.EasyCrudWireTapMode;
+import org.summerb.easycrud.api.RowCloner;
 import org.summerb.easycrud.api.StringIdGenerator;
 import org.summerb.easycrud.api.dto.OrderBy;
 import org.summerb.easycrud.api.exceptions.EntityNotFoundException;
@@ -48,8 +48,6 @@ import org.summerb.security.api.exceptions.NotAuthorizedException;
 import org.summerb.utils.easycrud.api.dto.PagerParams;
 import org.summerb.utils.easycrud.api.dto.PaginatedList;
 import org.summerb.utils.easycrud.api.dto.Top;
-import org.summerb.utils.objectcopy.Clonnable;
-import org.summerb.utils.objectcopy.DeepCopy;
 
 /**
  * Default impl of EasyCrudService, with focus on OOD:OCP principle. In case some logic needs to be
@@ -81,6 +79,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
   protected StringIdGenerator stringIdGenerator;
   protected PropertyNameResolverFactory propertyNameResolverFactory;
   protected PropertyNameResolver<TRow> nameResolver;
+  protected RowCloner rowCloner;
 
   /**
    * Constructor for cases when subclass wants to take full responsibility on instantiation process.
@@ -127,6 +126,11 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
 
     if (stringIdGenerator == null && HasUuid.class.isAssignableFrom(rowClass)) {
       stringIdGenerator = buildDefaultStringIdGenerator();
+    }
+
+    if (rowCloner == null) {
+      rowCloner = new RowClonerReflectionImpl();
+      // rowCloner = new RowClonerDeepCopyImpl();
     }
   }
 
@@ -287,20 +291,9 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
     }
   }
 
-  // TODO: Performance: come up with a faster clonning logic
   @SuppressWarnings("unchecked")
   protected TRow copyDto(TRow row) {
-    try {
-      if (row instanceof Clonnable) {
-        return ((Clonnable<TRow>) row).clone();
-      }
-      return DeepCopy.copyOrPopagateExcIfAny(row);
-    } catch (NotSerializableException nse) {
-      throw new RuntimeException(
-          "Some files are not serializable. Consider implementing Clonnable interface", nse);
-    } catch (Throwable t) {
-      throw new RuntimeException("Failed to clone row", t);
-    }
+    return (TRow) rowCloner.clone(row);
   }
 
   @Override
@@ -619,5 +612,14 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
 
   public void setDao(TDao dao) {
     this.dao = dao;
+  }
+
+  public RowCloner getRowCloner() {
+    return rowCloner;
+  }
+
+  @Autowired(required = false)
+  public void setRowCloner(RowCloner rowCloner) {
+    this.rowCloner = rowCloner;
   }
 }
