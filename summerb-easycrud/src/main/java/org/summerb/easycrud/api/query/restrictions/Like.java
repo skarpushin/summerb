@@ -1,9 +1,9 @@
 package org.summerb.easycrud.api.query.restrictions;
 
-import com.google.common.base.Preconditions;
-import java.util.Objects;
 import org.springframework.util.StringUtils;
 import org.summerb.easycrud.api.query.restrictions.base.NegateableRestriction;
+
+import com.google.common.base.Preconditions;
 
 public class Like extends NegateableRestriction<Like> {
 
@@ -48,18 +48,40 @@ public class Like extends NegateableRestriction<Like> {
   }
 
   @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    if (!super.equals(o)) return false;
-    Like like = (Like) o;
-    return addPrefixWildcard == like.addPrefixWildcard
-        && addPostfixWildcard == like.addPostfixWildcard
-        && Objects.equals(subString, like.subString);
+  public int hashCode() {
+    final int prime = 31;
+    int result = super.hashCode();
+    result = prime * result + (addPostfixWildcard ? 1231 : 1237);
+    result = prime * result + (addPrefixWildcard ? 1231 : 1237);
+    result = prime * result + ((subString == null) ? 0 : subString.hashCode());
+    return result;
   }
 
   @Override
-  public int hashCode() {
-    return Objects.hash(super.hashCode(), subString, addPrefixWildcard, addPostfixWildcard);
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (!super.equals(obj)) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    Like other = (Like) obj;
+    if (addPostfixWildcard != other.addPostfixWildcard) {
+      return false;
+    }
+    if (addPrefixWildcard != other.addPrefixWildcard) {
+      return false;
+    }
+    if (subString == null) {
+      if (other.subString != null) {
+        return false;
+      }
+    } else if (!subString.equals(other.subString)) {
+      return false;
+    }
+    return true;
   }
 }

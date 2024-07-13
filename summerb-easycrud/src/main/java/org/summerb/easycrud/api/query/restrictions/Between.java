@@ -1,7 +1,6 @@
 package org.summerb.easycrud.api.query.restrictions;
 
 import com.google.common.base.Preconditions;
-import java.util.Objects;
 import org.summerb.easycrud.api.query.restrictions.base.NegateableRestriction;
 
 public class Between extends NegateableRestriction<Between> {
@@ -43,17 +42,40 @@ public class Between extends NegateableRestriction<Between> {
   }
 
   @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    if (!super.equals(o)) return false;
-    Between between = (Between) o;
-    return Objects.equals(lowerBoundary, between.lowerBoundary)
-        && Objects.equals(upperBoundary, between.upperBoundary);
+  public int hashCode() {
+    final int prime = 31;
+    int result = super.hashCode();
+    result = prime * result + ((lowerBoundary == null) ? 0 : lowerBoundary.hashCode());
+    result = prime * result + ((upperBoundary == null) ? 0 : upperBoundary.hashCode());
+    return result;
   }
 
   @Override
-  public int hashCode() {
-    return Objects.hash(super.hashCode(), lowerBoundary, upperBoundary);
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (!super.equals(obj)) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    Between other = (Between) obj;
+    if (lowerBoundary == null) {
+      if (other.lowerBoundary != null) {
+        return false;
+      }
+    } else if (!lowerBoundary.equals(other.lowerBoundary)) {
+      return false;
+    }
+    if (upperBoundary == null) {
+      if (other.upperBoundary != null) {
+        return false;
+      }
+    } else if (!upperBoundary.equals(other.upperBoundary)) {
+      return false;
+    }
+    return true;
   }
 }

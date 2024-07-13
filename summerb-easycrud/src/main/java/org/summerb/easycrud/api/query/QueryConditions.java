@@ -1,11 +1,12 @@
 package org.summerb.easycrud.api.query;
 
-import com.google.common.base.Preconditions;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
+
 import org.springframework.util.StringUtils;
 import org.summerb.easycrud.api.query.restrictions.base.Restriction;
+
+import com.google.common.base.Preconditions;
 
 public class QueryConditions {
   protected final List<Condition> conditions = new LinkedList<>();
@@ -34,15 +35,32 @@ public class QueryConditions {
   }
 
   @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    QueryConditions that = (QueryConditions) o;
-    return Objects.equals(conditions, that.conditions);
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((conditions == null) ? 0 : conditions.hashCode());
+    return result;
   }
 
   @Override
-  public int hashCode() {
-    return Objects.hashCode(conditions);
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    QueryConditions other = (QueryConditions) obj;
+    if (conditions == null) {
+      if (other.conditions != null) {
+        return false;
+      }
+    } else if (!conditions.equals(other.conditions)) {
+      return false;
+    }
+    return true;
   }
 }

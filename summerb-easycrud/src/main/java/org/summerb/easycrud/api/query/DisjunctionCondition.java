@@ -1,9 +1,10 @@
 package org.summerb.easycrud.api.query;
 
-import com.google.common.base.Preconditions;
 import java.util.List;
-import java.util.Objects;
+
 import org.springframework.util.CollectionUtils;
+
+import com.google.common.base.Preconditions;
 
 public class DisjunctionCondition extends Condition {
 
@@ -24,15 +25,32 @@ public class DisjunctionCondition extends Condition {
   }
 
   @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    DisjunctionCondition that = (DisjunctionCondition) o;
-    return Objects.equals(queries, that.queries);
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((queries == null) ? 0 : queries.hashCode());
+    return result;
   }
 
   @Override
-  public int hashCode() {
-    return Objects.hashCode(queries);
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    DisjunctionCondition other = (DisjunctionCondition) obj;
+    if (queries == null) {
+      if (other.queries != null) {
+        return false;
+      }
+    } else if (!queries.equals(other.queries)) {
+      return false;
+    }
+    return true;
   }
 }
