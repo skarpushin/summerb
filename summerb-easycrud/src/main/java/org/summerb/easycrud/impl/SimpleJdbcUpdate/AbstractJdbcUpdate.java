@@ -22,9 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.sql.DataSource;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -384,7 +382,7 @@ public abstract class AbstractJdbcUpdate {
       updateStatement.append(columnName);
       updateStatement.append(" = ? ");
     }
-    if (restrictingColumns.size() > 0) {
+    if (!restrictingColumns.isEmpty()) {
       updateStatement.append(" WHERE ");
       columnCount = 0;
       for (Map.Entry<String, Operator> column : restrictingColumns.entrySet()) {

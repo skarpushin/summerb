@@ -21,9 +21,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.sql.DataSource;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.SqlTypeValue;
@@ -57,52 +55,72 @@ public class TableMetaDataContext {
   /** the provider of table meta data */
   protected TableMetaDataProvider metaDataProvider;
 
-  /** @param tableName the name of the table for this context. */
+  /**
+   * @param tableName the name of the table for this context.
+   */
   public void setTableName(String tableName) {
     this.tableName = tableName;
   }
 
-  /** @return the name of the table for this context. */
+  /**
+   * @return the name of the table for this context.
+   */
   public String getTableName() {
     return this.tableName;
   }
 
-  /** @param catalogName the name of the catalog for this context. */
+  /**
+   * @param catalogName the name of the catalog for this context.
+   */
   public void setCatalogName(String catalogName) {
     this.catalogName = catalogName;
   }
 
-  /** @return the name of the catalog for this context. */
+  /**
+   * @return the name of the catalog for this context.
+   */
   public String getCatalogName() {
     return this.catalogName;
   }
 
-  /** @param schemaName the name of the schema for this context. */
+  /**
+   * @param schemaName the name of the schema for this context.
+   */
   public void setSchemaName(String schemaName) {
     this.schemaName = schemaName;
   }
 
-  /** @return the name of the schema for this context. */
+  /**
+   * @return the name of the schema for this context.
+   */
   public String getSchemaName() {
     return this.schemaName;
   }
 
-  /** @param accessTableColumnMetaData whether we should access table column meta data. */
+  /**
+   * @param accessTableColumnMetaData whether we should access table column meta data.
+   */
   public void setAccessTableColumnMetaData(boolean accessTableColumnMetaData) {
     this.accessTableColumnMetaData = accessTableColumnMetaData;
   }
 
-  /** @return Are we accessing table meta data? */
+  /**
+   * @return Are we accessing table meta data?
+   */
   public boolean isAccessTableColumnMetaData() {
     return this.accessTableColumnMetaData;
   }
 
-  /** @param override whether we should override default for accessing synonyms. */
+  /**
+   * @param override whether we should override default for accessing synonyms.
+   */
   public void setOverrideIncludeSynonymsDefault(boolean override) {
     this.overrideIncludeSynonymsDefault = override;
   }
 
-  /** @return are we overriding include synonyms default? */
+  /**
+   * @return are we overriding include synonyms default?
+   */
   public boolean isOverrideIncludeSynonymsDefault() {
     return this.overrideIncludeSynonymsDefault;
   }
@@ -201,8 +219,8 @@ public class TableMetaDataContext {
     // lookup support since the
     // database metadata is not necessarily providing case sensitive column
     // names
-    Map<?, ?> caseInsensitiveParameterNames =
-        SqlParameterSourceUtils.extractCaseInsensitiveParameterNames(sqlParameterSource);
+    Map<?, ?> caseInsensitiveParameterNames = null;
+
     for (String column : reconciledUpdatingColumns) {
       if (sqlParameterSource.hasValue(column)) {
         values.add(SqlParameterSourceUtils.getTypedValue(sqlParameterSource, column));
@@ -215,6 +233,10 @@ public class TableMetaDataContext {
           if (sqlParameterSource.hasValue(propertyName)) {
             values.add(SqlParameterSourceUtils.getTypedValue(sqlParameterSource, propertyName));
           } else {
+            if (caseInsensitiveParameterNames == null) {
+              caseInsensitiveParameterNames =
+                  SqlParameterSourceUtils.extractCaseInsensitiveParameterNames(sqlParameterSource);
+            }
             if (caseInsensitiveParameterNames.containsKey(lowerCaseName)) {
               values.add(
                   SqlParameterSourceUtils.getTypedValue(

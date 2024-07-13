@@ -324,15 +324,6 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
         throw exceptionStrategy.buildOptimisticLockException();
       }
 
-      if (ret instanceof HasTimestamps) {
-        HasTimestamps retTimestamps = (HasTimestamps) ret;
-        HasTimestamps newTimestamps = (HasTimestamps) newVersion;
-
-        Preconditions.checkState(
-            retTimestamps.getModifiedAt() > newTimestamps.getModifiedAt(),
-            "ModifiedAt expected to be increased after update");
-      }
-
       if (wireTap.requiresOnUpdate().isNeeded()) {
         wireTap.afterUpdate(currentVersion, ret);
       }

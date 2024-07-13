@@ -596,7 +596,7 @@ public abstract class GenericCrudServiceTestTemplate {
   }
 
   @Test
-  public void testEventBus_expectEventOnUpdate() {
+  public void testEventBus_expectEventOnUpdate() throws InterruptedException {
     final TestDto1 v1 = new TestDto1();
     v1.setActive(true);
     v1.setEnv("uat");
@@ -641,7 +641,6 @@ public abstract class GenericCrudServiceTestTemplate {
     dto.setCreatedAt(20);
     dto.setCreatedBy("by");
 
-    Thread.sleep(50);
     getTestDto1Service().update(dto);
     dto = getTestDto1Service().findById(dto.getId());
 

@@ -15,7 +15,6 @@
  ******************************************************************************/
 package integr.org.summerb.easycrud;
 
-
 import integr.org.summerb.easycrud.config.EasyCrudIntegrTestConfig;
 import integr.org.summerb.easycrud.config.EmbeddedMariaDbConfig;
 import integr.org.summerb.easycrud.dtos.TestDto1;
@@ -35,14 +34,29 @@ import org.springframework.transaction.annotation.Transactional;
 @ContextConfiguration(classes = {EmbeddedMariaDbConfig.class, EasyCrudIntegrTestConfig.class})
 @ProfileValueSourceConfiguration()
 @Transactional
-public class StressTest {
+public class PerformanceTest {
   @Autowired private TestDto1Service service;
 
   @Test
-  void massiveAddition() {
+  void massiveAdditions() {
     for (int i = 0; i < 100000; i++) {
       service.create(buildRow("env" + i, i));
     }
+  }
+
+  @Test
+  void massiveUpdates() {
+    TestDto1 row = service.create(buildRow("env", 1));
+    for (int i = 2; i < 100000; i++) {
+      row.setMajorVersion(i);
+      row.setEnv("env" + i);
+      row = service.update(row);
+    }
+
+    // NOTE: Updates are a bit slower than additions because under the hood they use vanilla
+    // MqpSqlParameterSource for restrictions and those are not optimized by EasyCrud. But compared
+    // to previous issues with performance with Spring's SimpleJdbcInsert, it doesn't look critical
+    // to optimize update performance. SO for now I'm leaving it as is.
   }
 
   private TestDto1 buildRow(String env, int majorVersion) {
