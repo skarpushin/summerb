@@ -33,6 +33,12 @@ public class GenericEntityNotFoundException extends EntityNotFoundException
   protected String subjectTypeMessageCode;
 
   /**
+   * @deprecated Used only for io
+   */
+  @Deprecated
+  public GenericEntityNotFoundException() {}
+
+  /**
    * @param subjectTypeMessageCode entity type message code
    * @param identity primary key value
    */

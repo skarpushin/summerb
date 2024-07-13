@@ -55,15 +55,8 @@ import org.summerb.validation.ValidationException;
 public interface EasyCrudService<TId, TRow extends HasId<TId>> {
 
   /**
-   * @return new Query for rows of this service
-   * @deprecated Use {@link #query()} which is more powerful and provides additional "coding sugar"
-   */
-  Query<TRow> newQuery();
-
-  /**
-   * Another way how to query the data. Does not differ from other querying methods, but could make
-   * a difference in terms of convenience ("coding-sugar"). You can simply chain query condition and
-   * then call one of search methods available in {@link QueryCommands}
+   * Build and get new actionable query. Use it to chain conditions and then call one of the methods
+   * like get, find, etc...
    *
    * @return new instance of {@link QueryCommands}
    */
@@ -79,7 +72,7 @@ public interface EasyCrudService<TId, TRow extends HasId<TId>> {
 
   /**
    * A short convenience method for building {@link OrderBy} instance without having to deal with
-   * string literals for field names
+   * string literals for field names. Use its result to pass to query search methods.
    *
    * @param getter to obtain field name from
    * @return instance of {@link OrderByBuilder}, just call one of it's methods {@link
@@ -249,6 +242,9 @@ public interface EasyCrudService<TId, TRow extends HasId<TId>> {
    */
   Class<TRow> getRowClass();
 
+  /**
+   * @return exception strategy that is used for handling exceptions for service methods
+   */
   EasyCrudExceptionStrategy<TId> getExceptionStrategy();
 
   /**
@@ -261,4 +257,10 @@ public interface EasyCrudService<TId, TRow extends HasId<TId>> {
    * @return WireTap if any that is used by this service
    */
   EasyCrudWireTap<TRow> getWireTap();
+
+  /**
+   * @return new Query for rows of this service
+   * @deprecated Use {@link #query()} which is more powerful and provides additional "coding sugar"
+   */
+  Query<TRow> newQuery();
 }

@@ -1,5 +1,7 @@
 package org.summerb.easycrud.api.query.restrictions.base;
 
+import java.util.Objects;
+
 public abstract class NegateableRestriction<T> extends Restriction {
 
   protected boolean not;
@@ -15,29 +17,16 @@ public abstract class NegateableRestriction<T> extends Restriction {
   }
 
   @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + (not ? 1231 : 1237);
-    return result;
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    if (!super.equals(o)) return false;
+    NegateableRestriction<?> that = (NegateableRestriction<?>) o;
+    return not == that.not;
   }
 
-  @SuppressWarnings("rawtypes")
   @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    NegateableRestriction other = (NegateableRestriction) obj;
-    if (not != other.not) {
-      return false;
-    }
-    return true;
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), not);
   }
 }

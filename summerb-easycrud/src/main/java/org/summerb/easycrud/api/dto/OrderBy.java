@@ -15,7 +15,13 @@
  ******************************************************************************/
 package org.summerb.easycrud.api.dto;
 
-/** @author sergey.karpushin */
+// TBD: Add support for NULLS FIRST, LAST
+
+/**
+ * Describes Order By part of the query for a single field
+ *
+ * @author sergey.karpushin
+ */
 public class OrderBy {
   private static final String ORDER_DESC = "DESC";
   private static final String ORDER_ASC = "ASC";

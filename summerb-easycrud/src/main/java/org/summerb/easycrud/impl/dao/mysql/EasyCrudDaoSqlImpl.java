@@ -67,7 +67,7 @@ import org.summerb.utils.easycrud.api.dto.Top;
  *
  * @author sergey.karpushin
  */
-public class EasyCrudDaoMySqlImpl<TId, TRow extends HasId<TId>> extends TableDaoBase
+public class EasyCrudDaoSqlImpl<TId, TRow extends HasId<TId>> extends TableDaoBase
     implements EasyCrudDao<TId, TRow>, EasyCrudDaoInjections<TId, TRow> {
   protected static final List<String> allowedSortDirections = Arrays.asList("asc", "desc");
   protected static final String PARAM_MAX = "max";
@@ -103,9 +103,9 @@ public class EasyCrudDaoMySqlImpl<TId, TRow extends HasId<TId>> extends TableDao
    */
   @Deprecated
   @SuppressWarnings("DeprecatedIsStillUsed")
-  protected EasyCrudDaoMySqlImpl() {}
+  protected EasyCrudDaoSqlImpl() {}
 
-  public EasyCrudDaoMySqlImpl(DataSource dataSource, String tableName, Class<TRow> rowClass) {
+  public EasyCrudDaoSqlImpl(DataSource dataSource, String tableName, Class<TRow> rowClass) {
     super(dataSource, tableName);
     this.rowClass = rowClass;
   }

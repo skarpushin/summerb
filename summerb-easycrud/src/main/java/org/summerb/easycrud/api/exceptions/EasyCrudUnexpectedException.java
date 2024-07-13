@@ -28,6 +28,10 @@ public class EasyCrudUnexpectedException extends RuntimeException
   protected String messageCode;
   protected String entityMessageCode;
 
+  /** @deprecated Used only for io */
+  @Deprecated
+  public EasyCrudUnexpectedException() {}
+
   public EasyCrudUnexpectedException(
       String messageCode, String entityMessageCode, Throwable cause) {
     super("Unexpected exception, code = " + messageCode + ", entity = " + entityMessageCode, cause);

@@ -9,14 +9,18 @@ import org.summerb.methodCapturers.PropertyNameResolverFactoryImpl;
 /**
  * A lightweight and simple way for building queries for {@link EasyCrudService}. It provides usual
  * conditions, nothing fancy (no aggregation, etc). If you need to build complex queries please
- * consider other options. But usually Query will provide sufficient facilities for querying rows.
+ * consider other options, i.e. use {@link org.summerb.easycrud.scaffold.api.ScaffoldedQuery}. But
+ * usually Query will provide sufficient facilities for querying rows.
  *
- * <p>It provides you with ability to specify field names two ways: a) Method references (it uses
- * ByteBuddy under the hood to extract field names) and b) using string literals.
+ * <p>It provides you with ability to specify field names two ways: (a) Method references (it uses
+ * ByteBuddy under the hood to extract field names) and (b) using string literals.
  *
  * <p>It is not recommended to specify field names as string literals because then you loose all
  * power of static code analysis, compiler defense against typos and IDE features like call
  * hierarchy analysis and renaming
+ *
+ * <p>Instead of using this class directly prefer to use {@link EasyCrudService#query()} which will
+ * also allow you to chain actions like find, get, etc...
  *
  * @author Sergey Karpushin
  * @param <T> type of Row for which this query is being built

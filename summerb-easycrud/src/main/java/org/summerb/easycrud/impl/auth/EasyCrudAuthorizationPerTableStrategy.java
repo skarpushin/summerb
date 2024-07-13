@@ -48,7 +48,7 @@ import com.google.common.base.Preconditions;
  *   <li>{@link #requiresOnDelete()}
  * </ul>
  */
-public abstract class EascyCrudAuthorizationPerTableStrategy extends EasyCrudWireTapAbstract<Object>
+public abstract class EasyCrudAuthorizationPerTableStrategy extends EasyCrudWireTapAbstract<Object>
     implements InitializingBean {
 
   protected static final NotAuthorizedResult ALLOW = null;
@@ -58,7 +58,7 @@ public abstract class EascyCrudAuthorizationPerTableStrategy extends EasyCrudWir
 
   protected String entityName;
 
-  public EascyCrudAuthorizationPerTableStrategy(String entityName) {
+  public EasyCrudAuthorizationPerTableStrategy(String entityName) {
     this.entityName = entityName;
   }
 

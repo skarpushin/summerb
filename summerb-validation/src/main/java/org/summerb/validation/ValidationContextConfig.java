@@ -63,7 +63,7 @@ public class ValidationContextConfig {
   }
 
   @Bean
-  PropertyNameResolverFactory propertyNameObtainerFactory(
+  PropertyNameResolverFactory propertyNameResolverFactory(
       MethodCapturerProxyClassFactory methodCapturerProxyClassFactory) {
     return new PropertyNameResolverFactoryImpl(methodCapturerProxyClassFactory);
   }

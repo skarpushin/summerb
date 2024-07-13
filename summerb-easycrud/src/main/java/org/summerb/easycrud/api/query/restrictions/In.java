@@ -2,6 +2,7 @@ package org.summerb.easycrud.api.query.restrictions;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import org.springframework.util.CollectionUtils;
@@ -28,32 +29,16 @@ public class In extends NegateableRestriction<In> {
   }
 
   @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = super.hashCode();
-    result = prime * result + ((values == null) ? 0 : values.hashCode());
-    return result;
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    if (!super.equals(o)) return false;
+    In in = (In) o;
+    return Objects.equals(values, in.values);
   }
 
   @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (!super.equals(obj)) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    In other = (In) obj;
-    if (values == null) {
-      if (other.values != null) {
-        return false;
-      }
-    } else if (!values.equals(other.values)) {
-      return false;
-    }
-    return true;
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), values);
   }
 }

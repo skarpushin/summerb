@@ -26,11 +26,11 @@ import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.impl.EasyCrudServiceImpl;
 import org.summerb.easycrud.impl.EasyCrudServiceResolverSpringImpl;
 import org.summerb.easycrud.impl.auth.EascyCrudAuthorizationPerRowStrategy;
-import org.summerb.easycrud.impl.dao.mysql.EasyCrudDaoMySqlImpl;
+import org.summerb.easycrud.impl.dao.mysql.EasyCrudDaoSqlImpl;
 import org.summerb.easycrud.impl.dao.postgres.DaoExceptionTranslatorPostgresImpl;
 import org.summerb.easycrud.impl.dao.postgres.QueryToSqlPostgresImpl;
 import org.summerb.easycrud.impl.query.QueryFactoryImpl;
-import org.summerb.easycrud.impl.relations.EasyCrudM2mDaoMySqlImpl;
+import org.summerb.easycrud.impl.relations.EasyCrudM2MDaoSqlImpl;
 import org.summerb.easycrud.impl.relations.EasyCrudM2mServiceImpl;
 import org.summerb.easycrud.impl.relations.M2mAuthorizationWireTapImpl;
 import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapDelegatingImpl;
@@ -107,7 +107,7 @@ public class EasyCrudIntegrTestConfig {
 
   @Bean
   EasyCrudDao<String, TestDto1> testDto1Dao(DataSource dataSource) {
-    return new EasyCrudDaoMySqlImpl<>(dataSource, "forms_test_1", TestDto1.class);
+    return new EasyCrudDaoSqlImpl<>(dataSource, "forms_test_1", TestDto1.class);
   }
 
   @Bean
@@ -147,7 +147,7 @@ public class EasyCrudIntegrTestConfig {
 
   @Bean
   EasyCrudDao<Long, TestDto2> testDto2Dao(DataSource dataSource) {
-    return new EasyCrudDaoMySqlImpl<>(dataSource, "forms_test_2", TestDto2.class);
+    return new EasyCrudDaoSqlImpl<>(dataSource, "forms_test_2", TestDto2.class);
   }
 
   @Bean
@@ -171,24 +171,24 @@ public class EasyCrudIntegrTestConfig {
   }
 
   @Bean
-  EasyCrudDaoMySqlImpl<String, TestDto3> daoTestDto3(DataSource dataSource) {
-    return new EasyCrudDaoMySqlImpl<>(dataSource, "forms_test_3", TestDto3.class);
+  EasyCrudDaoSqlImpl<String, TestDto3> daoTestDto3(DataSource dataSource) {
+    return new EasyCrudDaoSqlImpl<>(dataSource, "forms_test_3", TestDto3.class);
   }
 
   @Bean
-  EasyCrudService<String, TestDto3> testDto3Service(EasyCrudDaoMySqlImpl<String, TestDto3> dao) {
+  EasyCrudService<String, TestDto3> testDto3Service(EasyCrudDaoSqlImpl<String, TestDto3> dao) {
     return new EasyCrudServiceImpl<>(dao, TestDto3.class);
   }
 
   @Bean
-  EasyCrudM2mDaoMySqlImpl<Long, TestDto2, String, TestDto1> m2mDao(DataSource dataSource) {
-    return new EasyCrudM2mDaoMySqlImpl<>(dataSource, "forms_mtom");
+  EasyCrudM2MDaoSqlImpl<Long, TestDto2, String, TestDto1> m2mDao(DataSource dataSource) {
+    return new EasyCrudM2MDaoSqlImpl<>(dataSource, "forms_mtom");
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   @Bean
   EasyCrudM2mServiceImpl<Long, TestDto2, String, TestDto1> m2mService(
-      EasyCrudM2mDaoMySqlImpl<Long, TestDto2, String, TestDto1> dao,
+      EasyCrudM2MDaoSqlImpl<Long, TestDto2, String, TestDto1> dao,
       @Qualifier("testDto2ServiceBasicAuth") EasyCrudService<Long, TestDto2> serviceA,
       @Qualifier("testDto1Service") EasyCrudService<String, TestDto1> serviceB,
       @Qualifier("testDto2PerRowAuth")

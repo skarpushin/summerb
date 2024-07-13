@@ -61,7 +61,7 @@ import com.google.common.base.Throwables;
 public class EasyCrudM2mServiceImpl<
         T1Id, T1Dto extends HasId<T1Id>, T2Id, T2Dto extends HasId<T2Id>>
     extends EasyCrudServiceImpl<
-        Long, ManyToManyRow<T1Id, T2Id>, EasyCrudM2mDaoMySqlImpl<T1Id, T1Dto, T2Id, T2Dto>>
+        Long, ManyToManyRow<T1Id, T2Id>, EasyCrudM2MDaoSqlImpl<T1Id, T1Dto, T2Id, T2Dto>>
     implements EasyCrudM2mService<T1Id, T1Dto, T2Id, T2Dto> {
 
   protected EasyCrudService<T1Id, T1Dto> serviceA;
@@ -69,7 +69,7 @@ public class EasyCrudM2mServiceImpl<
 
   @SuppressWarnings("deprecation")
   public EasyCrudM2mServiceImpl(
-      EasyCrudM2mDaoMySqlImpl<T1Id, T1Dto, T2Id, T2Dto> dao,
+      EasyCrudM2MDaoSqlImpl<T1Id, T1Dto, T2Id, T2Dto> dao,
       EasyCrudService<T1Id, T1Dto> serviceA,
       EasyCrudService<T2Id, T2Dto> serviceB) {
     super();

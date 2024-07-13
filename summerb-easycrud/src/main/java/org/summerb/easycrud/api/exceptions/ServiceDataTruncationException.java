@@ -17,15 +17,19 @@ package org.summerb.easycrud.api.exceptions;
 
 import java.sql.DataTruncation;
 
+import org.summerb.easycrud.api.EasyCrudMessageCodes;
 import org.summerb.i18n.HasMessageCode;
 
+/** An Exception that is thrown when data submitted to DB is larger than field accepted size. */
 public class ServiceDataTruncationException extends DataTruncation implements HasMessageCode {
   private static final long serialVersionUID = -8091580877575496130L;
   protected String fieldTokenBeingTruncated;
   protected String message;
   protected Throwable cause;
 
-  /** @deprecated used only for IO purposes */
+  /**
+   * @deprecated used only for IO purposes
+   */
   @Deprecated
   public ServiceDataTruncationException() {
     super(-1, false, false, 0, 0);
@@ -56,7 +60,7 @@ public class ServiceDataTruncationException extends DataTruncation implements Ha
 
   @Override
   public String getMessageCode() {
-    return "exception.dao.dataTruncationError";
+    return EasyCrudMessageCodes.EXCEPTION_DAO_DATA_TRUNCATION_ERROR;
   }
 
   public String getFieldTokenBeingTruncated() {

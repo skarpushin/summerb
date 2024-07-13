@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.summerb.easycrud.api.row.HasId;
-import org.summerb.easycrud.impl.auth.EascyCrudAuthorizationPerTableStrategy;
+import org.summerb.easycrud.impl.auth.EasyCrudAuthorizationPerTableStrategy;
 import org.summerb.easycrud.rest.commonpathvars.PathVariablesMap;
 import org.summerb.easycrud.rest.dto.MultipleItemsResult;
 import org.summerb.easycrud.rest.dto.SingleItemResult;
@@ -13,7 +13,7 @@ import com.google.common.base.Preconditions;
 
 /**
  * Impl of {@link PermissionsResolverStrategy} that gets data from {@link
- * EascyCrudAuthorizationPerTableStrategy}. Therefore it provides only table-wide permissions and
+ * EasyCrudAuthorizationPerTableStrategy}. Therefore it provides only table-wide permissions and
  * Row permissions are not filled
  *
  * @author Sergey Karpushin
@@ -23,9 +23,9 @@ import com.google.common.base.Preconditions;
 public class PermissionsResolverStrategyPerTable<TId, TRow extends HasId<TId>>
     implements PermissionsResolverStrategy<TId, HasId<TId>> {
 
-  protected EascyCrudAuthorizationPerTableStrategy authStrategy;
+  protected EasyCrudAuthorizationPerTableStrategy authStrategy;
 
-  public PermissionsResolverStrategyPerTable(EascyCrudAuthorizationPerTableStrategy authStrategy) {
+  public PermissionsResolverStrategyPerTable(EasyCrudAuthorizationPerTableStrategy authStrategy) {
     Preconditions.checkArgument(authStrategy != null, "authStrategy required");
     this.authStrategy = authStrategy;
   }

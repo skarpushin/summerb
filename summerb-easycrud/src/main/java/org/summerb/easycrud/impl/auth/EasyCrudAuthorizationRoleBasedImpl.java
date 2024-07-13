@@ -27,7 +27,7 @@ import org.summerb.security.api.dto.NotAuthorizedResult;
  *
  * @author Sergey Karpushin
  */
-public class EasyCrudAuthorizationRoleBasedImpl extends EascyCrudAuthorizationPerTableStrategy
+public class EasyCrudAuthorizationRoleBasedImpl extends EasyCrudAuthorizationPerTableStrategy
     implements InitializingBean {
 
   protected Set<String> rolesAuthorizedToRead;

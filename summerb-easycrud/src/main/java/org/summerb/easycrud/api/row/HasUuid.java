@@ -16,14 +16,14 @@
 package org.summerb.easycrud.api.row;
 
 import org.summerb.easycrud.api.StringIdGenerator;
-import org.summerb.easycrud.impl.dao.mysql.EasyCrudDaoMySqlImpl;
+import org.summerb.easycrud.impl.dao.mysql.EasyCrudDaoSqlImpl;
 
 /**
  * Impl this interface if your DTO's primary key is automatically generated String.
  *
  * <p>Name of this interface remains HasUuid for compatibility purposes, while actually you can
  * customize underlying impl and provide string of any format by setting instance of {@link
- * StringIdGenerator} to {@link EasyCrudDaoMySqlImpl#setStringIdGenerator(StringIdGenerator)}
+ * StringIdGenerator} to {@link EasyCrudDaoSqlImpl#setStringIdGenerator(StringIdGenerator)}
  *
  * @author sergey.karpushin
  */

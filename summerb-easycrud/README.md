@@ -1,551 +1,633 @@
-**TBD**: Update this page as impl significantly evolved since this page was written
-
-# EasyCrud overview
 [![Maven](https://img.shields.io/maven-central/v/com.github.skarpushin/summerb-easycrud)](https://mvnrepository.com/artifact/com.github.skarpushin/summerb-easycrud)
 [![javadoc](https://javadoc.io/badge2/com.github.skarpushin/summerb-easycrud/javadoc.svg)](https://javadoc.io/doc/com.github.skarpushin/summerb-easycrud)
 [![Join the chat at https://gitter.im/summerb-community/community](https://badges.gitter.im/summerb-community/community.svg)](https://gitter.im/summerb-community/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-## What EasyCrud is offering?
-It is offering a way how to quickly boostrap your CRUD code and a how to naturally evolve it later. 
+# EasyCrud
+A CRUD library for real-world applications with authorization, validation, internationalization and extensibility as 
+first-class citizens.
 
-It simplifies your usual CRUD implementations on **Facade**, **Service** and **Repository** layers and it gives an opinionated view on how **i18n**, **validation** and **authorization** should be handled.
+## Philosophy
 
-Although it provides many features built-in, it allows you to change many (almost all) aspects of it's implementation. All you need to do is to inject corresponding strategy and/or subclass some default implementation. 
+When I created it, I pursued the concept of having some auto-magical implementation of CRUD functionality for real-world 
+applications, that can be easily configured and yet totally extensible so that I would not hit a wall the way I did 
+previously with JPA, Groovy on Grails, Java Server Faces and few other stuff.   
+
+* It is offering a way how to quickly boostrap your CRUD code and a how to naturally evolve it later together with your
+  application. Not all libraries can claim that. Some of them would eventually present a bottleneck for your business 
+  due to which you'll decide to rewrite application from scratch 
+* Although it provides many features built-in, it allows you to change many (almost all) aspects of it's implementation.
+  All you need to do is to (A) inject corresponding strategy and/or (B) subclass default implementation. In some cases
+  it is even more flexible that Spring itself (less private fields and methods and package visibility -- hence more you
+  can override)
+* It simplifies your usual CRUD implementations on **Facade**, **Service** and **Repository** layers and it gives an
+  opinionated view on how **i18n**, **validation** and **authorization** should be handled -- these usually not present
+  in other frameworks and you need to add them on top, while here you have it embedded in the core of EasyCrud
+* It is created with the SOLID, DRY and SLAP design principles in mind
+
+And now, 9 years later since inception it still serves its intended use. But I guess I'm putting insufficient efforts 
+in making it popular :-)
 
 ## How it compares to alternatives?
-To give you a quick outlook on where it belongs on a data access landscape:
- * It gives you more data-related features than **Spring Data Repositories**
- * It gives you less data-related features than **Hibernate**
- * It gives you more than both (Spring Data Repositories and Hibernate) when it comes to **i18n**, **validation**, **authorization** and **extensibility**
 
-## Tested with
- * MariaDB (MySQL)
- * Postgress
+* It gives you more than both Spring Data Repositories and Hibernate when it comes to **i18n**, **validation**,
+  **authorization** and **extensibility**
+* It gives you less data-related features than **Hibernate** namely ORM and Query DSL that supports projects and 
+  aggregates
+* It gives more auto-magic that Spring JdbcTemplate
+* It gives you more compiler protection and static code analysis features than Spring Data Repositories or myBatis
 
 ## Capabilities
- * Scaffolded implementation of Data access layer (DAO)
- * Scaffolded implementation of Service layer
- * Scaffolded Service interface methods for your own queries (in addition to CRUD operations)
- * Scaffolded implementation of REST API Controllers
- * REST API Controllers support for path variables
- * Swagger support for REST API Controllers
- * Baseline infrastructure for business validations at different data lifecycle steps
- * Baseline infrastructure for authorizations at different data lifecycle steps (for both per-Table and per-Row)
- * Extension points (Wire Taps) for adding any of your custom pre/post-processors
- * Automatically handle timestamps and author fields when data is created and updated
- * Super simple Query DSL (which is both Good and Bad), that has killer-feature -- it allows you to use method references to provide field name instead of using String literals
- * Facilities to implement Security-trimmed UI
- * Loading of object graphs
- * Object graphs can be mapped to POJOs instead of bulky `DataSet`
 
-## What is out of scope?
- * It is not an ORM framework. Although there are some facilities to load referenced objects (through `DataSetLoader`), there are no facilities to serialize object graphs. 
- * You'll need to create DB schema somehow else, EasyCrud is not doing this for you. 
+### Core
+* It automatically handles CRUD logic (internally uses Spring JdbcTemplate with several improvements)
+* It provides simplistic Query DSL that has a killer-feature is based on identifier names (not String literals, so 
+  your code is protected by refactoring and static code analysis)
+* It allows you to easily define native queries which implementation is also automatically scaffolded
+* Baseline infrastructure for business validations at different data lifecycle steps
+* Baseline infrastructure for authorizations at different data lifecycle steps (for both per-Table and per-Row)
+* Extension points (Wire Taps) for adding any of your custom pre/post-processors
+* Automatically handle timestamps and author fields when data is created and updated
+* Facilities to implement Security-trimmed UI
 
-# Usage
-There are 2 ways on how to initialize EasyCrud for a particular DTO (Data Transfer Object):
-1. Initialize each building block manually and wire it all together. This approach gives you maximum control and described in this section. In practice it means you'll have to create several classes, but implementation will be mostly inherited, thus amount of boiler-plate code will be minimized
-2. Other option (a **faster one**) is to use Scaffolding feature which will do some magic and initialize all building blocks automatically based on minimum input information. This described in section below: [Scaffolding](#scaffolding)
+### REST API
+* Scaffolded implementation of REST API Controllers
+* REST API Controllers support for path variables
+* Swagger support for REST API Controllers
 
-If you want to have maximum control over EasyCrud, you'll need to create several interfaces and classes for each entity:
-* DTO class
-* DAO interface **and** class
-* Service interface **and** class
-* Optional. Validation class
-* Optional. Authorization interface **and** class
-* Setup wiring of all created beans
-* Optional. REST controller class
+### What is out of scope?
 
-Please read below for detailed description of each building block.
+* You'll need to create DB schema somehow else, EasyCrud is not doing this for you.
+* Again, it is not an ORM framework. Although there is some beta/draft impl for loading referenced objects, there are 
+  sno facilities to serialize object graphs.
 
-# EasyCrud building blocks
-## Data Transfer Object (DTO)
-* DTO is a simple java bean with properties and getters/setters.
-* It's basically should mimic row in a table, all the same fields
-* You can have non-standard field types but then you'll need to customize `RowMapper` which is used by `DAO` (TBD: provide more examples on how ConversionService and SqlTypeOverride are used)
-* There must be no business logic in this class. 
-* When you need to put a reference to other entity then you need to add a field that resembles a foreign key. I.e. if `Document` refers to `User` then `Document` DTO will have field `private long userId`
-* For security reasons it's advised to implement interface `DtoBase` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-utils/latest/org/summerb/utils/DtoBase.html)), because then upon deserialization you can limit number of allowed classes (when using construct `Class.forName`)
+## Tested with
 
-### DTO IDs
-Each DTO used by EasyCrud must implement interface `HasId<?>` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/api/dto/HasId.html)) to specify what type of id is used.
+* Java 11
+* MariaDB (MySQL) / Postgress
 
-Dto can be identified by any type of id. EasyCrud supports out of the box:
-* Any scalar value type
-* Autogenerated Long `HasAutoincrementId` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/api/dto/HasAutoincrementId.html)). When row is created then newly generated ID is returned from database
-* UUID `HasUuid` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/api/dto/HasUuid.html)). UUID is generated for row if it's not provided
+# How To (with Examples)
+## Initial EasyCrud configuration
+This is a one-time action to setup beans for EasyCrud facilities that are common between all EasyCrud implementations.
 
-### DTO Author
-If DTO implements interface `HasAuthor` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/api/dto/HasAuthor.html)) then EasyCrud will set user from the current security context when row is created or updated. 
-
-### DTO Timestamps
-If DTO implements `HasTimestamps` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/api/dto/HasTimestamps.html)) then timestamps will be automatically set by EasyCrud when row is created or updated. 
-
-This is particularly useful for optimistic locking logic (which is provided by EasyCrud out-of-the-box). 
-
-Important to note that date and time is serialized here as `long` (milliseconds from Epoch in UTC timezone). This way you'll avoid all problems with time zone conversions which happens on all borders (including, jdbc driver, jdbc driver -> database, database, etc...)
-
-### DTO Example:
-
-**TBD**: Remove field names as String Literals - we now can use method references instead
-
-```java
-public class DeviceRow implements DtoBase, HasAutoincrementId, HasTimestamps, HasAuthor {
-	// you'll understand how these constants are used later
-	// see Validation section
-	public static final String FN_IDENTIFIER = "identifier";
-	public static final int FN_IDENTIFIER_SIZE = 64;
-	public static final String FN_NAME = "name";
-	public static final int FN_NAME_SIZE = 45;
-	public static final String FN_SERIAL_NUMBER = "serialNumber";
-	public static final int FN_SERIAL_NUMBER_SIZE = 36;
-
-	private Long id;
-	private long createdAt;
-	private long modifiedAt;
-	private String createdBy;
-	private String modifiedBy;
-
-	private long envId;
-	private String identifier;
-	private String name;
-	private String serialNumber;
-
-	@Override
-	public Long getId() {
-		return id;
-	}
-
-	@Override
-	public void setId(Long id) {
-		this.id = id;
-	}
-	
-	// ...other getters and setters are omitted
-}
-```
-
-## Data Access Objects (DAO)
-* EasyCrud DAO is a class that implements `EasyCrudDao` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/api/EasyCrudDao.html))
-* DAO (Data Access Object) is a layer that communicates with a database. No business logic is expected here. Only pure (de)serialization and storage-dependent code is allowed here
-* EasyCrud assumes usage of a transactional database, like MySQL
-* Base implementation is provided for MySQL ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/impl/mysql/EasyCrudDaoMySqlImpl.html), [src](https://github.com/skarpushin/summerb/blob/master/summerb-easycrud/src/main/java/org/summerb/easycrud/impl/mysql/EasyCrudDaoMySqlImpl.java)), but you can provide your own impl
-* Postgress impl is very similar to MySQL, except you need to inject different implementations of couple beans, namely: `DaoExceptionToFveTranslatorPostgresImpl` and `QueryToNativeSqlCompilerPostgresImpl` as query syntax and exceptions info is different in Postgress.
-* DAO assumes that database schema is already there, there are no facilities to generate database schema automatically.
-
-### Setting-up DAO
-In order to configure DAO for an entity you'll need to do 2 steps:
-
-**Step.1**. Create interface that extends `EasyCrudDao` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/api/EasyCrudDao.html)). In the beginning it will be an empty interface but it is useful because it clarifies particular types and you'll augment it with new methods if needed later on.
-
-Example:
-```java
-public interface DeviceDao extends EasyCrudDao<Long, DeviceRow> {
-	// no body needed, all essential methods are inherited from EasyCrudDao: 
-	// create, delete, deleteByQuery, findById, findOneByQuery, query, update
-	// see javadoc for details
-}  
-```
-
-**Step 2**. Create class that extends `EasyCrudDaoMySqlImpl` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/impl/EasyCrudDaoMySqlImpl.html)) and implements the interface that was created on step 1. 
-
-Example:
-```java
-public class DeviceDaoImpl extends EasyCrudDaoMySqlImpl<Long, DeviceRow> implements DeviceDao {
-	public DeviceDaoImpl() {
-		setRowClass(DeviceRow.class);
-	}
-	// no other class members required, everything else is handled by base class
-}
-```
-NOTE: You need to clarify DTO class by calling `setRowClass` method in the constructor.
-
-### Customizing DAO
-In most situations you won't need to customize DAO. But if you need to, you have couple options:
-* Extend `EasyCrudDaoMySqlImpl` to modify it's behavior. Here is [an example](https://github.com/skarpushin/summerb/blob/master/summerb-minicms/src/main/java/org/summerb/minicms/impl/AttachmentDaoExtFilesImpl.java) of how it can be customized (note that pretty much all aspects of the DAO are customized).
-* Provide your own impl of `EasyCrudDao`. In this case and IF you're going to use `Query` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/api/query/Query.html)) you'll need to also provide impl of `QueryToNativeSqlCompiler` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/api/QueryToNativeSqlCompiler.html))
-
-## Service layer
-* Service is a class that impl `EasyCrudService` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/api/EasyCrudService.html))
-* This layer is responsible for CRUD workflow. All business logic related to CRUD operations must be triggered from this layer
-* Default implementation of service layer is provided as a part of EasyCrud. See `EasyCrudServicePluggableImpl` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/impl/EasyCrudServicePluggableImpl.html), [src](https://github.com/skarpushin/summerb/blob/master/summerb-easycrud/src/main/java/org/summerb/easycrud/impl/EasyCrudServicePluggableImpl.java)). 
-* You can customize CRUD workflow by using extension mechanism called `EasyCrudWireTap` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/api/EasyCrudWireTap.html)). In order to use it you need to inject instance of `EasyCrudWireTap` as a value to `EasyCrudServicePluggableImpl#wireTap` property. This is how Validation, Authorization and other business logic can be injected. See [example](https://github.com/skarpushin/summerb/wiki/EasyCrud-Overview#wiring-it-all-together) below on how it can be configured
-
-### Setting-up Service
-Setting up Service is pretty much same thing as setting up DAO. There are 2 steps: 
-
-**Step.1**. Create interface that extends `EasyCrudService`. 
-
-Example:
-```java
-public interface DeviceService extends EasyCrudService<Long, DeviceRow> {
-	// no body needed, all essential methods are inherited from EasyCrudService
-	// see javadoc for details
-}
-```
-
-**Step 2**. Create class that extends `EasyCrudServicePluggableImpl` and implements the interface that was created on step 1. 
-
-Example:
-```java
-public class DeviceServiceImpl extends EasyCrudServicePluggableImpl<Long, DeviceRow, DeviceDao>
-		implements DeviceService {
-	public DeviceServiceImpl() {
-		setRowClass(DeviceRow.class);
-		setEntityTypeMessageCode("term.device");
-	}
-	// no other class members required, everything else is handled by base class
-}
-```
-NOTE 1: You need to clarify DTO class by calling `setRowClass` method in the constructor.
-
-NOTE 2: You need to provide message code that corresponds to managed entity. Service layer is designed to be user-language agnostic, thus no message translation is happening on this layer. 
-
-### Extending Service
-* If you need to affect CRUD operations workflow, then inject this logic using WireTap
-* If you need to add new method, then just add it to service interface and impl
-* If you need to query data, you can consider using simple `Query` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/api/query/Query.html)) language (it's limited in capabilities, but in most cases it will be sufficient), i.e.
-```java
-findOneByQuery(Query.n().eq("envId", envId).eq("deviceId", deviceId));
-```
-
-## Validation logic
-**TBD**: Correct class names
-
-* Validation logic is considered to be a part of business logic when code verifies if data is valid
-* It's optional, you don't have to provide it
-* **TBD**: Add info regarding ability to use JSR-303 alone and together with imperative validations
-* Validation is supposed to be invoked before creating and/or updating row in a database
-* Validation logic is implemented manually for each entity by providing impl of `EasyCrudValidationStrategy` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/api/EasyCrudValidationStrategy.html))
-* This logic is supposed to be injected into Service by using `EasyCrudWireTapValidationImpl` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/impl/wireTaps/EasyCrudWireTapValidationImpl.html)) adapter (see example below)
-* Validation process is basically a process of accumulating list of `ValidationError` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-validation/latest/org/summerb/validation/ValidationError.html)) instances in `ValidationContext` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-validation/latest/org/summerb/validation/ValidationContext.html)). The latter one contains utility methods for common validation operations.
-* List of validation errors are designed to be serialized and transmitted to front-end for rendering. `ValidationErrors` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-validation/latest/org/summerb/validation/ValidationErrors.html)) DTO can be used as a parent object when serializing
-
-**TBD**: Update example: use method references instead of String literals
-
-Example:
-```java
-public class DeviceValidationStrategyImpl extends EasyCrudValidationStrategyAbstract<DeviceRow> {
-	public static final String regexpIdentifier = "^[_a-zA-Z][_a-zA-Z0-9]*";
-
-	@Override
-	protected void doValidateForCreate(DeviceRow dto, ValidationContext ctx) {
-		if (ctx.validateNotEmpty(dto.getName(), DeviceRow.FN_NAME)) {
-			ctx.validateDataLengthLessOrEqual(dto.getName(), DeviceRow.FN_NAME_SIZE, DeviceRow.FN_NAME);
-		}
-
-		if (ctx.validateNotEmpty(dto.getSerialNumber(), DeviceRow.FN_SERIAL_NUMBER)) {
-			ctx.validateDataLengthLessOrEqual(dto.getSerialNumber(), DeviceRow.FN_SERIAL_NUMBER_SIZE,
-					DeviceRow.FN_SERIAL_NUMBER);
-		}
-
-		if (ctx.validateNotEmpty(dto.getIdentifier(), DeviceRow.FN_IDENTIFIER)) {
-			ctx.validateDataLengthLessOrEqual(dto.getIdentifier(), DeviceRow.FN_IDENTIFIER_SIZE,
-					DeviceRow.FN_IDENTIFIER);
-
-			if (!dto.getIdentifier().matches(regexpIdentifier)) {
-				ctx.add(new IdentifierNameExpectedValidationError(DeviceRow.FN_IDENTIFIER));
-			}
-		}
-	}
-}
-```
-NOTE 1: All fields names are constants, i.e. ` DeviceRow.FN_IDENTIFIER`, as well as constants for field sizes like `DeviceRow.FN_IDENTIFIER_SIZE`
-
-NOTE 2: You don't have to use `ValidationContext` methods to validate and add an error. You can just manually perform check you need and just `add` error to context. Like we did here with `IdentifierNameExpectedValidationError` in the example above
-
-## Authorization logic
-* Authorization logic considered to be a part of business logic
-* It's optional, you don't have to provide it
-* It's used to decide if users can access and modify particular data
-* Authorization logic could be applicable to the whole Table -OR- on a per-Row basis
-* This logic supposed to be used when performing CRUD operations. 
-* And also it can be used when rendering UI so that we can impl "security trimmed UI" (don't show actions if user don't have permissions for it). In this case our class must also implement `PermissionsResolverPerRow` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/rest/permissions/PermissionsResolverPerRow.html), or its table-wide counter part)
-* Authorization logic is implemented manually by implementing either `EasyCrudTableAuthStrategy` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/api/EasyCrudTableAuthStrategy.html)) or `EasyCrudPerRowAuthStrategy` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/api/EasyCrudPerRowAuthStrategy.html))
-* This logic is supposed to be injected into Service by using appropriate adapter, either `EasyCrudWireTapTableAuthImpl` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/impl/wireTaps/EasyCrudWireTapTableAuthImpl.html)) or `EasyCrudWireTapPerRowAuthImpl` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/impl/wireTaps/EasyCrudWireTapPerRowAuthImpl.html)) depending on authorization model you selected for this entity
-* If user is not authorized then `NotAuthorizedException` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-security/latest/org/summerb/security/api/exceptions/NotAuthorizedException.html)) is expected to be thrown. It contains instance of `NotAuthorizedResult` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-security/latest/org/summerb/security/api/dto/NotAuthorizedResult.html)) which is designed to be serialized and transmitted to the front-end or used by facade layer
-
-### Setting up Authorization logic
-It's done in 2 steps:
-
-**Step 1**: define interface which extends `EasyCrudTableAuthStrategy` (or `EasyCrudPerRowAuthStrategy`)
-In example: 
-```java
-public interface EnvAuthStrategy
-	extends EasyCrudPerRowAuthStrategy<EnvironmentRow>, PermissionsResolverPerRow<Long, EnvironmentRow> {
-	// no need to add more methods unless you need extra methods
-}
-```
-
-**Step 2**: Implement class (in this example we make use of `EasyCrudPerRowAuthStrategyAbstract` to simplify the code)
-```java
-public class EnvAuthStrategyImpl extends EasyCrudPerRowAuthStrategyAbstract<EnvironmentRow, User>
-		implements EnvAuthStrategy, PermissionsResolverPerRow<Long, EnvironmentRow> {
-	public static final String ENV = "env";
-
-	@Autowired
-	private PermissionService permissionService;
-
-	@Override
-	public void assertAuthorizedToRead(EnvironmentRow dto) throws NotAuthorizedException {
-		assertSubjPermission(dto.getId(), Permissions.READ);
-	}
-
-	@Override
-	protected void assertAuthorizedToModify(EnvironmentRow dto) throws NotAuthorizedException {
-		assertSubjPermission(dto.getId(), Permissions.UPDATE);
-	}
-
-	private void assertSubjPermission(Long envId, String permission) throws NotAuthorizedException {
-		if (isPermittedTo(envId, permission)) {
-			return;
-		}
-		throw new NotAuthorizedException(getUser().getDisplayName(), permission, "env:" + envId);
-	}
-
-	private boolean isPermittedTo(Long envId, String permission) {
-		return permissionService.hasPermission(ENV, getUser().getUuid(), envId == null ? null : "" + envId, permission);
-	}
-
-	@Override
-	public Map<String, Boolean> resolvePermissions(EnvironmentRow optionalDto, PathVariablesMap contextVariables) {
-		Map<String, Boolean> ret = new HashMap<>();
-		ret.put(Permissions.CREATE, isPermittedTo(null, Permissions.CREATE));
-		if (optionalDto == null) {
-			return ret;
-		}
-
-		ret.put(Permissions.READ, isPermittedTo(optionalDto.getId(), Permissions.READ));
-		boolean toModify = isPermittedTo(optionalDto.getId(), Permissions.UPDATE);
-		ret.put(Permissions.UPDATE, toModify);
-		ret.put(Permissions.DELETE, toModify);
-
-		return ret;
-	}
-}
-```
-
-## Wiring it all together
-
-**TBD**: Provide example as Java-config
-
-Here is an example of Spring XML configuration in root context
-```xml
-<bean id="deviceAuthStrategy" class="ru.skarpushin.smarthome.devicesgate.services.envconfig.impl.device.DeviceAuthStrategyImpl" />
-<bean id="deviceService" class="ru.skarpushin.smarthome.devicesgate.services.envconfig.impl.device.DeviceServiceImpl">
-   <property name="dao">
-      <bean class="ru.skarpushin.smarthome.devicesgate.services.envconfig.impl.device.DeviceDaoImpl">
-         <property name="dataSource" ref="dataSource" />
-         <property name="tableName" value="devices" />
-      </bean>
-   </property>
-   <property name="wireTap">
-      <bean class="org.summerb.approaches.jdbccrud.impl.wireTaps.EasyCrudWireTapDelegatingImpl">
-         <constructor-arg>
-            <util:list>
-               <bean class="org.summerb.approaches.jdbccrud.impl.wireTaps.EasyCrudWireTapValidationImpl">
-                  <constructor-arg>
-                     <bean class="ru.skarpushin.smarthome.devicesgate.services.envconfig.impl.device.DeviceValidationStrategyImpl" />
-                  </constructor-arg>
-               </bean>
-               <bean class="org.summerb.approaches.jdbccrud.impl.wireTaps.EasyCrudWireTapPerRowAuthImpl">
-                  <constructor-arg ref="deviceAuthStrategy" />
-               </bean>
-               <bean class="org.summerb.approaches.jdbccrud.impl.wireTaps.EasyCrudWireTapEventBusImpl" />
-            </util:list>
-         </constructor-arg>
-      </bean>
-   </property>
-</bean>
-```
-
-# Scaffolding
-Scaffolding is a nice feature that simplifies usage of EasyCrud, which is particularly useful when you need CRUD operations but not necessarily need to heavily customize them. 
-
-Scaffolding eliminates the need to manually create:
-* Dao interface
-* Dao class
-* Service interface
-* Service class
-
-Although you don't have to create Service interface you still might choose to because it's simply makes code more readable.
-
-## Setting up
-In order to use scaffolding all  you need to do is:
-1. Register bean `EasyCrudScaffold` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/scaffold/api/EasyCrudScaffold.html)) in the context. You can use provided impl `EasyCrudScaffoldImpl` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/scaffold/impl/EasyCrudScaffoldImpl.html))
-2. Define DTOs
-3. Create class annotated with Spring's `@Configuration` annotation and make sure it get's picked up by Spring
-4. For each service (that you need to be created) you need to specify bean definition
-5. Profit!
-
-Example:
 ```java
 @Configuration
-public class MyEasyCrudServices {
-	@Autowired
-	private EasyCrudScaffold easyCrudScaffold;
+@Import({ValidationContextConfig.class})
+public class EasyCrudBaselineConfig {
+  @Bean
+  StringIdGenerator stringIdGenerator() {
+    return new StringIdGeneratorUuidImpl();
+  }
 
-	@Bean
-	public DeviceService deviceService(EventBus eventBus, DeviceAuthStrategy deviceAuthStrategy) {
-		return easyCrudScaffold.fromService(
-			DeviceService.class, "term.device", "devices",
-			new DeviceValidationStrategyImpl(), deviceAuthStrategy, new EasyCrudWireTapEventBusImpl<>(eventBus));
-	}
+  @Bean
+  QueryToSql queryToNativeSqlCompiler(SqlTypeOverrides sqlTypeOverrides) {
+    return new QueryToSqlMySqlImpl(sqlTypeOverrides);
+  }
 
-	@Bean
-	public EasyCrudService<Long, EnvironmentRow> envService(EnvAuthStrategy envAuthStrategy) {
-		return easyCrudScaffold.fromDto(
-			EnvironmentRow.class, "term.environment", "envs", 
-			new EnvValidationStrategy(), envAuthStrategy);
-	}
+  @Bean
+  EasyCrudServiceProxyFactory easyCrudServiceProxyFactory(
+      ScaffoldedMethodFactory scaffoldedMethodFactory) {
+    return new EasyCrudServiceProxyFactoryImpl(scaffoldedMethodFactory);
+  }
+
+  @Bean
+  ScaffoldedMethodFactory scaffoldedMethodFactory(
+      DataSource dataSource, SqlTypeOverrides sqlTypeOverrides) {
+    ScaffoldedMethodFactoryMySqlImplEx ret = new ScaffoldedMethodFactoryMySqlImplEx(dataSource);
+    ret.setSqlTypeOverrides(sqlTypeOverrides);
+    return ret;
+  }
+
+  @Bean
+  EasyCrudScaffold easyCrudScaffold(
+      DataSource dataSource,
+      AutowireCapableBeanFactory beanFactory,
+      ScaffoldedMethodFactory scaffoldedMethodFactory) {
+    return new EasyCrudScaffoldImpl(dataSource, beanFactory, scaffoldedMethodFactory);
+  }
+
+  @Bean
+  EasyCrudServiceResolver easyCrudServiceResolver() {
+    return new EasyCrudServiceResolverSpringImpl();
+  }
 }
 ```
 
-## Injections
-* In the example above you probably noticed how we passed couple arguments to `fromDto` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/scaffold/api/EasyCrudScaffold.html#fromDto-java.lang.Class-java.lang.String-java.lang.String-java.lang.Object...-)) and to `fromService` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/scaffold/api/EasyCrudScaffold.html#fromService-java.lang.Class-java.lang.String-java.lang.String-java.lang.Object...-)) methods. 
-* Last argument in aforementioned methods is a varargs argument, so you can specify none or as many injections as you need
-* Scaffolder will try to inject those into Service (now we assuming that service implementation is provided using `EasyCrudServicePluggableImpl` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/impl/EasyCrudServicePluggableImpl.html)) impl)
-* All injections like that are performed in a form of `EasyCrudWireTap` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/api/EasyCrudWireTap.html)) impl.
-* Scaffolder can automatically convert instances of `EasyCrudValidationStrategy`, `EasyCrudPerRowAuthStrategy`, `EasyCrudTableAuthStrategy` to wireTaps.
+NOTES:
+1. Notice `ValidationContextConfig` is imported here. This is needed for validation logic as well as for Query DSL that
+   utilizes getters instead of String literals
+2. When using Postgress use different implementations for 2 beans: `DaoExceptionToFveTranslatorPostgresImpl` and 
+   `QueryToNativeSqlCompilerPostgresImpl`
 
-# REST API Controller
-* EasyCrud provides base implementation for REST API Controller. In order to make use of it you'll need to subclass `EasyCrudRestControllerBase` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/rest/EasyCrudRestControllerBase.html), [src](https://github.com/skarpushin/summerb/blob/master/summerb-easycrud/src/main/java/org/summerb/easycrud/rest/EasyCrudRestControllerBase.java))
-* Provided impl is trying to be as automatic as possible, but it still requires some guidance from you
-  * You'll need to provide base url path
-  * if you have context variables in this path you'll need to
-    * Add `HasCommonPathVariable` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/rest/commonpathvars/HasCommonPathVariable.html)) annotation to controller 
-    * Specify `QueryNarrowerStrategy` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/rest/querynarrower/QueryNarrowerStrategy.html))
-  * You'll need to provide value for `permissionsResolverStrategy` if you want to make use of security-trimmed UI approach. This effectively means that client will be able to request permissions and get them as a result of a query
-* This REST controller returns either `SingleItemResult` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/rest/dto/SingleItemResult.html)) or `MultipleItemsResult` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/rest/dto/MultipleItemsResult.html)). And as you can see it contains data itself as well as:
-  * Pagination (for `MultipleItemsResult`)
-  * Permissions (if asked for)
-  * Referenced objects (if asked for)
-* It supports results ordering (sorting) and simple filtering
-* It's Swagger friendly
+## Minimal code to get EasyCrud Service up and running
+### 1. Define Row class
+```java
+public class ProjectRow implements HasUuid {
+  private String id;
+  private String refKey;
+  private String name;
+  private String accountId;
 
-## REST methods provided:
-```
-GET /rest/api/v1/env/{envId}/device => getList
-POST /rest/api/v1/env/{envId}/device => createNewItem
-POST /rest/api/v1/env/{envId}/device/query => getListWithQuery
-DELETE /rest/api/v1/env/{envId}/device/{id} => deleteItem
-GET /rest/api/v1/env/{envId}/device/{id} => getItem
-PUT /rest/api/v1/env/{envId}/device/{id} => updateItem
+  // getter/setters
+}
 ```
 
-## REST controller example:
+NOTES:
+1. Row is a simple java bean with fields and respective getters/setters.
+1. It's basically should mimic row in a table, all the same fields (except that in DB they're expected to be `snake_case`
+   while in Java they're `camelCase`)
+1. You can have non-standard field types, but then you'll need to customize (de)serialization, see below for examples.
+1. There must be no business logic in this class.
+1. When you need to put a reference to other entity then you need to add a field that resembles a foreign key. I.e.
+   if `Document` refers to `User` then `Document` Row will have field `private long userId`
+1. Class Implements interface `HasUuid`. It means that ID will be generated by DAO upon row creation. Bean of type 
+   `StringIdGenerator` will be used to generate value for ID field. You can use more conventional `HasAutoincrementId` 
+   for usual numeric ID generation by DB engine
+
+### 2. Create DB schema for that table
+EasyCrud does not have any facilities for that. Do this manually and include in DB migration scripts of your choice. 
+For the POJO above DDL for MySQL/MariaDB would look something like this:
+```sql
+CREATE TABLE `projects` (
+  `id` VARCHAR(25) NOT NULL,
+  `refKey` VARCHAR(50) NOT NULL,
+  `name` VARCHAR(250) NOT NULL,
+  `account_id` VARCHAR(25) NULL,
+  
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC),
+
+  UNIQUE INDEX `name_UNIQUE` (`name` ASC),
+
+  INDEX `idx_account_id` (`account_id` ASC),
+  CONSTRAINT `fk__projects__account_id` FOREIGN KEY (`account_id` ) REFERENCES `projects` (`id` ) ON DELETE RESTRICT ON UPDATE RESTRICT
+
+) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8 COLLATE = utf8_general_ci;
+```
+
+### 3. Define Service interface
+```java
+public interface ProjectService extends EasyCrudService<String, ProjectRow> {
+  String TERM = "term.project";
+}
+```
+
+NOTES:
+1. Notice constant `TERM` -- it will be used as a message code in errors and exceptions. Your FE (or facade layer) are 
+   responsible then for translating it to user language  
+
+### 4. Define Service bean
+```java
+@Bean
+ProjectService projectService(EasyCrudScaffold easyCrudScaffold) {
+  return easyCrudScaffold.fromService(ProjectService.class, ProjectService.TERM, "projects");
+}
+```
+
+NOTES:
+1. DAO and Service implementations are created on the fly using Java Proxies
+
+### 4. Use your new service
+```java
+ProjectRow row = new ProjectRow(); // and init fields 
+projectService.create(row);
+
+String accountId;
+List<ProjectRow> projects = projectService.query().eq(ProjectRow::getAccountId, accountId).findAll();
+
+String projectName;
+ProjectRow project = projectService.query().eq(ProjectRow::getName, projectName).getOne();
+```
+
+## Executing simple queries using Query DSL
+Start with calling `query()` method of the `EasyCrudService` interface, chain conditions and then calling action
+methods. I.e.:
+```java
+measurementService
+    .query()
+    .eq(Measurement::getProjectId, projectId)
+    .eq(Measurement::getType, Measurement.TYPE_GMR_TARGET)
+    .startsWith(Measurement::getPath, MeasurementPaths.fy(Year.of(fy)))
+    .findAll();
+```
+
+NOTES:
+1. We are using POJO field getters to identify field names - this helps a lot to use IDEs features to find usages of
+   fields and also will be automatically renamed if you use IDE's Refactoring feature to rename field. Under the hood
+   this is implemented using some heavy-duty bytecode manipulation (ByteBuddy) because Java's reflection does not
+   support it.
+
+## Executing queries which are not supported by Query DSL
+### 1. Parameter names must be included in the bytecode
+Custom queries are using named parameters. So this requires parameter names to be included in the byte code. I.e. 
+with Maven you can augment `maven-compiler-plugin` like this:
+```xml
+<plugin>
+  <groupId>org.apache.maven.plugins</groupId>
+  <artifactId>maven-compiler-plugin</artifactId>
+  <version>3.11.0</version>
+  <configuration>
+      <source>11</source>
+      <target>11</target>
+      <compilerArgs>
+        <arg>-parameters</arg>
+      </compilerArgs>
+  </configuration>
+</plugin>
+```
+
+### 2. Define @ScaffoldedQuery
+This is supported only when Service implementation was scaffolded by `EasyCrudScaffold`. Just add a method to the
+interface and mark it with `@ScaffoldedQuery` annotation.
+
+```java
+@ScaffoldedQuery("SELECT DISTINCT name FROM projects WHERE account_id = :accountId")
+List<String> getAccountProjectNames(String accountId);
+
+@ScaffoldedQuery("SELECT pc1.* FROM project_complexity pc1 "
+               + "LEFT JOIN project_complexity pc2 ON (pc1.project_id = pc2.project_id AND pc1.latest_for_fy < pc2.latest_for_fy) "
+               + "WHERE pc1.latest_for_fy <= :fy AND pc2.project_id IS NULL AND pc1.project_id IN (:projectIds)")
+List<ProjectComplexityRow> findLatestByFyAndProjects(int fy, Set<String> projectIds);
+```
+
+NOTES:
+1. In case return type matches Service row class, then Service WireTap `beforeRead` and `afterRead` hooks will be
+   triggered, if any
+1. If return type is primitive or matches Service row class, then Row mapper is initialized automatically
+1. In case you want some other schema to be returned, provide your own RowMapper class name into
+   `ScaffoldedQuery::rowMapper`
+
+## Add Validation Logic (using annotations)
+Validation annotations are used from package `javax.validation.constraints.*` which are defined in widely used
+Maven artifact `jakarta.validation:jakarta.validation-api:2.0.2`
+
+### 1. Add annotations on your Row class fields
+
+```java
+import javax.validation.constraints.Max;
+import javax.validation.constraints.NotBlank;
+
+public class ProjectRow implements HasUuid {
+  private String id;
+  @Min(5)
+  @Max(50)
+  @NotBlank
+  private String refKey;
+  @Min(5)
+  @Max(250)
+  @NotBlank
+  private String name;
+  private String accountId;
+
+  // getters/setters
+}
+```
+
+### 2. Augment Service configuration
+Just add `EasyCrudValidationStrategyJakartaImpl` to injections list when configuring service bean:
+
+```java
+@Bean
+ProjectService projectService(EasyCrudScaffold easyCrudScaffold) {
+  return easyCrudScaffold.fromService(
+      ProjectService.class, 
+      ProjectService.TERM, 
+      "projects",
+      new EasyCrudValidationStrategyJakartaImpl<>());
+}
+```
+
+NOTES:
+1. Now whenever you'll try to create or update rows, this validation will kick in and validate data.
+2. All validation errors (not just first) will be reported in `ValidationException` and bound to field names
+   so that FE can render them neatly for each relevant field. Also each validation error is denoted by message code,
+   so FE can translate it to user language. See `summerb-validation` subproject for more details.
+
+## Add Validation Logic (using imperative approach)
+Sometimes validation logic might be more complex than basic annotations can handle. In such case you'll want to define
+such validation explicitly in Java code.
+
+### 1. Define class that performs validation
+```java
+public class EptMetricValidationStrategyImpl
+    extends EasyCrudValidationStrategyAbstract<EptMetricRow> {
+  @Override
+  protected void validate(EptMetricRow row, ValidationContext<EptMetricRow> ctx) {
+    ctx.hasText(EptMetricRow::getProjectId);
+    ctx.notNull(EptMetricRow::getType);
+    ctx.notNull(EptMetricRow::getPeriod);
+
+    if (!row.isApplicable()) {
+      if (ctx.hasText(EptMetricRow::getComment)) {
+        ctx.lengthLe(EptMetricRow::getComment, EptMetricRow.FN_COMMENT_SIZE);
+      }
+    } else {
+      ctx.between(EptMetricRow::getScore, BigDecimal.ZERO, Constants.BIG_DECIMAL_100);
+    }
+
+    ctx.lengthLe(EptMetricRow::getWorkProductLocation, EptMetricRow.FN_WORK_PRODUCT_LOCATION_SIZE);
+
+    ctx.lengthLe(
+        EptMetricRow::getWorkProductLocationComment,
+        EptMetricRow.FN_WORK_PRODUCT_LOCATION_COMMENT_SIZE);
+
+    ctx.lengthLe(EptMetricRow::getComment, EptMetricRow.FN_COMMENT_SIZE);
+  }
+}
+```
+
+NOTES:
+1. Notice that validation methods are also using getters for field name resolution instead of string literals
+2. For fine-grained control you can implement `EasyCrudValidationStrategy` interface to make different validation upon
+   creation and deletion
+
+### 2. Augment bean configuration
+Just add you class to injections list when configuring service bean:
+
+```java
+@Bean
+EptMetricService eptMetricService(EptMetricAuth eptMetricAuth) {
+    return easyCrudScaffold.fromService(
+            EptMetricService.class,
+            EptMetricService.TERM,
+            "ept_metric",
+            new EptMetricValidationStrategyImpl());
+}
+```
+
+## Add Authorization logic
+By using EasyCrud WireTaps mechanism, you can make sure that user authorization is being verified whenever data is being
+accessed or modified. So it doesn't matter from which facade layer data is used -- authorization check will be performed.
+
+### 1.a. Define authorization logic - Per Table
+Authorization can be checked per table-wide.
+
+```java
+public class PresaleFeedbackAuthStrategyImpl extends EascyCrudAuthorizationPerTableStrategy {
+    @Autowired
+    private SecurityContextResolverEx securityContextResolverEx;
+
+    public PresaleFeedbackAuthStrategyImpl() {
+        super(PresaleFeedbackRowService.TERM);
+    }
+
+    @Override
+    public NotAuthorizedResult getForRead() {
+        if (securityContextResolverEx.isCurrentUserSystemUser()
+                || securityContextResolverEx.isCurrentUserDoEOrAbove()
+                || currentUserRolesResolver.hasAnyRole(
+                SecurityConstantsEx.ROLE_EDM, SecurityConstantsEx.ROLE_POM)) {
+            return ALLOW;
+        }
+
+        return denyRead();
+    }
+
+    @Override
+    public NotAuthorizedResult getForUpdate() {
+        if (securityContextResolverEx.isCurrentUserSystemUser()) {
+            return ALLOW;
+        }
+        return denyUpdate();
+    }
+}
+```
+
+NOTES: 
+1. In the above impl Row instances are not used, logic is based purely on User  
+2. There is also `EasyCrudAuthorizationRoleBasedImpl` which is a subclass for `EasyCrudAuthorizationPerTableStrategy`
+   it's a convenient way to define access permissions using user role names
+
+### 1.b. Define authorization logic - Per Row
+Authorization can be checked on per-row basis.
+```java
+public class ProjectRowAuthStrategyImpl extends EascyCrudAuthorizationPerRowStrategy<ProjectRow> {
+    @Override
+    public NotAuthorizedResult getForRead(ProjectRow presaleRow) {
+        if (currentUserUuidResolver.getUserUuid().equals(row.getCreatedBy())) {
+            return ALLOW;
+        }
+
+        return denyRead(row);
+    }
+
+    @Override
+    public NotAuthorizedResult getForUpdate(ProjectRow persistedVersion, ProjectRow presaleRow) {
+        if (securityContextResolverEx.isCurrentUserSystemUser()) {
+            return ALLOW;
+        }
+        return denyUpdate(row);
+    }
+}
+```
+
+NOTES:
+1. Logic in the above authorization logic is based on both - row data as well as User parameters
+2. If access is allowed, then return `ALLOW` constant. Otherwise return initialized `NotAuthorizedResult`
+   that describes why access is not allowed. In the example above method `denyUpdate` from base class is used to
+   simplify the implementation, but this can be of course overridden
+2. For fine-grained auth control of each of the four CRUD methods, override more methods from base class
+   `EascyCrudAuthorizationPerRowStrategy`
+
+### 2. Augment service configuration
+```java
+@Bean
+ProjectService projectService(EasyCrudScaffold easyCrudScaffold) {
+  return easyCrudScaffold.fromService(
+      ProjectService.class, 
+      ProjectService.TERM, 
+      "projects",
+      new ProjectRowAuthStrategyImpl<>());
+}
+```
+
+NOTES:
+1. All injections will be autowired and `afterPropertiesSet()` will be called for those who implement `InitializingBean` 
+
+## Automatically populate current user ID during creation and update
+### 1. Make sure that current user ID resolver is configured in your context
+
+This is a one-time action:
+```java
+@Bean
+CurrentUserUuidResolver currentUserUuidResolver() {
+    return new YourImplForCurrentUserUuidResolver();
+}
+```
+
+NOTES:
+1. EasyCrud knows nothing about the way you manage security in your application. Therefore, you need to provide your 
+   own implementation 
+2. EasyCrud makes hard assumption that your user ID is represented as a String 
+
+### 2. Augment Row class
+Add `HasAuthor` interface to your Row class and add corresponding fields:
+```java
+public class ProjectRow implements HasUuid, HasAuthor {
+  private String id;
+  private String refKey;
+  private String name;
+  private String accountId;
+
+  private String createdBy;
+  private String modifiedBy;
+
+  // getter/setters
+}
+```
+
+NOTES:
+1. That's it. The rest will be done by base implementation of `EasyCrudServiceImpl`
+
+## Automatically populate timestamps of creation and modification
+
+All you need to do is add interface `HasTimestamps` to your row and corresponding fields:
+```java
+public class ProjectRow implements HasUuid, HasTimestamps {
+  private String id;
+  private String refKey;
+  private String name;
+  private String accountId;
+
+  private long createdAt;
+  private long modifiedAt;
+
+  // getter/setters
+}
+```
+
+NOTES:
+1. EasyCrud will also use value of the field `modifiedAt` for optimistic locking. Meaning that if you attempt to modify
+   row and value of `modifiedAt` would not match same in DB, transaction will fail with `ConcurrentModificationException`
+2. `createdAt` and `modifiedAt` are milliseconds from epoch in UTC
+
+## Add support for custom field types
+
+In case you want your row classes to contain custom data types, you'll need to provide EasyCrud with information on how 
+to handle them during serialization and deserialization. 
+
+### 1. Define SqlTypeOverrides bean with serialization instructions
+```java
+@Bean
+SqlTypeOverrides sqlTypeOverrides() {
+  return new SqlTypeOverridesDelegatingImpl(
+      Arrays.asList(
+          SqlTypeOverride.of(YearWeek.class, Types.INTEGER, YearWeek::toInt),
+          SqlTypeOverride.of(YearMonth.class, Types.VARCHAR, YearMonth::toString),
+          SqlTypeOverride.of(FyQuarter.class, Types.INTEGER, FyQuarter::toInt)));
+}
+```
+
+### 2. Define converter for deserialization
+It will be picked up automatically by Spring's ConversionService
+
+```java
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.stereotype.Component;
+
+@Component
+public class NumberToYearWeekConverter implements Converter<Number, YearWeek> {
+  @Override
+  public YearWeek convert(Number source) {
+    if (source == null) {
+      return null;
+    }
+    return YearWeek.from(source.intValue());
+  }
+}
+```
+
+## Define REST controller for CRUD operations
+Define REST Controller class:
+
 ```java
 @RestController
-@Secured(SecurityConstants.ROLE_USER)
-@RequestMapping(path = "/rest/api/v1/env/{envId}/device")
-@HasCommonPathVariable(name = "envId", type = Long.class)
-public class DeviceRestController extends EasyCrudRestControllerBase<Long, DeviceRow, DeviceService> {
-	@Autowired
-	private DeviceAuthStrategy deviceAuthStrategy;
+@RequestMapping(("/rest/divisions"))
+public class DivisionsRestController
+        extends EasyCrudRestControllerBase<String, DivisionRow, DivisionService> {
 
-	public DeviceRestController(DeviceService service) {
-		super(service);
-		queryNarrowerStrategy = new QueryNarrowerByCommonPathVariable(HasEnvId.FN_ENV_ID);
-	}
-
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		super.afterPropertiesSet();
-		permissionsResolverStrategy = new PermissionsResolverStrategyRowAuthImpl<Long, DeviceRow>(deviceAuthStrategy);
-	}
+    public DivisionsRestController(DivisionService service) {
+        super(service);
+    }
 }
-``` 
-
-## HasCommonPathVariable arguments resolver
-If you going to use `HasCommonPathVariable` or `HasCommonPathVariables` annotations, then don't forget to configure arguments resolver:
-```xml
-<mvc:annotation-driven>
-	<mvc:argument-resolvers>
-		<bean class="org.summerb.approaches.jdbccrud.rest.commonpathvars.PathVariablesMapArgumentResolver" />
-	</mvc:argument-resolvers>
-</mvc:annotation-driven>
 ```
 
-# Loading object graphs
-* Although it's not an O/R-mapping framework EasyCrud has facilities to load object graphs. It's called `DataSetLoader` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/api/relations/DataSetLoader.html))
-* MAJOR guideline behind design of this functionality was to be non-disruptive, thus no changes to DTOs, Service or other parts of EasyCrud required to make it work
-* Instance of the `DataSet` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/api/dto/datapackage/DataSet.html), [src](https://github.com/skarpushin/summerb/blob/master/summerb-easycrud/src/main/java/org/summerb/easycrud/api/dto/datapackage/DataSet.java)) is populated with all loaded entities.
-* All loaded rows are placed into maps. See `DataTable` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/api/dto/datapackage/DataTable.html), [src](https://github.com/skarpushin/summerb/blob/master/summerb-easycrud/src/main/java/org/summerb/easycrud/api/dto/datapackage/DataTable.java))
-* In order to track one-to-many references you can use `DataTable#backRefs` (any ideas how to make it nicer?)
-* Essential requirement for this mechanism to work is to define references between rows. Use `Ref` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/api/dto/relations/Ref.html)) for that
-* All `Ref` must be resolvable by instance of `ReferencesRegistry` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/api/relations/ReferencesRegistry.html)), i.e. you can use simple `ReferencesRegistryPredefinedImpl` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/impl/relations/ReferencesRegistryPredefinedImpl.html))
-* All Services also must be resolvable using impl of `EasyCrudServiceResolver` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/api/EasyCrudServiceResolver.html)). You can use provided impl `EasyCrudServiceResolverSpringImpl` [javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/impl/EasyCrudServiceResolverSpringImpl.html)
+This will provide REST API endpoints:
+```
+GET    /rest/divisions => getList
+POST   /rest/divisions => createNewItem
+POST   /rest/divisions/query => getListWithQuery
+DELETE /rest/divisions/{id} => deleteItem
+GET    /rest/divisions/{id} => getItem
+PUT    /rest/divisions/{id} => updateItem
+```
 
-## Using DataSet
-### Configuring Refs
-Here is an example how `ReferencesRegistry` can be implemented:
+NOTES: 
+1. That's it. This REST controller will provide all CRUD operations including simple filtering functionality
+2. Whenever you need to extend its functionality, check source code in debug mode and you'll see what strategies you 
+   need to inject to override it's behavior 
+
+## Add custom code before and/or after default CRUD methods logic 
+
+There are few ways to do so:
+* Use `EasyCrudWireTap` mechanism to supply pre/post code for each CRUD method -- this my preferred way of doing so 
+  because it fits well within OCP design principle and seems like easiest way of achieving the goal. Validation and 
+  Authorization is implemented as WireTaps 
+* Subclass `EasyCrudServiceImpl` and override needed methods
+* Create Wrapper class that implements Service interface but that delegates all impl to real impl, and put your code 
+  around calls to actual impl 
+
+In order to create your own WireTap just do the following:
+### 1. Create WireTap 
+
+Create a class that implements interface `EasyCrudWireTap`, easiest way to do so is to extend `EasyCrudWireTapAbstract` 
+because it gives default impl of the interface so you don't have to write boiler-plate code. And just enable method that 
+you want to implement. 
+
+Let's say you want to set default values to some fields upon creation:
+
 ```java
-public class Refs extends ReferencesRegistryPredefinedImpl {
-	public static final Ref deviceToEnv = new Ref("deviceEnv", 
-		"term.device", "envId", "term.environment", "id",
-		RefQuantity.Many2One);
+public class BackgroundTaskFieldsPatcherWireTap extends EasyCrudWireTapAbstract<BackgroundTask> {
+    @Override
+    public boolean requiresOnCreate() {
+        return true;
+    }
 
-	public static final Ref envToDevices = new Ref("envDevices", 
-		"term.environment", "id", "term.device", "envId",
-		RefQuantity.One2Many);
-
-	public Refs() {
-		super(new Ref[] { deviceToEnv, envToDevices });
-	}
+    @Override
+    public void beforeCreate(BackgroundTask dto) {
+        super.beforeCreate(dto);
+        dto.setStatus(BackgroundTaskStatus.QUEUED);
+    }
 }
 ```
-NOTE 1: As you can see same reference is described here from both directions from `environment` to `device` and vice versa. You don't have to do it same way - specify only those references you'll want to be automatically resolved when loading object graphs. The reason why I have both directions described here is because:
-* sometimes I have instance of `environment` at hand and I want to load all `devices` which belong to this environment. 
-* in other cases I have list of `devices` at hand and I need to load referenced `environments`
 
-### Configuring beans
-It could be as simple as just declaring couple Spring beans, i.e.:
-```xml
-<bean class="org.summerb.approaches.jdbccrud.impl.EasyCrudServiceResolverSpringImpl" />
-<bean class="org.summerb.approaches.jdbccrud.impl.relations.DataSetLoaderImpl" />
-<bean class="ru.skarpushin.smarthome.devicesgate.services.envconfig.rows.Refs" />
-```
-
-### Example use:
+### 2. Augment service bean initialization
 ```java
-DataSet dataSet = new DataSet();
-dataSetLoader.loadObjectAndItsRefs(envId, "term.environment", 
-	dataSet, Refs.envToDevices, Refs.deviceAssets);
-EnvironmentRow envRow = (EnvironmentRow) dataSet.get("term.environment").find(envId);
-List<DeviceRow> deviceRows = EasyCrudDomUtils.buildReferencedObjectsList(
-	dataSet, envRow, Refs.envToDevices, DeviceRow.class, x -> x);
-```
-NOTE:
-* You can specify multiple references to resolve. Notice how `Refs.deviceAssets` is just added as another value to var args array
-* Every time we're referring to entity type we use `messageCode` the very same one that is returned by `EasyCrudService#getEntityTypeMessageCode`
-* When traversing one-to-many relations it's easier to get list of referencees using provided helper method `EasyCrudDomUtils.buildReferencedObjectsList` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/impl/relations/EasyCrudDomUtils.html#buildReferencedObjectsList-org.summerb.approaches.jdbccrud.api.dto.datapackage.DataSet-TSrcDto-org.summerb.approaches.jdbccrud.api.dto.relations.Ref-java.lang.Class-java.util.function.Function-)). It also allows you to convert data before return (in case you want to build DOM from DTOs)
-
-## Using Domain Object Model
-Why?
-* Instead of working with plain structure of `DataSet` you can create Domain Object Model structure
-* This case is useful when you want to have a list of child objects or you want to have an instance of actual referenced object instead of it's id
-
-In order to make it work you need to:
-1. Create classes which will represent your DOM structure
-2. Each DOM class must extend corresponding DTO class
-3. Add fields to DOM classes which will represent references
-4. Use `DomLoader` ([javadoc](https://www.javadoc.io/doc/com.github.skarpushin/summerb-easycrud/latest/org/summerb/easycrud/api/relations/DomLoader.html)) to load and populate DOM
-
-Example:
-```java
-public class Device extends DeviceRow {
-	private Env env;
-	private List<Asset> assets;
-	// getters and setters omitted
+@Bean
+BackgroundTaskService backgroundTaskService(EasyCrudScaffold easyCrudScaffold) {
+    return easyCrudScaffold.fromService(
+            BackgroundTaskService.class,
+            BackgroundTaskService.TERM,
+            "background_tasks",
+            new BackgroundTaskFieldsPatcherWireTap<>());
 }
-
-public class Env extends EnvironmentRow {
-	private List<Device> devices;
-}
-
-// DomLoader is initialized like this
-DomLoader domLoader = new DomLoaderImpl(dataSetLoader, easyCrudServiceResolver);
-
-// somewhere in controller or other backend code
-Env env = domLoader.load(Env.class, envId, Refs.envToDevices);
 ```
+
+## Define all interfaces and classes manually
+When Scaffolded functionality is not enough and you want to have full control over Service and Dao logic and 
+implementation, you'll need to manually define each "building block":
+1. Row class - _same as with Scaffolding_
+1. DAO interface - own interface that extends `EasyCrudDao`
+2. DAO class - own class that extends `EasyCrudDaoSqlImpl` and implements interface defined on previous step.
+    1. Also make sure to set `rowClass` and `tableName` fields in constructor 
+1. Service interface - _same as with Scaffolding_
+2. Service class - own class that extends `EasyCrudServiceImpl` and implements interface from previous step
+   1. Also make sure to set `rowClass` field in constructor
+1. Optional. Validation class - _same as with Scaffolding_
+1. Optional. Authorization - _same as with Scaffolding_
+1. Setup wiring of all created beans
+1. Optional. REST controller class - _same as with Scaffolding_
+
+# Post-Scriptum
+I hope this gave you enough outlook for a head start. EasyCrud actually provides more than I described here, but then 
+this document might get too boring. Whenever you need to adjust behavior of EasyCrud just look in th underlying 
+implementation, I bet you'll quickly see extension points where you can adjust behavior as needed. Or ask me.

@@ -1,5 +1,6 @@
 package org.summerb.easycrud.api.query;
 
+import java.util.Objects;
 import org.summerb.easycrud.api.query.restrictions.base.Restriction;
 
 public class FieldCondition extends Condition {
@@ -29,40 +30,16 @@ public class FieldCondition extends Condition {
   }
 
   @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((fieldName == null) ? 0 : fieldName.hashCode());
-    result = prime * result + ((restriction == null) ? 0 : restriction.hashCode());
-    return result;
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    FieldCondition that = (FieldCondition) o;
+    return Objects.equals(fieldName, that.fieldName)
+        && Objects.equals(restriction, that.restriction);
   }
 
   @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    FieldCondition other = (FieldCondition) obj;
-    if (fieldName == null) {
-      if (other.fieldName != null) {
-        return false;
-      }
-    } else if (!fieldName.equals(other.fieldName)) {
-      return false;
-    }
-    if (restriction == null) {
-      if (other.restriction != null) {
-        return false;
-      }
-    } else if (!restriction.equals(other.restriction)) {
-      return false;
-    }
-    return true;
+  public int hashCode() {
+    return Objects.hash(fieldName, restriction);
   }
 }

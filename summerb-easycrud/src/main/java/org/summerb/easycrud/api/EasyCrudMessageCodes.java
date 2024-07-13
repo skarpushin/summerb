@@ -26,4 +26,12 @@ public class EasyCrudMessageCodes {
   public static final String UNEXPECTED_FAILED_TO_DELETE = "easycrud.unexpecteFailed.delete";
   public static final String UNEXPECTED_FAILED_TO_UPDATE = "easycrud.unexpecteFailed.update";
   public static final String UNEXPECTED_FAILED_TO_FIND = "easycrud.unexpecteFailed.find";
+  public static final String EXCEPTION_DAO_CONCURRENT_MODIFICATION =
+      "exception.dao.concurrentModification";
+  public static final String EXCEPTION_DAO_DATA_TRUNCATION_ERROR =
+      "exception.dao.dataTruncationError";
+  public static final String VALIDATION_REFERENCED_ROW_CANNOT_BE_DELETED =
+      "validation.referencedRowCannotBeDeleted";
+  public static final String VALIDATION_REFERENCED_OBJECT_NOT_FOUND =
+      "validation.referencedObjectNotFound";
 }

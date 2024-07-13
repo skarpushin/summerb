@@ -1,8 +1,8 @@
 package org.summerb.easycrud.api.query.restrictions;
 
-import org.summerb.easycrud.api.query.restrictions.base.NegateableRestriction;
-
 import com.google.common.base.Preconditions;
+import java.util.Objects;
+import org.summerb.easycrud.api.query.restrictions.base.NegateableRestriction;
 
 public class StringLengthBetween extends NegateableRestriction<StringLengthBetween> {
 
@@ -33,32 +33,16 @@ public class StringLengthBetween extends NegateableRestriction<StringLengthBetwe
   }
 
   @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = super.hashCode();
-    result = prime * result + lowerBoundary;
-    result = prime * result + upperBoundary;
-    return result;
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    if (!super.equals(o)) return false;
+    StringLengthBetween that = (StringLengthBetween) o;
+    return lowerBoundary == that.lowerBoundary && upperBoundary == that.upperBoundary;
   }
 
   @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (!super.equals(obj)) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    StringLengthBetween other = (StringLengthBetween) obj;
-    if (lowerBoundary != other.lowerBoundary) {
-      return false;
-    }
-    if (upperBoundary != other.upperBoundary) {
-      return false;
-    }
-    return true;
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), lowerBoundary, upperBoundary);
   }
 }

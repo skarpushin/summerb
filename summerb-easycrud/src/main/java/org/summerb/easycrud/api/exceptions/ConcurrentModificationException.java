@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.summerb.easycrud.api.exceptions;
 
+import org.summerb.easycrud.api.EasyCrudMessageCodes;
 import org.summerb.easycrud.api.row.HasTimestamps;
 import org.summerb.i18n.HasMessageArgs;
 import org.summerb.i18n.HasMessageArgsConverters;
@@ -23,8 +24,12 @@ import org.summerb.i18n.MessageArgConverter;
 import org.summerb.i18n.MessageCodeMessageArgConverter;
 
 /**
- * Exception is thrown if record was already updated by someone else. Normally {@link
- * HasTimestamps#getModifiedAt()} is used for optimistic locking logic
+ * Exception is thrown if record was already updated by someone else.
+ *
+ * <p>Normally {@link HasTimestamps#getModifiedAt()} is used for optimistic locking logic. So when
+ * you update a record, WHERE clause includes not only ID of the Row but also current known value
+ * for modifiedAt. So if current DB value for that field have changed on a background, UPDATE query
+ * will return affectedRows == 0 and this would mean Concurrent Modification happen
  *
  * @author sergey.karpushin
  */
@@ -37,7 +42,9 @@ public class ConcurrentModificationException extends Exception
   protected String objectTypeName;
   protected String objectIdentifier;
 
-  /** @deprecated only for io */
+  /**
+   * @deprecated only for io
+   */
   @Deprecated
   public ConcurrentModificationException() {}
 
@@ -48,7 +55,7 @@ public class ConcurrentModificationException extends Exception
 
   @Override
   public String getMessageCode() {
-    return "exception.dao.concurrentModification";
+    return EasyCrudMessageCodes.EXCEPTION_DAO_CONCURRENT_MODIFICATION;
   }
 
   @Override

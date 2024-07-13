@@ -51,7 +51,7 @@ import org.summerb.easycrud.api.row.datapackage.DataTable;
 import org.summerb.easycrud.api.row.relations.Ref;
 import org.summerb.easycrud.impl.EasyCrudServiceImpl;
 import org.summerb.easycrud.impl.auth.EascyCrudAuthorizationPerRowStrategy;
-import org.summerb.easycrud.impl.auth.EascyCrudAuthorizationPerTableStrategy;
+import org.summerb.easycrud.impl.auth.EasyCrudAuthorizationPerTableStrategy;
 import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapDelegatingImpl;
 import org.summerb.easycrud.mvc.filter.FilteringParamsToQueryConverter;
 import org.summerb.easycrud.mvc.filter.FilteringParamsToQueryConverterImpl;
@@ -132,9 +132,9 @@ public class EasyCrudRestControllerBase<
   protected PermissionsResolverStrategy<TId, TRow> tryGetPermissionsResolverFromWireTap(
       EasyCrudWireTap wireTap) {
 
-    if (wireTap instanceof EascyCrudAuthorizationPerTableStrategy) {
+    if (wireTap instanceof EasyCrudAuthorizationPerTableStrategy) {
       return new PermissionsResolverStrategyPerTable(
-          (EascyCrudAuthorizationPerTableStrategy) wireTap);
+          (EasyCrudAuthorizationPerTableStrategy) wireTap);
     } else if (wireTap instanceof EascyCrudAuthorizationPerRowStrategy) {
       return new PermissionsResolverStrategyPerRow((EascyCrudAuthorizationPerRowStrategy) wireTap);
     } else if (wireTap instanceof EasyCrudWireTapDelegatingImpl) {

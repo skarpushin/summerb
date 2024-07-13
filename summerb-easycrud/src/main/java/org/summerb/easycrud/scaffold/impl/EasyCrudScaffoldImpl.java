@@ -42,7 +42,7 @@ import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.impl.EasyCrudServiceImpl;
 import org.summerb.easycrud.impl.dao.SqlTypeOverrides;
 import org.summerb.easycrud.impl.dao.mysql.EasyCrudDaoInjections;
-import org.summerb.easycrud.impl.dao.mysql.EasyCrudDaoMySqlImpl;
+import org.summerb.easycrud.impl.dao.mysql.EasyCrudDaoSqlImpl;
 import org.summerb.easycrud.impl.dao.mysql.QueryToSqlMySqlImpl;
 import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapDelegatingImpl;
 import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapEventBusImpl;
@@ -173,6 +173,13 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
         continue;
       }
       beanFactory.autowireBean(inj);
+      if (inj instanceof InitializingBean) {
+        try {
+          ((InitializingBean) inj).afterPropertiesSet();
+        } catch (Exception e) {
+          throw new RuntimeException("Calling afterPropertiesSet failed on " + inj, e);
+        }
+      }
     }
   }
 
@@ -305,7 +312,7 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
   protected <TId, TDto extends HasId<TId>> EasyCrudDao<TId, TDto> buildDao(
       Class<TDto> rowClass, String tableName, Object... injections) throws Exception {
 
-    EasyCrudDaoMySqlImpl<TId, TDto> ret =
+    EasyCrudDaoSqlImpl<TId, TDto> ret =
         instantiateAndAutowireDao(dataSource, tableName, rowClass);
     autowireInjections(injections);
     setDaoInjectionsIfAny(ret, injections);
@@ -315,7 +322,7 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
 
   @SuppressWarnings("unchecked")
   protected <TId, TDto extends HasId<TId>> void setDaoInjectionsIfAny(
-      EasyCrudDaoMySqlImpl<TId, TDto> ret, Object... injections) {
+          EasyCrudDaoSqlImpl<TId, TDto> ret, Object... injections) {
 
     var conversionService = find(injections, ConversionService.class);
     if (conversionService != null) {
@@ -364,10 +371,10 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
   }
 
   protected <TDto extends HasId<TId>, TId>
-      EasyCrudDaoMySqlImpl<TId, TDto> instantiateAndAutowireDao(
+  EasyCrudDaoSqlImpl<TId, TDto> instantiateAndAutowireDao(
           DataSource dataSource, String tableName, Class<TDto> rowClass) {
-    EasyCrudDaoMySqlImpl<TId, TDto> ret =
-        new EasyCrudDaoMySqlImpl<>(dataSource, tableName, rowClass);
+    EasyCrudDaoSqlImpl<TId, TDto> ret =
+        new EasyCrudDaoSqlImpl<>(dataSource, tableName, rowClass);
     beanFactory.autowireBean(ret);
     return ret;
   }

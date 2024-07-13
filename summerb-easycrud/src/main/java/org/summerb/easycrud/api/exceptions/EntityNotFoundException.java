@@ -19,7 +19,7 @@ import org.summerb.i18n.HasMessageArgs;
 import org.summerb.i18n.HasMessageCode;
 
 /**
- * Base class for exceptions for case when something wasn't found by it's identity
+ * Base class for exceptions for case when something wasn't found by its identity
  *
  * @author sergey.karpushin
  */
