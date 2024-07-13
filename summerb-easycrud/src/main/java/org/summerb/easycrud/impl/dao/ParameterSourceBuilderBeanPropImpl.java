@@ -15,75 +15,155 @@
  ******************************************************************************/
 package org.summerb.easycrud.impl.dao;
 
-import java.sql.Types;
-
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.PropertyAccessorFactory;
-import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.summerb.easycrud.api.ParameterSourceBuilder;
-
 import com.google.common.base.Preconditions;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import java.beans.PropertyDescriptor;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.PropertyAccessorFactory;
+import org.springframework.jdbc.core.StatementCreatorUtils;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.support.JdbcUtils;
+import org.springframework.util.StringUtils;
+import org.summerb.easycrud.api.ParameterSourceBuilder;
 
-/** @author sergey.karpushin */
+/**
+ * This builder serves 3 purposes:
+ *
+ * <p>1. Provide extension point for parameter source builders
+ *
+ * <p>2. Support SqlTypeOverride for fields that needs this
+ *
+ * <p>3. And last but not least - heavily optimize compared to Spring's default implementation which
+ * spends too much time again and again to resolve same data. So here we're using caches a lot
+ *
+ * @param <TRow> row type
+ *
+ * @author sergey.karpushin
+ */
 public class ParameterSourceBuilderBeanPropImpl<TRow> implements ParameterSourceBuilder<TRow> {
+  protected final Logger log = LoggerFactory.getLogger(getClass());
+
+  protected static final SqlTypeOverride NO_OVERRIDE = new SqlTypeOverride();
+  protected static final String COLUMN_NOT_MAPPED = "COLUMN_NOT_MAPPED";
+
   protected SqlTypeOverrides overrides;
+  protected BeanWrapper beanWrapper;
+  protected Class<TRow> rowClazz;
+  protected Set<String> readableProperties;
+  protected Map<String, String> mapLowerCaseToPropertyName;
+  protected LoadingCache<String, String> columnNameToFieldNameCache;
+  protected LoadingCache<String, SqlTypeOverride> fieldNameToOverrideCache;
+  protected LoadingCache<String, Boolean> columnNameToHasValueCache;
+  protected LoadingCache<String, Integer> fieldNameToSqlType;
+  protected String[] propertyNames;
 
-  protected static final SqlTypeOverride NOT_FOUND = new SqlTypeOverride();
-
-  public ParameterSourceBuilderBeanPropImpl() {
-    this.overrides = new SqlTypeOverridesDefaultImpl();
-  }
-
-  public ParameterSourceBuilderBeanPropImpl(SqlTypeOverrides overrides) {
+  public ParameterSourceBuilderBeanPropImpl(SqlTypeOverrides overrides, Class<TRow> rowClazz) {
+    Preconditions.checkNotNull(rowClazz, "rowClazz required");
     Preconditions.checkNotNull(overrides, "override required");
     this.overrides = overrides;
+    this.rowClazz = rowClazz;
+
+    beanWrapper = buildBeanWrapper(rowClazz);
+    fieldNameToOverrideCache = buildFieldNameToOverrideCache();
+    columnNameToHasValueCache = buildColumnNameToHasValueCache();
+    columnNameToFieldNameCache = buildColumnNameToFieldNameCache();
+    fieldNameToSqlType = buildFieldNameToSqlTypeCache();
+
+    readableProperties = buildReadableProperties();
+    mapLowerCaseToPropertyName =
+        readableProperties.stream().collect(Collectors.toMap(String::toLowerCase, v -> v));
+    propertyNames = StringUtils.toStringArray(readableProperties);
+  }
+
+  protected BeanWrapper buildBeanWrapper(Class<TRow> rowClazz) {
+    try {
+      return PropertyAccessorFactory.forBeanPropertyAccess(
+          rowClazz.getDeclaredConstructor().newInstance());
+    } catch (Exception e) {
+      throw new RuntimeException(
+          "Failed to initialize default bean wrapper for row class " + rowClazz, e);
+    }
+  }
+
+  protected HashSet<String> buildReadableProperties() {
+    HashSet<String> ret = new HashSet<>();
+    PropertyDescriptor[] props = this.beanWrapper.getPropertyDescriptors();
+    for (PropertyDescriptor pd : props) {
+      if (this.beanWrapper.isReadableProperty(pd.getName())) {
+        ret.add(pd.getName());
+      }
+    }
+    return ret;
+  }
+
+  protected LoadingCache<String, Integer> buildFieldNameToSqlTypeCache() {
+    return CacheBuilder.newBuilder().build(buildFieldNameToSqlTypeCacheLoader());
+  }
+
+  protected LoadingCache<String, String> buildColumnNameToFieldNameCache() {
+    return CacheBuilder.newBuilder().build(buildColumnNameToFieldNameCacheLoader());
+  }
+
+  protected LoadingCache<String, Boolean> buildColumnNameToHasValueCache() {
+    return CacheBuilder.newBuilder().build(buildColumnNameToHasValueCacheLoader());
+  }
+
+  protected LoadingCache<String, SqlTypeOverride> buildFieldNameToOverrideCache() {
+    return CacheBuilder.newBuilder().build(buildFieldNameToOverrideCacheLoader());
   }
 
   @Override
   public SqlParameterSource buildParameterSource(TRow row) {
-    BeanWrapper beanWrapper = PropertyAccessorFactory.forBeanPropertyAccess(row);
+    return new BeanPropertySqlParameterSourceEx<>(
+        row,
+        columnNameToFieldNameCache,
+        columnNameToHasValueCache,
+        fieldNameToOverrideCache,
+        fieldNameToSqlType,
+        propertyNames);
+  }
 
-    /** We're going an extra mile here in attempt to optimize performance */
-    LoadingCache<String, SqlTypeOverride> fieldNameToOverrideCache =
-        CacheBuilder.newBuilder().build(buildOverrideLoader(beanWrapper));
-
-    return new BeanPropertySqlParameterSource(row) {
+  protected CacheLoader<? super String, String> buildColumnNameToFieldNameCacheLoader() {
+    return new CacheLoader<>() {
       @Override
-      public Object getValue(String paramName) throws IllegalArgumentException {
-        var rawValue = super.getValue(paramName);
-        if (rawValue == null) {
-          return null;
+      public String load(String column) {
+        if (readableProperties.contains(column)) {
+          return column;
         }
 
-        SqlTypeOverride override = fieldNameToOverrideCache.getUnchecked(paramName);
-        if (override != NOT_FOUND) {
-          return override.convert(rawValue);
+        String lowerCaseName = column.toLowerCase();
+        if (readableProperties.contains(lowerCaseName)) {
+          return lowerCaseName;
         }
 
-        return rawValue;
-      }
-
-      @Override
-      public int getSqlType(String paramName) {
-        SqlTypeOverride override = fieldNameToOverrideCache.getUnchecked(paramName);
-        if (override == NOT_FOUND) {
-          return super.getSqlType(paramName);
+        String propertyName = JdbcUtils.convertUnderscoreNameToPropertyName(column);
+        if (readableProperties.contains(propertyName)) {
+          return propertyName;
         }
 
-        return override.getSqlType();
+        String fieldName = mapLowerCaseToPropertyName.get(lowerCaseName);
+        if (fieldName != null) {
+          return fieldName;
+        }
+
+        log.error("Column {} could not be mapped to field name of {}", column, rowClazz);
+        return COLUMN_NOT_MAPPED;
       }
     };
   }
 
-  protected CacheLoader<String, SqlTypeOverride> buildOverrideLoader(
-      BeanWrapper beanWrapper) {
+  protected CacheLoader<String, SqlTypeOverride> buildFieldNameToOverrideCacheLoader() {
     return new CacheLoader<>() {
       @Override
-      public SqlTypeOverride load(String fieldName) throws Exception {
+      public SqlTypeOverride load(String fieldName) {
         Class<?> fieldType = beanWrapper.getPropertyType(fieldName);
 
         SqlTypeOverride override = overrides.findOverrideForClass(fieldType);
@@ -91,7 +171,32 @@ public class ParameterSourceBuilderBeanPropImpl<TRow> implements ParameterSource
           return override;
         }
 
-        return NOT_FOUND;
+        return NO_OVERRIDE;
+      }
+    };
+  }
+
+  protected CacheLoader<String, Boolean> buildColumnNameToHasValueCacheLoader() {
+    return new CacheLoader<>() {
+      @Override
+      public Boolean load(String columnName) {
+        return !COLUMN_NOT_MAPPED.equals(columnNameToFieldNameCache.getUnchecked(columnName));
+      }
+    };
+  }
+
+  private CacheLoader<? super String, Integer> buildFieldNameToSqlTypeCacheLoader() {
+    return new CacheLoader<>() {
+      @Override
+      public Integer load(String fieldName) {
+        Class<?> fieldType = beanWrapper.getPropertyType(fieldName);
+
+        SqlTypeOverride override = overrides.findOverrideForClass(fieldType);
+        if (override != null) {
+          return override.getSqlType();
+        }
+
+        return StatementCreatorUtils.javaTypeToSqlParameterType(fieldType);
       }
     };
   }

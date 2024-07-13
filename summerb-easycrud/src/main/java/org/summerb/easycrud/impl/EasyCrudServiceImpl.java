@@ -287,6 +287,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
     }
   }
 
+  // TODO: Performance: come up with a faster clonning logic
   @SuppressWarnings("unchecked")
   protected TRow copyDto(TRow row) {
     try {

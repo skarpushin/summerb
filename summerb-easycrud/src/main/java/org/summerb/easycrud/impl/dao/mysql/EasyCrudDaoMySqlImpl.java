@@ -166,7 +166,7 @@ public class EasyCrudDaoMySqlImpl<TId, TRow extends HasId<TId>> extends TableDao
   }
 
   protected ParameterSourceBuilderBeanPropImpl<TRow> buildDefaultParameterSourceBuilder() {
-    return new ParameterSourceBuilderBeanPropImpl<>(sqlTypeOverrides);
+    return new ParameterSourceBuilderBeanPropImpl<>(sqlTypeOverrides, rowClass);
   }
 
   protected RowMapper<TRow> buildDefaultRowMapper(
