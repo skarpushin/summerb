@@ -1,6 +1,6 @@
 package org.summerb.validation;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -28,7 +28,7 @@ public class ValidationContextEmailValidatorTest {
         "veryMuchValid@email.com" // capital case characters
       })
   public void testValidateEmailFormat_expectOkForValidEmails(String email) {
-    assertEquals(true, ValidationContext.isValidEmail(email));
+    assertTrue(ValidationContext.isValidEmail(email));
   }
 
   /** Examples are taken from https://en.wikipedia.org/wiki/Email_address */
@@ -44,6 +44,6 @@ public class ValidationContextEmailValidatorTest {
         "i_like_underscore@but_its_not_allowed_in_this_part.example.com"
       })
   public void testValidateEmailFormat_expectFailForInvalidEmails(String email) {
-    assertEquals(false, ValidationContext.isValidEmail(email));
+    assertFalse(ValidationContext.isValidEmail(email));
   }
 }

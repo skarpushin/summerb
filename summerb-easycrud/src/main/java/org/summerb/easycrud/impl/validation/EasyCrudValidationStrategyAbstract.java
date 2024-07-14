@@ -15,14 +15,13 @@
  ******************************************************************************/
 package org.summerb.easycrud.impl.validation;
 
+import com.google.common.base.Preconditions;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.summerb.easycrud.api.EasyCrudValidationStrategy;
 import org.summerb.validation.ValidationContext;
 import org.summerb.validation.ValidationContextConfig;
 import org.summerb.validation.ValidationContextFactory;
-
-import com.google.common.base.Preconditions;
 
 /**
  * Use this abstract class to implement {@link EasyCrudValidationStrategy} and avoid majority of
@@ -51,7 +50,7 @@ public abstract class EasyCrudValidationStrategyAbstract<TRow>
   @Autowired protected ValidationContextFactory validationContextFactory;
 
   @Override
-  public void afterPropertiesSet() throws Exception {
+  public void afterPropertiesSet() {
     Preconditions.checkArgument(
         validationContextFactory != null, "validationContextFactory required");
   }

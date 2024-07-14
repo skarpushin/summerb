@@ -15,7 +15,7 @@
  ******************************************************************************/
 package org.summerb.stringtemplate.impl;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 import org.summerb.stringtemplate.api.StringTemplate;
@@ -24,8 +24,6 @@ public class StringTemplateCompilerSpElImplTest {
 
   /**
    * The object that is being tested.
-   *
-   * @see ru.skarpushin.services.stringtemplate.impl. StringTemplateCompilerSpElImpl
    */
   private StringTemplateFactorySpElImpl fixture = new StringTemplateFactorySpElImpl();
 

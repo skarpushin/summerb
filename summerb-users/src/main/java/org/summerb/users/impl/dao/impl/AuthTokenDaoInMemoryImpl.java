@@ -15,6 +15,9 @@
  ******************************************************************************/
 package org.summerb.users.impl.dao.impl;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -25,7 +28,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -35,10 +37,6 @@ import org.summerb.users.api.dto.AuthToken;
 import org.summerb.users.impl.dao.AuthTokenDao;
 import org.summerb.utils.jmx.MapSizeMXBean;
 import org.summerb.utils.jmx.MapSizeMXBeanImpl;
-
-import com.google.common.base.Preconditions;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 
 public class AuthTokenDaoInMemoryImpl implements AuthTokenDao, InitializingBean, DisposableBean {
   protected Logger log = LoggerFactory.getLogger(getClass());
@@ -110,7 +108,7 @@ public class AuthTokenDaoInMemoryImpl implements AuthTokenDao, InitializingBean,
   }
 
   @Override
-  public synchronized void afterPropertiesSet() throws Exception {
+  public synchronized void afterPropertiesSet() {
     mxBean = new MapSizeMXBeanImpl("AuthTokens", tokens);
     loadPersistedTokens();
   }
@@ -171,7 +169,7 @@ public class AuthTokenDaoInMemoryImpl implements AuthTokenDao, InitializingBean,
   }
 
   @Override
-  public synchronized void destroy() throws Exception {
+  public synchronized void destroy() {
     persistTokens();
   }
 

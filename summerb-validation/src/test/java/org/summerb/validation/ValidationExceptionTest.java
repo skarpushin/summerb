@@ -1,15 +1,11 @@
 package org.summerb.validation;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
 import java.util.List;
-
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.summerb.validation.errors.MustBeEmpty;
 import org.summerb.validation.errors.MustBeGreater;
@@ -43,14 +39,14 @@ class ValidationExceptionTest {
     assertEquals(2, f.getErrorDescriptionObject().getList().size());
     assertEquals(ValidationException.MESSAGE_CODE, f.getMessageCode());
 
-    assertNotNull(f.findErrorOfType(MustHaveText.class));
-    assertNull(f.findErrorOfType(MustBeEmpty.class));
+    Assertions.assertNotNull(f.findErrorOfType(MustHaveText.class));
+    Assertions.assertNull(f.findErrorOfType(MustBeEmpty.class));
 
-    assertTrue(f.hasErrorOfType(MustHaveText.class));
-    assertFalse(f.hasErrorOfType(MustBeEmpty.class));
+    Assertions.assertTrue(f.hasErrorOfType(MustHaveText.class));
+    Assertions.assertFalse(f.hasErrorOfType(MustBeEmpty.class));
 
-    assertNotNull(f.findErrorOfTypeForField(MustHaveText.class, "asd"));
-    assertNull(f.findErrorOfTypeForField(MustBeEmpty.class, "qqq"));
+    Assertions.assertNotNull(f.findErrorOfTypeForField(MustHaveText.class, "asd"));
+    Assertions.assertNull(f.findErrorOfTypeForField(MustBeEmpty.class, "qqq"));
 
     assertEquals(0, f.findErrorsForField("qqq").size());
     assertEquals(1, f.findErrorsForField("asd").size());

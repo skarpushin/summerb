@@ -15,9 +15,7 @@
  ******************************************************************************/
 package integr.org.summerb.easycrud;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import integr.org.summerb.easycrud.config.EasyCrudIntegrTestConfig;
 import integr.org.summerb.easycrud.config.EmbeddedDbConfig;
@@ -38,7 +36,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.annotation.ProfileValueSourceConfiguration;
-import org.springframework.test.annotation.SystemProfileValueSource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,7 +56,7 @@ import org.summerb.validation.ValidationException;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {EmbeddedDbConfig.class, EasyCrudIntegrTestConfig.class})
-@ProfileValueSourceConfiguration(SystemProfileValueSource.class)
+@ProfileValueSourceConfiguration()
 @Transactional
 @SuppressWarnings({"unchecked", "deprecation", "rawtypes"})
 @AutoConfigureEmbeddedDatabase(type = DatabaseType.MARIADB, refresh = RefreshMode.AFTER_CLASS)
@@ -390,8 +387,7 @@ public class DataSetLoaderTest {
   }
 
   protected Set<Object> ids(Object... pids) {
-    Set<Object> ids = new HashSet<>(Arrays.asList(pids));
-    return ids;
+    return new HashSet<>(Arrays.asList(pids));
   }
 
   protected Set<Object> ids(HasId... pids) {

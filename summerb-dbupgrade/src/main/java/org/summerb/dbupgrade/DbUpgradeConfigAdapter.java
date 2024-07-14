@@ -16,7 +16,6 @@
 package org.summerb.dbupgrade;
 
 import javax.sql.DataSource;
-
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
@@ -47,7 +46,7 @@ public abstract class DbUpgradeConfigAdapter {
   }
 
   @Bean
-  protected abstract UpgradePackageMetaResolver upgradePackageMetaResolver() throws Exception;
+  protected abstract UpgradePackageMetaResolver upgradePackageMetaResolver();
 
   @Bean
   protected VersionTableDbDialect versionTableDbDialect() {

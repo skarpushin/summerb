@@ -1,19 +1,14 @@
 package org.summerb.validation.errors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
+import com.google.common.reflect.ClassPath;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +17,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.summerb.i18n.I18nUtils;
 import org.summerb.validation.ValidationError;
-
-import com.google.common.reflect.ClassPath;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {ValidationMessageSourceContextConfig.class})
@@ -59,8 +52,8 @@ class MessageCodesIntegrTest {
             .collect(Collectors.toSet());
 
     assertFalse(
-        "package org.summerb.validation.errors must contain ValidationErrors. If you renamed pakcge -- make sure to update name in this test",
-        validationErrorsClasses.isEmpty());
+        validationErrorsClasses.isEmpty(),
+        "package org.summerb.validation.errors must contain ValidationErrors. If you renamed pakcge -- make sure to update name in this test");
 
     for (Class<?> clazz : validationErrorsClasses) {
       String messageCode = getMessageCode(clazz);

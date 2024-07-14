@@ -15,10 +15,9 @@
  ******************************************************************************/
 package org.summerb.webappboilerplate.utils.exceptions.translator;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collections;
-
 import org.junit.jupiter.api.Test;
 
 public class ExceptionTranslatorDelegatingImplTest {

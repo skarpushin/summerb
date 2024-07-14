@@ -15,8 +15,7 @@
  ******************************************************************************/
 package integr.org.summerb.users.impl.dao.impl;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import integr.org.summerb.easycrud.config.EmbeddedDbConfig;
 import integr.org.summerb.users.impl.config.UserServicesTestConfig;
@@ -27,7 +26,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.ProfileValueSourceConfiguration;
-import org.springframework.test.annotation.SystemProfileValueSource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +36,7 @@ import org.summerb.users.api.dto.UserFactory;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {EmbeddedDbConfig.class, UserServicesTestConfig.class})
-@ProfileValueSourceConfiguration(SystemProfileValueSource.class)
+@ProfileValueSourceConfiguration()
 @Transactional
 @AutoConfigureEmbeddedDatabase(type = DatabaseType.MARIADB, refresh = RefreshMode.AFTER_CLASS)
 public class PasswordTest {

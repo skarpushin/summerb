@@ -15,11 +15,7 @@
  ******************************************************************************/
 package integr.org.summerb.properties.impl.dao.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase.DatabaseType;
@@ -62,8 +58,7 @@ public class PropertyServiceImplTest {
   }
 
   @Test
-  public void testPutSubjectProperty_blackbox_expectToFindPropertyWhichWasJustSet()
-      throws Exception {
+  public void testPutSubjectProperty_blackbox_expectToFindPropertyWhichWasJustSet() {
     propertyService.putSubjectProperty("test", "test.domain", "1", "some.property", "value1");
 
     String result =
@@ -72,7 +67,7 @@ public class PropertyServiceImplTest {
   }
 
   @Test
-  public void testPutSubjectProperty_blackbox_expectToFindExactlyTwoProperties() throws Exception {
+  public void testPutSubjectProperty_blackbox_expectToFindExactlyTwoProperties() {
     propertyService.putSubjectProperty("test", "test.domain", "1", "some.property1", "value1");
     propertyService.putSubjectProperty("test", "test.domain", "1", "some.property2", "value2");
     propertyService.putSubjectProperty("test", "test.domain", "2", "some.property3", "value3");
@@ -82,7 +77,7 @@ public class PropertyServiceImplTest {
   }
 
   @Test
-  public void testPutSubjectProperty_whitebox_expectCorretPropertyNames() throws Exception {
+  public void testPutSubjectProperty_whitebox_expectCorretPropertyNames() {
     propertyService.putSubjectProperty("test", "test.domain", "1", "some.property1", "value1");
     propertyService.putSubjectProperty("test", "test.domain", "1", "some.property2", "value2");
     propertyService.putSubjectProperty("test", "test.domain", "2", "some.property1", "value3");
@@ -93,7 +88,7 @@ public class PropertyServiceImplTest {
   }
 
   @Test
-  public void testPutSubjectProperty_expectNullValuesHandledOk() throws Exception {
+  public void testPutSubjectProperty_expectNullValuesHandledOk() {
     propertyService.putSubjectProperty("test", "test.domain", "1", "some.property1", "value1");
     propertyService.putSubjectProperty("test", "test.domain", "1", "some.property2", null);
 
@@ -107,8 +102,8 @@ public class PropertyServiceImplTest {
   }
 
   @Test
-  public void testPutSubjectProperties_whitebox_expectCorretPropertyNames() throws Exception {
-    List<NamedProperty> propList = new ArrayList<NamedProperty>();
+  public void testPutSubjectProperties_whitebox_expectCorretPropertyNames() {
+    List<NamedProperty> propList = new ArrayList<>();
     propList.add(new NamedProperty("some.property1", "value1"));
     propList.add(new NamedProperty("some.property2", "value2"));
     propertyService.putSubjectProperties("test", "test.domain", "1", propList);
@@ -120,8 +115,8 @@ public class PropertyServiceImplTest {
   }
 
   @Test
-  public void testPutSubjectsProperty_whitebox_expectCorretPropertyNames() throws Exception {
-    List<String> subjects = new ArrayList<String>();
+  public void testPutSubjectsProperty_whitebox_expectCorretPropertyNames() {
+    List<String> subjects = new ArrayList<>();
     subjects.add("1");
     subjects.add("2");
     propertyService.putSubjectsProperty(
@@ -134,8 +129,8 @@ public class PropertyServiceImplTest {
   }
 
   @Test
-  public void testFindSubjectsProperties_whitebox_expectCorretPropertyNames() throws Exception {
-    List<String> subjects = new ArrayList<String>();
+  public void testFindSubjectsProperties_whitebox_expectCorretPropertyNames() {
+    List<String> subjects = new ArrayList<>();
     subjects.add("1");
     subjects.add("2");
     propertyService.putSubjectsProperty(
@@ -152,8 +147,8 @@ public class PropertyServiceImplTest {
   }
 
   @Test
-  public void testFindSubjectsProperty_whitebox_expectCorretPropertyNames() throws Exception {
-    List<String> subjects = new ArrayList<String>();
+  public void testFindSubjectsProperty_whitebox_expectCorretPropertyNames() {
+    List<String> subjects = new ArrayList<>();
     subjects.add("1");
     subjects.add("2");
     propertyService.putSubjectsProperty(
@@ -167,7 +162,7 @@ public class PropertyServiceImplTest {
   }
 
   @Test
-  public void testDeleteSubjectProperties_whitebox_expectCorretPropertyNames() throws Exception {
+  public void testDeleteSubjectProperties_whitebox_expectCorretPropertyNames() {
     propertyService.putSubjectProperty("test", "test.domain", "1", "some.property2", "value2");
 
     propertyService.deleteSubjectProperties("test", "test.domain", "1");
@@ -177,8 +172,8 @@ public class PropertyServiceImplTest {
   }
 
   @Test
-  public void testDeleteSubjectsProperties_whitebox_expectCorretPropertyNames() throws Exception {
-    List<String> subjects = new ArrayList<String>();
+  public void testDeleteSubjectsProperties_whitebox_expectCorretPropertyNames() {
+    List<String> subjects = new ArrayList<>();
     subjects.add("1");
     subjects.add("2");
     propertyService.putSubjectsProperty(
@@ -214,7 +209,7 @@ public class PropertyServiceImplTest {
   public void testPutProperty_expectTruncationExceptionForPropertyNameForMultipleProperties() {
     String propertyName = "some.property1";
 
-    List<NamedProperty> props = new ArrayList<NamedProperty>();
+    List<NamedProperty> props = new ArrayList<>();
     props.add(new NamedProperty("n1", "vvv1"));
     props.add(new NamedProperty(propertyName, generateLongString(256, "прол")));
     props.add(new NamedProperty("n2", "vvv2"));

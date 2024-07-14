@@ -15,10 +15,11 @@
  ******************************************************************************/
 package org.summerb.users.impl;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Throwables;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.summerb.users.api.AuthTokenService;
@@ -33,9 +34,6 @@ import org.summerb.users.api.exceptions.UserServiceUnexpectedException;
 import org.summerb.users.impl.dao.AuthTokenDao;
 import org.summerb.validation.ValidationError;
 import org.summerb.validation.ValidationException;
-
-import com.google.common.base.Preconditions;
-import com.google.common.base.Throwables;
 
 public class AuthTokenServiceImpl implements AuthTokenService {
   // protected static Logger log =
@@ -245,7 +243,7 @@ public class AuthTokenServiceImpl implements AuthTokenService {
 
   @Override
   @Transactional(rollbackFor = Throwable.class)
-  public void deleteAuthToken(String authTokenUuid) throws AuthTokenNotFoundException {
+  public void deleteAuthToken(String authTokenUuid) {
     Preconditions.checkArgument(authTokenUuid != null);
 
     try {

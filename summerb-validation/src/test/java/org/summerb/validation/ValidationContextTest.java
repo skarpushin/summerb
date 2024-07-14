@@ -1,12 +1,9 @@
 package org.summerb.validation;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
+import com.google.common.collect.Range;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -31,7 +28,6 @@ import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.summerb.methodCapturers.MethodCapturerProxyClassFactory;
@@ -79,8 +75,6 @@ import org.summerb.validation.jakarta.JakartaValidator;
 import org.summerb.validation.testDtos.Bean;
 import org.summerb.validation.testDtos.Beans;
 import org.summerb.validation.testDtos.Dated;
-
-import com.google.common.collect.Range;
 
 class ValidationContextTest {
 

@@ -15,13 +15,13 @@
  ******************************************************************************/
 package org.summerb.easycrud.impl.relations;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
+import integr.org.summerb.easycrud.dtos.TestDto1;
+import integr.org.summerb.easycrud.dtos.TestDto2;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.summerb.easycrud.api.EasyCrudService;
@@ -40,9 +39,6 @@ import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.api.relations.ReferencesRegistry;
 import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.api.row.datapackage.DataSet;
-
-import integr.org.summerb.easycrud.dtos.TestDto1;
-import integr.org.summerb.easycrud.dtos.TestDto2;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class DataSetLoaderImplTest {
@@ -54,21 +50,21 @@ public class DataSetLoaderImplTest {
   }
 
   @Test
-  public void testLoadObjectsByIds_ExpectIaeForEmptyIds() throws Exception {
+  public void testLoadObjectsByIds_ExpectIaeForEmptyIds() {
     DataSetLoaderImpl fixture = buildMockedInstance();
 
     assertThrows(IllegalArgumentException.class, () -> fixture.loadObjectsByIds(null, "asdasd"));
   }
 
   @Test
-  public void testLoadObjectsByIds_ExpectIaeForEmptyIds2() throws Exception {
+  public void testLoadObjectsByIds_ExpectIaeForEmptyIds2() {
     DataSetLoaderImpl fixture = buildMockedInstance();
     assertThrows(
         IllegalArgumentException.class, () -> fixture.loadObjectsByIds(new HashSet<>(), "asdasd"));
   }
 
   @Test
-  public void testLoadObjectsByIds_ExpectOneLoadOk() throws Exception {
+  public void testLoadObjectsByIds_ExpectOneLoadOk() {
     DataSetLoaderImpl fixture = buildMockedInstance();
     EasyCrudService service = Mockito.mock(EasyCrudService.class);
     when(fixture.getEasyCrudServiceResolver().resolveByRowMessageCode("dto1")).thenReturn(service);
@@ -82,7 +78,7 @@ public class DataSetLoaderImplTest {
   }
 
   @Test
-  public void testLoadObjectsByIds_ExpectOneLoadNfe() throws Exception {
+  public void testLoadObjectsByIds_ExpectOneLoadNfe() {
     DataSetLoaderImpl fixture = buildMockedInstance();
     EasyCrudService service = Mockito.mock(EasyCrudService.class);
     when(fixture.getEasyCrudServiceResolver().resolveByRowMessageCode("dto1")).thenReturn(service);
@@ -98,7 +94,7 @@ public class DataSetLoaderImplTest {
   }
 
   @Test
-  public void testLoadObjectsByIds_ExpectManyLoadByLongsOk() throws Exception {
+  public void testLoadObjectsByIds_ExpectManyLoadByLongsOk() {
     DataSetLoaderImpl fixture = buildMockedInstance();
     EasyCrudService service = Mockito.mock(EasyCrudService.class);
     when(fixture.getEasyCrudServiceResolver().resolveByRowMessageCode("dto1")).thenReturn(service);
@@ -112,7 +108,7 @@ public class DataSetLoaderImplTest {
   }
 
   @Test
-  public void testLoadObjectsByIds_ExpectManyLoadByLongsNfe() throws Exception {
+  public void testLoadObjectsByIds_ExpectManyLoadByLongsNfe() {
     DataSetLoaderImpl fixture = buildMockedInstance();
     EasyCrudService service = Mockito.mock(EasyCrudService.class);
     when(fixture.getEasyCrudServiceResolver().resolveByRowMessageCode("dto1")).thenReturn(service);
@@ -124,7 +120,7 @@ public class DataSetLoaderImplTest {
   }
 
   @Test
-  public void testLoadObjectsByIds_ExpectManyLoadByStrings() throws Exception {
+  public void testLoadObjectsByIds_ExpectManyLoadByStrings() {
     DataSetLoaderImpl fixture = buildMockedInstance();
     EasyCrudService service = Mockito.mock(EasyCrudService.class);
     when(fixture.getEasyCrudServiceResolver().resolveByRowMessageCode("dto1")).thenReturn(service);
@@ -138,7 +134,7 @@ public class DataSetLoaderImplTest {
   }
 
   @Test
-  public void testLoadObjectsByIds_ExpectManyLoadByUnknownType() throws Exception {
+  public void testLoadObjectsByIds_ExpectManyLoadByUnknownType() {
     DataSetLoaderImpl fixture = buildMockedInstance();
     EasyCrudService service = Mockito.mock(EasyCrudService.class);
     when(fixture.getEasyCrudServiceResolver().resolveByRowMessageCode("dto1")).thenReturn(service);
@@ -155,7 +151,7 @@ public class DataSetLoaderImplTest {
   }
 
   @Test
-  public void testLoadObjectsByIds_ExpectTwoDifferentObjectsLoadedOk() throws Exception {
+  public void testLoadObjectsByIds_ExpectTwoDifferentObjectsLoadedOk() {
     DataSetLoaderImpl fixture = buildMockedInstance();
     EasyCrudService service1 = Mockito.mock(EasyCrudService.class);
     when(fixture.getEasyCrudServiceResolver().resolveByRowMessageCode("dto1")).thenReturn(service1);

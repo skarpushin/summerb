@@ -15,8 +15,8 @@
  ******************************************************************************/
 package org.summerb.webappboilerplate.security.elevation;
 
+import com.google.common.base.Preconditions;
 import java.util.List;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -32,8 +32,6 @@ import org.summerb.users.api.PermissionService;
 import org.summerb.users.api.UserService;
 import org.summerb.users.api.dto.User;
 import org.summerb.webappboilerplate.security.impls.UserDetailsImpl;
-
-import com.google.common.base.Preconditions;
 
 /**
  * This impl elevates to BackgroundProcess credentials if current user is missing or ANonymous
@@ -59,7 +57,7 @@ public class ElevationStrategyUserBasedImpl implements ElevationStrategy, Initia
   }
 
   @Override
-  public void afterPropertiesSet() throws Exception {
+  public void afterPropertiesSet() {
     getAuthentication(); // eagerly load user
   }
 

@@ -48,7 +48,7 @@ public class StringIdAliasServiceTest {
   }
 
   @Test
-  public void testFindAlias_expectAliasWillBeFound() throws Exception {
+  public void testFindAlias_expectAliasWillBeFound() {
     // now let's create values
     Map<String, Long> map = new HashMap<>();
     for (int i = 0; i < 10; i++) {

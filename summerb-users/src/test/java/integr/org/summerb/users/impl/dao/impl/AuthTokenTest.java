@@ -15,10 +15,7 @@
  ******************************************************************************/
 package integr.org.summerb.users.impl.dao.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import integr.org.summerb.easycrud.config.EmbeddedDbConfig;
 import integr.org.summerb.users.impl.config.UserServicesTestConfig;

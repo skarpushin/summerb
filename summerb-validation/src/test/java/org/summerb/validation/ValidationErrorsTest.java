@@ -1,17 +1,15 @@
 package org.summerb.validation;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import org.summerb.methodCapturers.MethodCapturerProxyClassFactory;
 import org.summerb.methodCapturers.MethodCapturerProxyClassFactoryImpl;
@@ -23,9 +21,6 @@ import org.summerb.validation.errors.MustHaveText;
 import org.summerb.validation.gson.ValidationErrorGsonTypeAdapter;
 import org.summerb.validation.testDtos.Bean;
 import org.summerb.validation.testDtos.Beans;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 class ValidationErrorsTest {
 
@@ -44,11 +39,11 @@ class ValidationErrorsTest {
 
     List<ValidationError> errors = new LinkedList<>();
     f.setList(errors);
-    assertTrue(f.getList() == errors);
+    assertSame(f.getList(), errors);
 
     // via constructor
     f = new ValidationErrors(errors);
-    assertTrue(f.getList() == errors);
+    assertSame(f.getList(), errors);
   }
 
   @Test
@@ -147,7 +142,7 @@ class ValidationErrorsTest {
     var f = new ValidationErrors("asd", new LinkedList<>());
     List<ValidationError> vee = new ArrayList<>();
     f.setList(vee);
-    assertTrue(vee == f.getList());
+    assertSame(vee, f.getList());
   }
 
   @Test

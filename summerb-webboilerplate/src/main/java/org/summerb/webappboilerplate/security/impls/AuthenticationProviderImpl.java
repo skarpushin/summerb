@@ -16,7 +16,6 @@
 package org.summerb.webappboilerplate.security.impls;
 
 import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -61,7 +60,7 @@ public class AuthenticationProviderImpl
   protected UserService userService;
 
   @Override
-  public void afterPropertiesSet() throws Exception {}
+  public void afterPropertiesSet() {}
 
   @Override
   public Authentication authenticate(Authentication authentication) throws AuthenticationException {

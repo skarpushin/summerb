@@ -1,12 +1,11 @@
 package org.summerb.validation.jakarta;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 import java.lang.annotation.Annotation;
 import java.util.function.Function;
-
 import org.junit.jupiter.api.Test;
 
 class JakartaValidatorItemTest {

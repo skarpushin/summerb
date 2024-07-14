@@ -1,9 +1,6 @@
 package org.summerb.validation.jakarta;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.summerb.validation.Asserts.assertIae;
 import static org.summerb.validation.Asserts.assertIaeMessage;
 
@@ -31,7 +28,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
-
 import javax.validation.constraints.AssertFalse;
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.Digits;
@@ -47,7 +43,6 @@ import javax.validation.constraints.Past;
 import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-
 import org.junit.function.ThrowingRunnable;
 import org.junit.jupiter.api.Test;
 import org.summerb.methodCapturers.MethodCapturerProxyClassFactory;
@@ -463,7 +458,7 @@ public class JakartaValidatorImplTest {
       Function<JakartaFullBean, Object> getter,
       Object... args) {
     T ve = ctx.findErrorOfTypeForField(veClass, getter);
-    assertNotNull(veClass.getCanonicalName() + " not found", ve);
+    assertNotNull(ve, veClass.getCanonicalName() + " not found");
     if (args != null && args.length == 0) {
       args = null;
     }
@@ -522,7 +517,7 @@ public class JakartaValidatorImplTest {
   }
 
   @Test
-  void test_processors_expectIaeForAbstractImpl() throws Exception {
+  void test_processors_expectIaeForAbstractImpl() {
     var c = JakartaFullBean.class;
 
     assertIaeMessage(
@@ -536,7 +531,7 @@ public class JakartaValidatorImplTest {
   }
 
   @Test
-  void test_processors_expectIaeOnInvalidValueType() throws Exception {
+  void test_processors_expectIaeOnInvalidValueType() {
     var c = JakartaFullBean.class;
     var v = new ValidationContext<>();
 
@@ -606,7 +601,7 @@ public class JakartaValidatorImplTest {
   }
 
   @Test
-  void test_processors_expectIaeOnNullValidationContext() throws Exception {
+  void test_processors_expectIaeOnNullValidationContext() {
     var c = JakartaFullBean.class;
 
     assertCtxRequired(

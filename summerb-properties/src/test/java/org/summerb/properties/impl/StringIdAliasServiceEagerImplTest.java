@@ -15,10 +15,8 @@
  ******************************************************************************/
 package org.summerb.properties.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
@@ -70,7 +68,7 @@ public class StringIdAliasServiceEagerImplTest {
 
     StringIdAliasServiceEagerImpl fixture = new StringIdAliasServiceEagerImpl(stringIdAliasDao);
 
-    RuntimeException ex = assertThrows(RuntimeException.class, () -> fixture.loadAllAliases());
+    RuntimeException ex = assertThrows(RuntimeException.class, fixture::loadAllAliases);
     IllegalStateException ise = ExceptionUtils.findExceptionOfType(ex, IllegalStateException.class);
     assertNotNull(ise);
     assertEquals("INTENTIONAL FAILURE FOR TEST PURPOSES", ise.getMessage());
@@ -84,6 +82,6 @@ public class StringIdAliasServiceEagerImplTest {
 
     StringIdAliasServiceEagerImpl fixture = new StringIdAliasServiceEagerImpl(stringIdAliasDao);
 
-    assertThrows(RuntimeException.class, () -> fixture.getAliases());
+    assertThrows(RuntimeException.class, fixture::getAliases);
   }
 }

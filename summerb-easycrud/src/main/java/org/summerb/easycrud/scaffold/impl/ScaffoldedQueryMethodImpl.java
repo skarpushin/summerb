@@ -183,7 +183,7 @@ public class ScaffoldedQueryMethodImpl<TMethodParameter extends ScaffoldedMethod
 
   @SuppressWarnings({"unchecked", "rawtypes"})
   @Override
-  public Object call(Object[] methodArgs) throws Exception {
+  public Object call(Object[] methodArgs) {
     try {
       MapSqlParameterSource params = buildQueryParams(methodArgs);
       ScaffoldedMethodFactoryMySqlImpl.log.debug(

@@ -15,7 +15,7 @@
  ******************************************************************************/
 package unit.org.summerb.utils.collection;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 import org.summerb.utils.collection.OneWayList;

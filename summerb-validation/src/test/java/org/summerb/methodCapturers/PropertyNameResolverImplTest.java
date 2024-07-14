@@ -1,10 +1,9 @@
 package org.summerb.methodCapturers;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.lang.reflect.Method;
-
 import org.junit.jupiter.api.Test;
 import org.summerb.validation.testDtos.Bean;
 

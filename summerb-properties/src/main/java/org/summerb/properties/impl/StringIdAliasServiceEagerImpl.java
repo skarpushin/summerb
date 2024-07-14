@@ -60,7 +60,7 @@ public class StringIdAliasServiceEagerImpl implements StringIdAliasService, Init
   }
 
   @Override
-  public void afterPropertiesSet() throws Exception {
+  public void afterPropertiesSet() {
     Preconditions.checkState(stringIdAliasDao != null);
 
     if (executorService == null) {
@@ -166,7 +166,7 @@ public class StringIdAliasServiceEagerImpl implements StringIdAliasService, Init
    * @param str
    * @return
    */
-  protected long doCreateAlias(String str) throws Exception {
+  protected long doCreateAlias(String str) {
     try {
       CreateAliasTask task = new CreateAliasTask(str);
       Future<Long> future = executorService.submit(task);
@@ -189,7 +189,7 @@ public class StringIdAliasServiceEagerImpl implements StringIdAliasService, Init
     }
 
     @Override
-    public Long call() throws Exception {
+    public Long call() {
       return stringIdAliasDao.createAliasFor(name);
     }
   }

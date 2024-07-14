@@ -15,16 +15,14 @@
  ******************************************************************************/
 package org.summerb.easycrud.api.dto.tools;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
-
-import org.junit.jupiter.api.Test;
-import org.summerb.utils.easycrud.api.dto.EntityChangedEvent;
-import org.summerb.utils.easycrud.api.dto.tools.EntityChangedEventAdapter;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.junit.jupiter.api.Test;
+import org.summerb.utils.easycrud.api.dto.EntityChangedEvent;
+import org.summerb.utils.easycrud.api.dto.tools.EntityChangedEventAdapter;
 
 public class EntityChangedEventAdapterTest {
   @SuppressWarnings("rawtypes")

@@ -15,13 +15,8 @@
  ******************************************************************************/
 package org.summerb.users.impl;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.summerb.users.api.PasswordService;
 import org.summerb.users.api.dto.PasswordFactory;
@@ -32,21 +27,19 @@ import org.summerb.users.api.exceptions.UserServiceUnexpectedException;
 public class PasswordServiceDbImplTest {
 
   @Test
-  public void testIsUserPasswordValid_defensive_expectIllegalArgumentExceptionForUserUuid()
-      throws Exception {
+  public void testIsUserPasswordValid_defensive_expectIllegalArgumentExceptionForUserUuid() {
     PasswordService fixture = PasswordServiceDbImplFactory.createPasswordServiceDbImpl();
     assertThrows(IllegalArgumentException.class, () -> fixture.isUserPasswordValid(null, ""));
   }
 
   @Test
-  public void testIsUserPasswordValid_defensive_expectIllegalArgumentExceptionForPassword()
-      throws Exception {
+  public void testIsUserPasswordValid_defensive_expectIllegalArgumentExceptionForPassword() {
     PasswordService fixture = PasswordServiceDbImplFactory.createPasswordServiceDbImpl();
     assertThrows(IllegalArgumentException.class, () -> fixture.isUserPasswordValid("", null));
   }
 
   @Test
-  public void testIsUserPasswordValid_blackbox_expectUserUserNotFoundException() throws Exception {
+  public void testIsUserPasswordValid_blackbox_expectUserUserNotFoundException() {
     PasswordService fixture = PasswordServiceDbImplFactory.createPasswordServiceDbImpl();
     assertThrows(
         UserNotFoundException.class,
@@ -78,8 +71,7 @@ public class PasswordServiceDbImplTest {
   }
 
   @Test
-  public void testIsUserPasswordValid_whitebox_expectUsersServiceUnexpectedException()
-      throws Exception {
+  public void testIsUserPasswordValid_whitebox_expectUsersServiceUnexpectedException() {
     PasswordService fixture = PasswordServiceDbImplFactory.createPasswordServiceDbImpl();
     assertThrows(
         UserServiceUnexpectedException.class,
@@ -89,19 +81,19 @@ public class PasswordServiceDbImplTest {
   }
 
   @Test
-  public void testSetUserPassword_defensive_nullUser() throws Exception {
+  public void testSetUserPassword_defensive_nullUser() {
     PasswordService fixture = PasswordServiceDbImplFactory.createPasswordServiceDbImpl();
     assertThrows(IllegalArgumentException.class, () -> fixture.setUserPassword(null, ""));
   }
 
   @Test
-  public void testSetUserPassword_defensive_nullPassword() throws Exception {
+  public void testSetUserPassword_defensive_nullPassword() {
     PasswordService fixture = PasswordServiceDbImplFactory.createPasswordServiceDbImpl();
     assertThrows(IllegalArgumentException.class, () -> fixture.setUserPassword("", null));
   }
 
   @Test
-  public void testSetUserPassword_blackbox_expectUserNotFoundException() throws Exception {
+  public void testSetUserPassword_blackbox_expectUserNotFoundException() {
     PasswordService fixture = PasswordServiceDbImplFactory.createPasswordServiceDbImpl();
     assertThrows(
         UserNotFoundException.class,
@@ -109,8 +101,7 @@ public class PasswordServiceDbImplTest {
   }
 
   @Test
-  public void testSetUserPassword_blackbox_expectUsersServiceUnexpectedException()
-      throws Exception {
+  public void testSetUserPassword_blackbox_expectUsersServiceUnexpectedException() {
     PasswordService fixture = PasswordServiceDbImplFactory.createPasswordServiceDbImpl();
     assertThrows(
         UserServiceUnexpectedException.class,
@@ -124,8 +115,7 @@ public class PasswordServiceDbImplTest {
   }
 
   @Test
-  public void testSetUserPassword_whitebox_expectUsersServiceUnexpectedExceptionOnDbProblem()
-      throws Exception {
+  public void testSetUserPassword_whitebox_expectUsersServiceUnexpectedExceptionOnDbProblem() {
     PasswordService fixture = PasswordServiceDbImplFactory.createPasswordServiceDbImpl();
     assertThrows(
         UserServiceUnexpectedException.class,
@@ -133,14 +123,13 @@ public class PasswordServiceDbImplTest {
   }
 
   @Test
-  public void testGetNewRestorationTokenForUser_defensive_nullUser() throws Exception {
+  public void testGetNewRestorationTokenForUser_defensive_nullUser() {
     PasswordService fixture = PasswordServiceDbImplFactory.createPasswordServiceDbImpl();
     assertThrows(IllegalArgumentException.class, () -> fixture.getNewRestorationTokenForUser(null));
   }
 
   @Test
-  public void testGetNewRestorationTokenForUser_blackbox_expectUserNotFoundException()
-      throws Exception {
+  public void testGetNewRestorationTokenForUser_blackbox_expectUserNotFoundException() {
     PasswordService fixture = PasswordServiceDbImplFactory.createPasswordServiceDbImpl();
     assertThrows(
         UserNotFoundException.class,
@@ -156,8 +145,7 @@ public class PasswordServiceDbImplTest {
   }
 
   @Test
-  public void testGetNewRestorationTokenForUser_whitebox_expectUsersServiceUnexpectedException()
-      throws Exception {
+  public void testGetNewRestorationTokenForUser_whitebox_expectUsersServiceUnexpectedException() {
     PasswordService fixture = PasswordServiceDbImplFactory.createPasswordServiceDbImpl();
     assertThrows(
         UserServiceUnexpectedException.class,
@@ -166,8 +154,7 @@ public class PasswordServiceDbImplTest {
 
   @Test
   public void
-      testGetNewRestorationTokenForUser_whitebox_expectUsersServiceUnexpectedExceptionOnUnexpectedDbError()
-          throws Exception {
+      testGetNewRestorationTokenForUser_whitebox_expectUsersServiceUnexpectedExceptionOnUnexpectedDbError() {
     PasswordService fixture = PasswordServiceDbImplFactory.createPasswordServiceDbImpl();
     assertThrows(
         UserServiceUnexpectedException.class,
@@ -176,13 +163,13 @@ public class PasswordServiceDbImplTest {
   }
 
   @Test
-  public void testDeleteRestorationToken_defensive_userNull() throws Exception {
+  public void testDeleteRestorationToken_defensive_userNull() {
     PasswordService fixture = PasswordServiceDbImplFactory.createPasswordServiceDbImpl();
     assertThrows(IllegalArgumentException.class, () -> fixture.deleteRestorationToken(null));
   }
 
   @Test
-  public void testDeleteRestorationToken_blackbox_expectUserNotFoundException() throws Exception {
+  public void testDeleteRestorationToken_blackbox_expectUserNotFoundException() {
     PasswordService fixture = PasswordServiceDbImplFactory.createPasswordServiceDbImpl();
     assertThrows(
         UserNotFoundException.class,
@@ -196,8 +183,7 @@ public class PasswordServiceDbImplTest {
   }
 
   @Test
-  public void testDeleteRestorationToken_whitebox_expectUsersServiceUnexpectedException()
-      throws Exception {
+  public void testDeleteRestorationToken_whitebox_expectUsersServiceUnexpectedException() {
     PasswordService fixture = PasswordServiceDbImplFactory.createPasswordServiceDbImpl();
     assertThrows(
         UserServiceUnexpectedException.class,
@@ -206,8 +192,7 @@ public class PasswordServiceDbImplTest {
 
   @Test
   public void
-      testDeleteRestorationToken_whitebox_expectUsersServiceUnexpectedExceptionOnUnexpectedDbProblem()
-          throws Exception {
+      testDeleteRestorationToken_whitebox_expectUsersServiceUnexpectedExceptionOnUnexpectedDbProblem() {
     PasswordService fixture = PasswordServiceDbImplFactory.createPasswordServiceDbImpl();
     assertThrows(
         UserServiceUnexpectedException.class,
@@ -215,19 +200,19 @@ public class PasswordServiceDbImplTest {
   }
 
   @Test
-  public void testIsRestorationTokenValid_defensive_userNull() throws Exception {
+  public void testIsRestorationTokenValid_defensive_userNull() {
     PasswordService fixture = PasswordServiceDbImplFactory.createPasswordServiceDbImpl();
     assertThrows(IllegalArgumentException.class, () -> fixture.isRestorationTokenValid(null, ""));
   }
 
   @Test
-  public void testIsRestorationTokenValid_defensive_tokenNull() throws Exception {
+  public void testIsRestorationTokenValid_defensive_tokenNull() {
     PasswordService fixture = PasswordServiceDbImplFactory.createPasswordServiceDbImpl();
     assertThrows(IllegalArgumentException.class, () -> fixture.isRestorationTokenValid("", null));
   }
 
   @Test
-  public void testIsRestorationTokenValid_blackbox_expectUserNotFoundException() throws Exception {
+  public void testIsRestorationTokenValid_blackbox_expectUserNotFoundException() {
     PasswordService fixture = PasswordServiceDbImplFactory.createPasswordServiceDbImpl();
     assertThrows(
         UserNotFoundException.class,
@@ -263,8 +248,7 @@ public class PasswordServiceDbImplTest {
   }
 
   @Test
-  public void testIsRestorationTokenValid_whitebox_expectUsersServiceUnexpectedException()
-      throws Exception {
+  public void testIsRestorationTokenValid_whitebox_expectUsersServiceUnexpectedException() {
     PasswordService fixture = PasswordServiceDbImplFactory.createPasswordServiceDbImpl();
     assertThrows(
         UserServiceUnexpectedException.class,
@@ -273,9 +257,4 @@ public class PasswordServiceDbImplTest {
                 UserFactory.EXISTENT_USER_2_PROBLEM_WITH_PASSWORD, "asd"));
   }
 
-  @Before
-  public void setUp() throws Exception {}
-
-  @After
-  public void tearDown() throws Exception {}
 }

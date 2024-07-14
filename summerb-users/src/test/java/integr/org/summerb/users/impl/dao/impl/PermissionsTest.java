@@ -15,9 +15,7 @@
  ******************************************************************************/
 package integr.org.summerb.users.impl.dao.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import integr.org.summerb.easycrud.config.EmbeddedDbConfig;
 import integr.org.summerb.users.impl.config.UserServicesTestConfig;
@@ -30,7 +28,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.ProfileValueSourceConfiguration;
-import org.springframework.test.annotation.SystemProfileValueSource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +35,7 @@ import org.summerb.users.api.PermissionService;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {EmbeddedDbConfig.class, UserServicesTestConfig.class})
-@ProfileValueSourceConfiguration(SystemProfileValueSource.class)
+@ProfileValueSourceConfiguration()
 @Transactional
 @AutoConfigureEmbeddedDatabase(type = DatabaseType.MARIADB, refresh = RefreshMode.AFTER_CLASS)
 public class PermissionsTest {
@@ -46,7 +43,7 @@ public class PermissionsTest {
   @Autowired private PermissionService permissionService;
 
   @Test
-  public void testGranPermission_expectPermissionWillBeFoundAfterCreation() throws Exception {
+  public void testGranPermission_expectPermissionWillBeFoundAfterCreation() {
     permissionService.grantPermission("domain", "user", "subject", "permission");
 
     List<String> results =
@@ -60,7 +57,7 @@ public class PermissionsTest {
   }
 
   @Test
-  public void testRevokePermission_expectPermissionWillBeFoundAfterCreation() throws Exception {
+  public void testRevokePermission_expectPermissionWillBeFoundAfterCreation() {
     permissionService.grantPermission("domain", "user", "subject", "permission");
     permissionService.revokePermission("domain", "user", "subject", "permission");
 
@@ -73,7 +70,7 @@ public class PermissionsTest {
   }
 
   @Test
-  public void testRevokeUserPermissions_expectNoPermissionsAfterRevokation() throws Exception {
+  public void testRevokeUserPermissions_expectNoPermissionsAfterRevokation() {
     permissionService.grantPermission("domain", "user1", "subject1", "permission");
     permissionService.grantPermission("domain", "user1", "subject2", "permission");
 
@@ -88,8 +85,7 @@ public class PermissionsTest {
   }
 
   @Test
-  public void testRevokeAllPermissionsForSubject_expectNoPermissionsAfterClearence()
-      throws Exception {
+  public void testRevokeAllPermissionsForSubject_expectNoPermissionsAfterClearence() {
     // preconditions
     permissionService.grantPermission("domain", "user1", "subject1", "permission");
     permissionService.grantPermission("domain", "user1", "subject2", "permission");
@@ -108,8 +104,7 @@ public class PermissionsTest {
   }
 
   @Test
-  public void testGetSubjectsUserHasPermissionsFor_expectNoPermissionsAfterClearence()
-      throws Exception {
+  public void testGetSubjectsUserHasPermissionsFor_expectNoPermissionsAfterClearence() {
     // preconditions
     permissionService.grantPermission(null, "user1", "subject1", "permission1");
     permissionService.grantPermission(null, "user1", "subject2", "permission1");
@@ -128,8 +123,7 @@ public class PermissionsTest {
   }
 
   @Test
-  public void testGetUsersAndTheirPermissionsForSubject_expectAllAppropriateDataWillBeReturned()
-      throws Exception {
+  public void testGetUsersAndTheirPermissionsForSubject_expectAllAppropriateDataWillBeReturned() {
     permissionService.grantPermission(null, "user1", "subject1", "permission1");
     permissionService.grantPermission(null, "user2", "subject1", "permission1");
     permissionService.grantPermission(null, "user2", "subject1", "permission2");

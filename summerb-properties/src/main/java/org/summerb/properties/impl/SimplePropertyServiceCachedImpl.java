@@ -15,10 +15,15 @@
  ******************************************************************************/
 package org.summerb.properties.impl;
 
+import com.google.common.base.Preconditions;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.ObjectUtils;
 import org.summerb.properties.api.SimplePropertyService;
@@ -27,13 +32,6 @@ import org.summerb.properties.api.dto.SimplePropertiesSubject;
 import org.summerb.utils.cache.CachesInvalidationNeeded;
 import org.summerb.utils.easycrud.api.dto.EntityChangedEvent;
 import org.summerb.utils.tx.TransactionBoundCache;
-
-import com.google.common.base.Preconditions;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 
 public class SimplePropertyServiceCachedImpl implements SimplePropertyService, InitializingBean {
   protected SimplePropertyService simplePropertyService;
@@ -48,7 +46,7 @@ public class SimplePropertyServiceCachedImpl implements SimplePropertyService, I
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   @Override
-  public void afterPropertiesSet() throws Exception {
+  public void afterPropertiesSet() {
     Preconditions.checkArgument(simplePropertyService != null, "simplePropertyService required");
     Preconditions.checkArgument(eventBus != null, "eventBus required");
 

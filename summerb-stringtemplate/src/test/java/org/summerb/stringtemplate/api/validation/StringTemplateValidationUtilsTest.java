@@ -15,7 +15,7 @@
  ******************************************************************************/
 package org.summerb.stringtemplate.api.validation;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 import org.summerb.stringtemplate.api.StringTemplateFactory;
@@ -25,7 +25,7 @@ import org.summerb.validation.ValidationContext;
 public class StringTemplateValidationUtilsTest {
 
   @Test
-  public void testValidateStringTemplate_blackbox_expectOkForConstant() throws Exception {
+  public void testValidateStringTemplate_blackbox_expectOkForConstant() {
     StringTemplateFactory stringTemplateFactory = new StringTemplateFactorySpElImpl();
     String stringTemplate = "Constant text";
     ValidationContext<?> ctx = new ValidationContext<>();
@@ -34,11 +34,11 @@ public class StringTemplateValidationUtilsTest {
     StringTemplateValidationUtils.validateStringTemplate(
         stringTemplateFactory, stringTemplate, ctx, fieldToken);
 
-    assertEquals(false, ctx.isHasErrors());
+    assertFalse(ctx.isHasErrors());
   }
 
   @Test
-  public void testValidateStringTemplate_blackbox_expectOkForValidExpression() throws Exception {
+  public void testValidateStringTemplate_blackbox_expectOkForValidExpression() {
     StringTemplateFactory stringTemplateFactory = new StringTemplateFactorySpElImpl();
     String stringTemplate = "Constant text plus ${vars['4444']}";
     ValidationContext<?> ctx = new ValidationContext<>();
@@ -47,12 +47,11 @@ public class StringTemplateValidationUtilsTest {
     StringTemplateValidationUtils.validateStringTemplate(
         stringTemplateFactory, stringTemplate, ctx, fieldToken);
 
-    assertEquals(false, ctx.isHasErrors());
+    assertFalse(ctx.isHasErrors());
   }
 
   @Test
-  public void testValidateStringTemplate_blackbox_expectValidationErrorForWrongExpression()
-      throws Exception {
+  public void testValidateStringTemplate_blackbox_expectValidationErrorForWrongExpression() {
     StringTemplateFactory stringTemplateFactory = new StringTemplateFactorySpElImpl();
     String stringTemplate = "Constant text plus ${vars['4444";
     ValidationContext<?> ctx = new ValidationContext<>();
@@ -61,6 +60,6 @@ public class StringTemplateValidationUtilsTest {
     StringTemplateValidationUtils.validateStringTemplate(
         stringTemplateFactory, stringTemplate, ctx, fieldToken);
 
-    assertEquals(true, ctx.isHasErrors());
+    assertTrue(ctx.isHasErrors());
   }
 }

@@ -27,7 +27,7 @@ import org.summerb.dbupgrade.impl.postgress.VersionTableDbDialectPostgressImpl;
 @Configuration
 public class TestPostgressConfig extends TestConfigBase {
   @Override
-  protected UpgradePackageMetaResolver upgradePackageMetaResolver() throws Exception {
+  protected UpgradePackageMetaResolver upgradePackageMetaResolver() {
     return new UpgradePackageMetaResolverClasspathImpl(
         resourcePatternResolver, "classpath:/db_postgres/*");
   }

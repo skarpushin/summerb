@@ -15,9 +15,10 @@
  ******************************************************************************/
 package org.summerb.properties.impl;
 
+import com.google.common.base.Preconditions;
+import com.google.common.eventbus.EventBus;
 import java.util.List;
 import java.util.Map;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,9 +28,6 @@ import org.summerb.properties.api.SimplePropertyService;
 import org.summerb.properties.api.dto.NamedProperty;
 import org.summerb.properties.api.dto.SimplePropertiesSubject;
 import org.summerb.utils.easycrud.api.dto.EntityChangedEvent;
-
-import com.google.common.base.Preconditions;
-import com.google.common.eventbus.EventBus;
 
 public class SimplePropertyServiceImpl implements SimplePropertyService, InitializingBean {
   protected PropertyService propertyService;
@@ -46,7 +44,7 @@ public class SimplePropertyServiceImpl implements SimplePropertyService, Initial
   }
 
   @Override
-  public void afterPropertiesSet() throws Exception {
+  public void afterPropertiesSet() {
     Preconditions.checkArgument(propertyService != null);
     Preconditions.checkArgument(StringUtils.hasText(appName));
     Preconditions.checkArgument(StringUtils.hasText(domainName));

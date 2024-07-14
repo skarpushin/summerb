@@ -15,12 +15,13 @@
  ******************************************************************************/
 package org.summerb.easycrud.rest;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -30,9 +31,6 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import org.summerb.easycrud.api.dto.OrderBy;
 import org.summerb.utils.easycrud.api.dto.PagerParams;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 /**
  * This ArgumentResolver will map request parameters to a given method parameter. Only parameters
@@ -96,8 +94,7 @@ public class PojoFieldsArgumentResolver implements HandlerMethodArgumentResolver
       MethodParameter parameter,
       ModelAndViewContainer mavContainer,
       NativeWebRequest webRequest,
-      WebDataBinderFactory binderFactory)
-      throws Exception {
+      WebDataBinderFactory binderFactory) {
 
     int scope = RequestAttributes.SCOPE_REQUEST;
     String paramsJson = (String) webRequest.getAttribute(ATTR_NAME, scope);

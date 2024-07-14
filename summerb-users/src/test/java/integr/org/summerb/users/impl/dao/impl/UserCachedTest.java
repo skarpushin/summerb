@@ -15,14 +15,14 @@
  ******************************************************************************/
 package integr.org.summerb.users.impl.dao.impl;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.Date;
-
+import integr.org.summerb.easycrud.config.EmbeddedDbConfig;
+import integr.org.summerb.users.impl.config.UserServicesTestConfig;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase.DatabaseType;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase.RefreshMode;
+import java.util.Date;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,9 +36,6 @@ import org.summerb.users.api.UserService;
 import org.summerb.users.api.dto.User;
 import org.summerb.users.api.dto.UserFactory;
 import org.summerb.users.api.exceptions.UserNotFoundException;
-
-import integr.org.summerb.easycrud.config.EmbeddedDbConfig;
-import integr.org.summerb.users.impl.config.UserServicesTestConfig;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {EmbeddedDbConfig.class, UserServicesTestConfig.class})
@@ -61,7 +58,7 @@ public class UserCachedTest {
 
     User foundUser = userService.getUserByUuid(userToCreate.getUuid());
     User foundUserCached = userService.getUserByUuid(userToCreate.getUuid());
-    assertTrue(foundUser == foundUserCached);
+    assertSame(foundUser, foundUserCached);
   }
 
   @Test
@@ -71,7 +68,7 @@ public class UserCachedTest {
 
     User foundUser = userService.getUserByEmail(userToCreate.getEmail());
     User foundUserCached = userService.getUserByEmail(userToCreate.getEmail());
-    assertTrue(foundUser == foundUserCached);
+    assertSame(foundUser, foundUserCached);
   }
 
   @Test
@@ -87,8 +84,8 @@ public class UserCachedTest {
 
     User foundUserAgain = userService.getUserByUuid(userToCreate.getUuid());
 
-    assertTrue(foundUser != foundUserAgain);
-    assertTrue(foundUserAgain.getDisplayName().equals("Another display name"));
+    assertNotSame(foundUser, foundUserAgain);
+    assertEquals("Another display name", foundUserAgain.getDisplayName());
   }
 
   @Test // (expected=UserNotFoundException.class)

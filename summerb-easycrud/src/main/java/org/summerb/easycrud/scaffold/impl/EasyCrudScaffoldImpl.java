@@ -76,7 +76,7 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
   }
 
   @Override
-  public void afterPropertiesSet() throws Exception {
+  public void afterPropertiesSet() {
     Preconditions.checkArgument(dataSource != null, "dataSource required");
     Preconditions.checkArgument(beanFactory != null, "beanFactory required");
     Preconditions.checkArgument(

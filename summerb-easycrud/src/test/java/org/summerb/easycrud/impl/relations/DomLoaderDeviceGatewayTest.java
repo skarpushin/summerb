@@ -15,18 +15,15 @@
  ******************************************************************************/
 package org.summerb.easycrud.impl.relations;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.beans.PropertyDescriptor;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.BeanUtils;
 import org.summerb.easycrud.api.EasyCrudServiceResolver;
@@ -61,7 +58,7 @@ public class DomLoaderDeviceGatewayTest {
   }
 
   @Test
-  public void testDiscoverDomFields() throws Exception {
+  public void testDiscoverDomFields() {
     DataSetLoader dataSetLoader = mock(DataSetLoader.class);
     EasyCrudServiceResolver easyCrudServiceResolver = mock(EasyCrudServiceResolver.class);
     DomLoaderImpl f = new DomLoaderImpl(dataSetLoader, easyCrudServiceResolver);
@@ -74,7 +71,7 @@ public class DomLoaderDeviceGatewayTest {
   }
 
   @Test
-  public void testMapDtoToDom_expectCorrectFieldTypeResolution() throws Exception {
+  public void testMapDtoToDom_expectCorrectFieldTypeResolution() {
     // Deps and fixture
     ReferencesRegistry referencesRegistry = new Refs();
     EasyCrudServiceResolver easyCrudServiceResolver = mock(EasyCrudServiceResolver.class);
@@ -105,7 +102,7 @@ public class DomLoaderDeviceGatewayTest {
     deviceRow.setEnvId(1);
     deviceRow.setName("Yes it is");
     var qDeviceRowForEnv1 = Query.n(DeviceRow.class).eq(DeviceRow::getEnvId, 1L);
-    when(deviceService.findAll(eq(qDeviceRowForEnv1))).thenReturn(Arrays.asList(deviceRow));
+    when(deviceService.findAll(eq(qDeviceRowForEnv1))).thenReturn(List.of(deviceRow));
 
     // Now let's invoke it
     Env env = f.load(Env.class, 1L, Refs.envDevices, Refs.deviceEnv);

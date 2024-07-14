@@ -15,10 +15,7 @@
  ******************************************************************************/
 package integr.org.summerb.users.impl.dao.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import integr.org.summerb.easycrud.config.EmbeddedDbConfig;
 import integr.org.summerb.users.impl.config.UserServicesTestConfig;
@@ -30,7 +27,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.ProfileValueSourceConfiguration;
-import org.springframework.test.annotation.SystemProfileValueSource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,7 +39,7 @@ import org.summerb.utils.easycrud.api.dto.PaginatedList;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {EmbeddedDbConfig.class, UserServicesTestConfig.class})
-@ProfileValueSourceConfiguration(SystemProfileValueSource.class)
+@ProfileValueSourceConfiguration()
 @Transactional
 @AutoConfigureEmbeddedDatabase(type = DatabaseType.MARIADB, refresh = RefreshMode.AFTER_CLASS)
 public class UsersTest {
@@ -107,7 +103,7 @@ public class UsersTest {
   }
 
   @Test
-  public void testFindUsersByDisplayNamePartial_expectUsersWillBeFound() throws Exception {
+  public void testFindUsersByDisplayNamePartial_expectUsersWillBeFound() {
     User user = UserFactory.createNewUserTemplate();
     user.setDisplayName("oneUHapqoiwez");
     user.setEmail("email1@aaa.ru");
@@ -133,21 +129,21 @@ public class UsersTest {
 
     assertNotNull(results);
     assertNotNull(results.getItems());
-    assertTrue(results.getItems().size() == 3);
-    assertTrue(results.getTotalResults() == 3);
+    assertEquals(3, results.getItems().size());
+    assertEquals(3, results.getTotalResults());
 
     results = userService.findUsersByDisplayNamePartial("eUHapqoiwez", new PagerParams());
-    assertTrue(results.getItems().size() == 2);
-    assertTrue(results.getTotalResults() == 2);
+    assertEquals(2, results.getItems().size());
+    assertEquals(2, results.getTotalResults());
 
     results = userService.findUsersByDisplayNamePartial("UHapqoiwez", new PagerParams(0, 1));
-    assertTrue(results.getItems().size() == 1);
-    assertTrue(results.getTotalResults() == 3);
+    assertEquals(1, results.getItems().size());
+    assertEquals(3, results.getTotalResults());
   }
 
   @Test
   // @Rollback(false)
-  public void testFindUsersByDisplayNamePartial_expectCorrectSorting() throws Exception {
+  public void testFindUsersByDisplayNamePartial_expectCorrectSorting() {
     User user = UserFactory.createNewUserTemplate();
     user.setDisplayName("ooUHapqoiwez");
     user.setEmail("email2@aaa.ru");
@@ -169,8 +165,8 @@ public class UsersTest {
     assertNotNull(results);
     List<User> items = results.getItems();
     assertNotNull(items);
-    assertTrue(items.size() == 3);
-    assertTrue(results.getTotalResults() == 3);
+    assertEquals(3, items.size());
+    assertEquals(3, results.getTotalResults());
 
     assertEquals("email1@aaa.ru", items.get(0).getEmail());
     assertEquals("email2@aaa.ru", items.get(1).getEmail());

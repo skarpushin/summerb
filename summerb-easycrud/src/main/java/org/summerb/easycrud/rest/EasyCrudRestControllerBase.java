@@ -111,7 +111,7 @@ public class EasyCrudRestControllerBase<
   }
 
   @Override
-  public void afterPropertiesSet() throws Exception {
+  public void afterPropertiesSet() {
     Preconditions.checkArgument(service != null);
 
     if (permissionsResolverStrategy == null) {
@@ -165,7 +165,6 @@ public class EasyCrudRestControllerBase<
    * @param referencesToResolve references to resolve
    * @param pathVariables path variables
    * @return list of items
-   * @throws Exception in case something goes wrong. It supposed to be handled by Advice or Filter
    */
   @GetMapping
   public MultipleItemsResult<TId, TRow> getList(
@@ -174,8 +173,7 @@ public class EasyCrudRestControllerBase<
       @RequestParam(value = "needPerms", required = false) boolean needPerms,
       @RequestParam(value = "referencesToResolve", required = false)
           List<String> referencesToResolve,
-      @Parameter(hidden = true) PathVariablesMap pathVariables)
-      throws Exception {
+      @Parameter(hidden = true) PathVariablesMap pathVariables) {
 
     OrderBy[] orderBy = clarifyOrderBy(optionalOrderBy);
     PagerParams pagerParams = clarifyPagerParams(optionalPagerParams);
@@ -298,8 +296,7 @@ public class EasyCrudRestControllerBase<
       @RequestParam(value = "needPerms", required = false) boolean needPerms,
       @RequestParam(value = "referencesToResolve", required = false)
           List<String> referencesToResolve,
-      @Parameter(hidden = true) PathVariablesMap pathVariables)
-      throws Exception {
+      @Parameter(hidden = true) PathVariablesMap pathVariables) {
 
     OrderBy[] orderBy = clarifyOrderBy(filteringParams.getOrderBy());
     PagerParams pagerParams = clarifyPagerParams(filteringParams.getPagerParams());
@@ -319,8 +316,7 @@ public class EasyCrudRestControllerBase<
       @PathVariable("id") TId id,
       @RequestParam(value = "needPerms", required = false) boolean needPerms,
       @RequestParam(value = "referencesToResolve", required = false)
-          List<String> referencesToResolve)
-      throws Exception {
+          List<String> referencesToResolve) {
 
     TRow row = service.findById(id);
     SingleItemResult<TId, TRow> ret = new SingleItemResult<>(service.getRowMessageCode(), row);
@@ -342,8 +338,7 @@ public class EasyCrudRestControllerBase<
       consumes = MediaType.APPLICATION_JSON_VALUE)
   public SingleItemResult<TId, TRow> createNewItem(
       @RequestBody TRow rowToCreate,
-      @RequestParam(value = "needPerms", required = false) boolean needPerms)
-      throws Exception {
+      @RequestParam(value = "needPerms", required = false) boolean needPerms) {
     TRow row = service.create(rowToCreate);
     SingleItemResult<TId, TRow> ret = new SingleItemResult<>(service.getRowMessageCode(), row);
     if (needPerms) {
@@ -360,8 +355,7 @@ public class EasyCrudRestControllerBase<
   public SingleItemResult<TId, TRow> updateItem(
       @PathVariable("id") TId id,
       @RequestBody TRow rowToUpdate,
-      @RequestParam(value = "needPerms", required = false) boolean needPerms)
-      throws Exception {
+      @RequestParam(value = "needPerms", required = false) boolean needPerms) {
     TRow row = service.update(rowToUpdate);
     SingleItemResult<TId, TRow> ret = new SingleItemResult<>(service.getRowMessageCode(), row);
     if (needPerms) {
@@ -372,7 +366,7 @@ public class EasyCrudRestControllerBase<
   }
 
   @DeleteMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-  public void deleteItem(@PathVariable("id") TId id) throws Exception {
+  public void deleteItem(@PathVariable("id") TId id) {
     service.deleteById(id);
   }
 

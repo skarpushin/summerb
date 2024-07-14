@@ -22,7 +22,7 @@ import org.summerb.dbupgrade.impl.UpgradePackageMetaResolverClasspathImpl;
 @Configuration
 public class TestMySqlConfig extends TestConfigBase {
   @Override
-  protected UpgradePackageMetaResolver upgradePackageMetaResolver() throws Exception {
+  protected UpgradePackageMetaResolver upgradePackageMetaResolver() {
     return new UpgradePackageMetaResolverClasspathImpl(
         resourcePatternResolver, "classpath:/db_mysql/*");
   }

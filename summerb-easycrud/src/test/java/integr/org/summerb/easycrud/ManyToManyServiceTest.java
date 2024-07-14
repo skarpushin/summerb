@@ -15,10 +15,8 @@
  ******************************************************************************/
 package integr.org.summerb.easycrud;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import integr.org.summerb.easycrud.config.EasyCrudIntegrTestConfig;
 import integr.org.summerb.easycrud.config.EmbeddedDbConfig;
@@ -37,7 +35,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.annotation.ProfileValueSourceConfiguration;
-import org.springframework.test.annotation.SystemProfileValueSource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,7 +45,7 @@ import org.summerb.security.api.exceptions.NotAuthorizedException;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {EmbeddedDbConfig.class, EasyCrudIntegrTestConfig.class})
-@ProfileValueSourceConfiguration(SystemProfileValueSource.class)
+@ProfileValueSourceConfiguration()
 @Transactional
 @AutoConfigureEmbeddedDatabase(type = DatabaseType.MARIADB, refresh = RefreshMode.AFTER_CLASS)
 public class ManyToManyServiceTest {
@@ -150,7 +147,7 @@ public class ManyToManyServiceTest {
 
     Map<Long, List<TestDto1>> result =
         m2mService.findReferenceeByReferencers(
-            new HashSet<>(Arrays.asList(new Long[] {d2i1.getId(), d2i2.getId()})));
+            new HashSet<>(Arrays.asList(d2i1.getId(), d2i2.getId())));
 
     assertNotNull(result);
     assertEquals(2, result.size());
@@ -186,7 +183,7 @@ public class ManyToManyServiceTest {
 
     Map<Long, List<TestDto1>> result =
         m2mService.findReferenceeByReferencers(
-            new HashSet<>(Arrays.asList(new Long[] {d2i1.getId(), d2i2.getId()})));
+            new HashSet<>(Arrays.asList(d2i1.getId(), d2i2.getId())));
 
     assertNotNull(result);
     assertEquals(1, result.size());

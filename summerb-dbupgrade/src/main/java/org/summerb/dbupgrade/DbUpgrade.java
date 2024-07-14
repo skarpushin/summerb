@@ -27,5 +27,5 @@ public interface DbUpgrade {
 
   int getTargetDbVersion();
 
-  void upgrade() throws Exception;
+  void upgrade();
 }

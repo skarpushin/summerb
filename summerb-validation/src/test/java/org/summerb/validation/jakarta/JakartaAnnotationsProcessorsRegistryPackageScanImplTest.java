@@ -1,21 +1,16 @@
 package org.summerb.validation.jakarta;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.Set;
-
 import javax.validation.constraints.AssertFalse;
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-
 import org.junit.jupiter.api.Test;
 import org.summerb.validation.ValidationContext;
 import org.summerb.validation.errors.LengthMustBeGreater;
@@ -121,7 +116,7 @@ class JakartaAnnotationsProcessorsRegistryPackageScanImplTest {
             new JakartaAnnotationsProcessorsRegistryPackageScanImpl() {
               @Override
               protected Set<Class<? extends AnnotationProcessor<? extends Annotation>>>
-                  findAnnotationProcessorsClasses(String packageName) throws IOException {
+                  findAnnotationProcessorsClasses(String packageName) {
                 throw new IllegalStateException("test");
               }
             });

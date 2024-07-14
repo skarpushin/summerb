@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.summerb.dbupgrade.impl;
 
+import com.google.common.base.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.summerb.dbupgrade.DbUpgrade;
@@ -22,8 +23,6 @@ import org.summerb.dbupgrade.api.DbSchemaVersionResolver;
 import org.summerb.dbupgrade.api.UpgradePackage;
 import org.summerb.dbupgrade.api.UpgradePackageFactory;
 import org.summerb.dbupgrade.api.UpgradePackageMetaResolver;
-
-import com.google.common.base.Preconditions;
 
 public class DbUpgradeImpl implements DbUpgrade {
   protected Logger log = LoggerFactory.getLogger(getClass());
@@ -57,7 +56,7 @@ public class DbUpgradeImpl implements DbUpgrade {
   }
 
   @Override
-  public void upgrade() throws Exception {
+  public void upgrade() {
     try {
       int currentDbVersion = getCurrentDbVersion();
       int targetDbVersion = getTargetDbVersion();

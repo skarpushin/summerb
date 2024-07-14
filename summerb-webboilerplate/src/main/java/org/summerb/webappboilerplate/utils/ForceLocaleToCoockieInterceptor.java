@@ -18,7 +18,6 @@ package org.summerb.webappboilerplate.utils;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.web.servlet.AsyncHandlerInterceptor;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
@@ -34,8 +33,8 @@ import org.springframework.web.util.WebUtils;
  */
 public class ForceLocaleToCoockieInterceptor implements AsyncHandlerInterceptor {
   @Override
-  public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
-      throws Exception {
+  public boolean preHandle(
+      HttpServletRequest request, HttpServletResponse response, Object handler) {
     LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(request);
 
     // Check if it's our case

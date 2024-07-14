@@ -15,12 +15,9 @@
  ******************************************************************************/
 package org.summerb.webappboilerplate.security.rest;
 
-import java.io.IOException;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.security.web.session.InvalidSessionStrategy;
 import org.summerb.security.api.dto.NotAuthorizedResult;
 import org.summerb.spring.security.SecurityMessageCodes;
@@ -39,8 +36,7 @@ public class RestInvalidSessionStrategy implements InvalidSessionStrategy {
   }
 
   @Override
-  public void onInvalidSessionDetected(HttpServletRequest request, HttpServletResponse response)
-      throws IOException, ServletException {
+  public void onInvalidSessionDetected(HttpServletRequest request, HttpServletResponse response) {
     // create new session, which will result in JSESSIONID coockie reset
     request.getSession();
 

@@ -16,7 +16,6 @@
 package org.summerb.users.api;
 
 import java.util.List;
-
 import org.summerb.users.api.dto.AuthToken;
 import org.summerb.users.api.exceptions.AuthTokenNotFoundException;
 import org.summerb.users.api.exceptions.InvalidPasswordException;
@@ -84,7 +83,7 @@ public interface AuthTokenService {
   void updateToken(String authTokenUuid, long lastVerifiedAt, String newTokenValue)
       throws AuthTokenNotFoundException, ValidationException;
 
-  void deleteAuthToken(String authTokenUuid) throws AuthTokenNotFoundException;
+  void deleteAuthToken(String authTokenUuid);
 
   /**
    * Find all auth tokens for this user

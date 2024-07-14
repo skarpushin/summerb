@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.summerb.easycrud.impl.auth;
 
+import com.google.common.base.Preconditions;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.summerb.easycrud.api.EasyCrudWireTapMode;
@@ -24,8 +25,6 @@ import org.summerb.security.api.CurrentUserUuidResolver;
 import org.summerb.security.api.dto.NotAuthorizedResult;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
 import org.summerb.spring.security.api.CurrentUserRolesResolver;
-
-import com.google.common.base.Preconditions;
 
 /**
  * This is abstract class for implementing Table-wide authorization logic. Table-wide means that
@@ -111,7 +110,7 @@ public abstract class EasyCrudAuthorizationPerTableStrategy extends EasyCrudWire
   }
 
   @Override
-  public void afterPropertiesSet() throws Exception {
+  public void afterPropertiesSet() {
     Preconditions.checkArgument(
         currentUserRolesResolver != null, "currentUserRolesResolver required");
     Preconditions.checkArgument(

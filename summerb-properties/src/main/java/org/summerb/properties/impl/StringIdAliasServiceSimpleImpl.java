@@ -41,7 +41,7 @@ public class StringIdAliasServiceSimpleImpl implements StringIdAliasService, Ini
   }
 
   @Override
-  public void afterPropertiesSet() throws Exception {
+  public void afterPropertiesSet() {
     Preconditions.checkState(stringIdAliasDao != null);
   }
 

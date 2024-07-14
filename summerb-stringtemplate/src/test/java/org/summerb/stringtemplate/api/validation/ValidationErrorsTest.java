@@ -15,7 +15,7 @@
  ******************************************************************************/
 package org.summerb.stringtemplate.api.validation;
 
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 import org.summerb.validation.errors.MustBeEquals;
@@ -24,7 +24,7 @@ public class ValidationErrorsTest {
 
   /** This test is to confirm bugfix for https://github.com/skarpushin/summerb/issues/9 fixed */
   @Test
-  public void testMustBeEqualsValidationError_expextCorrectArgumentsRetention() throws Exception {
+  public void testMustBeEqualsValidationError_expextCorrectArgumentsRetention() {
     MustBeEquals ve = new MustBeEquals("ft", "a", "b");
     assertArrayEquals(new Object[] {"a", "b"}, ve.getMessageArgs());
   }

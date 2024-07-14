@@ -1,16 +1,14 @@
 package org.summerb.validation;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
-
-import org.junit.jupiter.api.Test;
-import org.summerb.validation.errors.MustHaveText;
-import org.summerb.validation.gson.ValidationErrorGsonTypeAdapter;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
+import org.junit.jupiter.api.Test;
+import org.summerb.validation.errors.MustHaveText;
+import org.summerb.validation.gson.ValidationErrorGsonTypeAdapter;
 
 class ValidationErrorGsonTypeAdapterTest {
 

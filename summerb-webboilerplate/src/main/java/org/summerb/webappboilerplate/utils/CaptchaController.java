@@ -15,13 +15,12 @@
  ******************************************************************************/
 package org.summerb.webappboilerplate.utils;
 
+import com.google.common.base.Preconditions;
 import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -32,8 +31,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.summerb.security.api.AuditEvents;
 import org.summerb.security.api.dto.ScalarValue;
 import org.summerb.security.impl.AuditEventsDefaultImpl;
-
-import com.google.common.base.Preconditions;
 
 /**
  * Very naive impl that could be hacked by using selenium, but I hope it's sufficient for now
@@ -50,7 +47,7 @@ public class CaptchaController implements InitializingBean {
   protected static AuditEvents staticAuditLog = new AuditEventsDefaultImpl();
 
   @Override
-  public void afterPropertiesSet() throws Exception {
+  public void afterPropertiesSet() {
     if (auditEvents == null) {
       auditEvents = new AuditEventsDefaultImpl();
     }

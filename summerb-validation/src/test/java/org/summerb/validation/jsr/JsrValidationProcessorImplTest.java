@@ -1,12 +1,9 @@
 package org.summerb.validation.jsr;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.lang.reflect.Field;
-
 import javax.validation.constraints.AssertTrue;
-
 import org.junit.jupiter.api.Test;
 
 class JsrValidationProcessorImplTest {
@@ -23,8 +20,8 @@ class JsrValidationProcessorImplTest {
     Field field3 = JsrRow.class.getDeclaredField("booleanValue2");
     AssertTrue ann3 = field3.getAnnotation(AssertTrue.class);
 
-    assertTrue(ann1 == ann2);
+    assertSame(ann1, ann2);
     // NOTE: we can rely only on reference equality as equals() will compare them by-field basis
-    assertFalse(ann1 == ann3);
+    assertNotSame(ann1, ann3);
   }
 }

@@ -15,8 +15,14 @@
  ******************************************************************************/
 package org.summerb.users.impl;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Throwables;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import java.util.concurrent.ExecutionException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -29,14 +35,6 @@ import org.summerb.utils.easycrud.api.dto.PagerParams;
 import org.summerb.utils.easycrud.api.dto.PaginatedList;
 import org.summerb.utils.tx.TransactionBoundCache;
 import org.summerb.validation.ValidationException;
-
-import com.google.common.base.Preconditions;
-import com.google.common.base.Throwables;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 
 public class UserServiceCachedImpl implements UserService, InitializingBean {
   protected Logger log = LoggerFactory.getLogger(getClass());
@@ -57,7 +55,7 @@ public class UserServiceCachedImpl implements UserService, InitializingBean {
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   @Override
-  public void afterPropertiesSet() throws Exception {
+  public void afterPropertiesSet() {
     CacheBuilder cacheBuilder =
         (CacheBuilder) CacheBuilder.newBuilder().maximumSize(1000).recordStats();
     cacheByEmail =

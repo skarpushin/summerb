@@ -70,7 +70,7 @@ public abstract class DbUpgradeTestAbstract {
     }
 
     @Override
-    public void apply() throws Exception {
+    public void apply() {
       assertTrue(jdbcTemplate.update("INSERT INTO upg_pet (field1) VALUES ('5')") == 1);
     }
   }

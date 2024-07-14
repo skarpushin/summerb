@@ -15,13 +15,15 @@
  ******************************************************************************/
 package org.summerb.webappboilerplate.utils;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.google.gson.Gson;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-
 import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -32,11 +34,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
 import org.summerb.utils.spring.AllMessagesProvider;
-
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import com.google.gson.Gson;
 
 /**
  * This controller exposes all messages as a JSON object (map)
@@ -56,7 +53,7 @@ public class AllMessagesController implements InitializingBean {
   protected long lastModified = System.currentTimeMillis();
 
   @Override
-  public void afterPropertiesSet() throws Exception {
+  public void afterPropertiesSet() {
     messagesCache =
         CacheBuilder.newBuilder()
             .maximumSize(1000)
@@ -97,7 +94,7 @@ public class AllMessagesController implements InitializingBean {
   protected CacheLoader<Locale, Properties> messagesLoader =
       new CacheLoader<Locale, Properties>() {
         @Override
-        public Properties load(Locale key) throws Exception {
+        public Properties load(Locale key) {
           return allMessagesProvider.getAllMessages(key);
         }
       };
