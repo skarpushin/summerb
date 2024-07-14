@@ -48,7 +48,7 @@ public class StringIdAliasServiceSimpleImpl implements StringIdAliasService, Ini
   @Override
   @Transactional(rollbackFor = Throwable.class)
   public long getAliasFor(String str) {
-    Long ret = null;
+    Long ret;
     try {
       ret = stringIdAliasDao.findAliasFor(str);
       if (ret != null) {

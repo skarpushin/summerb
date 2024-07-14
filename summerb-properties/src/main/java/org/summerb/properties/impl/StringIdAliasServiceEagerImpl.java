@@ -74,13 +74,7 @@ public class StringIdAliasServiceEagerImpl implements StringIdAliasService, Init
     }
   }
 
-  protected final Callable<BiMap<String, Long>> aliasesBackgroundResolver =
-      new Callable<BiMap<String, Long>>() {
-        @Override
-        public BiMap<String, Long> call() {
-          return loadAllAliases();
-        }
-      };
+  protected final Callable<BiMap<String, Long>> aliasesBackgroundResolver = this::loadAllAliases;
 
   protected final BiMap<String, Long> loadAllAliases() {
     try {

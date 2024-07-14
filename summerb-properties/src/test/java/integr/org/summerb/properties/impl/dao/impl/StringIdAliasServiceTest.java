@@ -50,7 +50,7 @@ public class StringIdAliasServiceTest {
   @Test
   public void testFindAlias_expectAliasWillBeFound() throws Exception {
     // now let's create values
-    Map<String, Long> map = new HashMap<String, Long>();
+    Map<String, Long> map = new HashMap<>();
     for (int i = 0; i < 10; i++) {
       String name = "anyA" + i;
       long alias = appAliasService.getAliasFor(name);

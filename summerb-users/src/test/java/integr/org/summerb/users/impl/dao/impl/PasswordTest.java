@@ -18,10 +18,11 @@ package integr.org.summerb.users.impl.dao.impl;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import integr.org.summerb.easycrud.config.EmbeddedDbConfig;
+import integr.org.summerb.users.impl.config.UserServicesTestConfig;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase.DatabaseType;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase.RefreshMode;
-import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,15 +30,11 @@ import org.springframework.test.annotation.ProfileValueSourceConfiguration;
 import org.springframework.test.annotation.SystemProfileValueSource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
 import org.summerb.users.api.PasswordService;
 import org.summerb.users.api.UserService;
 import org.summerb.users.api.dto.User;
 import org.summerb.users.api.dto.UserFactory;
-
-import integr.org.summerb.easycrud.config.EmbeddedDbConfig;
-import integr.org.summerb.users.impl.config.UserServicesTestConfig;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {EmbeddedDbConfig.class, UserServicesTestConfig.class})
@@ -49,16 +46,6 @@ public class PasswordTest {
   @Autowired private PasswordService passwordService;
 
   @Autowired private UserService userService;
-
-  @BeforeTransaction
-  public void verifyInitialDatabaseState() {
-    // logic to verify the initial state before a transaction is started
-  }
-
-  @Before
-  public void setUp() {
-    // set up test data within the transaction
-  }
 
   @Test
   public void testSetUserPassword_expectWillBePerformedOk() throws Exception {

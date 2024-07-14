@@ -17,6 +17,10 @@ package integr.org.summerb.easycrud;
 
 import static org.junit.Assert.assertThrows;
 
+import integr.org.summerb.easycrud.config.EasyCrudIntegrTestConfig;
+import integr.org.summerb.easycrud.config.EmbeddedDbConfig;
+import integr.org.summerb.easycrud.dtos.TestDto1;
+import integr.org.summerb.easycrud.dtos.TestDto2;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase.DatabaseType;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase.RefreshMode;
@@ -31,11 +35,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
-
-import integr.org.summerb.easycrud.config.EasyCrudIntegrTestConfig;
-import integr.org.summerb.easycrud.config.EmbeddedDbConfig;
-import integr.org.summerb.easycrud.dtos.TestDto1;
-import integr.org.summerb.easycrud.dtos.TestDto2;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {EmbeddedDbConfig.class, EasyCrudIntegrTestConfig.class})
@@ -81,7 +80,7 @@ public class EasyCrudServicePerRowAuthTest extends GenericCrudServiceTestTemplat
   }
 
   @Test
-  public void testCreateDto2ExpectNae() throws Exception {
+  public void testCreateDto2ExpectNae() {
     TestDto2 dto = new TestDto2();
     dto.setActive(true);
     dto.setEnv("throwNaeOnCreate");

@@ -1,17 +1,14 @@
 package integr.org.summerb.easycrud.config;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import javax.sql.DataSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.transaction.PlatformTransactionManager;
-
-import java.sql.Connection;
-import java.sql.SQLException;
 
 @Configuration
 public class EmbeddedDbConfig {

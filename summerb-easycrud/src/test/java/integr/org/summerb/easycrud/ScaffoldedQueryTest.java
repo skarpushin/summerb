@@ -15,8 +15,6 @@
  ******************************************************************************/
 package integr.org.summerb.easycrud;
 
-import static io.zonky.test.db.AutoConfigureEmbeddedDatabase.DatabaseType.*;
-import static io.zonky.test.db.AutoConfigureEmbeddedDatabase.RefreshMode.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import integr.org.summerb.easycrud.config.EasyCrudIntegrTestConfig;
@@ -27,11 +25,10 @@ import integr.org.summerb.easycrud.dtos.TestEnumFieldType;
 import integr.org.summerb.easycrud.testbeans.CustomMapperToTestDto2;
 import integr.org.summerb.easycrud.testbeans.TestDto1Service;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
-import java.util.List;
-import java.util.Set;
-
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase.DatabaseType;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase.RefreshMode;
+import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;

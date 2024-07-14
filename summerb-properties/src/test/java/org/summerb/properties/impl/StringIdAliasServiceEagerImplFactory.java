@@ -61,11 +61,10 @@ public class StringIdAliasServiceEagerImplFactory {
                 // Synthetic pause, simulate
                 Thread.sleep(250);
 
-                PaginatedList<Entry<String, Long>> result =
-                    new PaginatedList<Entry<String, Long>>();
+                PaginatedList<Entry<String, Long>> result = new PaginatedList<>();
                 result.setPagerParams(pagerParams);
                 result.setTotalResults(150);
-                ArrayList<Entry<String, Long>> items = new ArrayList<Entry<String, Long>>();
+                ArrayList<Entry<String, Long>> items = new ArrayList<>();
                 result.setItems(items);
                 long offset = pagerParams.getOffset();
                 long max = -1;

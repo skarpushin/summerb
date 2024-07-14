@@ -36,9 +36,7 @@ public class PropertiesConfig {
     SimplePropertyServiceImpl ret =
         new SimplePropertyServiceImpl(
             propertyService, SecurityConstants.DOMAIN, SecurityConstants.DOMAIN);
-    if (eventBus.isPresent()) {
-      ret.setEventBus(eventBus.get());
-    }
+    eventBus.ifPresent(ret::setEventBus);
     return ret;
   }
 

@@ -32,7 +32,7 @@ import org.summerb.utils.exceptions.ExceptionUtils;
 public class StringIdAliasServiceEagerImplTest {
 
   @Test
-  public void testInitialization_defensive_expectExceptionIfDaoIsNotSet() throws Exception {
+  public void testInitialization_defensive_expectExceptionIfDaoIsNotSet() {
     assertThrows(IllegalArgumentException.class, () -> new StringIdAliasServiceEagerImpl(null));
   }
 
