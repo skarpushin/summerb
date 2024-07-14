@@ -73,9 +73,9 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>ch.vorburger.mariaDB4j</groupId>
-			<artifactId>mariaDB4j</artifactId>
-			<version>3.1.0</version>
+			<groupId>io.zonky.test</groupId>
+			<artifactId>embedded-database-spring-test</artifactId>
+			<version>2.2.0</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

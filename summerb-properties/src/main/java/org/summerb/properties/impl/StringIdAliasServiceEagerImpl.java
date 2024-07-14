@@ -15,13 +15,16 @@
  ******************************************************************************/
 package org.summerb.properties.impl;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Throwables;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -32,11 +35,6 @@ import org.summerb.properties.impl.dao.StringIdAliasDao;
 import org.summerb.properties.internal.StringIdAliasService;
 import org.summerb.utils.easycrud.api.dto.PagerParams;
 import org.summerb.utils.easycrud.api.dto.PaginatedList;
-
-import com.google.common.base.Preconditions;
-import com.google.common.base.Throwables;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 
 /**
  * Impl which holds all aliases in-memory. So it performs extremely fast. But it will go to the
@@ -52,6 +50,8 @@ public class StringIdAliasServiceEagerImpl implements StringIdAliasService, Init
   protected static Logger log = LoggerFactory.getLogger(StringIdAliasServiceEagerImpl.class);
 
   protected StringIdAliasDao stringIdAliasDao;
+
+  // TODO: Get rid of this async logic -OR- create alternative impl which will use cache for reading
   protected ExecutorService executorService;
 
   protected BiMap<String, Long> aliases;

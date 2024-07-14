@@ -20,10 +20,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import integr.org.summerb.easycrud.config.EasyCrudIntegrTestConfig;
-import integr.org.summerb.easycrud.config.EmbeddedMariaDbConfig;
+import integr.org.summerb.easycrud.config.EmbeddedDbConfig;
 import integr.org.summerb.easycrud.dtos.TestDto1;
 import integr.org.summerb.easycrud.dtos.TestDto2;
 import integr.org.summerb.easycrud.dtos.TestDto3;
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase.DatabaseType;
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase.RefreshMode;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -55,11 +58,11 @@ import org.summerb.security.api.exceptions.NotAuthorizedException;
 import org.summerb.validation.ValidationException;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {EmbeddedMariaDbConfig.class, EasyCrudIntegrTestConfig.class})
+@ContextConfiguration(classes = {EmbeddedDbConfig.class, EasyCrudIntegrTestConfig.class})
 @ProfileValueSourceConfiguration(SystemProfileValueSource.class)
 @Transactional
 @SuppressWarnings({"unchecked", "deprecation", "rawtypes"})
-// @AutoConfigureEmbeddedDatabase(type = DatabaseType.MARIADB, refresh = RefreshMode.AFTER_CLASS)
+@AutoConfigureEmbeddedDatabase(type = DatabaseType.MARIADB, refresh = RefreshMode.AFTER_CLASS)
 public class DataSetLoaderTest {
   //  @BeforeAll
   //  static void setup(@Autowired DataSource dataSource) throws SQLException {

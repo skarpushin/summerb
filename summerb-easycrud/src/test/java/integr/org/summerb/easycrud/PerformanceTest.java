@@ -16,10 +16,13 @@
 package integr.org.summerb.easycrud;
 
 import integr.org.summerb.easycrud.config.EasyCrudIntegrTestConfig;
-import integr.org.summerb.easycrud.config.EmbeddedMariaDbConfig;
+import integr.org.summerb.easycrud.config.EmbeddedDbConfig;
 import integr.org.summerb.easycrud.dtos.TestDto1;
 import integr.org.summerb.easycrud.dtos.TestEnumFieldType;
 import integr.org.summerb.easycrud.testbeans.TestDto1Service;
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase.DatabaseType;
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase.RefreshMode;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,9 +34,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Disabled
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {EmbeddedMariaDbConfig.class, EasyCrudIntegrTestConfig.class})
+@ContextConfiguration(classes = {EmbeddedDbConfig.class, EasyCrudIntegrTestConfig.class})
 @ProfileValueSourceConfiguration()
 @Transactional
+@AutoConfigureEmbeddedDatabase(type = DatabaseType.MARIADB, refresh = RefreshMode.AFTER_CLASS)
 public class PerformanceTest {
   @Autowired private TestDto1Service service;
 

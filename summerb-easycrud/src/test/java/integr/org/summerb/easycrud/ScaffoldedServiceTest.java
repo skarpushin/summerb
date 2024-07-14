@@ -19,9 +19,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import integr.org.summerb.easycrud.config.EasyCrudIntegrTestConfig;
-import integr.org.summerb.easycrud.config.EmbeddedMariaDbConfig;
+import integr.org.summerb.easycrud.config.EmbeddedDbConfig;
 import integr.org.summerb.easycrud.dtos.TestDto2;
 import integr.org.summerb.easycrud.testbeans.TestDto2Service;
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase.DatabaseType;
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase.RefreshMode;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +34,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {EmbeddedMariaDbConfig.class, EasyCrudIntegrTestConfig.class})
+@ContextConfiguration(classes = {EmbeddedDbConfig.class, EasyCrudIntegrTestConfig.class})
 @ProfileValueSourceConfiguration()
 @Transactional
+@AutoConfigureEmbeddedDatabase(type = DatabaseType.MARIADB, refresh = RefreshMode.AFTER_CLASS)
 public class ScaffoldedServiceTest {
   @Autowired private TestDto2Service service;
 

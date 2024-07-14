@@ -18,6 +18,9 @@ package integr.org.summerb.users.impl.dao.impl;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase.DatabaseType;
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase.RefreshMode;
 import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,13 +36,14 @@ import org.summerb.users.api.UserService;
 import org.summerb.users.api.dto.User;
 import org.summerb.users.api.dto.UserFactory;
 
-import integr.org.summerb.easycrud.config.EmbeddedMariaDbConfig;
+import integr.org.summerb.easycrud.config.EmbeddedDbConfig;
 import integr.org.summerb.users.impl.config.UserServicesTestConfig;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {EmbeddedMariaDbConfig.class, UserServicesTestConfig.class})
+@ContextConfiguration(classes = {EmbeddedDbConfig.class, UserServicesTestConfig.class})
 @ProfileValueSourceConfiguration(SystemProfileValueSource.class)
 @Transactional
+@AutoConfigureEmbeddedDatabase(type = DatabaseType.MARIADB, refresh = RefreshMode.AFTER_CLASS)
 public class PasswordTest {
 
   @Autowired private PasswordService passwordService;

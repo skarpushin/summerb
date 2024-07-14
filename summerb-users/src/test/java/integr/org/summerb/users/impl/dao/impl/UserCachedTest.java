@@ -20,6 +20,9 @@ import static org.junit.Assert.fail;
 
 import java.util.Date;
 
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase.DatabaseType;
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase.RefreshMode;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,13 +37,14 @@ import org.summerb.users.api.dto.User;
 import org.summerb.users.api.dto.UserFactory;
 import org.summerb.users.api.exceptions.UserNotFoundException;
 
-import integr.org.summerb.easycrud.config.EmbeddedMariaDbConfig;
+import integr.org.summerb.easycrud.config.EmbeddedDbConfig;
 import integr.org.summerb.users.impl.config.UserServicesTestConfig;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {EmbeddedMariaDbConfig.class, UserServicesTestConfig.class})
+@ContextConfiguration(classes = {EmbeddedDbConfig.class, UserServicesTestConfig.class})
 @ProfileValueSourceConfiguration(SystemProfileValueSource.class)
 @Transactional
+@AutoConfigureEmbeddedDatabase(type = DatabaseType.MARIADB, refresh = RefreshMode.AFTER_CLASS)
 public class UserCachedTest {
   @Autowired
   @Qualifier("userService")

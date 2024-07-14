@@ -15,6 +15,9 @@
  ******************************************************************************/
 package integr.org.summerb.easycrud;
 
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase.DatabaseType;
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase.RefreshMode;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -26,14 +29,15 @@ import org.springframework.transaction.annotation.Transactional;
 import org.summerb.easycrud.api.EasyCrudService;
 
 import integr.org.summerb.easycrud.config.EasyCrudIntegrTestConfig;
-import integr.org.summerb.easycrud.config.EmbeddedMariaDbConfig;
+import integr.org.summerb.easycrud.config.EmbeddedDbConfig;
 import integr.org.summerb.easycrud.dtos.TestDto1;
 import integr.org.summerb.easycrud.dtos.TestDto2;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {EmbeddedMariaDbConfig.class, EasyCrudIntegrTestConfig.class})
+@ContextConfiguration(classes = {EmbeddedDbConfig.class, EasyCrudIntegrTestConfig.class})
 @ProfileValueSourceConfiguration(SystemProfileValueSource.class)
 @Transactional
+@AutoConfigureEmbeddedDatabase(type = DatabaseType.MARIADB, refresh = RefreshMode.AFTER_CLASS)
 public class EasyCrudServiceTableAuthTest extends GenericCrudServiceTestTemplate {
   //  @BeforeAll
   //  static void setup(@Autowired DataSource dataSource) throws SQLException {

@@ -21,10 +21,12 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase.DatabaseType;
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase.RefreshMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,9 +44,10 @@ import org.summerb.properties.api.dto.NamedProperty;
 import org.summerb.utils.exceptions.ExceptionUtils;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {EmbeddedMariaDbConfig.class, PropertiesConfig.class})
+@ContextConfiguration(classes = {EmbeddedDbConfig.class, PropertiesConfig.class})
 @ProfileValueSourceConfiguration(SystemProfileValueSource.class)
 @Transactional
+@AutoConfigureEmbeddedDatabase(type = DatabaseType.MARIADB, refresh = RefreshMode.AFTER_CLASS)
 public class PropertyServiceImplTest {
   @Autowired protected PropertyService propertyService;
 

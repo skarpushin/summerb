@@ -22,6 +22,9 @@ import static org.junit.Assert.assertTrue;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase.DatabaseType;
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase.RefreshMode;
 import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,29 +41,19 @@ import org.summerb.properties.impl.StringIdAliasServiceEagerImpl;
 import org.summerb.properties.internal.StringIdAliasService;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {EmbeddedMariaDbConfig.class, PropertiesConfig.class})
+@ContextConfiguration(classes = {EmbeddedDbConfig.class, PropertiesConfig.class})
 @ProfileValueSourceConfiguration(SystemProfileValueSource.class)
 @Transactional
+@AutoConfigureEmbeddedDatabase(type = DatabaseType.MARIADB, refresh = RefreshMode.BEFORE_CLASS)
 public class StringIdAliasServiceTest {
   @Autowired protected StringIdAliasService appAliasService;
 
-  @BeforeTransaction
-  public void verifyInitialDatabaseState() {
-    // logic to verify the initial state before a transaction is started
-  }
-
-  @Before
-  public void setUp() {
-    // set up test data within the transaction
-  }
-
   @Test
-  @Rollback(false)
   public void testFindAlias_expectALiasWillBeFound() throws Exception {
     Map<String, Long> map = new HashMap<String, Long>();
 
     for (int i = 0; i < 10; i++) {
-      String name = "any" + i;
+      String name = "anyA" + i;
       long alias = appAliasService.getAliasFor(name);
       assertTrue(alias > 0);
       map.put(name, alias);
@@ -68,7 +61,7 @@ public class StringIdAliasServiceTest {
 
     // test for smae instance
     for (int i = 0; i < 10; i++) {
-      String name = "any" + i;
+      String name = "anyA" + i;
       long alias = appAliasService.getAliasFor(name);
       assertEquals(map.get(name).longValue(), alias);
     }
