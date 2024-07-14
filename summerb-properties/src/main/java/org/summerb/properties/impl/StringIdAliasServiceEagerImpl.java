@@ -50,10 +50,7 @@ public class StringIdAliasServiceEagerImpl implements StringIdAliasService, Init
   protected static Logger log = LoggerFactory.getLogger(StringIdAliasServiceEagerImpl.class);
 
   protected StringIdAliasDao stringIdAliasDao;
-
-  // TODO: Get rid of this async logic -OR- create alternative impl which will use cache for reading
   protected ExecutorService executorService;
-
   protected BiMap<String, Long> aliases;
   protected Future<BiMap<String, Long>> aliasesFuture;
 
@@ -93,7 +90,7 @@ public class StringIdAliasServiceEagerImpl implements StringIdAliasService, Init
           maxOffset == -2 || offset < maxOffset;
           offset = offset + EAGER_LOAD_BATCH_SIZE) {
         PagerParams pagerParams = new PagerParams(offset, EAGER_LOAD_BATCH_SIZE);
-        PaginatedList<AliasEntry> loadedAliases = stringIdAliasDao.loadAllAliases(pagerParams);
+        PaginatedList<AliasEntry> loadedAliases = stringIdAliasDao.loadAliasesPaged(pagerParams);
         maxOffset = loadedAliases.getTotalResults() - 1;
 
         for (Entry<String, Long> entry : loadedAliases.getItems()) {

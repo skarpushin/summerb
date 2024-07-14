@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.summerb.properties.impl;
 
+import com.google.common.base.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -24,12 +25,8 @@ import org.summerb.properties.api.exceptions.PropertyServiceUnexpectedException;
 import org.summerb.properties.impl.dao.StringIdAliasDao;
 import org.summerb.properties.internal.StringIdAliasService;
 
-import com.google.common.base.Preconditions;
-
 /**
  * Simple impl which will go to the database for each request
- *
- * <p>TBD: Class is not tested!!!
  *
  * @author skarpushin
  */

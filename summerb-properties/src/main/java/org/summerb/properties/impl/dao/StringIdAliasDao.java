@@ -15,16 +15,22 @@
  ******************************************************************************/
 package org.summerb.properties.impl.dao;
 
+import java.util.List;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.summerb.utils.easycrud.api.dto.PagerParams;
 import org.summerb.utils.easycrud.api.dto.PaginatedList;
 
 public interface StringIdAliasDao {
 
-  PaginatedList<AliasEntry> loadAllAliases(PagerParams pagerParams);
+  PaginatedList<AliasEntry> loadAliasesPaged(PagerParams pagerParams);
 
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
   long createAliasFor(String str);
 
   Long findAliasFor(String str);
+
+  List<AliasEntry> loadAllAliases();
 
   String findAliasName(long alias);
 }

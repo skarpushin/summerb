@@ -15,43 +15,42 @@
  ******************************************************************************/
 package integr.org.summerb.properties.impl.dao.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.util.HashMap;
-import java.util.Map;
+import static org.junit.jupiter.api.Assertions.*;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase.DatabaseType;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase.RefreshMode;
-import org.junit.Before;
+import java.util.HashMap;
+import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.ProfileValueSourceConfiguration;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.annotation.SystemProfileValueSource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
 import org.summerb.properties.PropertiesConfig;
-import org.summerb.properties.impl.StringIdAliasServiceEagerImpl;
 import org.summerb.properties.internal.StringIdAliasService;
+import org.summerb.properties.internal.StringIdAliasServiceVisibleForTesting;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {EmbeddedDbConfig.class, PropertiesConfig.class})
-@ProfileValueSourceConfiguration(SystemProfileValueSource.class)
+@ProfileValueSourceConfiguration()
 @Transactional
 @AutoConfigureEmbeddedDatabase(type = DatabaseType.MARIADB, refresh = RefreshMode.BEFORE_CLASS)
 public class StringIdAliasServiceTest {
   @Autowired protected StringIdAliasService appAliasService;
 
-  @Test
-  public void testFindAlias_expectALiasWillBeFound() throws Exception {
-    Map<String, Long> map = new HashMap<String, Long>();
+  @BeforeEach
+  public void beforeEachTest() {
+    ((StringIdAliasServiceVisibleForTesting) appAliasService).clearCache();
+  }
 
+  @Test
+  public void testFindAlias_expectAliasWillBeFound() throws Exception {
+    // now let's create values
+    Map<String, Long> map = new HashMap<String, Long>();
     for (int i = 0; i < 10; i++) {
       String name = "anyA" + i;
       long alias = appAliasService.getAliasFor(name);
@@ -59,21 +58,19 @@ public class StringIdAliasServiceTest {
       map.put(name, alias);
     }
 
-    // test for smae instance
+    // Make sure aliases can be fetched from cached state
     for (int i = 0; i < 10; i++) {
       String name = "anyA" + i;
       long alias = appAliasService.getAliasFor(name);
       assertEquals(map.get(name).longValue(), alias);
     }
 
-    // test for new instance
-    StringIdAliasServiceEagerImpl newAppAliasService =
-        new StringIdAliasServiceEagerImpl(
-            ((StringIdAliasServiceEagerImpl) appAliasService).getStringIdAliasDao());
-    newAppAliasService.afterPropertiesSet();
-
-    for (long aliasId : map.values()) {
-      assertNotNull(newAppAliasService.getNameByAlias(aliasId));
+    // Now let's clear it's cache
+    ((StringIdAliasServiceVisibleForTesting) appAliasService).clearCache();
+    for (int i = 0; i < 10; i++) {
+      String name = "anyA" + i;
+      long alias = appAliasService.getAliasFor(name);
+      assertEquals(map.get(name).longValue(), alias);
     }
   }
 }

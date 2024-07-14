@@ -27,38 +27,38 @@ import io.zonky.test.db.AutoConfigureEmbeddedDatabase.RefreshMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.ProfileValueSourceConfiguration;
-import org.springframework.test.annotation.SystemProfileValueSource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
 import org.summerb.easycrud.api.exceptions.ServiceDataTruncationException;
 import org.summerb.properties.PropertiesConfig;
 import org.summerb.properties.api.PropertyService;
 import org.summerb.properties.api.dto.NamedProperty;
+import org.summerb.properties.internal.StringIdAliasService;
+import org.summerb.properties.internal.StringIdAliasServiceVisibleForTesting;
 import org.summerb.utils.exceptions.ExceptionUtils;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {EmbeddedDbConfig.class, PropertiesConfig.class})
-@ProfileValueSourceConfiguration(SystemProfileValueSource.class)
+@ProfileValueSourceConfiguration()
 @Transactional
 @AutoConfigureEmbeddedDatabase(type = DatabaseType.MARIADB, refresh = RefreshMode.AFTER_CLASS)
 public class PropertyServiceImplTest {
   @Autowired protected PropertyService propertyService;
+  @Autowired protected StringIdAliasService appAliasService;
+  @Autowired protected StringIdAliasService domainAliasService;
+  @Autowired protected StringIdAliasService propertyNameAliasService;
 
-  @BeforeTransaction
-  public void verifyInitialDatabaseState() {
-    // logic to verify the initial state before a transaction is started
-  }
-
-  @Before
-  public void setUp() {
-    // set up test data within the transaction
+  @BeforeEach
+  public void beforeEachTest() {
+    ((StringIdAliasServiceVisibleForTesting) appAliasService).clearCache();
+    ((StringIdAliasServiceVisibleForTesting) domainAliasService).clearCache();
+    ((StringIdAliasServiceVisibleForTesting) propertyNameAliasService).clearCache();
   }
 
   @Test

@@ -66,7 +66,7 @@ public class StringIdAliasServiceEagerImplTest {
     StringIdAliasDao stringIdAliasDao = Mockito.mock(StringIdAliasDao.class);
     doThrow(new IllegalStateException("INTENTIONAL FAILURE FOR TEST PURPOSES"))
         .when(stringIdAliasDao)
-        .loadAllAliases(any(PagerParams.class));
+        .loadAliasesPaged(any(PagerParams.class));
 
     StringIdAliasServiceEagerImpl fixture = new StringIdAliasServiceEagerImpl(stringIdAliasDao);
 
@@ -79,7 +79,7 @@ public class StringIdAliasServiceEagerImplTest {
   @Test
   public void testGetAliases_whitebox_expectExceptionOnException() {
     StringIdAliasDao stringIdAliasDao = Mockito.mock(StringIdAliasDao.class);
-    when(stringIdAliasDao.loadAllAliases(any(PagerParams.class)))
+    when(stringIdAliasDao.loadAliasesPaged(any(PagerParams.class)))
         .thenThrow(new IllegalStateException("test exception"));
 
     StringIdAliasServiceEagerImpl fixture = new StringIdAliasServiceEagerImpl(stringIdAliasDao);

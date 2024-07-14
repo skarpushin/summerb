@@ -20,9 +20,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.sql.DataSource;
-
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.util.CollectionUtils;
@@ -40,6 +38,7 @@ public class StringIdAliasDaoImpl extends TableDaoBase implements StringIdAliasD
 
   protected SimpleJdbcInsert jdbcInsert;
   protected String sqlFindAliasByName;
+  protected String sqlFindAliasesPaged;
   protected String sqlFindAllAliases;
   protected String sqlLastStatementCount;
   protected String sqlFindNameByAlias;
@@ -62,7 +61,9 @@ public class StringIdAliasDaoImpl extends TableDaoBase implements StringIdAliasD
         String.format("SELECT alias FROM %s WHERE alias_name = :alias_name", tableName);
     sqlFindNameByAlias = String.format("SELECT alias_name FROM %s WHERE alias = :alias", tableName);
 
-    sqlFindAllAliases =
+    sqlFindAllAliases = String.format("SELECT alias_name, alias FROM %s", tableName);
+
+    sqlFindAliasesPaged =
         String.format(
             "SELECT SQL_CALC_FOUND_ROWS alias_name, alias FROM %s ORDER BY alias ASC LIMIT :max OFFSET :offset",
             tableName);
@@ -100,15 +101,20 @@ public class StringIdAliasDaoImpl extends TableDaoBase implements StringIdAliasD
       };
 
   @Override
-  public PaginatedList<AliasEntry> loadAllAliases(PagerParams pagerParams) {
+  public PaginatedList<AliasEntry> loadAliasesPaged(PagerParams pagerParams) {
     Map<String, Object> paramMap = new HashMap<String, Object>();
     paramMap.put(PARAM_OFFSET, pagerParams.getOffset());
     paramMap.put(PARAM_MAX, pagerParams.getMax());
 
-    List<AliasEntry> results = jdbc.query(sqlFindAllAliases, paramMap, rowMapper);
+    List<AliasEntry> results = jdbc.query(sqlFindAliasesPaged, paramMap, rowMapper);
     int totalResultsCount = jdbc.queryForInt(sqlLastStatementCount, new HashMap<String, Object>());
 
     return new PaginatedList<AliasEntry>(pagerParams, results, totalResultsCount);
+  }
+
+  @Override
+  public List<AliasEntry> loadAllAliases() {
+    return jdbc.query(sqlFindAllAliases, rowMapper);
   }
 
   // TBD: Method is not tested!!!
@@ -127,5 +133,10 @@ public class StringIdAliasDaoImpl extends TableDaoBase implements StringIdAliasD
 
   public String getTableName() {
     return tableName;
+  }
+
+  @Override
+  public String toString() {
+    return super.toString() + ", table=" + tableName;
   }
 }

@@ -1,9 +1,8 @@
 package org.summerb.properties;
 
+import com.google.common.eventbus.EventBus;
 import java.util.Optional;
-
 import javax.sql.DataSource;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -12,15 +11,13 @@ import org.summerb.properties.api.PropertyService;
 import org.summerb.properties.api.SimplePropertyService;
 import org.summerb.properties.impl.PropertyServiceImpl;
 import org.summerb.properties.impl.SimplePropertyServiceImpl;
-import org.summerb.properties.impl.StringIdAliasServiceEagerImpl;
+import org.summerb.properties.impl.StringIdAliasServiceCachedImpl;
 import org.summerb.properties.impl.dao.PropertyDao;
 import org.summerb.properties.impl.dao.StringIdAliasDao;
 import org.summerb.properties.impl.dao.impl.PropertyDaoImpl;
 import org.summerb.properties.impl.dao.impl.StringIdAliasDaoImpl;
 import org.summerb.properties.internal.StringIdAliasService;
 import org.summerb.spring.security.SecurityConstants;
-
-import com.google.common.eventbus.EventBus;
 
 /**
  * Template configuration for Properties Service beans
@@ -63,19 +60,19 @@ public class PropertiesConfig {
 
   @Bean
   StringIdAliasService appAliasService(@Qualifier("appAliasDao") StringIdAliasDao appAliasDao) {
-    return new StringIdAliasServiceEagerImpl(appAliasDao);
+    return new StringIdAliasServiceCachedImpl(appAliasDao);
   }
 
   @Bean
   StringIdAliasService domainAliasService(
       @Qualifier("domainAliasDao") StringIdAliasDao domainAliasDao) {
-    return new StringIdAliasServiceEagerImpl(domainAliasDao);
+    return new StringIdAliasServiceCachedImpl(domainAliasDao);
   }
 
   @Bean
   StringIdAliasService propertyNameAliasService(
       @Qualifier("propertyNameAliasDao") StringIdAliasDao propertyNameAliasDao) {
-    return new StringIdAliasServiceEagerImpl(propertyNameAliasDao);
+    return new StringIdAliasServiceCachedImpl(propertyNameAliasDao);
   }
 
   @Bean

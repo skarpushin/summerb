@@ -22,7 +22,6 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.Map.Entry;
 import java.util.concurrent.Executors;
-
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -51,7 +50,7 @@ public class StringIdAliasServiceEagerImplFactory {
     when(ret.createAliasFor(NAME)).thenReturn(NAME_ALIAS);
     when(ret.findAliasFor(NAME)).thenReturn(NAME_ALIAS);
 
-    when(ret.loadAllAliases(any(PagerParams.class)))
+    when(ret.loadAliasesPaged(any(PagerParams.class)))
         .thenAnswer(
             new Answer<PaginatedList<Entry<String, Long>>>() {
               @Override
