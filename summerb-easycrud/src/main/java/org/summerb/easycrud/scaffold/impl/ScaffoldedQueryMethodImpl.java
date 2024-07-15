@@ -27,6 +27,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
@@ -50,6 +52,8 @@ import org.summerb.easycrud.scaffold.api.ScaffoldedQuery;
  */
 public class ScaffoldedQueryMethodImpl<TMethodParameter extends ScaffoldedMethodParameter>
     implements CallableMethod {
+  private final Logger log = LoggerFactory.getLogger(getClass());
+
   protected final Method method;
   protected final EasyCrudService<?, HasId<?>> service;
   protected final EasyCrudDaoInjections<?, ?> dao;
@@ -181,12 +185,12 @@ public class ScaffoldedQueryMethodImpl<TMethodParameter extends ScaffoldedMethod
     return ret;
   }
 
-  @SuppressWarnings({"unchecked", "rawtypes"})
+  @SuppressWarnings({"rawtypes", "unchecked"})
   @Override
   public Object call(Object[] methodArgs) {
     try {
       MapSqlParameterSource params = buildQueryParams(methodArgs);
-      ScaffoldedMethodFactoryMySqlImpl.log.debug(
+      log.debug(
           "Executing scaffolded query {}\nQuery: {}\nParams: {}", methodName(), query, params);
 
       Class<?> returnType = method.getReturnType();
@@ -203,21 +207,17 @@ public class ScaffoldedQueryMethodImpl<TMethodParameter extends ScaffoldedMethod
             && wireTap.requiresOnRead()) {
           ret.forEach(wireTap::afterRead);
         }
-
         return ret;
-      } else if (isPrimitive(returnType)) {
-        Object ret = dao.getJdbc().queryForObject(query, params, rowMapper);
-        if (ret != null
-            && rowMapper == dao.getRowMapper()
-            && wireTap != null
-            && wireTap.requiresOnRead()) {
-          wireTap.afterRead(ret);
-        }
-        return ret;
-      } else {
-        throw new RuntimeException(
-            "StoredProceduresImpl. This case is not supported yet. Method name: " + methodName());
       }
+
+      Object ret = dao.getJdbc().queryForObject(query, params, rowMapper);
+      if (ret != null
+          && rowMapper == dao.getRowMapper()
+          && wireTap != null
+          && wireTap.requiresOnRead()) {
+        wireTap.afterRead(ret);
+      }
+      return ret;
     } catch (Throwable t) {
       throw service.getExceptionStrategy().handleExceptionAtFind(t);
     }
