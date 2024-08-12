@@ -90,11 +90,13 @@ public class EasyCrudBaselineConfig {
   }
 
   @Bean
-  ScaffoldedMethodFactory scaffoldedMethodFactory(
-      DataSource dataSource, SqlTypeOverrides sqlTypeOverrides) {
-    ScaffoldedMethodFactoryMySqlImplEx ret = new ScaffoldedMethodFactoryMySqlImplEx(dataSource);
-    ret.setSqlTypeOverrides(sqlTypeOverrides);
-    return ret;
+  SqlTypeOverrides sqlTypeOverrides() {
+    return new SqlTypeOverridesDefaultImpl();
+  }
+
+  @Bean
+  ScaffoldedMethodFactory scaffoldedMethodFactory() {
+    return new ScaffoldedMethodFactoryMySqlImpl();
   }
 
   @Bean
@@ -103,11 +105,6 @@ public class EasyCrudBaselineConfig {
       AutowireCapableBeanFactory beanFactory,
       ScaffoldedMethodFactory scaffoldedMethodFactory) {
     return new EasyCrudScaffoldImpl(dataSource, beanFactory, scaffoldedMethodFactory);
-  }
-
-  @Bean
-  EasyCrudServiceResolver easyCrudServiceResolver() {
-    return new EasyCrudServiceResolverSpringImpl();
   }
 }
 ```
