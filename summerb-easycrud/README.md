@@ -31,22 +31,22 @@ in making it popular :-)
 
 * It gives you more than both Spring Data Repositories and Hibernate when it comes to **i18n**, **validation**,
   **authorization** and **extensibility**
-* It gives you less data-related features than **Hibernate** namely ORM and Query DSL that supports projects and 
+* It gives you less data-related features than **Hibernate** namely ORM and Query DSL that supports projections and 
   aggregates
-* It gives more auto-magic that Spring JdbcTemplate
+* It gives more auto-magic than Spring JdbcTemplate
 * It gives you more compiler protection and static code analysis features than Spring Data Repositories or myBatis
 
 ## Capabilities
 
 ### Core
-* It automatically handles CRUD logic (internally uses Spring JdbcTemplate with several improvements)
-* It provides simplistic Query DSL that has a killer-feature is based on identifier names (not String literals, so 
-  your code is protected by refactoring and static code analysis)
+* It automatically handles CRUD logic (internally uses Spring JdbcTemplate with several crucial performance improvements)
+* It provides simplistic Query DSL that has a killer-feature that is based on identifier names (not String literals, so 
+  your code is protected by compiler and supported by refactoring and static code analysis)
 * It allows you to easily define native queries which implementation is also automatically scaffolded
 * Baseline infrastructure for business validations at different data lifecycle steps
 * Baseline infrastructure for authorizations at different data lifecycle steps (for both per-Table and per-Row)
 * Extension points (Wire Taps) for adding any of your custom pre/post-processors
-* Automatically handle timestamps and author fields when data is created and updated
+* Automatically handle timestamps and author fields when data is created and updated (sometimes this is called audit fields)
 * Facilities to implement Security-trimmed UI
 
 ### REST API
@@ -58,11 +58,11 @@ in making it popular :-)
 
 * You'll need to create DB schema somehow else, EasyCrud is not doing this for you.
 * Again, it is not an ORM framework. Although there is some beta/draft impl for loading referenced objects, there are 
-  sno facilities to serialize object graphs.
+  no facilities to serialize object graphs.
 
 ## Tested with
 
-* Java 11
+* Java 8, 11, 17
 * MariaDB (MySQL) / Postgress
 
 # How To (with Examples)
@@ -111,7 +111,7 @@ public class EasyCrudBaselineConfig {
 
 NOTES:
 1. Notice `ValidationContextConfig` is imported here. This is needed for validation logic as well as for Query DSL that
-   utilizes getters instead of String literals
+   utilizes getters instead of String literals for referencing fields in queries
 2. When using Postgress use different implementations for 2 beans: `DaoExceptionToFveTranslatorPostgresImpl` and 
    `QueryToNativeSqlCompilerPostgresImpl`
 
@@ -130,7 +130,7 @@ public class ProjectRow implements HasUuid {
 
 NOTES:
 1. Row is a simple java bean with fields and respective getters/setters.
-1. It's basically should mimic row in a table, all the same fields (except that in DB they're expected to be `snake_case`
+1. It basically should mimic row in a table, all the same fields (except that in DB they're expected to be `snake_case`
    while in Java they're `camelCase`)
 1. You can have non-standard field types, but then you'll need to customize (de)serialization, see below for examples.
 1. There must be no business logic in this class.
@@ -335,10 +335,10 @@ public class EptMetricValidationStrategyImpl
 NOTES:
 1. Notice that validation methods are also using getters for field name resolution instead of string literals
 2. For fine-grained control you can implement `EasyCrudValidationStrategy` interface to make different validation upon
-   creation and deletion
+   creation and modification
 
 ### 2. Augment bean configuration
-Just add you class to injections list when configuring service bean:
+Just add your class to injections list when configuring service bean, i.e.:
 
 ```java
 @Bean
@@ -353,7 +353,7 @@ EptMetricService eptMetricService(EptMetricAuth eptMetricAuth) {
 
 ## Add Authorization logic
 By using EasyCrud WireTaps mechanism, you can make sure that user authorization is being verified whenever data is being
-accessed or modified. So it doesn't matter from which facade layer data is used -- authorization check will be performed.
+accessed or modified. So it doesn't matter from which facade layer data is used -- authorization check will always be performed.
 
 ### 1.a. Define authorization logic - Per Table
 Authorization can be checked per table-wide.
@@ -391,11 +391,11 @@ public class PresaleFeedbackAuthStrategyImpl extends EascyCrudAuthorizationPerTa
 
 NOTES: 
 1. In the above impl Row instances are not used, logic is based purely on User  
-2. There is also `EasyCrudAuthorizationRoleBasedImpl` which is a subclass for `EasyCrudAuthorizationPerTableStrategy`
-   it's a convenient way to define access permissions using user role names
+2. For simple ROLE-based cases, consider using `EasyCrudAuthorizationRoleBasedImpl` (which is a subclass for `EasyCrudAuthorizationPerTableStrategy`)
+   it's a convenient way to define access permissions using conventional user role names
 
 ### 1.b. Define authorization logic - Per Row
-Authorization can be checked on per-row basis.
+Authorization can be checked on a per-row basis.
 ```java
 public class ProjectRowAuthStrategyImpl extends EascyCrudAuthorizationPerRowStrategy<ProjectRow> {
     @Override
@@ -453,8 +453,8 @@ CurrentUserUuidResolver currentUserUuidResolver() {
 
 NOTES:
 1. EasyCrud knows nothing about the way you manage security in your application. Therefore, you need to provide your 
-   own implementation 
-2. EasyCrud makes hard assumption that your user ID is represented as a String 
+   own implementation of the interface `CurrentUserUuidResolver`. Typically you'll create simpl impl to get data from current Authentication
+2. EasyCrud makes hard assumption that your user ID is represented as a String (doesn't have to be UUID though, may be something else alphanumerical) 
 
 ### 2. Augment Row class
 Add `HasAuthor` interface to your Row class and add corresponding fields:
@@ -495,7 +495,8 @@ public class ProjectRow implements HasUuid, HasTimestamps {
 NOTES:
 1. EasyCrud will also use value of the field `modifiedAt` for optimistic locking. Meaning that if you attempt to modify
    row and value of `modifiedAt` would not match same in DB, transaction will fail with `ConcurrentModificationException`
-2. `createdAt` and `modifiedAt` are milliseconds from epoch in UTC
+2. `createdAt` and `modifiedAt` are milliseconds from epoch in UTC. This is done intentionally to avoid all potential
+   "timezone hell" when working with temporal data types which cross boundaries of several systems.
 
 ## Add support for custom field types
 
@@ -566,9 +567,9 @@ NOTES:
 ## Add custom code before and/or after default CRUD methods logic 
 
 There are few ways to do so:
-* Use `EasyCrudWireTap` mechanism to supply pre/post code for each CRUD method -- this my preferred way of doing so 
+* Use `EasyCrudWireTap` mechanism to supply pre/post code for each CRUD method -- this is my preferred way of doing so 
   because it fits well within OCP design principle and seems like easiest way of achieving the goal. Validation and 
-  Authorization is implemented as WireTaps 
+  Authorization are implemented as WireTaps 
 * Subclass `EasyCrudServiceImpl` and override needed methods
 * Create Wrapper class that implements Service interface but that delegates all impl to real impl, and put your code 
   around calls to actual impl 
@@ -626,5 +627,6 @@ implementation, you'll need to manually define each "building block":
 
 # Post-Scriptum
 I hope this gave you enough outlook for a head start. EasyCrud actually provides more than I described here, but then 
-this document might get too boring. Whenever you need to adjust behavior of EasyCrud just look in th underlying 
-implementation, I bet you'll quickly see extension points where you can adjust behavior as needed. Or ask me.
+this document might get too boring. Whenever you need to adjust behavior of EasyCrud just look in the source code of underlying 
+implementation (I myself do this all the time with Spring and other libs :-)), I bet you'll quickly see extension points where 
+you can adjust behavior as needed. Or ask me.
