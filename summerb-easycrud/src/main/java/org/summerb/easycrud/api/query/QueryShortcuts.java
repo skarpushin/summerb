@@ -3,6 +3,7 @@ package org.summerb.easycrud.api.query;
 import com.google.common.base.Preconditions;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import org.springframework.util.CollectionUtils;
@@ -36,14 +37,38 @@ public class QueryShortcuts<TRow, TypeOfThis extends QueryShortcuts<TRow, TypeOf
   }
 
   @SuppressWarnings("unchecked")
-  public TypeOfThis or(List<? extends QueryConditions> disjunctions) {
-    add(new DisjunctionCondition(disjunctions));
+  public TypeOfThis or(TypeOfThis d1) {
+    add(new DisjunctionCondition(Collections.singletonList(d1)));
     return (TypeOfThis) this;
   }
 
   @SuppressWarnings("unchecked")
-  public TypeOfThis or(QueryConditions... disjunctions) {
-    add(new DisjunctionCondition(Arrays.asList(disjunctions)));
+  public TypeOfThis or(TypeOfThis d1, TypeOfThis d2) {
+    add(new DisjunctionCondition(Arrays.asList(d1, d2)));
+    return (TypeOfThis) this;
+  }
+
+  @SuppressWarnings("unchecked")
+  public TypeOfThis or(TypeOfThis d1, TypeOfThis d2, TypeOfThis d3) {
+    add(new DisjunctionCondition(Arrays.asList(d1, d2, d3)));
+    return (TypeOfThis) this;
+  }
+
+  @SuppressWarnings("unchecked")
+  public TypeOfThis or(TypeOfThis d1, TypeOfThis d2, TypeOfThis d3, TypeOfThis d4) {
+    add(new DisjunctionCondition(Arrays.asList(d1, d2, d3, d4)));
+    return (TypeOfThis) this;
+  }
+
+  @SuppressWarnings("unchecked")
+  public TypeOfThis or(TypeOfThis d1, TypeOfThis d2, TypeOfThis d3, TypeOfThis d4, TypeOfThis d5) {
+    add(new DisjunctionCondition(Arrays.asList(d1, d2, d3, d4, d5)));
+    return (TypeOfThis) this;
+  }
+
+  @SuppressWarnings("unchecked")
+  public TypeOfThis or(List<? extends TypeOfThis> disjunctions) {
+    add(new DisjunctionCondition(disjunctions));
     return (TypeOfThis) this;
   }
 

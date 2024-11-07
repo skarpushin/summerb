@@ -34,6 +34,7 @@ import org.summerb.easycrud.api.EasyCrudServiceResolver;
 import org.summerb.easycrud.api.exceptions.EntityNotFoundException;
 import org.summerb.easycrud.api.exceptions.GenericEntityNotFoundException;
 import org.summerb.easycrud.api.query.Query;
+import org.summerb.easycrud.api.query.QueryShortcuts;
 import org.summerb.easycrud.api.relations.DataSetLoader;
 import org.summerb.easycrud.api.relations.EasyCrudM2mService;
 import org.summerb.easycrud.api.relations.ReferencesRegistry;
@@ -330,17 +331,17 @@ public class DataSetLoaderImpl implements DataSetLoader {
 
     EntityTypeToObjectsMap ret = new EntityTypeToObjectsMap();
     for (String entityTypeCode : targetEntityToRef.keySet()) {
+      EasyCrudService service = easyCrudServiceResolver.resolveByRowMessageCode(entityTypeCode);
       Collection<Entry<Ref, Set<Object>>> entries = targetEntityToRef.get(entityTypeCode);
-      List<Query<?>> queries = new ArrayList<>(entries.size());
+      List<QueryShortcuts> queries = new ArrayList<>(entries.size());
       for (Entry<Ref, Set<Object>> entry : entries) {
         Set<Object> ids = entry.getValue();
         Ref ref = entry.getKey();
 
-        queries.add(Query.FACTORY.build().in(ref.getToField(), ids));
+        queries.add(service.query().in(ref.getToField(), ids));
       }
-      Query<?> q = queries.size() == 1 ? queries.get(0) : (Query<?>) Query.n().or(queries);
+      QueryShortcuts q = queries.size() == 1 ? queries.get(0) : service.query().or(queries);
 
-      EasyCrudService service = easyCrudServiceResolver.resolveByRowMessageCode(entityTypeCode);
       ret.put(entityTypeCode, new ArrayList<>(service.findAll(q)));
     }
 
