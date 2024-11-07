@@ -22,8 +22,8 @@ import org.summerb.easycrud.impl.dao.mysql.EasyCrudDaoInjections;
 
 /**
  * Impl of this interface will be responsible for creating impls for methods of sub-interfaces of
- * {@link EasyCrudService} marked with {@link ScaffoldedQuery} annotation and instantiated using
- * {@link EasyCrudScaffold#fromService(Class, String, String, Object...)}
+ * {@link EasyCrudService} marked with {@link Query} annotation and instantiated using {@link
+ * EasyCrudScaffold#fromService(Class, String, String, Object...)}
  *
  * @author sergeyk
  */

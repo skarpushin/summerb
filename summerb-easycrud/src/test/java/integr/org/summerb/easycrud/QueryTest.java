@@ -42,7 +42,7 @@ import org.springframework.transaction.annotation.Transactional;
 @AutoConfigureEmbeddedDatabase(type = DatabaseType.MARIADB, refresh = RefreshMode.AFTER_CLASS)
 @ProfileValueSourceConfiguration()
 @Transactional
-public class ScaffoldedQueryTest {
+public class QueryTest {
   @Autowired private TestDto1Service service;
 
   @Test

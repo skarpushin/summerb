@@ -9,8 +9,8 @@ import org.summerb.methodCapturers.PropertyNameResolverFactoryImpl;
 /**
  * A lightweight and simple way for building queries for {@link EasyCrudService}. It provides usual
  * conditions, nothing fancy (no aggregation, etc). If you need to build complex queries please
- * consider other options, i.e. use {@link org.summerb.easycrud.scaffold.api.ScaffoldedQuery}. But
- * usually Query will provide sufficient facilities for querying rows.
+ * consider other options, i.e. use {@link org.summerb.easycrud.scaffold.api.Query}. But usually
+ * Query will provide sufficient facilities for querying rows.
  *
  * <p>It provides you with ability to specify field names two ways: (a) Method references (it uses
  * ByteBuddy under the hood to extract field names) and (b) using string literals.

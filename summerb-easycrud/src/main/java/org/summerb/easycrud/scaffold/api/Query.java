@@ -37,8 +37,7 @@ import org.summerb.easycrud.scaffold.impl.ScaffoldedMethodFactoryMySqlImpl;
  * parameter names are included in bytecode! Add "-parameters" to compiler args. With maven do it
  * like this:
  *
- * <pre>
- * {@code
+ * <pre>{@code
  * <plugins>
  *   <plugin>
  *     <groupId>org.apache.maven.plugins</groupId>
@@ -51,8 +50,7 @@ import org.summerb.easycrud.scaffold.impl.ScaffoldedMethodFactoryMySqlImpl;
  *     </configuration>
  *   </plugin>
  * </plugins>
- * }
- * </pre>
+ * }</pre>
  *
  * <p>Then you can easily define new query to the underlying database.
  *
@@ -67,7 +65,7 @@ import org.summerb.easycrud.scaffold.impl.ScaffoldedMethodFactoryMySqlImpl;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface ScaffoldedQuery {
+public @interface Query {
   /**
    * @return SQL query to be used to perform the query
    */

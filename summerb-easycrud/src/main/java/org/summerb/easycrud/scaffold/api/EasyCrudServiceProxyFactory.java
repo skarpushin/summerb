@@ -27,7 +27,7 @@ import org.summerb.easycrud.impl.dao.mysql.EasyCrudDaoInjections;
 public interface EasyCrudServiceProxyFactory {
 
   /**
-   * @param optionalDao needs to be provided only if {@link ScaffoldedQuery} are used
+   * @param optionalDao needs to be provided only if {@link Query} are used
    */
   <TId, TDto extends HasId<TId>, TService extends EasyCrudService<TId, TDto>> TService createProxy(
       Class<TService> serviceInterface,

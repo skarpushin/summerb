@@ -50,7 +50,7 @@ import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapValidationImpl;
 import org.summerb.easycrud.scaffold.api.EasyCrudScaffold;
 import org.summerb.easycrud.scaffold.api.EasyCrudServiceProxyFactory;
 import org.summerb.easycrud.scaffold.api.ScaffoldedMethodFactory;
-import org.summerb.easycrud.scaffold.api.ScaffoldedQuery;
+import org.summerb.easycrud.scaffold.api.Query;
 import org.summerb.security.api.CurrentUserUuidResolver;
 import org.summerb.utils.DtoBase;
 
@@ -119,7 +119,7 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
 
   /**
    * Set {@link ScaffoldedMethodFactory}. Optional. Requried only if your interface has methods
-   * annotated with {@link ScaffoldedQuery}
+   * annotated with {@link Query}
    *
    * @param scaffoldedMethodFactory scaffoldedMethodFactory
    */
