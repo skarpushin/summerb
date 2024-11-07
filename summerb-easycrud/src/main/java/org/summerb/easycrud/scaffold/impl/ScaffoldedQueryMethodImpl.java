@@ -29,6 +29,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
@@ -210,7 +211,13 @@ public class ScaffoldedQueryMethodImpl<TMethodParameter extends ScaffoldedMethod
         return ret;
       }
 
-      Object ret = dao.getJdbc().queryForObject(query, params, rowMapper);
+      Object ret;
+      try {
+        ret = dao.getJdbc().queryForObject(query, params, rowMapper);
+      } catch (EmptyResultDataAccessException e) {
+        return null;
+      }
+
       if (ret != null
           && rowMapper == dao.getRowMapper()
           && wireTap != null
