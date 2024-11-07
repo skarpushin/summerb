@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.function.Function;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.JdbcUpdateAffectedIncorrectNumberOfRowsException;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.summerb.easycrud.api.EasyCrudDao;
@@ -73,7 +74,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
   protected TDao dao;
   protected Class<TRow> rowClass;
   protected String rowMessageCode;
-  protected EasyCrudExceptionStrategy<TId> exceptionStrategy;
+  protected EasyCrudExceptionStrategy<TId, TRow> exceptionStrategy;
   protected EasyCrudWireTap<TRow> wireTap;
   protected CurrentUserUuidResolver currentUserUuidResolver;
   protected StringIdGenerator stringIdGenerator;
@@ -146,7 +147,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
     return new StringIdGeneratorUuidImpl();
   }
 
-  protected EasyCrudExceptionStrategyDefaultImpl<TId> buildDefaultEasyCrudExceptionStrategy(
+  protected EasyCrudExceptionStrategyDefaultImpl<TId, TRow> buildDefaultEasyCrudExceptionStrategy(
       String rowMessageCode) {
     return new EasyCrudExceptionStrategyDefaultImpl<>(rowMessageCode);
   }
@@ -180,7 +181,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
   }
 
   @Override
-  public EasyCrudExceptionStrategy<TId> getExceptionStrategy() {
+  public EasyCrudExceptionStrategy<TId, TRow> getExceptionStrategy() {
     return exceptionStrategy;
   }
 
@@ -191,7 +192,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
    * @param exceptionStrategy exceptionStrategy
    */
   @Autowired(required = false)
-  public void setExceptionStrategy(EasyCrudExceptionStrategy<TId> exceptionStrategy) {
+  public void setExceptionStrategy(EasyCrudExceptionStrategy<TId, TRow> exceptionStrategy) {
     Preconditions.checkArgument(exceptionStrategy != null, "exceptionStrategy required");
     this.exceptionStrategy = exceptionStrategy;
   }
@@ -252,10 +253,11 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
 
   @Override
   public TRow create(TRow row) {
+    TRow ret = null;
     try {
       Preconditions.checkArgument(row != null);
 
-      TRow ret = copyDto(row);
+      ret = copyDto(row);
 
       if (wireTap.requiresOnCreate()) {
         wireTap.beforeCreate(ret);
@@ -287,7 +289,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
       }
       return ret;
     } catch (Throwable t) {
-      throw exceptionStrategy.handleExceptionAtCreate(t);
+      throw exceptionStrategy.handleExceptionAtCreate(t, ret == null ? row : ret);
     }
   }
 
@@ -298,6 +300,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
 
   @Override
   public TRow update(TRow newVersion) {
+    TRow ret = null;
     try {
       Preconditions.checkArgument(newVersion != null);
 
@@ -309,7 +312,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
         }
       }
 
-      TRow ret = copyDto(newVersion);
+      ret = copyDto(newVersion);
 
       if (wireTap.requiresOnUpdate().isNeeded()) {
         wireTap.beforeUpdate(currentVersion, ret);
@@ -320,16 +323,16 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
         hasAuthor.setModifiedBy(currentUserUuidResolver.getUserUuid());
       }
 
-      if (dao.update(ret) != 1) {
-        throw exceptionStrategy.buildOptimisticLockException();
-      }
+      dao.update(ret);
 
       if (wireTap.requiresOnUpdate().isNeeded()) {
         wireTap.afterUpdate(currentVersion, ret);
       }
       return ret;
+    } catch (JdbcUpdateAffectedIncorrectNumberOfRowsException t) {
+      throw exceptionStrategy.handleAffectedIncorrectNumberOfRowsOnUpdate(t, ret);
     } catch (Throwable t) {
-      throw exceptionStrategy.handleExceptionAtUpdate(t);
+      throw exceptionStrategy.handleExceptionAtUpdate(t, ret == null ? newVersion : ret);
     }
   }
 
@@ -345,16 +348,16 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
         deleteById(row.getId());
       }
     } catch (Throwable t) {
-      throw exceptionStrategy.handleExceptionAtDelete(t);
+      throw exceptionStrategy.handleExceptionAtDelete(t, row == null ? null : row.getId(), row);
     }
   }
 
   @Override
   public void deleteById(TId id) throws NotAuthorizedException, EntityNotFoundException {
+    TRow existing = null;
     try {
       Preconditions.checkArgument(id != null);
 
-      TRow existing = null;
       if (wireTap.requiresOnDelete().isDtoNeeded()) {
         existing = findById(id);
         if (existing == null) {
@@ -375,20 +378,20 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
         wireTap.afterDelete(existing);
       }
     } catch (Throwable t) {
-      throw exceptionStrategy.handleExceptionAtDelete(t);
+      throw exceptionStrategy.handleExceptionAtDelete(t, id, existing);
     }
   }
 
   @Override
   public void deleteByIdOptimistic(TId id, long modifiedAt)
       throws NotAuthorizedException, EntityNotFoundException {
+    TRow existing = null;
     try {
       Preconditions.checkArgument(id != null);
       Preconditions.checkState(
           HasTimestamps.class.isAssignableFrom(rowClass),
           "Delete using optimistic lock is not allowed for DTO which doesn't support HasTimestamps");
 
-      TRow existing = null;
       if (wireTap.requiresOnDelete().isDtoNeeded()) {
         existing = findById(id);
         if (existing == null) {
@@ -399,16 +402,15 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
         wireTap.beforeDelete(existing);
       }
 
-      int affected = dao.delete(id, modifiedAt);
-      if (affected != 1) {
-        throw exceptionStrategy.buildOptimisticLockException();
-      }
+      dao.delete(id, modifiedAt);
 
       if (wireTap.requiresOnDelete().isNeeded()) {
         wireTap.afterDelete(existing);
       }
+    } catch (JdbcUpdateAffectedIncorrectNumberOfRowsException t) {
+      throw exceptionStrategy.handleAffectedIncorrectNumberOfRowsOnDelete(t, existing);
     } catch (Throwable t) {
-      throw exceptionStrategy.handleExceptionAtDelete(t);
+      throw exceptionStrategy.handleExceptionAtDelete(t, id, existing);
     }
   }
 

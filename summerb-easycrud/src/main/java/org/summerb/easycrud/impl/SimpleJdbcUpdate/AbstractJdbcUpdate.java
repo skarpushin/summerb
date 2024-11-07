@@ -173,8 +173,10 @@ public abstract class AbstractJdbcUpdate {
     this.tableMetaDataContext.setOverrideIncludeSynonymsDefault(override);
   }
 
-  /** @return the update string to be used */
-  protected String getUpdateString() {
+  /**
+   * @return the update string to be used
+   */
+  public String getUpdateString() {
     return this.updateString;
   }
 

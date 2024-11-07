@@ -27,6 +27,7 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.JdbcUpdateAffectedIncorrectNumberOfRowsException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -289,7 +290,12 @@ public class EasyCrudDaoSqlImpl<TId, TRow extends HasId<TId>> extends TableDaoBa
     SqlParameterSource rowParams = parameterSourceBuilder.buildParameterSource(row);
 
     try {
-      return jdbcUpdate.execute(rowParams, restrictionParams);
+      int affectedRows = jdbcUpdate.execute(rowParams, restrictionParams);
+      if (affectedRows != 1) {
+        throw new JdbcUpdateAffectedIncorrectNumberOfRowsException(
+            jdbcUpdate.getUpdateString(), 1, affectedRows);
+      }
+      return affectedRows;
     } catch (Throwable t) {
       daoExceptionTranslator.translateAndThrowIfApplicable(t);
       throw t;
@@ -322,7 +328,12 @@ public class EasyCrudDaoSqlImpl<TId, TRow extends HasId<TId>> extends TableDaoBa
     MapSqlParameterSource params = new MapSqlParameterSource();
     params.addValue(HasId.FN_ID, id);
     params.addValue(HasTimestamps.FN_MODIFIED_AT, modifiedAt);
-    return jdbc.update(sqlDeleteOptimisticById, params);
+    int affectedRows = jdbc.update(sqlDeleteOptimisticById, params);
+    if (affectedRows != 1) {
+      throw new JdbcUpdateAffectedIncorrectNumberOfRowsException(
+          jdbcUpdate.getUpdateString(), 1, affectedRows);
+    }
+    return affectedRows;
   }
 
   @Override

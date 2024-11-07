@@ -15,11 +15,13 @@
  ******************************************************************************/
 package org.summerb.easycrud.api;
 
+import org.springframework.jdbc.JdbcUpdateAffectedIncorrectNumberOfRowsException;
 import org.summerb.easycrud.api.exceptions.EntityNotFoundException;
+import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.impl.EasyCrudExceptionStrategyDefaultImpl;
 
 /**
- * Exception handlign strategy. Rarely but you might need to override how exceptions are handled
+ * Exception handling strategy. Rarely but you might need to override how exceptions are handled
  * during {@link EasyCrudService} operations.
  *
  * <p>Default implementation {@link EasyCrudExceptionStrategyDefaultImpl} supposed to be enough in
@@ -27,19 +29,24 @@ import org.summerb.easycrud.impl.EasyCrudExceptionStrategyDefaultImpl;
  *
  * @author sergey.karpushin
  */
-public interface EasyCrudExceptionStrategy<TId> {
-
-  RuntimeException handleExceptionAtCreate(Throwable t);
+public interface EasyCrudExceptionStrategy<TId, TRow extends HasId<TId>> {
 
   EntityNotFoundException buildNotFoundException(String subjectTypeMessageCode, TId identity);
 
-  RuntimeException handleExceptionAtDelete(Throwable t);
+  RuntimeException handleExceptionAtCreate(Throwable t, TRow row);
 
-  RuntimeException buildOptimisticLockException();
+  RuntimeException handleExceptionAtDelete(Throwable t, TId id, TRow rowOptional);
 
-  RuntimeException handleExceptionAtUpdate(Throwable t);
+  RuntimeException handleAffectedIncorrectNumberOfRowsOnDelete(
+      JdbcUpdateAffectedIncorrectNumberOfRowsException t, TRow rowOptional);
+
+  RuntimeException handleExceptionAtUpdate(Throwable t, TRow row);
+
+  RuntimeException handleAffectedIncorrectNumberOfRowsOnUpdate(
+      JdbcUpdateAffectedIncorrectNumberOfRowsException t, TRow rowOptional);
 
   RuntimeException handleExceptionAtFind(Throwable t);
 
   RuntimeException handleExceptionAtDeleteByQuery(Throwable t);
+
 }

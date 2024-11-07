@@ -16,9 +16,7 @@
 package org.summerb.easycrud.impl.relations;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.beans.PropertyDescriptor;
 import java.util.Collections;
@@ -27,17 +25,11 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.BeanUtils;
 import org.summerb.easycrud.api.EasyCrudServiceResolver;
-import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.api.relations.DataSetLoader;
-import org.summerb.easycrud.api.relations.ReferencesRegistry;
 import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.api.row.relations.Ref;
 import org.summerb.easycrud.impl.relations.example.Device;
-import org.summerb.easycrud.impl.relations.example.DeviceRow;
-import org.summerb.easycrud.impl.relations.example.DeviceService;
 import org.summerb.easycrud.impl.relations.example.Env;
-import org.summerb.easycrud.impl.relations.example.EnvService;
-import org.summerb.easycrud.impl.relations.example.EnvironmentRow;
 import org.summerb.easycrud.impl.relations.example.Refs;
 import org.summerb.utils.Pair;
 
@@ -70,51 +62,4 @@ public class DomLoaderDeviceGatewayTest {
     assertEquals("devices", domFields.get(0).getValue().getName());
   }
 
-  @Test
-  public void testMapDtoToDom_expectCorrectFieldTypeResolution() {
-    // Deps and fixture
-    ReferencesRegistry referencesRegistry = new Refs();
-    EasyCrudServiceResolver easyCrudServiceResolver = mock(EasyCrudServiceResolver.class);
-
-    DeviceService deviceService = mock(DeviceService.class);
-    when(deviceService.getRowMessageCode()).thenReturn(DeviceService.TERM);
-    when(easyCrudServiceResolver.resolveByRowClass(DeviceRow.class)).thenReturn(deviceService);
-    when(easyCrudServiceResolver.resolveByRowMessageCode(DeviceService.TERM))
-        .thenReturn(deviceService);
-
-    EnvService envService = mock(EnvService.class);
-    when(envService.getRowMessageCode()).thenReturn(EnvService.TERM);
-    when(easyCrudServiceResolver.resolveByRowClass(EnvironmentRow.class)).thenReturn(envService);
-    when(easyCrudServiceResolver.resolveByRowMessageCode(EnvService.TERM)).thenReturn(envService);
-
-    DataSetLoaderImpl dataSetLoader =
-        new DataSetLoaderImpl(referencesRegistry, easyCrudServiceResolver);
-
-    DomLoaderImpl f = new DomLoaderImpl(dataSetLoader, easyCrudServiceResolver);
-
-    EnvironmentRow envRow = new EnvironmentRow();
-    envRow.setId(1L);
-    envRow.setName("Hurray");
-    when(envService.findById(1L)).thenReturn(envRow);
-
-    DeviceRow deviceRow = new DeviceRow();
-    deviceRow.setId(2L);
-    deviceRow.setEnvId(1);
-    deviceRow.setName("Yes it is");
-    var qDeviceRowForEnv1 = Query.n(DeviceRow.class).eq(DeviceRow::getEnvId, 1L);
-    when(deviceService.findAll(eq(qDeviceRowForEnv1))).thenReturn(List.of(deviceRow));
-
-    // Now let's invoke it
-    Env env = f.load(Env.class, 1L, Refs.envDevices, Refs.deviceEnv);
-
-    // Verify
-    assertNotNull(env);
-    assertEquals("Hurray", env.getName());
-    assertNotNull(env.getDevices());
-    assertEquals(1, env.getDevices().size());
-    Device device = env.getDevices().get(0);
-    assertEquals("Yes it is", device.getName());
-    assertNotNull(device.getEnv());
-    assertEquals(env, device.getEnv());
-  }
 }

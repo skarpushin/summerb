@@ -90,7 +90,7 @@ public class EasyCrudServiceWrapper<
   }
 
   @Override
-  public EasyCrudExceptionStrategy<TId> getExceptionStrategy() {
+  public EasyCrudExceptionStrategy<TId, TRow> getExceptionStrategy() {
     return actual.getExceptionStrategy();
   }
 

@@ -245,7 +245,7 @@ public interface EasyCrudService<TId, TRow extends HasId<TId>> {
   /**
    * @return exception strategy that is used for handling exceptions for service methods
    */
-  EasyCrudExceptionStrategy<TId> getExceptionStrategy();
+  EasyCrudExceptionStrategy<TId, TRow> getExceptionStrategy();
 
   /**
    * @return entityTypeMessageCode. Same is used in exception messages codes {@link HasMessageCode}

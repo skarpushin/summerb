@@ -15,43 +15,34 @@
  ******************************************************************************/
 package org.summerb.easycrud.impl;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Throwables;
 import java.sql.SQLIntegrityConstraintViolationException;
-
 import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.jdbc.JdbcUpdateAffectedIncorrectNumberOfRowsException;
 import org.springframework.util.StringUtils;
 import org.summerb.easycrud.api.EasyCrudExceptionStrategy;
 import org.summerb.easycrud.api.EasyCrudMessageCodes;
 import org.summerb.easycrud.api.exceptions.EasyCrudUnexpectedException;
 import org.summerb.easycrud.api.exceptions.EntityNotFoundException;
 import org.summerb.easycrud.api.exceptions.GenericEntityNotFoundException;
+import org.summerb.easycrud.api.row.HasId;
+import org.summerb.easycrud.api.row.HasTimestamps;
 import org.summerb.easycrud.api.validation_errors.ReferencedRowCannotBeDeletedValidationError;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
 import org.summerb.utils.exceptions.ExceptionUtils;
 import org.summerb.validation.ValidationException;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Throwables;
-
-/** @author sergey.karpushin */
-public class EasyCrudExceptionStrategyDefaultImpl<TId> implements EasyCrudExceptionStrategy<TId> {
+/**
+ * @author sergey.karpushin
+ */
+public class EasyCrudExceptionStrategyDefaultImpl<TId, TRow extends HasId<TId>>
+    implements EasyCrudExceptionStrategy<TId, TRow> {
   protected String entityCode;
 
   public EasyCrudExceptionStrategyDefaultImpl(String entityTypeMessageCode) {
     Preconditions.checkArgument(StringUtils.hasText(entityTypeMessageCode));
     this.entityCode = entityTypeMessageCode;
-  }
-
-  @Override
-  public RuntimeException handleExceptionAtCreate(Throwable t) {
-    Throwables.throwIfInstanceOf(t, ValidationException.class);
-    Throwables.throwIfInstanceOf(t, NotAuthorizedException.class);
-
-    return buildUnexpectedAtCreate(t);
-  }
-
-  protected RuntimeException buildUnexpectedAtCreate(Throwable t) {
-    return new EasyCrudUnexpectedException(
-        EasyCrudMessageCodes.UNEXPECTED_FAILED_TO_CREATE, entityCode, t);
   }
 
   @Override
@@ -61,7 +52,16 @@ public class EasyCrudExceptionStrategyDefaultImpl<TId> implements EasyCrudExcept
   }
 
   @Override
-  public RuntimeException handleExceptionAtDelete(Throwable t)
+  public RuntimeException handleExceptionAtCreate(Throwable t, TRow row) {
+    Throwables.throwIfInstanceOf(t, ValidationException.class);
+    Throwables.throwIfInstanceOf(t, NotAuthorizedException.class);
+
+    return new EasyCrudUnexpectedException(
+        EasyCrudMessageCodes.UNEXPECTED_FAILED_TO_CREATE, entityCode, t);
+  }
+
+  @Override
+  public RuntimeException handleExceptionAtDelete(Throwable t, TId id, TRow rowOptional)
       throws NotAuthorizedException, EntityNotFoundException {
     Throwables.throwIfInstanceOf(t, NotAuthorizedException.class);
     Throwables.throwIfInstanceOf(t, EntityNotFoundException.class);
@@ -71,7 +71,8 @@ public class EasyCrudExceptionStrategyDefaultImpl<TId> implements EasyCrudExcept
       return new RuntimeException("Constraint violation", fve);
     }
 
-    return buildUnexpectedAtDelete(t);
+    return new EasyCrudUnexpectedException(
+        EasyCrudMessageCodes.UNEXPECTED_FAILED_TO_DELETE, entityCode, t);
   }
 
   /**
@@ -100,28 +101,37 @@ public class EasyCrudExceptionStrategyDefaultImpl<TId> implements EasyCrudExcept
   public RuntimeException handleExceptionAtDeleteByQuery(Throwable t)
       throws NotAuthorizedException {
     Throwables.throwIfInstanceOf(t, NotAuthorizedException.class);
-    return buildUnexpectedAtDelete(t);
-  }
-
-  protected RuntimeException buildUnexpectedAtDelete(Throwable t) {
     return new EasyCrudUnexpectedException(
         EasyCrudMessageCodes.UNEXPECTED_FAILED_TO_DELETE, entityCode, t);
   }
 
   @Override
-  public RuntimeException buildOptimisticLockException() {
+  public RuntimeException handleAffectedIncorrectNumberOfRowsOnDelete(
+      JdbcUpdateAffectedIncorrectNumberOfRowsException t, TRow rowOptional) {
+    if (rowOptional instanceof HasTimestamps) {
+      return buildOptimisticLockException(t.getActualRowsAffected(), rowOptional);
+    }
+    return t;
+  }
+
+  @Override
+  public RuntimeException handleAffectedIncorrectNumberOfRowsOnUpdate(
+      JdbcUpdateAffectedIncorrectNumberOfRowsException t, TRow rowOptional) {
+    if (rowOptional instanceof HasTimestamps) {
+      return buildOptimisticLockException(t.getActualRowsAffected(), rowOptional);
+    }
+    return t;
+  }
+
+  protected RuntimeException buildOptimisticLockException(int affectedRows, TRow rowOptional) {
     return new OptimisticLockingFailureException("Optimistic lock failed, record was already updated but someone else");
   }
 
   @Override
-  public RuntimeException handleExceptionAtUpdate(Throwable t) {
+  public RuntimeException handleExceptionAtUpdate(Throwable t, TRow row) {
     Throwables.throwIfInstanceOf(t, ValidationException.class);
     Throwables.throwIfInstanceOf(t, NotAuthorizedException.class);
     Throwables.throwIfInstanceOf(t, EntityNotFoundException.class);
-    return buildUnexpectedAtUpdate(t);
-  }
-
-  protected RuntimeException buildUnexpectedAtUpdate(Throwable t) {
     return new EasyCrudUnexpectedException(
         EasyCrudMessageCodes.UNEXPECTED_FAILED_TO_UPDATE, entityCode, t);
   }
@@ -129,11 +139,8 @@ public class EasyCrudExceptionStrategyDefaultImpl<TId> implements EasyCrudExcept
   @Override
   public RuntimeException handleExceptionAtFind(Throwable t) throws NotAuthorizedException {
     Throwables.throwIfInstanceOf(t, NotAuthorizedException.class);
-    return buildUnexpectedAtFind(t);
-  }
-
-  protected RuntimeException buildUnexpectedAtFind(Throwable t) {
     return new EasyCrudUnexpectedException(
         EasyCrudMessageCodes.UNEXPECTED_FAILED_TO_FIND, entityCode, t);
   }
+
 }
