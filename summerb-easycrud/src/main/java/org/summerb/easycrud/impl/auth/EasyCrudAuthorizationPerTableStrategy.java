@@ -47,8 +47,8 @@ import org.summerb.spring.security.api.CurrentUserRolesResolver;
  *   <li>{@link #requiresOnDelete()}
  * </ul>
  */
-public abstract class EasyCrudAuthorizationPerTableStrategy extends EasyCrudWireTapAbstract<Object>
-    implements InitializingBean {
+public abstract class EasyCrudAuthorizationPerTableStrategy<TRow>
+    extends EasyCrudWireTapAbstract<TRow> implements InitializingBean {
 
   protected static final NotAuthorizedResult ALLOW = null;
 
