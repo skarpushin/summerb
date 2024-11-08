@@ -108,23 +108,18 @@ public class EasyCrudExceptionStrategyDefaultImpl<TId, TRow extends HasId<TId>>
   @Override
   public RuntimeException handleAffectedIncorrectNumberOfRowsOnDelete(
       JdbcUpdateAffectedIncorrectNumberOfRowsException t, TRow rowOptional) {
-    if (rowOptional instanceof HasTimestamps) {
-      return buildOptimisticLockException(t.getActualRowsAffected(), rowOptional);
-    }
-    return t;
+    return new OptimisticLockingFailureException(
+        "Optimistic lock failed, record was already concurrently updated", t);
   }
 
   @Override
   public RuntimeException handleAffectedIncorrectNumberOfRowsOnUpdate(
       JdbcUpdateAffectedIncorrectNumberOfRowsException t, TRow rowOptional) {
     if (rowOptional instanceof HasTimestamps) {
-      return buildOptimisticLockException(t.getActualRowsAffected(), rowOptional);
+      return new OptimisticLockingFailureException(
+          "Optimistic lock failed, record was already concurrently updated", t);
     }
     return t;
-  }
-
-  protected RuntimeException buildOptimisticLockException(int affectedRows, TRow rowOptional) {
-    return new OptimisticLockingFailureException("Optimistic lock failed, record was already updated but someone else");
   }
 
   @Override

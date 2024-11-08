@@ -15,8 +15,7 @@
  ******************************************************************************/
 package integr.org.summerb.easycrud;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 import integr.org.summerb.easycrud.config.EasyCrudIntegrTestConfig;
 import integr.org.summerb.easycrud.config.EmbeddedDbConfig;
@@ -28,6 +27,7 @@ import io.zonky.test.db.AutoConfigureEmbeddedDatabase.RefreshMode;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.test.annotation.ProfileValueSourceConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -48,6 +48,26 @@ public class ScaffoldedServiceTest {
     TestDto2 result = service.getForEnv("env2");
     assertNotNull(result);
     assertEquals("env2", result.getEnv());
+  }
+
+  @Test
+  void expect_exceptionOnNoAffectedRowsDuringUpdate() {
+    service.create(buildRow("env2", 20));
+    TestDto2 result = service.getForEnv("env2");
+    result.setModifiedAt(123); // set some invalid value
+    assertThrows(OptimisticLockingFailureException.class, () -> service.update(result));
+  }
+
+  @Test
+  void expect_exceptionOnNoAffectedRowsDuringDelete() throws InterruptedException {
+    service.create(buildRow("env2", 20));
+    TestDto2 modified = service.getForEnv("env2");
+    TestDto2 unmodified = service.getForEnv("env2");
+    Thread.sleep(100);
+    modified.setLinkToFullDownload("asd");
+    service.update(modified);
+
+    assertThrows(OptimisticLockingFailureException.class, () -> service.delete(unmodified));
   }
 
   private void createTestData() {

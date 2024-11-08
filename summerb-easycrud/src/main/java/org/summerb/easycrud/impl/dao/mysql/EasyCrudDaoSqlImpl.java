@@ -331,7 +331,7 @@ public class EasyCrudDaoSqlImpl<TId, TRow extends HasId<TId>> extends TableDaoBa
     int affectedRows = jdbc.update(sqlDeleteOptimisticById, params);
     if (affectedRows != 1) {
       throw new JdbcUpdateAffectedIncorrectNumberOfRowsException(
-          jdbcUpdate.getUpdateString(), 1, affectedRows);
+          sqlDeleteOptimisticById, 1, affectedRows);
     }
     return affectedRows;
   }

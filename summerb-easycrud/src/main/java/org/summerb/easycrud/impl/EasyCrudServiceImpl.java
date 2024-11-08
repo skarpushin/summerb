@@ -338,17 +338,12 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
 
   @Override
   public void delete(TRow row) {
-    try {
-      Preconditions.checkArgument(row != null);
-      Preconditions.checkArgument(row.getId() != null);
-
-      if (row instanceof HasTimestamps) {
-        deleteByIdOptimistic(row.getId(), ((HasTimestamps) row).getModifiedAt());
-      } else {
-        deleteById(row.getId());
-      }
-    } catch (Throwable t) {
-      throw exceptionStrategy.handleExceptionAtDelete(t, row == null ? null : row.getId(), row);
+    Preconditions.checkArgument(row != null);
+    Preconditions.checkArgument(row.getId() != null);
+    if (row instanceof HasTimestamps) {
+      deleteByIdOptimistic(row.getId(), ((HasTimestamps) row).getModifiedAt());
+    } else {
+      deleteById(row.getId());
     }
   }
 
