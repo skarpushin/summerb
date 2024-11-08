@@ -142,7 +142,7 @@ public class QueryToSqlMySqlImpl implements QueryToSql {
 
   public static String underscore(String name) {
     StringBuilder result = new StringBuilder();
-    if (name != null && name.length() > 0) {
+    if (name != null && !name.isEmpty()) {
       result.append(name.substring(0, 1).toLowerCase());
       for (int i = 1; i < name.length(); i++) {
         String s = name.substring(i, i + 1);

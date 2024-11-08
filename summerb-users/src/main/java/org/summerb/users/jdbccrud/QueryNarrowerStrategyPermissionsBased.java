@@ -61,20 +61,19 @@ public class QueryNarrowerStrategyPermissionsBased<TRow extends HasId<?>>
             optionalDomain, currentUserUuidResolver.getUserUuid(), optionalRequiredPermission);
 
     if (idClass.equals(String.class)) {
-      if (idsStrs.size() == 0) {
+      if (idsStrs.isEmpty()) {
         ret.eq(HasId.FN_ID, "NA");
       } else {
         ret.in(HasId.FN_ID, idsStrs);
       }
     } else {
-      if (idsStrs.size() == 0) {
+      if (idsStrs.isEmpty()) {
         // NOTE: Yes potentially there could be item with id = 0,
         // but still it's better to try that one instead of all
         // environments
         ret.eq(HasId.FN_ID, 0);
       } else {
-        List<Long> idsLongs =
-            idsStrs.stream().map(x -> Long.valueOf(x)).collect(Collectors.toList());
+        List<Long> idsLongs = idsStrs.stream().map(Long::valueOf).collect(Collectors.toList());
         ret.in(HasId.FN_ID, idsLongs);
       }
     }

@@ -24,7 +24,7 @@ public class OneWayListTest {
 
   @Test
   public void testExpectAllItemsListedByIterator() {
-    OneWayList<Long> longs = new OneWayList<Long>();
+    OneWayList<Long> longs = new OneWayList<>();
     for (long l = 1; l <= 10; l++) {
       longs.append(l);
     }
@@ -37,7 +37,7 @@ public class OneWayListTest {
 
   @Test
   public void testExpectHeadWillBeShiftedCorrectly() {
-    OneWayList<Long> longs = new OneWayList<Long>();
+    OneWayList<Long> longs = new OneWayList<>();
     for (long l = 1; l <= 10; l++) {
       longs.append(l);
     }

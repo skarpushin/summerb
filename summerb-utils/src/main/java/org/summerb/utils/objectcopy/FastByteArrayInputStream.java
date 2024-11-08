@@ -20,10 +20,10 @@ import java.io.InputStream;
 /** ByteArrayInputStream implementation that does not synchronize methods. */
 public class FastByteArrayInputStream extends InputStream {
   /** Our byte buffer */
-  protected byte[] buf = null;
+  protected byte[] buf;
 
   /** Number of bytes that we can read from the buffer */
-  protected int count = 0;
+  protected int count;
 
   /** Number of bytes that have been read from the buffer */
   protected int pos = 0;

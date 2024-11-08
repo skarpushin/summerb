@@ -83,7 +83,7 @@ public class EntityChangedEventAdapter
 
     String className = prim.getAsString();
 
-    Class<T> klass = null;
+    Class<T> klass;
     try {
       klass = (Class<T>) Class.forName(className);
       if (!DtoBase.class.isAssignableFrom(klass)) {

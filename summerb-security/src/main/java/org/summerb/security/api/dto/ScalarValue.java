@@ -23,7 +23,7 @@ public class ScalarValue<T> implements Serializable {
   private T value;
 
   public static <T1> ScalarValue<T1> forV(T1 value) {
-    ScalarValue<T1> ret = new ScalarValue<T1>();
+    ScalarValue<T1> ret = new ScalarValue<>();
     ret.value = value;
     return ret;
   }

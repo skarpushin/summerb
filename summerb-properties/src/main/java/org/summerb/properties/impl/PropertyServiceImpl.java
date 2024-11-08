@@ -94,7 +94,7 @@ public class PropertyServiceImpl implements PropertyService {
     }
     checkArgumentsHaveText(appName, domainName, subjectId);
 
-    String currentPropertyName = null;
+    String currentPropertyName;
     try {
       long appId = appNameAlias.getAliasFor(appName);
       long domainId = domainNameAlias.getAliasFor(domainName);
@@ -174,7 +174,7 @@ public class PropertyServiceImpl implements PropertyService {
     List<NamedIdProperty> foundProperties =
         propertyDao.findSubjectProperties(appId, domainId, subjectId);
 
-    Map<String, String> ret = new HashMap<String, String>();
+    Map<String, String> ret = new HashMap<>();
     for (NamedIdProperty namedIdProperty : foundProperties) {
       long nameId = namedIdProperty.getNameId();
       String name = propertyNameAlias.getNameByAlias(nameId);
@@ -187,18 +187,18 @@ public class PropertyServiceImpl implements PropertyService {
   public Map<String, Map<String, String>> findSubjectsProperties(
       String appName, String domainName, List<String> subjectsIds) {
     if (CollectionUtils.isEmpty(subjectsIds)) {
-      return new HashMap<String, Map<String, String>>();
+      return new HashMap<>();
     }
     checkArgumentsHaveText(appName, domainName);
 
     try {
       long appId = appNameAlias.getAliasFor(appName);
       long domainId = domainNameAlias.getAliasFor(domainName);
-      Map<String, Map<String, String>> ret = new HashMap<String, Map<String, String>>();
+      Map<String, Map<String, String>> ret = new HashMap<>();
 
       for (String subjectId : subjectsIds) {
         Map<String, String> properties = internalFindSubjectProperties(appId, domainId, subjectId);
-        if (properties != null && properties.size() > 0) {
+        if (properties != null && !properties.isEmpty()) {
           ret.put(subjectId, properties);
         }
       }
@@ -213,7 +213,7 @@ public class PropertyServiceImpl implements PropertyService {
   public Map<String, String> findSubjectsProperty(
       String appName, String domainName, List<String> subjectsIds, String name) {
     if (CollectionUtils.isEmpty(subjectsIds)) {
-      return new HashMap<String, String>();
+      return new HashMap<>();
     }
     checkArgumentsHaveText(appName, domainName, name);
 
@@ -222,7 +222,7 @@ public class PropertyServiceImpl implements PropertyService {
       long domainId = domainNameAlias.getAliasFor(domainName);
       long propertyNameId = propertyNameAlias.getAliasFor(name);
 
-      Map<String, String> ret = new HashMap<String, String>();
+      Map<String, String> ret = new HashMap<>();
       for (String subjectId : subjectsIds) {
         String value = propertyDao.findSubjectProperty(appId, domainId, subjectId, propertyNameId);
         if (value != null) {

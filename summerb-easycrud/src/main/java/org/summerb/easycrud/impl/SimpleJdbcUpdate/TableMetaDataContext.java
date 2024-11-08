@@ -189,14 +189,14 @@ public class TableMetaDataContext {
    */
   protected List<String> reconcileColumnsToUse(
       List<String> declaredColumns, String[] generatedKeyNames) {
-    if (declaredColumns.size() > 0) {
-      return new ArrayList<String>(declaredColumns);
+    if (!declaredColumns.isEmpty()) {
+      return new ArrayList<>(declaredColumns);
     }
-    Set<String> keys = new HashSet<String>(generatedKeyNames.length);
+    Set<String> keys = new HashSet<>(generatedKeyNames.length);
     for (String key : generatedKeyNames) {
       keys.add(key.toUpperCase());
     }
-    List<String> columns = new ArrayList<String>();
+    List<String> columns = new ArrayList<>();
     for (TableParameterMetaData meta : metaDataProvider.getTableParameterMetaData()) {
       if (!keys.contains(meta.getParameterName().toUpperCase())) {
         columns.add(meta.getParameterName());
@@ -214,7 +214,7 @@ public class TableMetaDataContext {
    */
   public List<Object> sortAndTypeInParameter(
       SqlParameterSource sqlParameterSource, List<String> reconciledUpdatingColumns) {
-    List<Object> values = new ArrayList<Object>();
+    List<Object> values = new ArrayList<>();
     // for parameter source lookups we need to provide caseinsensitive
     // lookup support since the
     // database metadata is not necessarily providing case sensitive column
@@ -261,8 +261,8 @@ public class TableMetaDataContext {
    */
   public List<Object> sortAndTypeInParameter(
       Map<String, Object> inParameters, List<String> reconciledUpdatingColumns) {
-    List<Object> values = new ArrayList<Object>();
-    Map<String, Object> source = new HashMap<String, Object>();
+    List<Object> values = new ArrayList<>();
+    Map<String, Object> source = new HashMap<>();
     for (String key : inParameters.keySet()) {
       source.put(key.toLowerCase(), inParameters.get(key));
     }
@@ -275,7 +275,7 @@ public class TableMetaDataContext {
   public List<String> createColumns() {
     List<TableParameterMetaData> tableParameterMetaDataList =
         this.metaDataProvider.getTableParameterMetaData();
-    List<String> columnList = new ArrayList<String>(tableParameterMetaDataList.size());
+    List<String> columnList = new ArrayList<>(tableParameterMetaDataList.size());
     for (TableParameterMetaData tableParameterMetaData : tableParameterMetaDataList) {
       columnList.add(tableParameterMetaData.getParameterName());
     }
@@ -291,8 +291,7 @@ public class TableMetaDataContext {
   public int[] createColumnTypes(List<String> columns) {
     int[] types = new int[columns.size()];
     List<TableParameterMetaData> parameters = this.metaDataProvider.getTableParameterMetaData();
-    Map<String, TableParameterMetaData> parameterMap =
-        new HashMap<String, TableParameterMetaData>(parameters.size());
+    Map<String, TableParameterMetaData> parameterMap = new HashMap<>(parameters.size());
     for (TableParameterMetaData tpmd : parameters) {
       parameterMap.put(tpmd.getParameterName().toUpperCase(), tpmd);
     }

@@ -33,7 +33,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 public class AfterCommitExecutorThreadLocalImpl implements TransactionSynchronization, Executor {
   private static Logger log = LoggerFactory.getLogger(AfterCommitExecutorThreadLocalImpl.class);
 
-  private static final ThreadLocal<Queue<Runnable>> RUNNABLES = new ThreadLocal<Queue<Runnable>>();
+  private static final ThreadLocal<Queue<Runnable>> RUNNABLES = new ThreadLocal<>();
 
   @Override
   public void execute(Runnable runnable) {
@@ -47,7 +47,7 @@ public class AfterCommitExecutorThreadLocalImpl implements TransactionSynchroniz
     }
     Queue<Runnable> threadRunnables = RUNNABLES.get();
     if (threadRunnables == null) {
-      threadRunnables = new LinkedList<Runnable>();
+      threadRunnables = new LinkedList<>();
       RUNNABLES.set(threadRunnables);
       TransactionSynchronizationManager.registerSynchronization(this);
     }
@@ -60,7 +60,7 @@ public class AfterCommitExecutorThreadLocalImpl implements TransactionSynchroniz
   @Override
   public void afterCommit() {
     Queue<Runnable> threadRunnables = RUNNABLES.get();
-    if (threadRunnables.size() == 0) {
+    if (threadRunnables.isEmpty()) {
       return;
     }
 
@@ -97,7 +97,7 @@ public class AfterCommitExecutorThreadLocalImpl implements TransactionSynchroniz
 
     @Override
     public void run() {
-      Runnable runnable = null;
+      Runnable runnable;
       while ((runnable = threadRunnables.poll()) != null) {
         if (log.isDebugEnabled()) {
           log.debug("Executing runnable after TX commit" + runnable);

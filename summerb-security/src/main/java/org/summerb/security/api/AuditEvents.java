@@ -20,7 +20,7 @@ import java.io.Serializable;
 import org.summerb.security.api.dto.ScalarValue;
 
 public interface AuditEvents {
-  public static final String AUDIT_INJECTION_ATTEMPT = "INJ";
+  String AUDIT_INJECTION_ATTEMPT = "INJ";
 
   /**
    * report record to audit log

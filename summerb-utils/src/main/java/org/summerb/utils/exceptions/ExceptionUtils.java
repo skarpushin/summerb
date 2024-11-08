@@ -21,7 +21,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-/** @author sergey.karpushin */
+/**
+ * @author sergey.karpushin
+ */
 public class ExceptionUtils {
 
   public static String getAllMessagesRaw(Throwable t) {
@@ -66,11 +68,12 @@ public class ExceptionUtils {
   }
 
   /**
-   * Find exception cause of specified type. Will fallback to first exception if target wasn't found
+   * Find exception cause of specified type. Will fall back to first exception if target wasn't
+   * found
    *
-   * @param t
-   * @param exceptionClass
-   * @return found exception of requested type OR first exception
+   * @param t throwable in question
+   * @param exceptionClass exception type to search for
+   * @return found exception OR first exception
    */
   public static <T extends Exception> Throwable getExceptionOfClassOrFallbackToOriginal(
       Throwable t, Class<T> exceptionClass) {
@@ -83,7 +86,7 @@ public class ExceptionUtils {
    * different fro time to time which negative effect to consistency of ewxception code
    */
   private static final Set<String> ignoredStackTraceClasses =
-      new HashSet<String>(Arrays.asList("org.apache.tomcat.util.net.JIoEndpoint$SocketProcessor"));
+      new HashSet<>(Arrays.asList("org.apache.tomcat.util.net.JIoEndpoint$SocketProcessor"));
 
   public static String calculateExceptionCode(Throwable throwable) {
     int lineCount = 0;
@@ -103,14 +106,10 @@ public class ExceptionUtils {
         }
 
         String lineNumber = String.valueOf(ste.getLineNumber());
-        if (ste.getClassName() != null) {
-          strLength += ste.getClassName().length();
-          hash = hash * 31 + ste.getClassName().hashCode();
-        }
-        if (ste.getMethodName() != null) {
-          strLength += ste.getMethodName().length();
-          hash = hash * 31 + ste.getMethodName().hashCode();
-        }
+        strLength += ste.getClassName().length();
+        hash = hash * 31 + ste.getClassName().hashCode();
+        strLength += ste.getMethodName().length();
+        hash = hash * 31 + ste.getMethodName().hashCode();
         if (ste.getFileName() != null) {
           strLength += ste.getFileName().length();
           hash = hash * 31 + ste.getFileName().hashCode();
@@ -121,12 +120,7 @@ public class ExceptionUtils {
       cur = cur.getCause();
     }
 
-    return ""
-        + lineCount
-        + "_"
-        + strLength
-        + "_"
-        + (hash < 0 ? ("_" + Math.abs(hash)) : ("" + hash));
+    return lineCount + "_" + strLength + "_" + (hash < 0 ? ("_" + Math.abs(hash)) : ("" + hash));
   }
 
   public static String getThrowableStackTraceAsString(Throwable t) {

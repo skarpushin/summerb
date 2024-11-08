@@ -71,7 +71,7 @@ public class ServiceModelToSwagger2MapperImplEx<TUser extends User>
     Map<String, Path> paths = super.mapApiListings(apiListings);
     return paths.entrySet().stream()
         .filter(x -> !x.getValue().isEmpty())
-        .collect(Collectors.toMap(x -> x.getKey(), v -> v.getValue()));
+        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
   }
 
   /** This extension will prevent empty controller from appearing in the list (step 2) */

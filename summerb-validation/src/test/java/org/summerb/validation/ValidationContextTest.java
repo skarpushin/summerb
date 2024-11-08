@@ -112,7 +112,7 @@ class ValidationContextTest {
   @Test
   void test_processJakartaValidations_ExpectIse() {
     var f = new ValidationContext<>();
-    assertThrows(IllegalStateException.class, () -> f.processJakartaValidations());
+    assertThrows(IllegalStateException.class, f::processJakartaValidations);
   }
 
   @Test
@@ -222,12 +222,12 @@ class ValidationContextTest {
     assertEquals(
         "mc,mc1",
         f.findErrorsForField("pn").stream()
-            .map(x -> x.getMessageCode())
+            .map(ValidationError::getMessageCode)
             .collect(Collectors.joining(",")));
     assertEquals(
         "mc",
         f.findErrorsForField("pn1").stream()
-            .map(x -> x.getMessageCode())
+            .map(ValidationError::getMessageCode)
             .collect(Collectors.joining(",")));
   }
 
@@ -242,7 +242,7 @@ class ValidationContextTest {
     var f = new ValidationContext<>();
     f.throwIfHasErrors();
     f.add(new MustNotBeNull("pn1"));
-    assertThrows(ValidationException.class, () -> f.throwIfHasErrors());
+    assertThrows(ValidationException.class, f::throwIfHasErrors);
   }
 
   @Test
@@ -1206,7 +1206,7 @@ class ValidationContextTest {
   }
 
   private ObjectValidator<Bean> beanValidator =
-      new ObjectValidator<Bean>() {
+      new ObjectValidator<>() {
         @Override
         public void validate(
             Bean subject,

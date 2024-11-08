@@ -31,7 +31,7 @@ public class OneWayList<T> implements Iterable<T> {
   private volatile Entry<T> first;
   private volatile Entry<T> last;
 
-  private Object syncRoot = new Object();
+  private final Object syncRoot = new Object();
 
   public OneWayList() {}
 
@@ -55,7 +55,7 @@ public class OneWayList<T> implements Iterable<T> {
   }
 
   public void append(T data) {
-    Entry<T> newEntry = new Entry<T>(data);
+    Entry<T> newEntry = new Entry<>(data);
     if (first == null) {
       first = last = newEntry;
       return;
@@ -123,7 +123,7 @@ public class OneWayList<T> implements Iterable<T> {
       Preconditions.checkState(
           current != null, "Cannot insertNewBeforeCurrent for iteration that not started");
 
-      Entry<T> e = new Entry<T>(newItem);
+      Entry<T> e = new Entry<>(newItem);
       e.next = current;
 
       if (prevCur == null) {
@@ -150,7 +150,7 @@ public class OneWayList<T> implements Iterable<T> {
     }
   }
 
-  private static class Entry<T> {
+  public static class Entry<T> {
     T data;
 
     @SuppressWarnings("rawtypes")

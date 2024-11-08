@@ -55,7 +55,7 @@ public abstract class ValidationErrorsUtils {
     for (ValidationError ve : errors) {
       if (propertyName.equals(ve.getPropertyName())) {
         if (ret == null) {
-          ret = new LinkedList<ValidationError>();
+          ret = new LinkedList<>();
         }
         ret.add(ve);
       }

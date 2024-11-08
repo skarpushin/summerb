@@ -16,7 +16,7 @@
 package org.summerb.easycrud.impl.relations.example;
 
 public interface HasEnvId {
-  public static final String FN_ENV_ID = "envId";
+  String FN_ENV_ID = "envId";
 
   long getEnvId();
 

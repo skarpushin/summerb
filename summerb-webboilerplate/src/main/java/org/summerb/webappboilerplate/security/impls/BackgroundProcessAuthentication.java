@@ -23,9 +23,7 @@ public class BackgroundProcessAuthentication<TUserDetails extends UserDetails, T
   public static List<String> AUTHORITIES_STRINGS =
       new ArrayList<>(Arrays.asList(SecurityConstants.ROLE_BACKGROUND_PROCESS));
   public static List<? extends GrantedAuthority> AUTHORITIES =
-      AUTHORITIES_STRINGS.stream()
-          .map(x -> new SimpleGrantedAuthority(x))
-          .collect(Collectors.toList());
+      AUTHORITIES_STRINGS.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
 
   protected final String origin;
   protected TUserDetails userDetails;

@@ -47,8 +47,8 @@ class MessageCodesIntegrTest {
         ClassPath.from(ClassLoader.getSystemClassLoader()).getAllClasses().stream()
             .filter(
                 clazz1 -> clazz1.getPackageName().equalsIgnoreCase("org.summerb.validation.errors"))
-            .map(clazz2 -> clazz2.load())
-            .filter(x -> ValidationError.class.isAssignableFrom(x))
+            .map(ClassPath.ClassInfo::load)
+            .filter(ValidationError.class::isAssignableFrom)
             .collect(Collectors.toSet());
 
     assertFalse(

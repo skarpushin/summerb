@@ -117,7 +117,7 @@ public class StringIdAliasServiceEagerImpl implements StringIdAliasService, Init
     if (ret == null) {
       return registerAlias(str);
     }
-    return ret.longValue();
+    return ret;
   }
 
   /**
@@ -131,7 +131,7 @@ public class StringIdAliasServiceEagerImpl implements StringIdAliasService, Init
 
     // sanity check if someone has already stored it
     if (ret != null) {
-      return ret.longValue();
+      return ret;
     }
 
     long alias;
@@ -145,7 +145,7 @@ public class StringIdAliasServiceEagerImpl implements StringIdAliasService, Init
           throw new PropertyServiceUnexpectedException(
               "Failed to create alias because of duplicate, but later was unable to find that duplicate.");
         }
-        alias = ret.longValue();
+        alias = ret;
       }
     } catch (Throwable t) {
       throw new PropertyServiceUnexpectedException("Failed to store alias", t);
@@ -160,11 +160,11 @@ public class StringIdAliasServiceEagerImpl implements StringIdAliasService, Init
 
   /**
    * This method will make use os separate thread in order to have separate transaction manager. We
-   * need this to comi our change even if parent transaction fails. This might sound strange but we
-   * assume it's ok for aliases to remain in the database (thase are not values)
+   * need this to commit our change even if parent transaction fails. This might sound strange but
+   * we assume it's ok for aliases to remain in the database (these are not values)
    *
-   * @param str
-   * @return
+   * @param str alias name
+   * @return id of created alias
    */
   protected long doCreateAlias(String str) {
     try {

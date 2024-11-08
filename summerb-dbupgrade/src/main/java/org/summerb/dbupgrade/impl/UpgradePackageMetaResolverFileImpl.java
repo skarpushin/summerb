@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.stream.Stream;
 
 import org.apache.commons.io.FilenameUtils;
@@ -45,7 +46,7 @@ public class UpgradePackageMetaResolverFileImpl implements UpgradePackageMetaRes
   public int getMaximumPackageId() {
     return Arrays.stream(basePath.listFiles())
         .map(this::fileToUpgradePackageMeta)
-        .mapToInt(x -> x.getVersion())
+        .mapToInt(UpgradePackageMeta::getVersion)
         .max()
         .orElse(-1);
   }
@@ -79,6 +80,6 @@ public class UpgradePackageMetaResolverFileImpl implements UpgradePackageMetaRes
     return Arrays.stream(basePath.listFiles())
         .map(this::fileToUpgradePackageMeta)
         .filter(x -> x.getVersion() > currentVersion)
-        .sorted((a, b) -> a.getVersion() - b.getVersion());
+        .sorted(Comparator.comparingInt(UpgradePackageMeta::getVersion));
   }
 }

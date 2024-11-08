@@ -55,7 +55,7 @@ public class AfterCommitExecutorImpl implements TransactionSynchronization, Exec
       return;
     }
     if (threadRunnables == null) {
-      threadRunnables = new LinkedList<Runnable>();
+      threadRunnables = new LinkedList<>();
       TransactionSynchronizationManager.registerSynchronization(this);
     }
     if (log.isDebugEnabled()) {
@@ -66,7 +66,7 @@ public class AfterCommitExecutorImpl implements TransactionSynchronization, Exec
 
   @Override
   public void afterCommit() {
-    if (threadRunnables.size() == 0) {
+    if (threadRunnables.isEmpty()) {
       return;
     }
 
@@ -99,7 +99,7 @@ public class AfterCommitExecutorImpl implements TransactionSynchronization, Exec
 
     @Override
     public void run() {
-      Runnable runnable = null;
+      Runnable runnable;
       while ((runnable = threadRunnables.poll()) != null) {
         if (log.isDebugEnabled()) {
           log.debug("Executing runnable after TX commit" + runnable);

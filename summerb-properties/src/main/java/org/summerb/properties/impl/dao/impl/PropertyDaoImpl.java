@@ -73,7 +73,7 @@ public class PropertyDaoImpl extends TableDaoBase implements PropertyDao, Initia
   protected DaoExceptionTranslator daoExceptionTranslator = new DaoExceptionTranslatorMySqlImpl();
 
   protected RowMapper<String> propertyValueRowMapper =
-      new RowMapper<String>() {
+      new RowMapper<>() {
         @Override
         public String mapRow(ResultSet rs, int rowNum) throws SQLException {
           String value = rs.getString(VALUE_FIELD_NAME);
@@ -83,7 +83,7 @@ public class PropertyDaoImpl extends TableDaoBase implements PropertyDao, Initia
       };
 
   protected RowMapper<NamedIdProperty> namedPropertyRowMapper =
-      new RowMapper<NamedIdProperty>() {
+      new RowMapper<>() {
         @Override
         public NamedIdProperty mapRow(ResultSet rs, int rowNum) throws SQLException {
           String value = rs.getString(VALUE_FIELD_NAME);
@@ -96,7 +96,7 @@ public class PropertyDaoImpl extends TableDaoBase implements PropertyDao, Initia
   @Override
   public void putProperty(
       long appId, long domainId, String subjectId, long propertyNameId, String propertyValue) {
-    Map<String, Object> params = new HashMap<String, Object>();
+    Map<String, Object> params = new HashMap<>();
     params.put("app_id", appId);
     params.put("domain_id", domainId);
     params.put("subject_id", subjectId);
@@ -114,7 +114,7 @@ public class PropertyDaoImpl extends TableDaoBase implements PropertyDao, Initia
   @Override
   public String findSubjectProperty(
       long appId, long domainId, String subjectId, long propertyNameId) {
-    Map<String, Object> params = new HashMap<String, Object>();
+    Map<String, Object> params = new HashMap<>();
     params.put("app_id", appId);
     params.put("domain_id", domainId);
     params.put("subject_id", subjectId);
@@ -130,7 +130,7 @@ public class PropertyDaoImpl extends TableDaoBase implements PropertyDao, Initia
 
   @Override
   public List<NamedIdProperty> findSubjectProperties(long appId, long domainId, String subjectId) {
-    Map<String, Object> params = new HashMap<String, Object>();
+    Map<String, Object> params = new HashMap<>();
     params.put("app_id", appId);
     params.put("domain_id", domainId);
     params.put("subject_id", subjectId);
@@ -140,7 +140,7 @@ public class PropertyDaoImpl extends TableDaoBase implements PropertyDao, Initia
 
   @Override
   public void deleteSubjectProperties(long appId, long domainId, String subjectId) {
-    Map<String, Object> params = new HashMap<String, Object>();
+    Map<String, Object> params = new HashMap<>();
     params.put("app_id", appId);
     params.put("domain_id", domainId);
     params.put("subject_id", subjectId);

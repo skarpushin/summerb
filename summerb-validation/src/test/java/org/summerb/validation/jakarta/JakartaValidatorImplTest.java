@@ -297,7 +297,7 @@ public class JakartaValidatorImplTest {
     p.setPositiveByte((byte) 0);
     p.setPositiveShort((short) 0);
     p.setPositiveInt(0);
-    p.setPositiveLong(0l);
+    p.setPositiveLong(0L);
     p.setPositiveFloat(-1f);
     p.setPositiveDouble(-1d);
 
@@ -446,8 +446,7 @@ public class JakartaValidatorImplTest {
     // now just check count
     int expectedErrors = 62;
     if (ctx.getErrors().size() != expectedErrors) {
-      System.out.println(
-          String.valueOf(new org.summerb.validation.ValidationErrors(ctx.getErrors())));
+      System.out.println(new org.summerb.validation.ValidationErrors(ctx.getErrors()));
     }
     assertEquals(expectedErrors, ctx.getErrors().size());
   }

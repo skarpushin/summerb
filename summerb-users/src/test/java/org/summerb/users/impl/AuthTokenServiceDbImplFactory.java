@@ -49,7 +49,7 @@ public class AuthTokenServiceDbImplFactory {
     when(authTokenDao.findAuthTokenByUuid(AuthTokenFactory.AUTH_TOKEN_EXPIRED))
         .thenReturn(AuthTokenFactory.createExpiredAuthToken());
 
-    List<AuthToken> expiredTokens = new LinkedList<AuthToken>();
+    List<AuthToken> expiredTokens = new LinkedList<>();
     expiredTokens.add(AuthTokenFactory.createExpiredAuthToken());
 
     // PaginatedList<AuthToken> expiredAuthTokens = new PaginatedList<AuthToken>(new

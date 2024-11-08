@@ -103,7 +103,7 @@ public class EasyCrudM2mServiceImpl<
       Preconditions.checkArgument(referencerId != null, "referencerId is required");
       List<ManyToManyRow<T1Id, T2Id>> m2mPairs =
           findAll(newQuery().eq(ManyToManyRow.FN_SRC, referencerId));
-      if (m2mPairs.size() == 0) {
+      if (m2mPairs.isEmpty()) {
         return Collections.emptyList();
       }
       return serviceB.findAll(serviceB.newQuery().in(HasId::getId, collectReferenceeIds(m2mPairs)));
@@ -134,7 +134,7 @@ public class EasyCrudM2mServiceImpl<
           !CollectionUtils.isEmpty(referencerIds), "referencerId is required");
       List<ManyToManyRow<T1Id, T2Id>> m2mPairs =
           findAll(newQuery().in(ManyToManyRow.FN_SRC, referencerIds));
-      if (m2mPairs.size() == 0) {
+      if (m2mPairs.isEmpty()) {
         return Collections.emptyMap();
       }
       List<T2Dto> referencee =
@@ -157,10 +157,7 @@ public class EasyCrudM2mServiceImpl<
     Map<T2Id, T2Dto> referenceeMap = EasyCrudDtoUtils.toMapById(referencee);
     Map<T1Id, List<T2Dto>> ret = new HashMap<>();
     for (ManyToManyRow<T1Id, T2Id> pair : m2mPairs) {
-      List<T2Dto> curReferencee = ret.get(pair.getSrc());
-      if (curReferencee == null) {
-        ret.put(pair.getSrc(), curReferencee = new ArrayList<T2Dto>());
-      }
+      List<T2Dto> curReferencee = ret.computeIfAbsent(pair.getSrc(), k -> new ArrayList<>());
       curReferencee.add(referenceeMap.get(pair.getDst()));
     }
     return ret;

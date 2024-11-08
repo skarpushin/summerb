@@ -15,7 +15,6 @@
  ******************************************************************************/
 package org.summerb.webappboilerplate.security.rest;
 
-
 import javax.servlet.FilterChain;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;

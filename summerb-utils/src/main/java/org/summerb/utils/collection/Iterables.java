@@ -31,7 +31,7 @@ public abstract class Iterables {
 
   public static <T, V> List<T> findItems(
       Iterable<T> items, ParametrizedItemMatcher<T, V> matcher, V param) {
-    List<T> ret = new LinkedList<T>();
+    List<T> ret = new LinkedList<>();
     for (T item : items) {
       if (matcher.isMatch(item, param)) {
         ret.add(item);
@@ -41,7 +41,7 @@ public abstract class Iterables {
   }
 
   public static <F, T> List<T> convert(List<F> from, ItemConverter<F, T> converter) {
-    List<T> ret = new LinkedList<T>();
+    List<T> ret = new LinkedList<>();
     for (F item : from) {
       ret.add(converter.convert(item));
     }

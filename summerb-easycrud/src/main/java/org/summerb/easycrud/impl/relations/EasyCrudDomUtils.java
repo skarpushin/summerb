@@ -71,7 +71,7 @@ public class EasyCrudDomUtils {
 
       @SuppressWarnings("unchecked")
       DataTable<TId, TRowDto> target = dataSet.get(ref.getToEntity());
-      if (target.getRows().size() == 0) {
+      if (target.getRows().isEmpty()) {
         return Collections.emptyList();
       }
 

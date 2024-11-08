@@ -46,13 +46,13 @@ public abstract class AbstractJdbcUpdate {
   protected final TableMetaDataContext tableMetaDataContext = new TableMetaDataContext();
 
   /** List of columns declared by user to be used in 'set' clause */
-  protected final List<String> declaredUpdatingColumns = new ArrayList<String>();
+  protected final List<String> declaredUpdatingColumns = new ArrayList<>();
 
   /** List of columns effectively used in 'set' clause */
-  protected final List<String> reconciledUpdatingColumns = new ArrayList<String>();
+  protected final List<String> reconciledUpdatingColumns = new ArrayList<>();
 
   /** The names of the columns to be used in 'where' clause */
-  protected final Map<String, Operator> restrictingColumns = new HashMap<String, Operator>();
+  protected final Map<String, Operator> restrictingColumns = new HashMap<>();
 
   /**
    * Has this operation been compiled? Compilation means at least checking that a DataSource or
@@ -143,7 +143,7 @@ public abstract class AbstractJdbcUpdate {
 
   /** @param whereNames the names of any primary keys */
   public void setRestrictingColumns(List<String> whereNames) {
-    Map<String, Operator> columns = new HashMap<String, Operator>();
+    Map<String, Operator> columns = new HashMap<>();
     for (String columnName : whereNames) {
       columns.put(columnName, Operator.EQUALS);
     }
@@ -233,7 +233,7 @@ public abstract class AbstractJdbcUpdate {
 
     updateString = createUpdateString();
 
-    List<String> columns = new ArrayList<String>();
+    List<String> columns = new ArrayList<>();
     columns.addAll(reconciledUpdatingColumns);
     columns.addAll(restrictingColumns.keySet());
 
@@ -299,12 +299,12 @@ public abstract class AbstractJdbcUpdate {
   protected int doExecute(
       Map<String, Object> updatingValues, Map<String, Object> restrictingValues) {
     checkCompiled();
-    List<Object> values = new ArrayList<Object>();
+    List<Object> values = new ArrayList<>();
     values.addAll(
         matchInParameterValuesWithUpdateColumns(updatingValues, reconciledUpdatingColumns));
     values.addAll(
         matchInParameterValuesWithUpdateColumns(
-            restrictingValues, new ArrayList<String>(restrictingColumns.keySet())));
+            restrictingValues, new ArrayList<>(restrictingColumns.keySet())));
     return executeUpdateInternal(values);
   }
 
@@ -317,12 +317,12 @@ public abstract class AbstractJdbcUpdate {
    */
   protected int doExecute(SqlParameterSource updatingValues, SqlParameterSource restrictingValues) {
     checkCompiled();
-    List<Object> values = new ArrayList<Object>();
+    List<Object> values = new ArrayList<>();
     values.addAll(
         matchInParameterValuesWithUpdateColumns(updatingValues, reconciledUpdatingColumns));
     values.addAll(
         matchInParameterValuesWithUpdateColumns(
-            restrictingValues, new ArrayList<String>(restrictingColumns.keySet())));
+            restrictingValues, new ArrayList<>(restrictingColumns.keySet())));
     return executeUpdateInternal(values);
   }
 
@@ -412,7 +412,7 @@ public abstract class AbstractJdbcUpdate {
       @Override
       public Collection<? extends String> getColumnsForUpdate(
           TableMetaDataContext tableMetaDataContext) {
-        if (declaredUpdatingColumns.size() > 0) {
+        if (!declaredUpdatingColumns.isEmpty()) {
           return declaredUpdatingColumns;
         } else {
           return tableMetaDataContext.createColumns();

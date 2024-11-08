@@ -223,10 +223,7 @@ public class DataSetLoaderImpl implements DataSetLoader {
         }
 
         String refName = refToReferenceeListPair.getKey().getName();
-        Set<Object> referenceeIdsList = refToObjsMap.get(refName);
-        if (referenceeIdsList == null) {
-          refToObjsMap.put(refName, referenceeIdsList = new HashSet<>());
-        }
+        Set<Object> referenceeIdsList = refToObjsMap.computeIfAbsent(refName, k -> new HashSet<>());
         Set referenceeIds =
             EasyCrudDtoUtils.enumerateIds(referencerToReferencesListPair.getValue());
         referenceeIdsList.addAll(referenceeIds);
@@ -278,7 +275,7 @@ public class DataSetLoaderImpl implements DataSetLoader {
             continue;
           }
 
-          Object referencedId = null;
+          Object referencedId;
           try {
             referencedId = propertyAccessor.getPropertyValue(ref.getToField());
           } catch (Throwable t) {
@@ -296,9 +293,7 @@ public class DataSetLoaderImpl implements DataSetLoader {
           }
 
           RefToReferencedObjectsIdsMap refToObjsMap = backRefs.get(referencedId);
-          if (refToObjsMap.get(ref.getName()) == null) {
-            refToObjsMap.put(ref.getName(), new HashSet<>());
-          }
+          refToObjsMap.computeIfAbsent(ref.getName(), k -> new HashSet<>());
 
           refToObjsMap.get(ref.getName()).add(row.getId());
         }
@@ -369,7 +364,7 @@ public class DataSetLoaderImpl implements DataSetLoader {
 
         PropertyAccessor propertyAccessor = PropertyAccessorFactory.forBeanPropertyAccess(row);
         for (Ref ref : outgoingRefs) {
-          Object referencedId = null;
+          Object referencedId;
           try {
             referencedId = propertyAccessor.getPropertyValue(ref.getFromField());
           } catch (Throwable t) {
@@ -385,10 +380,7 @@ public class DataSetLoaderImpl implements DataSetLoader {
             continue;
           }
 
-          Set<Object> referencedIds = ret.get(ref.getToEntity());
-          if (referencedIds == null) {
-            ret.put(ref.getToEntity(), referencedIds = new HashSet<>());
-          }
+          Set<Object> referencedIds = ret.computeIfAbsent(ref.getToEntity(), k -> new HashSet<>());
           referencedIds.add(referencedId);
         }
       }
@@ -439,7 +431,7 @@ public class DataSetLoaderImpl implements DataSetLoader {
       String entityTypeCode = ref.getFromEntity();
       Set<Object> ids =
           EasyCrudDtoUtils.enumerateIds(dataSet.get(entityTypeCode).getRows().values());
-      if (ids.size() != 0) {
+      if (!ids.isEmpty()) {
         ret.put(ref, ids);
       }
     }

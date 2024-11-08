@@ -33,13 +33,13 @@ import com.google.common.base.Preconditions;
  */
 public class NotAuthorizedResult
     implements DtoBase, HasMessageCode, HasMessageArgs, HasMessageArgsConverters {
-  private static final transient long serialVersionUID = 1122164433294017483L;
+  private static final long serialVersionUID = 1122164433294017483L;
 
   public static final String SECURITY_AUTHORIZATION_MISSING_ON_SUBJECT =
       "security.authorization.missingOnSubject";
   public static final String SECURITY_AUTHORIZATION_MISSING = "security.authorization.missing";
 
-  private static final transient MessageArgConverter[] messageArgsConverters =
+  private static final MessageArgConverter[] messageArgsConverters =
       new MessageArgConverter[] {null, MessageCodeMessageArgConverter.INSTANCE, null};
 
   private String userName;

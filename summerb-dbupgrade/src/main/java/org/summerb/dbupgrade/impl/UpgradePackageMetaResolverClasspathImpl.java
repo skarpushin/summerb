@@ -17,6 +17,7 @@ package org.summerb.dbupgrade.impl;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.stream.Stream;
 
 import org.apache.commons.io.FilenameUtils;
@@ -46,7 +47,7 @@ public class UpgradePackageMetaResolverClasspathImpl implements UpgradePackageMe
       Resource[] resources = resourcePatternResolver.getResources(basePath);
       return Arrays.stream(resources)
           .map(this::fileToUpgradePackageMeta)
-          .mapToInt(x -> x.getVersion())
+          .mapToInt(UpgradePackageMeta::getVersion)
           .max()
           .orElse(-1);
     } catch (Exception e) {
@@ -61,7 +62,7 @@ public class UpgradePackageMetaResolverClasspathImpl implements UpgradePackageMe
       return Arrays.stream(resources)
           .map(this::fileToUpgradePackageMeta)
           .filter(x -> x.getVersion() > currentVersion)
-          .sorted((a, b) -> a.getVersion() - b.getVersion());
+          .sorted(Comparator.comparingInt(UpgradePackageMeta::getVersion));
     } catch (Exception e) {
       throw new RuntimeException("Failed to getPackagesSince " + currentVersion, e);
     }

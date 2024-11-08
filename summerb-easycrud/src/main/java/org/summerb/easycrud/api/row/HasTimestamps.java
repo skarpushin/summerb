@@ -27,8 +27,8 @@ import org.summerb.easycrud.api.EasyCrudService;
  * @author sergey.karpushin
  */
 public interface HasTimestamps {
-  public static final String FN_CREATED_AT = "createdAt";
-  public static final String FN_MODIFIED_AT = "modifiedAt";
+  String FN_CREATED_AT = "createdAt";
+  String FN_MODIFIED_AT = "modifiedAt";
 
   void setCreatedAt(long createdAt);
 

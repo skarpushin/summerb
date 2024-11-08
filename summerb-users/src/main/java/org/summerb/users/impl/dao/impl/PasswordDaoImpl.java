@@ -48,7 +48,7 @@ public class PasswordDaoImpl extends TableDaoBase implements InitializingBean, P
   public void afterPropertiesSet() throws Exception {
     super.afterPropertiesSet();
 
-    rowMapper = new BeanPropertyRowMapper<Password>(Password.class);
+    rowMapper = new BeanPropertyRowMapper<>(Password.class);
 
     sqlPutPassword =
         String.format(
@@ -78,7 +78,7 @@ public class PasswordDaoImpl extends TableDaoBase implements InitializingBean, P
 
   @Override
   public Password findPasswordByUserUuid(String userUuid) {
-    Map<String, Object> paramMap = new HashMap<String, Object>();
+    Map<String, Object> paramMap = new HashMap<>();
     paramMap.put(USER_UUID_PARAM, userUuid);
     List<Password> results = jdbc.query(sqlFindPasswordByUserUuid, paramMap, rowMapper);
     if (results.size() == 1) {
@@ -89,7 +89,7 @@ public class PasswordDaoImpl extends TableDaoBase implements InitializingBean, P
 
   @Override
   public int setRestorationToken(String userUuid, String restorationToken) {
-    Map<String, Object> paramMap = new HashMap<String, Object>();
+    Map<String, Object> paramMap = new HashMap<>();
     paramMap.put(USER_UUID_PARAM, userUuid);
     paramMap.put(PARAM_RESTORATION_TOKEN, restorationToken);
     return jdbc.update(sqlSetRestorationToken, paramMap);

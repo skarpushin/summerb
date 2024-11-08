@@ -43,7 +43,7 @@ public class AuthTokenDaoInMemoryImpl implements AuthTokenDao, InitializingBean,
 
   protected String pathNameToPersistedTokens;
 
-  protected Map<String, AuthToken> tokens = new HashMap<String, AuthToken>();
+  protected Map<String, AuthToken> tokens = new HashMap<>();
   protected Multimap<String, AuthToken> idxByUser = HashMultimap.create();
   protected MapSizeMXBean mxBean;
 
@@ -88,7 +88,7 @@ public class AuthTokenDaoInMemoryImpl implements AuthTokenDao, InitializingBean,
   @Override
   public synchronized List<AuthToken> findAuthTokensByUser(String userUuid) {
     Collection<AuthToken> data = idxByUser.get(userUuid);
-    List<AuthToken> ret = new ArrayList<AuthToken>(data.size());
+    List<AuthToken> ret = new ArrayList<>(data.size());
     for (AuthToken d : data) {
       ret.add(clone(d));
     }
@@ -191,7 +191,7 @@ public class AuthTokenDaoInMemoryImpl implements AuthTokenDao, InitializingBean,
             continue;
           }
 
-          output.printf("%s%s", formatToken(token), System.getProperty("line.separator"));
+          output.printf("%s%s", formatToken(token), System.lineSeparator());
           output.flush();
         }
       }

@@ -179,7 +179,7 @@ public abstract class EascyCrudAuthorizationPerRowStrategy<TRow>
       return "n/a";
     }
     if (row instanceof HasId) {
-      return row.getClass().getSimpleName() + "#" + String.valueOf(((HasId) row).getId());
+      return row.getClass().getSimpleName() + "#" + ((HasId) row).getId();
     }
     return row.getClass().getSimpleName() + "#?";
   }

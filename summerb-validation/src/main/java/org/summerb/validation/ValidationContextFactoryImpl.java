@@ -40,7 +40,7 @@ public class ValidationContextFactoryImpl implements ValidationContextFactory {
     try {
       PropertyNameResolver<T> obtainer =
           propertyNameResolverFactory.getResolver((Class<T>) bean.getClass());
-      return (F) new ValidationContext<T>(bean, obtainer, jakartaValidator, this);
+      return (F) new ValidationContext<>(bean, obtainer, jakartaValidator, this);
     } catch (Exception e) {
       throw new RuntimeException("Failed to build ValidationContext for " + bean, e);
     }

@@ -101,7 +101,7 @@ public class PojoFieldsArgumentResolver implements HandlerMethodArgumentResolver
     if (paramsJson == null) {
       Map<Object, Object> map =
           webRequest.getParameterMap().entrySet().stream()
-              .collect(Collectors.toMap(x -> x.getKey(), y -> y.getValue()[0]));
+              .collect(Collectors.toMap(Map.Entry::getKey, y -> y.getValue()[0]));
       String json = gson.toJson(map);
       webRequest.setAttribute(ATTR_NAME, json, scope);
     }

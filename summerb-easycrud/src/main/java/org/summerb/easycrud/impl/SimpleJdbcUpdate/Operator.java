@@ -22,7 +22,7 @@ public enum Operator {
 
   private String op;
 
-  private Operator(final String op) {
+  Operator(final String op) {
     this.op = op;
   }
 

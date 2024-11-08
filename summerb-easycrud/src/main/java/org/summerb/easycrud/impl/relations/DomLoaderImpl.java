@@ -87,7 +87,7 @@ public class DomLoaderImpl implements DomLoader {
 
     try {
       Preconditions.checkArgument(rootDomClass != null, "rootDomClass must not be empty");
-      Preconditions.checkArgument(ids != null && ids.size() > 0, "List of ids must not be empty");
+      Preconditions.checkArgument(ids != null && !ids.isEmpty(), "List of ids must not be empty");
 
       // Resolve root row entity name (MessageCode)
       String rowMessageCode = resolveDtoMessageCodeFromDomClass(rootDomClass);
@@ -103,7 +103,7 @@ public class DomLoaderImpl implements DomLoader {
       Map<String, Ref> refs =
           !haveRefsToLoad
               ? Collections.emptyMap()
-              : Arrays.stream(refsToResolve).collect(Collectors.toMap(x -> x.getName(), x -> x));
+              : Arrays.stream(refsToResolve).collect(Collectors.toMap(Ref::getName, x -> x));
 
       // Construct root Dom objects
       Collection<TRowClass> rootRows = ds.get(rowMessageCode).getRows().values();
@@ -305,7 +305,7 @@ public class DomLoaderImpl implements DomLoader {
     try {
       Preconditions.checkArgument(clazz != null, "clazz must not be null");
       Preconditions.checkArgument(
-          refs != null && refs.size() > 0, "refsToResolve must not be null");
+          refs != null && !refs.isEmpty(), "refsToResolve must not be null");
 
       List<Pair<Ref, PropertyDescriptor>> ret = new ArrayList<>();
       PropertyDescriptor[] srcProps = BeanUtils.getPropertyDescriptors(clazz);

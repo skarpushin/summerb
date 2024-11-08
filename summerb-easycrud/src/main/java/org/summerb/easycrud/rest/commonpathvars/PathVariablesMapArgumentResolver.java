@@ -125,7 +125,7 @@ public class PathVariablesMapArgumentResolver implements HandlerMethodArgumentRe
     int scope = RequestAttributes.SCOPE_REQUEST;
     Map<String, Object> pathVars = (Map<String, Object>) webRequest.getAttribute(key, scope);
     if (pathVars == null) {
-      pathVars = new HashMap<String, Object>();
+      pathVars = new HashMap<>();
       webRequest.setAttribute(key, pathVars, scope);
     }
     pathVars.put(paramName, value);

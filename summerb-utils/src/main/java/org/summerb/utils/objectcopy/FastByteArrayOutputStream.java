@@ -24,9 +24,9 @@ import java.io.OutputStream;
  */
 public class FastByteArrayOutputStream extends OutputStream {
   /** Buffer and size */
-  protected byte[] buf = null;
+  protected byte[] buf;
 
-  protected int size = 0;
+  protected int size;
 
   /** Constructs a stream with buffer capacity size 5K */
   public FastByteArrayOutputStream() {

@@ -74,7 +74,7 @@ public class AllMessagesController implements InitializingBean {
       throws ExecutionException {
     // see if not modified
     if (request.checkNotModified(lastModified)) {
-      return new ResponseEntity<String>(HttpStatus.NOT_MODIFIED);
+      return new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
     }
 
     // set headers
@@ -87,12 +87,11 @@ public class AllMessagesController implements InitializingBean {
     // responseHeaders.setLastModified(maxLastModified);
     response.setDateHeader("Last-Modified", lastModified);
     Properties msgs = messagesCache.get(CurrentRequestUtils.getLocale());
-    return new ResponseEntity<String>(
-        "var msgs = " + gson.toJson(msgs), responseHeaders, HttpStatus.OK);
+    return new ResponseEntity<>("var msgs = " + gson.toJson(msgs), responseHeaders, HttpStatus.OK);
   }
 
   protected CacheLoader<Locale, Properties> messagesLoader =
-      new CacheLoader<Locale, Properties>() {
+      new CacheLoader<>() {
         @Override
         public Properties load(Locale key) {
           return allMessagesProvider.getAllMessages(key);

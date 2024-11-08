@@ -85,8 +85,8 @@ public class JakartaAnnotationsProcessorsRegistryPackageScanImpl
       findAnnotationProcessorsClasses(String packageName) throws IOException {
     return ClassPath.from(ClassLoader.getSystemClassLoader()).getAllClasses().stream()
         .filter(clazz1 -> clazz1.getPackageName().equalsIgnoreCase(packageName))
-        .map(clazz2 -> clazz2.load())
-        .filter(x -> AnnotationProcessor.class.isAssignableFrom(x))
+        .map(ClassPath.ClassInfo::load)
+        .filter(AnnotationProcessor.class::isAssignableFrom)
         .map(x -> (Class<? extends AnnotationProcessor<? extends Annotation>>) x)
         .filter(x -> findEligibleConstructor(x) != null)
         .collect(Collectors.toSet());

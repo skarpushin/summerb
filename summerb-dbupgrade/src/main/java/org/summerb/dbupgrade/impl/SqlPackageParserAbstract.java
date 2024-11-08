@@ -152,7 +152,6 @@ public abstract class SqlPackageParserAbstract implements SqlPackageParser {
       return null;
     }
   }
-  ;
 
   protected String read(InputStream is) throws Exception {
     StringWriter writer = new StringWriter();

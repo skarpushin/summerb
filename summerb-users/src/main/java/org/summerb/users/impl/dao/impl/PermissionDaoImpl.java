@@ -92,7 +92,7 @@ public class PermissionDaoImpl extends TableDaoBase implements InitializingBean,
   }
 
   protected RowMapper<String> permissionKeyRowMapper =
-      new RowMapper<String>() {
+      new RowMapper<>() {
         @Override
         public String mapRow(ResultSet rs, int idx) throws SQLException {
           return rs.getString("permission_key");
@@ -100,7 +100,7 @@ public class PermissionDaoImpl extends TableDaoBase implements InitializingBean,
       };
 
   protected RowMapper<String> subjectIdRowMapper =
-      new RowMapper<String>() {
+      new RowMapper<>() {
         @Override
         public String mapRow(ResultSet rs, int idx) throws SQLException {
           return rs.getString("subject_id");
@@ -110,7 +110,7 @@ public class PermissionDaoImpl extends TableDaoBase implements InitializingBean,
   @Override
   public void grantPermission(
       String domainName, String userUuid, String subjectId, String permissionKey) {
-    Map<String, Object> paramMap = new HashMap<String, Object>();
+    Map<String, Object> paramMap = new HashMap<>();
     paramMap.put("domainName", domainName);
     paramMap.put("subjectId", subjectId);
     paramMap.put("userUuid", userUuid);
@@ -121,7 +121,7 @@ public class PermissionDaoImpl extends TableDaoBase implements InitializingBean,
   @Override
   public void revokePermission(
       String domainName, String userUuid, String subjectId, String permissionKey) {
-    Map<String, Object> paramMap = new HashMap<String, Object>();
+    Map<String, Object> paramMap = new HashMap<>();
     paramMap.put("domainName", domainName);
     paramMap.put("subjectId", subjectId);
     paramMap.put("userUuid", userUuid);
@@ -131,7 +131,7 @@ public class PermissionDaoImpl extends TableDaoBase implements InitializingBean,
 
   @Override
   public void revokeUserPermissions(String domainName, String userUuid) {
-    Map<String, Object> paramMap = new HashMap<String, Object>();
+    Map<String, Object> paramMap = new HashMap<>();
     paramMap.put("domainName", domainName);
     paramMap.put("userUuid", userUuid);
     jdbc.update(sqlDeleteUserPermission, paramMap);
@@ -139,7 +139,7 @@ public class PermissionDaoImpl extends TableDaoBase implements InitializingBean,
 
   @Override
   public void clearSubjectPermissions(String domainName, String subjectId) {
-    Map<String, Object> paramMap = new HashMap<String, Object>();
+    Map<String, Object> paramMap = new HashMap<>();
     paramMap.put("domainName", domainName);
     paramMap.put("subjectId", subjectId);
     jdbc.update(sqlSubjectPermissions, paramMap);
@@ -148,7 +148,7 @@ public class PermissionDaoImpl extends TableDaoBase implements InitializingBean,
   @Override
   public List<String> getUserPermissionsForSubject(
       String domainName, String userUuid, String subjectId) {
-    Map<String, Object> paramMap = new HashMap<String, Object>();
+    Map<String, Object> paramMap = new HashMap<>();
     paramMap.put("domainName", domainName);
     paramMap.put("userUuid", userUuid);
     paramMap.put("subjectId", subjectId);
@@ -157,7 +157,7 @@ public class PermissionDaoImpl extends TableDaoBase implements InitializingBean,
 
   @Override
   public List<String> getSubjectsUserHasPermissionFor(String domainName, String userUuid) {
-    Map<String, Object> paramMap = new HashMap<String, Object>();
+    Map<String, Object> paramMap = new HashMap<>();
     paramMap.put("domainName", domainName);
     paramMap.put("userUuid", userUuid);
     return jdbc.query(sqlGetSubjectsUserHasPermissionFor, paramMap, subjectIdRowMapper);
@@ -166,7 +166,7 @@ public class PermissionDaoImpl extends TableDaoBase implements InitializingBean,
   @Override
   public List<String> getSubjectsUserHasPermissionForFiltered(
       String domainName, String userUuid, String requiredPermission) {
-    Map<String, Object> paramMap = new HashMap<String, Object>();
+    Map<String, Object> paramMap = new HashMap<>();
     paramMap.put("domainName", domainName);
     paramMap.put("userUuid", userUuid);
     paramMap.put("permissionKey", requiredPermission);
@@ -176,21 +176,18 @@ public class PermissionDaoImpl extends TableDaoBase implements InitializingBean,
   @Override
   public Map<String, List<String>> getUsersAndTheirPermissionsForSubject(
       String domainName, String subjectId) {
-    Map<String, Object> paramMap = new HashMap<String, Object>();
+    Map<String, Object> paramMap = new HashMap<>();
     paramMap.put("domainName", domainName);
     paramMap.put("subjectId", subjectId);
 
     List<Map<String, Object>> results =
         jdbc.queryForList(sqlGetSubjectUsersAndPermissions, paramMap);
-    Map<String, List<String>> ret = new HashMap<String, List<String>>();
+    Map<String, List<String>> ret = new HashMap<>();
     for (Map<String, Object> row : results) {
       String userUuid = (String) row.get("user_uuid");
       String permissionKey = (String) row.get("permission_key");
 
-      List<String> userMap = ret.get(userUuid);
-      if (userMap == null) {
-        ret.put(userUuid, userMap = new ArrayList<String>());
-      }
+      List<String> userMap = ret.computeIfAbsent(userUuid, k -> new ArrayList<>());
       userMap.add(permissionKey);
     }
     return ret;

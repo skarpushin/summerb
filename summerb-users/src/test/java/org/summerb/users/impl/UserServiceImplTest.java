@@ -248,10 +248,10 @@ public class UserServiceImplTest {
     UserServiceImpl fixture = UserServiceImplFactory.createUsersServiceImpl();
 
     PagerParams pagerParams = new PagerParams(20, 40);
-    PaginatedList<User> resultFromDao = new PaginatedList<User>();
+    PaginatedList<User> resultFromDao = new PaginatedList<>();
     resultFromDao.setTotalResults(1);
     resultFromDao.setPagerParams(pagerParams);
-    resultFromDao.setItems(new LinkedList<User>());
+    resultFromDao.setItems(new LinkedList<>());
     resultFromDao.getItems().add(UserFactory.createNewUserTemplate());
     when(fixture.getUserDao().findUserByDisplayNamePartial("asd", pagerParams))
         .thenReturn(resultFromDao);

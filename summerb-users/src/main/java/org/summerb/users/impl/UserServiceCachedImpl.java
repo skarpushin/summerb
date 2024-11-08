@@ -86,7 +86,7 @@ public class UserServiceCachedImpl implements UserService, InitializingBean {
   }
 
   protected CacheLoader<String, User> loaderByEmail =
-      new CacheLoader<String, User>() {
+      new CacheLoader<>() {
         @Override
         public User load(String key) throws Exception {
           User ret = userService.getUserByEmail(key);
@@ -98,7 +98,7 @@ public class UserServiceCachedImpl implements UserService, InitializingBean {
       };
 
   protected CacheLoader<String, User> loaderByUuid =
-      new CacheLoader<String, User>() {
+      new CacheLoader<>() {
         @Override
         public User load(String key) throws Exception {
           User ret = userService.getUserByUuid(key);

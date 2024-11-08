@@ -32,7 +32,7 @@ public interface PropertyDao {
    * <p>IMPORTANT! If impl of this class will throw truncation errors they must use this name for
    * value field
    */
-  public static final String VALUE_FIELD_NAME = "value";
+  String VALUE_FIELD_NAME = "value";
 
   void putProperty(
       long appId, long domainId, String subjectId, long propertyNameId, String propertyValue);

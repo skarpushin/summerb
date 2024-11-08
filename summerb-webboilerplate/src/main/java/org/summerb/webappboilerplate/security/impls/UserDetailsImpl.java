@@ -40,7 +40,7 @@ public class UserDetailsImpl implements UserDetails {
     this.passwordHash = passwordHash;
     this.authToken = authToken;
 
-    userAuthorities = new ArrayList<GrantedAuthority>();
+    userAuthorities = new ArrayList<>();
     for (String permission : permissions) {
       userAuthorities.add(new SimpleGrantedAuthority(permission));
     }

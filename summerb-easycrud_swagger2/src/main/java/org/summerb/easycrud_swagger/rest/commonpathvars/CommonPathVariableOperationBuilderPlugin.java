@@ -57,7 +57,7 @@ public class CommonPathVariableOperationBuilderPlugin implements OperationBuilde
 
   @Override
   public void apply(OperationContext opCtx) {
-    List<Parameter> ret = new ArrayList<Parameter>();
+    List<Parameter> ret = new ArrayList<>();
     Optional<HasCommonPathVariable> annSingle =
         opCtx.findControllerAnnotation(HasCommonPathVariable.class);
     if (annSingle.isPresent()) {

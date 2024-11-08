@@ -15,15 +15,12 @@
  ******************************************************************************/
 package org.summerb.validation.jakarta.processors;
 
-import java.math.BigDecimal;
-
-import javax.validation.constraints.Digits;
-
-import org.summerb.validation.ValidationContext;
-import org.summerb.validation.jakarta.processors.abstracts.DecimalProcessorNullableAbstract;
-
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
+import java.math.BigDecimal;
+import javax.validation.constraints.Digits;
+import org.summerb.validation.ValidationContext;
+import org.summerb.validation.jakarta.processors.abstracts.DecimalProcessorNullableAbstract;
 
 public class DigitsProcessor extends DecimalProcessorNullableAbstract<Digits> {
 
@@ -45,9 +42,7 @@ public class DigitsProcessor extends DecimalProcessorNullableAbstract<Digits> {
     Preconditions.checkArgument(fraction >= 0, "fraction part must be non-negative: %s", fraction);
 
     StringBuilder sb = new StringBuilder();
-    for (int i = 0; i < integer; i++) {
-      sb.append("9");
-    }
+    sb.append("9".repeat(integer));
 
     for (int i = 0; i < fraction; i++) {
       if (i == 0) {

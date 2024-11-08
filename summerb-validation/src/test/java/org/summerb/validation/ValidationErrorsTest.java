@@ -94,7 +94,7 @@ class ValidationErrorsTest {
 
     ValidationContext<Beans> ctx = validationContextFactory.buildFor(beans);
     ObjectValidator<Bean> validator =
-        new ObjectValidator<Bean>() {
+        new ObjectValidator<>() {
           @Override
           public void validate(
               Bean subject,

@@ -58,7 +58,7 @@ public class TransactionBoundCache<K, V> implements LoadingCache<K, V> {
   // NOTE: It's not static because we need it to be bound to specific cache,
   // not to singleton
   private final ThreadLocal<TransactionBoundCacheEntry> transactionBoundCacheEntries =
-      new ThreadLocal<TransactionBoundCacheEntry>();
+      new ThreadLocal<>();
 
   /**
    * This marker will be used as a value for {@link #transactionBoundCacheEntries} to prevent from
@@ -157,7 +157,6 @@ public class TransactionBoundCache<K, V> implements LoadingCache<K, V> {
             actual.invalidateAll(invalidatedKeys);
           }
         }
-        ;
 
         @Override
         public void afterCompletion(int status) {
@@ -170,7 +169,7 @@ public class TransactionBoundCache<K, V> implements LoadingCache<K, V> {
       };
 
   private RemovalListener<? super K, ? super V> localRemovalListener =
-      new RemovalListener<K, V>() {
+      new RemovalListener<>() {
         @Override
         public void onRemoval(RemovalNotification<K, V> notification) {
           TransactionBoundCacheEntry transactionBoundCacheEntry =

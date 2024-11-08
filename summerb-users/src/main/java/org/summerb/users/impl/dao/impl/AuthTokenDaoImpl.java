@@ -55,7 +55,7 @@ public class AuthTokenDaoImpl extends TableDaoBase implements InitializingBean, 
   public void afterPropertiesSet() throws Exception {
     super.afterPropertiesSet();
 
-    rowMapper = new BeanPropertyRowMapper<AuthToken>(AuthToken.class);
+    rowMapper = new BeanPropertyRowMapper<>(AuthToken.class);
     jdbcInsert = new SimpleJdbcInsert(dataSource).withTableName(tableName);
 
     sqlSelectTokenByUuid =
@@ -78,7 +78,7 @@ public class AuthTokenDaoImpl extends TableDaoBase implements InitializingBean, 
 
   @Override
   public AuthToken findAuthTokenByUuid(String authTokenUuid) {
-    Map<String, Object> paramMap = new HashMap<String, Object>();
+    Map<String, Object> paramMap = new HashMap<>();
     paramMap.put(PARAM_AUTH_TOKEN_UUID, authTokenUuid);
     List<AuthToken> ret = jdbc.query(sqlSelectTokenByUuid, paramMap, rowMapper);
     if (ret.size() == 1) {
@@ -89,7 +89,7 @@ public class AuthTokenDaoImpl extends TableDaoBase implements InitializingBean, 
 
   @Override
   public void updateToken(String authTokenUuid, long now, String newTokenValue) {
-    Map<String, Object> paramMap = new HashMap<String, Object>();
+    Map<String, Object> paramMap = new HashMap<>();
     paramMap.put(PARAM_AUTH_TOKEN_UUID, authTokenUuid);
     paramMap.put(PARAM_LAST_VERIFIED_AT, now);
     paramMap.put(PARAM_TOKEN_VALUE, newTokenValue);
@@ -98,14 +98,14 @@ public class AuthTokenDaoImpl extends TableDaoBase implements InitializingBean, 
 
   @Override
   public void deleteAuthToken(String authTokenUuid) {
-    Map<String, Object> paramMap = new HashMap<String, Object>();
+    Map<String, Object> paramMap = new HashMap<>();
     paramMap.put(PARAM_AUTH_TOKEN_UUID, authTokenUuid);
     jdbc.update(sqlDeleteTokenByUuid, paramMap);
   }
 
   @Override
   public List<AuthToken> findAuthTokensByUser(String userUuid) {
-    Map<String, Object> paramMap = new HashMap<String, Object>();
+    Map<String, Object> paramMap = new HashMap<>();
     paramMap.put(PARAM_USER_UUID, userUuid);
     return jdbc.query(sqlSearchUserTokens, paramMap, rowMapper);
   }

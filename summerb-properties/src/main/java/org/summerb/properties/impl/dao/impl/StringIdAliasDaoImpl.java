@@ -77,7 +77,7 @@ public class StringIdAliasDaoImpl extends TableDaoBase implements StringIdAliasD
   }
 
   protected Map<String, Object> getParamForAliasName(String str) {
-    Map<String, Object> paramMap = new HashMap<String, Object>();
+    Map<String, Object> paramMap = new HashMap<>();
     paramMap.put(PARAM_ALIAS_NAME, str);
     return paramMap;
   }
@@ -93,7 +93,7 @@ public class StringIdAliasDaoImpl extends TableDaoBase implements StringIdAliasD
   }
 
   protected RowMapper<AliasEntry> rowMapper =
-      new RowMapper<AliasEntry>() {
+      new RowMapper<>() {
         @Override
         public AliasEntry mapRow(ResultSet rs, int rowNum) throws SQLException {
           return new AliasEntry(rs.getString(PARAM_ALIAS_NAME), rs.getLong(PARAM_ALIAS));
@@ -102,14 +102,14 @@ public class StringIdAliasDaoImpl extends TableDaoBase implements StringIdAliasD
 
   @Override
   public PaginatedList<AliasEntry> loadAliasesPaged(PagerParams pagerParams) {
-    Map<String, Object> paramMap = new HashMap<String, Object>();
+    Map<String, Object> paramMap = new HashMap<>();
     paramMap.put(PARAM_OFFSET, pagerParams.getOffset());
     paramMap.put(PARAM_MAX, pagerParams.getMax());
 
     List<AliasEntry> results = jdbc.query(sqlFindAliasesPaged, paramMap, rowMapper);
-    int totalResultsCount = jdbc.queryForInt(sqlLastStatementCount, new HashMap<String, Object>());
+    int totalResultsCount = jdbc.queryForInt(sqlLastStatementCount, new HashMap<>());
 
-    return new PaginatedList<AliasEntry>(pagerParams, results, totalResultsCount);
+    return new PaginatedList<>(pagerParams, results, totalResultsCount);
   }
 
   @Override
@@ -120,7 +120,7 @@ public class StringIdAliasDaoImpl extends TableDaoBase implements StringIdAliasD
   // TBD: Method is not tested!!!
   @Override
   public String findAliasName(long alias) {
-    Map<String, Object> paramMap = new HashMap<String, Object>();
+    Map<String, Object> paramMap = new HashMap<>();
     paramMap.put("alias", alias);
 
     List<String> results = jdbc.queryForList(sqlFindNameByAlias, paramMap, String.class);

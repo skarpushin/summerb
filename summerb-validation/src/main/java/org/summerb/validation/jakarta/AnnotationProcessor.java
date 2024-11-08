@@ -29,7 +29,7 @@ import org.summerb.validation.ValidationContext;
  * @param <T> type of annotation, one of jakarta validation constraints. I.e. {@link AssertTrue}
  */
 public interface AnnotationProcessor<T extends Annotation> {
-  public static final String CTX_REQUIRED = "ctx required";
+  String CTX_REQUIRED = "ctx required";
 
   void validate(Object value, ValidationContext<?> ctx);
 }

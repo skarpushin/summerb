@@ -68,7 +68,7 @@ public class UserDaoImpl extends TableDaoBase implements InitializingBean, UserD
   public void afterPropertiesSet() throws Exception {
     super.afterPropertiesSet();
 
-    rowMapper = new BeanPropertyRowMapper<User>(User.class);
+    rowMapper = new BeanPropertyRowMapper<>(User.class);
     jdbcInsert = new SimpleJdbcInsert(dataSource).withTableName(tableName);
 
     sqlSelectUserByUuid = String.format("SELECT * FROM %s u WHERE u.uuid = :userUuid", tableName);
@@ -95,7 +95,7 @@ public class UserDaoImpl extends TableDaoBase implements InitializingBean, UserD
 
   @Override
   public User findUserByUuid(String userUuid) {
-    Map<String, Object> paramMap = new HashMap<String, Object>();
+    Map<String, Object> paramMap = new HashMap<>();
     paramMap.put(PARAM_USER_UUID, userUuid);
     List<User> ret = jdbc.query(sqlSelectUserByUuid, paramMap, rowMapper);
     if (ret.size() == 1) {
@@ -106,7 +106,7 @@ public class UserDaoImpl extends TableDaoBase implements InitializingBean, UserD
 
   @Override
   public User findUserByEmail(String userEmail) {
-    Map<String, Object> paramMap = new HashMap<String, Object>();
+    Map<String, Object> paramMap = new HashMap<>();
     paramMap.put(PARAM_USER_EMAIL, userEmail);
     List<User> ret = jdbc.query(sqlSelectUserByEmail, paramMap, rowMapper);
     if (ret.size() == 1) {
@@ -123,7 +123,7 @@ public class UserDaoImpl extends TableDaoBase implements InitializingBean, UserD
 
   @Override
   public boolean deleteUser(String userUuid) {
-    Map<String, Object> paramMap = new HashMap<String, Object>();
+    Map<String, Object> paramMap = new HashMap<>();
     paramMap.put(PARAM_USER_UUID, userUuid);
     return jdbc.update(sqlDeleteUserByUuid, paramMap) == 1;
   }
@@ -132,15 +132,14 @@ public class UserDaoImpl extends TableDaoBase implements InitializingBean, UserD
   @Transactional(propagation = Propagation.REQUIRED)
   public PaginatedList<User> findUserByDisplayNamePartial(
       String displayNamePartial, PagerParams pagerParams) {
-    Map<String, Object> paramMap = new HashMap<String, Object>();
+    Map<String, Object> paramMap = new HashMap<>();
     paramMap.put(PARAM_DISPLAY_NAME, "%" + displayNamePartial + "%");
     paramMap.put(PARAM_DISPLAY_NAME_AS_IS, displayNamePartial);
     paramMap.put(PARAM_OFFSET, pagerParams.getOffset());
     paramMap.put(PARAM_MAX, pagerParams.getMax());
     List<User> results = jdbc.query(sqlSearchUsersByDisplayName, paramMap, rowMapper);
-    int totalResultsCount =
-        jdbc.queryForInt(sqlSearchUsersByDisplayNameGetCount, new HashMap<String, Object>());
-    return new PaginatedList<User>(pagerParams, results, totalResultsCount);
+    int totalResultsCount = jdbc.queryForInt(sqlSearchUsersByDisplayNameGetCount, new HashMap<>());
+    return new PaginatedList<>(pagerParams, results, totalResultsCount);
   }
 
   public String getTableName() {

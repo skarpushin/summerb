@@ -44,18 +44,17 @@ public class Disruptor<T> {
 
     this.disruptionInterval = disruptionInterval;
     this.disruptorProcessor = disruptorProcessor;
-    disruptionRing = new OneWayList<DisruptionQueue<T>>();
+    disruptionRing = new OneWayList<>();
   }
 
   private ThreadLocal<DisruptionQueue<T>> disruptionRingThreadLocal =
-      new ThreadLocal<DisruptionQueue<T>>() {
+      new ThreadLocal<>() {
         @Override
         protected DisruptionQueue<T> initialValue() {
-          DisruptionQueue<T> newQueue = new DisruptionQueue<T>();
+          DisruptionQueue<T> newQueue = new DisruptionQueue<>();
           disruptionRing.appendThreadSafe(newQueue);
           return newQueue;
         }
-        ;
       };
 
   public void start() {

@@ -61,11 +61,11 @@ public class SimplePropertyServiceCachedImpl implements SimplePropertyService, I
   }
 
   protected CacheLoader<String, Map<String, String>> loader =
-      new CacheLoader<String, Map<String, String>>() {
+      new CacheLoader<>() {
         @Override
         public Map<String, String> load(String key) {
           Map<String, String> ret = simplePropertyService.findSubjectProperties(key);
-          return ret == null ? new HashMap<String, String>() : ret;
+          return ret == null ? new HashMap<>() : ret;
         }
       };
 

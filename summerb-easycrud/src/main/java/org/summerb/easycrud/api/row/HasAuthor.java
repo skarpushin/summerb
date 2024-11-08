@@ -24,8 +24,8 @@ import org.summerb.easycrud.api.EasyCrudService;
  * @author sergey.karpushin
  */
 public interface HasAuthor {
-  public static final String FN_CREATED_BY = "createdBy";
-  public static final String FN_MODIFIED_BY = "modifiedBy";
+  String FN_CREATED_BY = "createdBy";
+  String FN_MODIFIED_BY = "modifiedBy";
 
   void setCreatedBy(String userUuid);
 

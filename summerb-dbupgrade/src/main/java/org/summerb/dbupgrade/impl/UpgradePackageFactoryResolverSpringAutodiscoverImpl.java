@@ -49,7 +49,7 @@ public class UpgradePackageFactoryResolverSpringAutodiscoverImpl
               .map(x -> ctx.getBean(x, UpgradePackageFactory.class))
               .collect(Collectors.toList());
       Preconditions.checkState(
-          found.size() > 0,
+          !found.isEmpty(),
           "No beans of type UpgradePackageFactory have been found (UpgradePackageFactoryDelegatingImpl bean doesn't count)");
       this.factories = found;
     }
