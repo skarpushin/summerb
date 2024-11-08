@@ -190,11 +190,20 @@ public class ScaffoldedQueryMethodImpl<TMethodParameter extends ScaffoldedMethod
   @Override
   public Object call(Object[] methodArgs) {
     try {
+      Class<?> returnType = method.getReturnType();
+      if (annotation.modifying()) {
+        assertReturnTypeForModifyingQuery(returnType);
+      }
+
       MapSqlParameterSource params = buildQueryParams(methodArgs);
       log.debug(
           "Executing scaffolded query {}\nQuery: {}\nParams: {}", methodName(), query, params);
 
-      Class<?> returnType = method.getReturnType();
+      if (annotation.modifying()) {
+        int affectedRows = dao.getJdbc().update(query, params);
+        return returnType.equals(Void.TYPE) ? null : affectedRows;
+      }
+
       EasyCrudWireTap wireTap = service.getWireTap();
       if (rowMapper == dao.getRowMapper() && wireTap != null && wireTap.requiresOnRead()) {
         wireTap.beforeRead();
@@ -228,6 +237,21 @@ public class ScaffoldedQueryMethodImpl<TMethodParameter extends ScaffoldedMethod
     } catch (Throwable t) {
       throw service.getExceptionStrategy().handleExceptionAtFind(t);
     }
+  }
+
+  protected void assertReturnTypeForModifyingQuery(Class<?> returnType) {
+    if (returnType.equals(Void.TYPE)
+        || returnType.equals(Integer.TYPE)
+        || returnType.equals(Integer.class)) {
+      return;
+    }
+
+    throw new IllegalArgumentException(
+        "Method "
+            + methodName()
+            + " is annotated with @Query(modifying = true), but it returns "
+            + returnType.getName()
+            + ". Only void or int are allowed for modifying methods");
   }
 
   protected MapSqlParameterSource buildQueryParams(Object[] methodArgs) {

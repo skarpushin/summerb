@@ -33,6 +33,10 @@ import org.summerb.easycrud.scaffold.impl.ScaffoldedMethodFactoryMySqlImpl;
  * which is instantiated by @link EasyCrudScaffold} (instead of defining class that implements this
  * interface)
  *
+ * <p>Please note: when using joins or selecting from different tables, and selecting all fields
+ * using asterisk "*" symbol, make sure to prepend it with table name from which you want to select
+ * all fields, i.e. "table_name.*", otherwise row mapping will not work correctly.
+ *
  * <p>Use named parameters which names will be resolved against method argument names. Make sure
  * parameter names are included in bytecode! Add "-parameters" to compiler args. With maven do it
  * like this:
@@ -73,7 +77,14 @@ public @interface Query {
 
   /**
    * @return Customize row mapper if needed. If none specified, then EasyCrud will attempt to guess.
-   *     For objects by default will be used {@link BeanPropertyRowMapper}
+   *     For objects {@link BeanPropertyRowMapper} will be used by default. Ignored if #modifying is
+   *     true.
    */
   Class<? extends RowMapper> rowMapper() default RowMapper.class;
+
+  /**
+   * @return If set to true, then this query is expected to modify data. And in such case return
+   *     value expect to be either void or int or long
+   */
+  boolean modifying() default false;
 }

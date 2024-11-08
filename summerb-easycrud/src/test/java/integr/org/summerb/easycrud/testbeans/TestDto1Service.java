@@ -43,4 +43,24 @@ public interface TestDto1Service extends EasyCrudService<String, TestDto1> {
       value = "SELECT * FROM forms_test_1 WHERE major_version IN (:majorVersions) ORDER BY env ASC",
       rowMapper = CustomMapperToTestDto2.class)
   List<TestDto2> getDtosWithSetAndCustomMapper(Set<Integer> majorVersions);
+
+  @Query(
+      modifying = true,
+      value = "UPDATE forms_test_1 SET link_to_full_download = :linkToFullDownload WHERE id = :id")
+  void updateReturnVoid(String id, String linkToFullDownload);
+
+  @Query(
+      modifying = true,
+      value = "UPDATE forms_test_1 SET link_to_full_download = :linkToFullDownload WHERE id = :id")
+  int updateReturnInt(String id, String linkToFullDownload);
+
+  @Query(
+      modifying = true,
+      value = "UPDATE forms_test_1 SET link_to_full_download = :linkToFullDownload WHERE id = :id")
+  Integer updateReturnIntBoxed(String id, String linkToFullDownload);
+
+  @Query(
+      modifying = true,
+      value = "UPDATE forms_test_1 SET link_to_full_download = :linkToFullDownload WHERE id = :id")
+  String updateReturnWrongReturnType(String id, String linkToFullDownload);
 }

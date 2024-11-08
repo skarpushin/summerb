@@ -16,6 +16,7 @@
 package integr.org.summerb.easycrud;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import integr.org.summerb.easycrud.config.EasyCrudIntegrTestConfig;
 import integr.org.summerb.easycrud.config.EmbeddedDbConfig;
@@ -29,6 +30,7 @@ import io.zonky.test.db.AutoConfigureEmbeddedDatabase.DatabaseType;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase.RefreshMode;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +38,7 @@ import org.springframework.test.annotation.ProfileValueSourceConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
+import org.summerb.easycrud.api.exceptions.EasyCrudUnexpectedException;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {EmbeddedDbConfig.class, EasyCrudIntegrTestConfig.class})
@@ -110,6 +113,47 @@ public class QueryTest {
 
     List<TestDto1> result = service.getDtosWithSet(Set.of(10, 30));
     assertEquals(TestEnumFieldType.ACTIVE, result.get(0).getLinkToPatchToNextVersion());
+  }
+
+  @Test
+  void test_updateReturnVoid() {
+    TestDto1 row = service.create(buildRow("env1", 30));
+    String someUuid = UUID.randomUUID().toString();
+    service.updateReturnVoid(row.getId(), someUuid);
+    TestDto1 retrieved = service.getById(row.getId());
+    assertEquals(someUuid, retrieved.getLinkToFullDownload());
+  }
+
+  @Test
+  void test_updateReturnInt() {
+    TestDto1 row = service.create(buildRow("env1", 30));
+    String someUuid = UUID.randomUUID().toString();
+    int affectedRows = service.updateReturnInt(row.getId(), someUuid);
+    assertEquals(1, affectedRows);
+    TestDto1 retrieved = service.getById(row.getId());
+    assertEquals(someUuid, retrieved.getLinkToFullDownload());
+  }
+
+  @Test
+  void test_updateReturnIntBoxed() {
+    TestDto1 row = service.create(buildRow("env1", 30));
+    String someUuid = UUID.randomUUID().toString();
+    Integer affectedRows = service.updateReturnIntBoxed(row.getId(), someUuid);
+    assertEquals(1, affectedRows);
+    TestDto1 retrieved = service.getById(row.getId());
+    assertEquals(someUuid, retrieved.getLinkToFullDownload());
+  }
+
+  @Test
+  void test_updateReturnInt_expect0() {
+    int affectedRows = service.updateReturnInt(UUID.randomUUID().toString(), "asd");
+    assertEquals(0, affectedRows);
+  }
+
+  @Test
+  void test_updateReturnInt_expectExceptionOnWrongReturnType() {
+    assertThrows(
+        EasyCrudUnexpectedException.class, () -> service.updateReturnWrongReturnType("asd", "asd"));
   }
 
   private void createTestData() {
