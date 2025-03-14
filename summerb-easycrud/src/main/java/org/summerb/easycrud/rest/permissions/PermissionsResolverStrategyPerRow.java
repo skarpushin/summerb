@@ -19,9 +19,9 @@ import org.summerb.easycrud.rest.dto.SingleItemResult;
  * @param <TRow> type of row
  */
 public class PermissionsResolverStrategyPerRow<TId, TRow extends HasId<TId>>
-    implements PermissionsResolverStrategy<TId, HasId<TId>> {
+    implements PermissionsResolverStrategy<TId, TRow> {
 
-  protected EasyCrudAuthorizationPerRowStrategy<TRow> perRowAuthStrategy;
+  protected final EasyCrudAuthorizationPerRowStrategy<TRow> perRowAuthStrategy;
 
   public PermissionsResolverStrategyPerRow(
       EasyCrudAuthorizationPerRowStrategy<TRow> perRowAuthStrategy) {
@@ -29,28 +29,32 @@ public class PermissionsResolverStrategyPerRow<TId, TRow extends HasId<TId>>
     this.perRowAuthStrategy = perRowAuthStrategy;
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public void resolvePermissions(
-      MultipleItemsResult<TId, HasId<TId>> ret, PathVariablesMap contextVariables) {
+      MultipleItemsResult<TId, TRow> ret, PathVariablesMap contextVariables) {
 
     ret.setRowPermissions(
-        ret.getRows().stream()
-            .collect(Collectors.toMap(HasId::getId, v -> buildRowPermissions((TRow) v))));
+        ret.getRows().stream().collect(Collectors.toMap(HasId::getId, this::buildAllPermissions)));
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public void resolvePermissions(
-      SingleItemResult<TId, HasId<TId>> ret, PathVariablesMap contextVariables) {
+      SingleItemResult<TId, TRow> ret, PathVariablesMap contextVariables) {
 
-    ret.setPermissions(buildRowPermissions((TRow) ret.getRow()));
+    ret.setPermissions(buildAllPermissions(ret.getRow()));
   }
 
-  protected Map<String, Boolean> buildRowPermissions(TRow row) {
+  public Map<String, Boolean> buildAllPermissions(TRow row) {
     Map<String, Boolean> permissions = new HashMap<>();
     permissions.put(Permissions.CREATE, perRowAuthStrategy.isAuthorizedToCreate(row));
     permissions.put(Permissions.READ, perRowAuthStrategy.isAuthorizedToRead(row));
+    permissions.put(Permissions.UPDATE, perRowAuthStrategy.isAuthorizedToUpdate(null, row));
+    permissions.put(Permissions.DELETE, perRowAuthStrategy.isAuthorizedToDelete(row));
+    return permissions;
+  }
+
+  public Map<String, Boolean> buildExistingRowPermissions(TRow row) {
+    Map<String, Boolean> permissions = new HashMap<>();
     permissions.put(Permissions.UPDATE, perRowAuthStrategy.isAuthorizedToUpdate(null, row));
     permissions.put(Permissions.DELETE, perRowAuthStrategy.isAuthorizedToDelete(row));
     return permissions;
