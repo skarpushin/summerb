@@ -53,7 +53,9 @@ public class StringTokenizerTest {
     if (next == null) {
       return null;
     }
-    return String.valueOf(next);
+    // WARNING: DO NOT OPTIMIZE AS IDEA SUGGESTS! OR CODE WILL BRAKE
+    //noinspection StringBufferReplaceableByString
+    return new StringBuilder(next).toString();
   }
 
   @Test

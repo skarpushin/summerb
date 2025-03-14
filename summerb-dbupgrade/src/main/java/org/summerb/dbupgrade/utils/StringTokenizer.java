@@ -58,7 +58,9 @@ public class StringTokenizer {
     this.delimStr = new String[delimLength];
 
     for (int i = 0; i < delimLength; i++) {
-      delimStr[i] = String.valueOf(delim[i]);
+      // WARNING: DO NOT OPTIMIZE AS IDEA SUGGESTS! OR CODE WILL BRAKE
+      //noinspection StringOperationCanBeSimplified,StringBufferReplaceableByString
+      delimStr[i] = new String(new StringBuilder(delim[i]).toString());
     }
   }
 
