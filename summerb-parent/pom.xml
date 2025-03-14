@@ -49,6 +49,7 @@ http://www.apache.org/licenses/LICENSE-2.0
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.compiler.debug>true</maven.compiler.debug>
 		<maven.compiler.debuglevel>lines,vars,source</maven.compiler.debuglevel>
+		<maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
 		<skip.unit.tests>false</skip.unit.tests>
 		<java.version>17</java.version>
 
@@ -210,7 +211,7 @@ http://www.apache.org/licenses/LICENSE-2.0
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.14.0</version>
+				<version>${maven-compiler-plugin.version}</version>
 				<configuration>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
