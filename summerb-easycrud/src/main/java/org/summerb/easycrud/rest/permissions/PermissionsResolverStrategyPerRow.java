@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.summerb.easycrud.api.row.HasId;
-import org.summerb.easycrud.impl.auth.EascyCrudAuthorizationPerRowStrategy;
+import org.summerb.easycrud.impl.auth.EasyCrudAuthorizationPerRowStrategy;
 import org.summerb.easycrud.rest.commonpathvars.PathVariablesMap;
 import org.summerb.easycrud.rest.dto.MultipleItemsResult;
 import org.summerb.easycrud.rest.dto.SingleItemResult;
@@ -14,7 +14,7 @@ import com.google.common.base.Preconditions;
 
 /**
  * Impl of {@link PermissionsResolverStrategy} that gets data from {@link
- * EascyCrudAuthorizationPerRowStrategy}, it means that provide per row permissions information
+ * EasyCrudAuthorizationPerRowStrategy}, it means that provide per row permissions information
  *
  * @author Sergey Karpushin
  * @param <TId> type of row id
@@ -23,10 +23,10 @@ import com.google.common.base.Preconditions;
 public class PermissionsResolverStrategyPerRow<TId, TRow extends HasId<TId>>
     implements PermissionsResolverStrategy<TId, HasId<TId>> {
 
-  protected EascyCrudAuthorizationPerRowStrategy<TRow> perRowAuthStrategy;
+  protected EasyCrudAuthorizationPerRowStrategy<TRow> perRowAuthStrategy;
 
   public PermissionsResolverStrategyPerRow(
-      EascyCrudAuthorizationPerRowStrategy<TRow> perRowAuthStrategy) {
+      EasyCrudAuthorizationPerRowStrategy<TRow> perRowAuthStrategy) {
     Preconditions.checkArgument(perRowAuthStrategy != null, "perRowAuthStrategy required");
     this.perRowAuthStrategy = perRowAuthStrategy;
   }

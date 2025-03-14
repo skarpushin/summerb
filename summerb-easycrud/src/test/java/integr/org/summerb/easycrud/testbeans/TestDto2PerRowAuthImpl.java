@@ -15,12 +15,12 @@
  ******************************************************************************/
 package integr.org.summerb.easycrud.testbeans;
 
-import org.summerb.easycrud.impl.auth.EascyCrudAuthorizationPerRowStrategy;
+import org.summerb.easycrud.impl.auth.EasyCrudAuthorizationPerRowStrategy;
 import org.summerb.security.api.dto.NotAuthorizedResult;
 
 import integr.org.summerb.easycrud.dtos.TestDto2;
 
-public class TestDto2PerRowAuthImpl extends EascyCrudAuthorizationPerRowStrategy<TestDto2> {
+public class TestDto2PerRowAuthImpl extends EasyCrudAuthorizationPerRowStrategy<TestDto2> {
   @Override
   public NotAuthorizedResult getForCreate(TestDto2 row) {
     if ("throwNaeOnCreate".equals(row.getEnv())) {

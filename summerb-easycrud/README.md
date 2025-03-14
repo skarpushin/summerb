@@ -359,7 +359,7 @@ accessed or modified. So it doesn't matter from which facade layer data is used 
 Authorization can be checked per table-wide.
 
 ```java
-public class PresaleFeedbackAuthStrategyImpl extends EascyCrudAuthorizationPerTableStrategy {
+public class PresaleFeedbackAuthStrategyImpl extends EasyCrudAuthorizationPerTableStrategy {
     @Autowired
     private SecurityContextResolverEx securityContextResolverEx;
 
@@ -397,7 +397,7 @@ NOTES:
 ### 1.b. Define authorization logic - Per Row
 Authorization can be checked on a per-row basis.
 ```java
-public class ProjectRowAuthStrategyImpl extends EascyCrudAuthorizationPerRowStrategy<ProjectRow> {
+public class ProjectRowAuthStrategyImpl extends EasyCrudAuthorizationPerRowStrategy<ProjectRow> {
     @Override
     public NotAuthorizedResult getForRead(ProjectRow presaleRow) {
         if (currentUserUuidResolver.getUserUuid().equals(row.getCreatedBy())) {
@@ -423,7 +423,7 @@ NOTES:
    that describes why access is not allowed. In the example above method `denyUpdate` from base class is used to
    simplify the implementation, but this can be of course overridden
 2. For fine-grained auth control of each of the four CRUD methods, override more methods from base class
-   `EascyCrudAuthorizationPerRowStrategy`
+   `EasyCrudAuthorizationPerRowStrategy`
 
 ### 2. Augment service configuration
 ```java

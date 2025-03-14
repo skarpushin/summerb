@@ -25,7 +25,7 @@ import org.summerb.easycrud.api.QueryToSql;
 import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.impl.EasyCrudServiceImpl;
 import org.summerb.easycrud.impl.EasyCrudServiceResolverSpringImpl;
-import org.summerb.easycrud.impl.auth.EascyCrudAuthorizationPerRowStrategy;
+import org.summerb.easycrud.impl.auth.EasyCrudAuthorizationPerRowStrategy;
 import org.summerb.easycrud.impl.dao.mysql.EasyCrudDaoSqlImpl;
 import org.summerb.easycrud.impl.dao.postgres.DaoExceptionTranslatorPostgresImpl;
 import org.summerb.easycrud.impl.dao.postgres.QueryToSqlPostgresImpl;
@@ -157,14 +157,14 @@ public class EasyCrudIntegrTestConfig {
   }
 
   @Bean
-  EascyCrudAuthorizationPerRowStrategy<TestDto2> testDto2PerRowAuth() {
+  EasyCrudAuthorizationPerRowStrategy<TestDto2> testDto2PerRowAuth() {
     return new TestDto2PerRowAuthImpl();
   }
 
   @Bean
   EasyCrudService<Long, TestDto2> testDto2ServiceBasicAuth(
       @Qualifier("testDto2Dao") EasyCrudDao<Long, TestDto2> testDto2Dao,
-      @Qualifier("testDto2PerRowAuth") EascyCrudAuthorizationPerRowStrategy<TestDto2> auth) {
+      @Qualifier("testDto2PerRowAuth") EasyCrudAuthorizationPerRowStrategy<TestDto2> auth) {
     var ret = new EasyCrudServiceImpl<>(testDto2Dao, TestDto2.class);
     ret.setWireTap(auth);
     return ret;
@@ -192,7 +192,7 @@ public class EasyCrudIntegrTestConfig {
       @Qualifier("testDto2ServiceBasicAuth") EasyCrudService<Long, TestDto2> serviceA,
       @Qualifier("testDto1Service") EasyCrudService<String, TestDto1> serviceB,
       @Qualifier("testDto2PerRowAuth")
-          EascyCrudAuthorizationPerRowStrategy<TestDto2> serviceAAuth) {
+      EasyCrudAuthorizationPerRowStrategy<TestDto2> serviceAAuth) {
 
     var ret = new EasyCrudM2mServiceImpl<>(dao, serviceA, serviceB);
     M2mAuthorizationWireTapImpl wireTap = new M2mAuthorizationWireTapImpl(serviceA, serviceAAuth);

@@ -51,7 +51,7 @@ import org.summerb.spring.security.api.CurrentUserRolesResolver;
  * @author Sergey Karpushin
  * @param <TRow> type of row
  */
-public abstract class EascyCrudAuthorizationPerRowStrategy<TRow>
+public abstract class EasyCrudAuthorizationPerRowStrategy<TRow>
     extends EasyCrudWireTapAbstract<TRow> implements InitializingBean {
 
   protected static final NotAuthorizedResult ALLOW = null;
