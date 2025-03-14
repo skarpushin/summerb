@@ -39,6 +39,8 @@ settings.xml example:
 
 Once ready, do: `mvn clean deploy -Prelease`
 
+If you want to retry last failed operation, do `mvn clean deploy -Prelease -rf :summerb-dbupgrade `
+
 ## Other stuff
 ### Setup local environment to run integration tests
 Do:
