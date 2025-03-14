@@ -53,7 +53,7 @@ import org.summerb.utils.easycrud.api.dto.Top;
 /**
  * Default impl of EasyCrudService, with focus on OOD:OCP principle. In case some logic needs to be
  * changed you can do it via {@link EasyCrudWireTap} interface - you don't need to write another
- * impl of {@link EasyCrudService} each time you need to change it's behavior.
+ * impl of {@link EasyCrudService} each time you need to change its behavior.
  *
  * <p>If your Row implements {@link HasAuthor} interface then this impl requires {@link
  * CurrentUserUuidResolver} to be injected.
@@ -91,7 +91,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
   protected EasyCrudServiceImpl() {}
 
   /**
-   * This is also for subclasses, mostly for cases when used in conunction with {@link
+   * This is also for subclasses, mostly for cases when used in conjunction with {@link
    * org.summerb.easycrud.scaffold.api.EasyCrudScaffold#fromService(Class, EasyCrudServiceImpl,
    * String, Object...)}
    */
@@ -168,7 +168,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
    */
   @Autowired(required = false)
   public void setCurrentUserResolver(CurrentUserUuidResolver currentUserUuidResolver) {
-    Preconditions.checkState(rowClass != null, "please set rowClass before callign this method");
+    Preconditions.checkState(rowClass != null, "please set rowClass before calling this method");
     Preconditions.checkArgument(
         !HasAuthor.class.isAssignableFrom(rowClass) || currentUserUuidResolver != null,
         "CurrentUserUuidResolver required for those DTOs who implement HasAuthor");
@@ -234,7 +234,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
    * @param stringIdGenerator stringIdGenerator
    */
   public void setStringIdGenerator(StringIdGenerator stringIdGenerator) {
-    Preconditions.checkState(rowClass != null, "please set rowClass before callign this method");
+    Preconditions.checkState(rowClass != null, "please set rowClass before calling this method");
     Preconditions.checkArgument(
         !HasUuid.class.isAssignableFrom(rowClass) || stringIdGenerator != null,
         "stringIdGenerator required");
@@ -263,8 +263,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
         wireTap.beforeCreate(ret);
       }
 
-      if (ret instanceof HasAuthor) {
-        HasAuthor hasAuthor = (HasAuthor) ret;
+      if (ret instanceof HasAuthor hasAuthor) {
         String currentUserUuid = currentUserUuidResolver.getUserUuid();
         hasAuthor.setCreatedBy(currentUserUuid);
         hasAuthor.setModifiedBy(currentUserUuid);
@@ -318,8 +317,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
         wireTap.beforeUpdate(currentVersion, ret);
       }
 
-      if (ret instanceof HasAuthor) {
-        HasAuthor hasAuthor = (HasAuthor) ret;
+      if (ret instanceof HasAuthor hasAuthor) {
         hasAuthor.setModifiedBy(currentUserUuidResolver.getUserUuid());
       }
 

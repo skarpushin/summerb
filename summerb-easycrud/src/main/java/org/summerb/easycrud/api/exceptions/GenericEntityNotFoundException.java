@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.summerb.easycrud.api.exceptions;
 
+import java.io.Serial;
 import org.summerb.easycrud.api.EasyCrudMessageCodes;
 import org.summerb.i18n.HasMessageArgsConverters;
 import org.summerb.i18n.MessageArgConverter;
@@ -22,13 +23,13 @@ import org.summerb.i18n.MessageCodeMessageArgConverter;
 
 /**
  * This is a subclass of {@link EntityNotFoundException}. It adds the ability to conveniently record
- * type of missing object along with it's identity
+ * type of missing object along with its identity
  *
  * @author sergey.karpushin
  */
 public class GenericEntityNotFoundException extends EntityNotFoundException
     implements HasMessageArgsConverters {
-  private static final long serialVersionUID = -953061537781444391L;
+  @Serial private static final long serialVersionUID = -953061537781444391L;
 
   protected String subjectTypeMessageCode;
 

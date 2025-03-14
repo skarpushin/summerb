@@ -19,6 +19,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
+import java.nio.charset.StandardCharsets;
 
 public class JsonResponseWriterGsonImpl implements JsonResponseWriter {
   protected Gson gson;
@@ -35,7 +36,7 @@ public class JsonResponseWriterGsonImpl implements JsonResponseWriter {
   public void writeResponseBody(Object dto, HttpServletResponse response) {
     try {
       String json = gson.toJson(dto);
-      byte[] content = json.getBytes("UTF-8");
+      byte[] content = json.getBytes(StandardCharsets.UTF_8);
       response.setContentLength(content.length);
       response.setContentType("application/json;charset=UTF-8");
       ServletOutputStream outputStream = response.getOutputStream();

@@ -50,8 +50,8 @@ import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapValidationImpl;
 public interface EasyCrudWireTap<T> {
 
   /**
-   * Impl must respond whether or not {@link #beforeCreate(Object)} and {@link #afterCreate(Object)}
-   * must be called
+   * Impl must respond whether {@link #beforeCreate(Object)} and {@link #afterCreate(Object)} must
+   * be called
    *
    * @return true if must be called, false otherwise.
    */
@@ -62,8 +62,7 @@ public interface EasyCrudWireTap<T> {
   void afterCreate(T row);
 
   /**
-   * Impl must respond whether or not {@link #beforeRead()} and {@link #afterRead(Object)} must be
-   * called
+   * Impl must respond whether {@link #beforeRead()} and {@link #afterRead(Object)} must be called
    *
    * @return true if must be called, false otherwise.
    */
@@ -74,8 +73,8 @@ public interface EasyCrudWireTap<T> {
   void afterRead(T row);
 
   /**
-   * Impl must respond whether or not {@link #beforeUpdate(Object, Object)} and {@link
-   * #afterUpdate(Object, Object)} must be called and what amount of information is required
+   * Impl must respond whether {@link #beforeUpdate(Object, Object)} and {@link #afterUpdate(Object,
+   * Object)} must be called and what amount of information is required
    *
    * @return level of information needed for "Update" WireTap
    */
@@ -86,8 +85,8 @@ public interface EasyCrudWireTap<T> {
   void afterUpdate(T from, T to);
 
   /**
-   * Impl must respond whether or not {@link #beforeDelete(Object)} and {@link #afterDelete(Object)}
-   * must be called
+   * Impl must respond whether {@link #beforeDelete(Object)} and {@link #afterDelete(Object)} must
+   * be called
    *
    * @return level of information needed for "Delete" WireTap
    */

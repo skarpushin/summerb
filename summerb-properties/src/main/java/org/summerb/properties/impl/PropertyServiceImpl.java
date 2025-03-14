@@ -272,7 +272,7 @@ public class PropertyServiceImpl implements PropertyService {
   /**
    * Utility method to check preconditions for all methods in this class
    *
-   * @param strings
+   * @param strings string to assert
    */
   protected void checkArgumentsHaveText(String... strings) {
     for (String str : strings) {

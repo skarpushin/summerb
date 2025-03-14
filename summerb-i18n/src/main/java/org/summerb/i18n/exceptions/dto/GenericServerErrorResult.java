@@ -15,10 +15,11 @@
  ******************************************************************************/
 package org.summerb.i18n.exceptions.dto;
 
+import java.io.Serial;
 import org.summerb.utils.DtoBase;
 
 public class GenericServerErrorResult implements DtoBase {
-  private static final long serialVersionUID = -3478702057346663837L;
+  @Serial private static final long serialVersionUID = -3478702057346663837L;
 
   private String allErrorsMessage;
   private ExceptionInfo exceptionInfo;

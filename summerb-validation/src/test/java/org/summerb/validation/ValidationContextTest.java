@@ -315,7 +315,7 @@ class ValidationContextTest {
   }
 
   @Test
-  void test_True_ExpectNullsWIllBeTreadedAsWrongValue() {
+  void test_True_ExpectNullsWIllBeTreatedAsWrongValue() {
     Bean bean = new Bean();
     var f = validationContextFactory.buildFor(bean);
     assertFalse(f.isTrue(Bean::getbValue2));
@@ -1141,7 +1141,7 @@ class ValidationContextTest {
     var f = validationContextFactory.buildFor(bean);
 
     // valid case
-    bean.setList(Arrays.asList(123));
+    bean.setList(List.of(123));
     assertTrue(f.notEmpty(Bean::getList));
 
     // invalid case - null
@@ -1174,7 +1174,7 @@ class ValidationContextTest {
 
     // invalid case - elements
     f.errors.clear();
-    bean.setList(Arrays.asList(1));
+    bean.setList(List.of(1));
     assertFalse(f.empty(Bean::getList));
     assertEquals(1, f.errors.size());
     assertNotNull(f.findErrorOfTypeForField(MustBeEmpty.class, Bean::getList));
@@ -1277,7 +1277,7 @@ class ValidationContextTest {
     Bean bean1 = new Bean();
     bean1.setString1("str1");
     bean1.setString2("str2");
-    beans.setBeans(Arrays.asList(bean1));
+    beans.setBeans(List.of(bean1));
     vee = f.validateCollection(Beans::getBeans, beanValidator);
     assertNull(vee);
     assertEquals(0, f.errors.size());
@@ -1300,7 +1300,7 @@ class ValidationContextTest {
 
     assertNull(vee.findAggregatedErrorsAtIndex(0));
 
-    assertTrue(vee.getList().get(0) == ve);
+    assertSame(vee.getList().get(0), ve);
   }
 
   @Test

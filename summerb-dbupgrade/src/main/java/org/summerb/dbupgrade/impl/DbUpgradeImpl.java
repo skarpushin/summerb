@@ -61,14 +61,13 @@ public class DbUpgradeImpl implements DbUpgrade {
       int currentDbVersion = getCurrentDbVersion();
       int targetDbVersion = getTargetDbVersion();
       if (targetDbVersion == currentDbVersion) {
-        log.info("Database schema version is up-to-date: " + targetDbVersion);
+        log.info("Database schema version is up-to-date: {}", targetDbVersion);
         return;
       }
       log.info(
-          "Database schema version will be upgraded from "
-              + currentDbVersion
-              + " to "
-              + getTargetDbVersion());
+          "Database schema version will be upgraded from {} to {}",
+          currentDbVersion,
+          getTargetDbVersion());
       upgradePackageMetaResolver
           .getPackagesSince(currentDbVersion)
           .map(upgradePackageFactory::create)
@@ -81,10 +80,7 @@ public class DbUpgradeImpl implements DbUpgrade {
   protected void applyPackage(UpgradePackage upgradePackage) {
     try {
       log.info(
-          "Applying db upgrade package #"
-              + upgradePackage.getId()
-              + ": "
-              + upgradePackage.getName());
+          "Applying db upgrade package #{}: {}", upgradePackage.getId(), upgradePackage.getName());
       upgradePackage.apply();
       dbSchemaVersionResolver.increaseVersionTo(upgradePackage.getId());
     } catch (Throwable t) {

@@ -28,8 +28,7 @@ public abstract class TableDaoBase extends DaoBase {
   protected String tableName;
 
   /**
-   * Constructor for cases when sub-class wants to take full responsibility on instantiation
-   * process.
+   * Constructor for cases when subclass wants to take full responsibility on instantiation process.
    *
    * @deprecated when using this constructor please make sure you're properly initializing required
    *     dependencies: {@link #dataSource} and {@link #tableName}

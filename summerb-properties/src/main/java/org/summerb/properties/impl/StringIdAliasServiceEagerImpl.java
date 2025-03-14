@@ -40,8 +40,8 @@ import org.summerb.utils.easycrud.api.dto.PaginatedList;
  * Impl which holds all aliases in-memory. So it performs extremely fast. But it will go to the
  * database when it will need to create new alias.
  *
- * <p>If it will hit duplicate key exception, it will load this alias, so it's safe to use this impl
- * in webfarm configuration
+ * <p>If it hits duplicate key exception, it will load this alias, so it's safe to use this impl in
+ * webfarm configuration
  *
  * @author skarpushin
  */
@@ -121,11 +121,11 @@ public class StringIdAliasServiceEagerImpl implements StringIdAliasService, Init
   }
 
   /**
-   * Will register alias (or retrieve already stored, only - useful for multi server installation -
+   * Will register alias (or retrieve already stored, only - useful for multiserver installation -
    * environment - AKA webfarm)
    */
   protected final synchronized long registerAlias(String str) {
-    // WARNING: This method must be called only after getALiasFor invoked at
+    // WARNING: This method must be called only after getAliasFor invoked at
     // least once, otherwise NullPointerException might happen
     Long ret = aliases.get(str);
 
@@ -160,7 +160,7 @@ public class StringIdAliasServiceEagerImpl implements StringIdAliasService, Init
 
   /**
    * This method will make use os separate thread in order to have separate transaction manager. We
-   * need this to commit our change even if parent transaction fails. This might sound strange but
+   * need this to commit our change even if parent transaction fails. This might sound strange, but
    * we assume it's ok for aliases to remain in the database (these are not values)
    *
    * @param str alias name

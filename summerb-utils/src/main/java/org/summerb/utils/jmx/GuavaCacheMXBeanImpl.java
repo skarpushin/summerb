@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class GuavaCacheMXBeanImpl<K, V> implements GuavaCacheMXBean, LoadingCache<K, V> {
-  private static Logger log = LoggerFactory.getLogger(GuavaCacheMXBeanImpl.class);
+  private static final Logger log = LoggerFactory.getLogger(GuavaCacheMXBeanImpl.class);
 
   private final LoadingCache<K, V> cache;
 
@@ -44,7 +44,7 @@ public class GuavaCacheMXBeanImpl<K, V> implements GuavaCacheMXBean, LoadingCach
         server.registerMBean(this, new ObjectName(name));
       }
     } catch (Throwable t) {
-      log.error("Failed to init jmx bean for cache " + cname, t);
+      log.error("Failed to init jmx bean for cache {}", cname, t);
     }
   }
 

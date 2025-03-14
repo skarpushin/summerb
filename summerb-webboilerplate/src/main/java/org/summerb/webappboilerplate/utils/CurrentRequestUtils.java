@@ -38,7 +38,7 @@ public class CurrentRequestUtils {
   /**
    * Get current request
    *
-   * @return
+   * @return request from current thread
    */
   public static HttpServletRequest get() {
     ServletRequestAttributes ra =
@@ -47,32 +47,19 @@ public class CurrentRequestUtils {
   }
 
   /**
-   * Get locale for curent request
+   * Get locale for current request
    *
-   * @return
+   * @return Locale
    */
   public static Locale getLocale() {
-    // Plan A: Try to get it from locale context holder
-    Locale locale = LocaleContextHolder.getLocale();
-    if (locale != null) {
-      return locale;
-    }
-
-    // Plan B: Try to get it from request
     HttpServletRequest request = get();
     LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(request);
     if (localeResolver == null) {
-      log.warn("Cannot get locale resolver. Will fallback to: " + defaultLocale);
-      return defaultLocale;
-    }
-    locale = localeResolver.resolveLocale(request);
-    if (locale != null) {
-      return locale;
+      log.warn("Cannot get locale resolver. Will fallback to: {}", defaultLocale);
+      return LocaleContextHolder.getLocale();
     }
 
-    // fallback
-    log.warn("Cannot resolve locale. Will fallback to: " + defaultLocale);
-    return defaultLocale;
+    return localeResolver.resolveLocale(request);
   }
 
   /**
@@ -86,13 +73,11 @@ public class CurrentRequestUtils {
 
   public static String getBaseUrl() {
     HttpServletRequest req = get();
-    String ret =
-        req.getScheme()
-            + "://"
-            + req.getServerName()
-            + ":"
-            + req.getServerPort()
-            + req.getContextPath();
-    return ret;
+    return req.getScheme()
+        + "://"
+        + req.getServerName()
+        + ":"
+        + req.getServerPort()
+        + req.getContextPath();
   }
 }

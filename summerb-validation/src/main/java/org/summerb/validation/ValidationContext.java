@@ -38,10 +38,8 @@ import java.time.chrono.ThaiBuddhistDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -94,7 +92,7 @@ import org.summerb.validation.jakarta.JakartaValidator;
 
 /**
  * Validation context provides you with convenience methods to validate Bean instance (DTOs, DOMs,
- * Rows, etc..). Major killer-feature is ability to use "method references" which eliminate the need
+ * Rows, etc.). Major killer-feature is ability to use "method references" which eliminate the need
  * to use string literals to denote property names. But this is not the only way -- each method has
  * it's old-school counterpart where you provide field name as string literal, AND/OR even combine
  * with Jakarta validation annotations processing (i.e. {@link NotBlank})
@@ -112,7 +110,7 @@ import org.summerb.validation.jakarta.JakartaValidator;
  * </ol>
  *
  * <p>For custom/complex validation rules you can do validation in your code and then just add
- * instances of (or sub-classes) {@link ValidationError}
+ * instances of (or subclasses) {@link ValidationError}
  *
  * <p>In case you're validating Objects tree (hence the necessity to validate aggregated object(s))
  * there are convenient methods {@link #validateObject(Function, ObjectValidator)} and {@link
@@ -125,7 +123,7 @@ import org.summerb.validation.jakarta.JakartaValidator;
  * MustNotBeNull} validation error
  *
  * <p>Jakarta validations note: while direct usage of ValidationContext gives you full control over
- * validation logic, in some cases you don't need such level of control and therefore you can use
+ * validation logic, in some cases you don't need such level of control, and therefore you can use
  * simpler declarative approach like annotating properties with constraints defined in <code>
  * jakarta.validation.constraints</code> package.
  *
@@ -185,7 +183,7 @@ public class ValidationContext<T> {
   /**
    * Instantiates ValidationContext that is capable of translating methods references into property
    * names and also getting values from actual Bean -- this will reduce amount of code you're
-   * writing and also you'll avoid usage of string literals for field names.
+   * writing, and also you'll avoid usage of string literals for field names.
    *
    * <p>This constructor is not intended to be called directly -- use {@link
    * ValidationContextFactoryImpl#buildFor(Object)} to build such instance
@@ -232,24 +230,24 @@ public class ValidationContext<T> {
   }
 
   static {
-    Map<Class<?>, Function<NowResolver, Comparable<?>>> allowed = new HashMap<>();
-    allowed.put(Date.class, nr -> Date.from(nr.clock().instant()));
-    allowed.put(Calendar.class, nr -> GregorianCalendar.from(ZonedDateTime.now(nr.clock())));
-    allowed.put(Instant.class, nr -> nr.clock().instant());
-    allowed.put(LocalDate.class, nr -> LocalDate.now(nr.clock()));
-    allowed.put(LocalDateTime.class, nr -> LocalDateTime.now(nr.clock()));
-    allowed.put(LocalTime.class, nr -> LocalTime.now(nr.clock()));
-    allowed.put(MonthDay.class, nr -> MonthDay.now(nr.clock()));
-    allowed.put(OffsetDateTime.class, nr -> OffsetDateTime.now(nr.clock()));
-    allowed.put(OffsetTime.class, nr -> OffsetTime.now(nr.clock()));
-    allowed.put(Year.class, nr -> Year.now(nr.clock()));
-    allowed.put(YearMonth.class, nr -> YearMonth.now(nr.clock()));
-    allowed.put(ZonedDateTime.class, nr -> ZonedDateTime.now(nr.clock()));
-    allowed.put(HijrahDate.class, nr -> HijrahDate.now(nr.clock()));
-    allowed.put(JapaneseDate.class, nr -> JapaneseDate.now(nr.clock()));
-    allowed.put(MinguoDate.class, nr -> MinguoDate.now(nr.clock()));
-    allowed.put(ThaiBuddhistDate.class, nr -> ThaiBuddhistDate.now(nr.clock()));
-    ALLOWED_TEMPORAL_TYPES = Collections.unmodifiableMap(allowed);
+    ALLOWED_TEMPORAL_TYPES =
+        Map.ofEntries(
+            Map.entry(Date.class, nr -> Date.from(nr.clock().instant())),
+            Map.entry(Calendar.class, nr -> GregorianCalendar.from(ZonedDateTime.now(nr.clock()))),
+            Map.entry(Instant.class, nr -> nr.clock().instant()),
+            Map.entry(LocalDate.class, nr -> LocalDate.now(nr.clock())),
+            Map.entry(LocalDateTime.class, nr -> LocalDateTime.now(nr.clock())),
+            Map.entry(LocalTime.class, nr -> LocalTime.now(nr.clock())),
+            Map.entry(MonthDay.class, nr -> MonthDay.now(nr.clock())),
+            Map.entry(OffsetDateTime.class, nr -> OffsetDateTime.now(nr.clock())),
+            Map.entry(OffsetTime.class, nr -> OffsetTime.now(nr.clock())),
+            Map.entry(Year.class, nr -> Year.now(nr.clock())),
+            Map.entry(YearMonth.class, nr -> YearMonth.now(nr.clock())),
+            Map.entry(ZonedDateTime.class, nr -> ZonedDateTime.now(nr.clock())),
+            Map.entry(HijrahDate.class, nr -> HijrahDate.now(nr.clock())),
+            Map.entry(JapaneseDate.class, nr -> JapaneseDate.now(nr.clock())),
+            Map.entry(MinguoDate.class, nr -> MinguoDate.now(nr.clock())),
+            Map.entry(ThaiBuddhistDate.class, nr -> ThaiBuddhistDate.now(nr.clock())));
   }
 
   public NowResolver getNowResolver() {
@@ -1051,7 +1049,7 @@ public class ValidationContext<T> {
    * @param messageCode message code for cases when value is invalid. Since pattern example could be
    *     language-sensitive, we're requiring messageCode to be provided here. If you don't want to
    *     provide custom, you can use default one {@link MustMatchPattern#MESSAGE_CODE} but it is
-   *     discouraged to do so as it doesn't not explain to the user what format is expected
+   *     discouraged to do so as it doesn't explain to the user what format is expected
    * @return true if value is valid, or false otherwise
    */
   public boolean matches(

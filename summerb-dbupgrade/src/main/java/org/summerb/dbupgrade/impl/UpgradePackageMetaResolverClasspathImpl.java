@@ -69,6 +69,7 @@ public class UpgradePackageMetaResolverClasspathImpl implements UpgradePackageMe
   protected UpgradePackageMeta fileToUpgradePackageMeta(Resource r) {
     try {
       UpgradePackageMeta ret = new UpgradePackageMeta();
+      Preconditions.checkState(r.getFilename() != null, "filename required");
       String[] rawFileName = r.getFilename().split("_", 2);
       Preconditions.checkState(
           rawFileName.length == 2,

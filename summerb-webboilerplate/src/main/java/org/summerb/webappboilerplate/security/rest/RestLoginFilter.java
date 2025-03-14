@@ -23,6 +23,7 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
@@ -174,7 +175,8 @@ public class RestLoginFilter extends GenericFilterBean implements ApplicationEve
    */
   protected String[] extractAndDecodeHeader(String header, HttpServletRequest request) {
     try {
-      byte[] base64Token = header.substring(AUTHORIZATION_PREFIX.length()).getBytes("UTF-8");
+      byte[] base64Token =
+          header.substring(AUTHORIZATION_PREFIX.length()).getBytes(StandardCharsets.UTF_8);
       byte[] decoded;
       try {
         decoded = Base64.getDecoder().decode(base64Token);

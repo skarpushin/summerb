@@ -35,7 +35,7 @@ public class StringIdAliasServiceEagerImplTest {
   }
 
   @Test
-  public void testInitialization_whitebox_expectAsyncAliasLoad() throws Exception {
+  public void testInitialization_whitebox_expectAsyncAliasLoad() {
     StringIdAliasServiceEagerImpl fixture =
         StringIdAliasServiceEagerImplFactory.createInstanceWithExecutorService();
 
@@ -50,7 +50,7 @@ public class StringIdAliasServiceEagerImplTest {
   }
 
   @Test
-  public void testInitialization_whitebox_expectCorrectValueForPrecachedAlias() throws Exception {
+  public void testInitialization_whitebox_expectCorrectValueForPrecachedAlias() {
     StringIdAliasServiceEagerImpl fixture =
         StringIdAliasServiceEagerImplFactory.createInstanceWithoutExecutorService();
     fixture.afterPropertiesSet();

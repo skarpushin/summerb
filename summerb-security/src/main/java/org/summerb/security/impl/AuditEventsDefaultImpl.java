@@ -23,13 +23,13 @@ import org.slf4j.LoggerFactory;
 import org.summerb.security.api.AuditEvents;
 
 public class AuditEventsDefaultImpl implements AuditEvents {
-  private static Logger audit = LoggerFactory.getLogger("AUDIT");
+  private static final Logger audit = LoggerFactory.getLogger("AUDIT");
 
   private Gson gson = new GsonBuilder().create();
 
   @Override
   public void report(String auditEventCode, Serializable data) {
-    audit.trace(auditEventCode + "\t" + sanitizeForLog(gson.toJson(data)));
+    audit.trace("{}\t{}", auditEventCode, sanitizeForLog(gson.toJson(data)));
   }
 
   public static String sanitizeForLog(String str) {

@@ -15,10 +15,11 @@
  ******************************************************************************/
 package org.summerb.users.api.exceptions;
 
+import java.io.Serial;
 import org.summerb.i18n.HasMessageCode;
 
 public class UserServiceUnexpectedException extends RuntimeException implements HasMessageCode {
-  private static final long serialVersionUID = 663561647374456299L;
+  @Serial private static final long serialVersionUID = 663561647374456299L;
 
   public UserServiceUnexpectedException() {}
 

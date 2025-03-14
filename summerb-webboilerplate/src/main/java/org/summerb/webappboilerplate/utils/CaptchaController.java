@@ -102,7 +102,7 @@ public class CaptchaController implements InitializingBean {
 
     if (!providedToken.equals(expectedToken)) {
       staticAuditLog.report(AUDIT_CAPTCHA_NOMATCH, ScalarValue.forV(providedToken));
-      throw new IllegalArgumentException("Captcha doens match our records");
+      throw new IllegalArgumentException("Captcha doesn't match our records");
     }
 
     // reset token so that it cant be used multiple times

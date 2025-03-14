@@ -19,18 +19,18 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * General purpose static permissions manager.
+ * General purpose static permissions' manager.
  *
  * <p>It capable of managing permissions on per-domain and per-subject basis, but it's optional and
- * may be ommited if not needed.
+ * may be omitted if not needed.
  *
  * <p>In certain situations permission could be treated as role/group/authority/etc.
  *
  * <p>Although it uses same term userUuid to identify user, this is not required to be the same
  * thing used in {@link UserService}, you are free to use whenever you want here.
  *
- * <p>NOTE! All string identifiers are limited to 45 unicode chars (that is, applies to: domain
- * name, permission name, user name, subject id)
+ * <p>NOTE! All string identifiers are limited to 45 Unicode chars (that is, applies to: domain
+ * name, permission name, username, subject id)
  *
  * @author skarpushin
  */
@@ -74,7 +74,7 @@ public interface PermissionService {
   /**
    * Get list of users and their permissions for the given subject
    *
-   * @return list of users and their permissions for the given subject
+   * @return Map users to the list of their permissions on given subject
    */
   Map<String, List<String>> findUsersAndTheirPermissionsForSubject(
       String optionalDomainName, String optionalSubjectId);

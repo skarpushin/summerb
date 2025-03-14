@@ -30,8 +30,8 @@ import org.summerb.validation.ValidationException;
 public interface AuthTokenService {
 
   /**
-   * This is high-level auth method. It will verify credentials and return auth token if all ok. In
-   * underhood will call {@link #createAuthToken(String, String, String, String)}
+   * This is high-level auth method. It will verify credentials and return auth token if all ok.
+   * Under the hood we'll call {@link #createAuthToken(String, String, String, String)}
    *
    * @return created auth token
    * @throws UserNotFoundException if such user not found
@@ -42,7 +42,7 @@ public interface AuthTokenService {
       throws UserNotFoundException, ValidationException, InvalidPasswordException;
 
   /**
-   * Low-level method which will just create auth token without any chesk/validations
+   * Low-level method which will just create auth token without any check/validations
    *
    * @return created auth token
    * @throws UserNotFoundException if such user not found
@@ -89,7 +89,7 @@ public interface AuthTokenService {
    * Find all auth tokens for this user
    *
    * @return non-null (might be empty) list
-   * @throws UserNotFoundException
+   * @throws UserNotFoundException in case user not found
    */
   List<AuthToken> findUserAuthTokens(String userUuid) throws UserNotFoundException;
 }

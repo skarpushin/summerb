@@ -27,7 +27,7 @@ import org.summerb.utils.tx.AfterCommitExecutorThreadLocalImpl;
  * modification operation.
  *
  * <p>When using it in a transactional environment it's suggested to use {@link EventBus} with
- * {@link AfterCommitExecutorThreadLocalImpl} injected so that events will be send only after
+ * {@link AfterCommitExecutorThreadLocalImpl} injected so that events will get dispatched only after
  * transaction is committed.
  *
  * @author sergeyk

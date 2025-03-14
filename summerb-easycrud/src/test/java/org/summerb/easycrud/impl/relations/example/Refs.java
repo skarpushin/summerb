@@ -40,6 +40,6 @@ public class Refs extends ReferencesRegistryPredefinedImpl {
           RefQuantity.One2Many);
 
   public Refs() {
-    super(new Ref[] {deviceEnv, envDevices});
+    super(deviceEnv, envDevices);
   }
 }

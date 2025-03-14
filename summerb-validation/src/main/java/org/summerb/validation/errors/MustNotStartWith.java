@@ -1,9 +1,10 @@
 package org.summerb.validation.errors;
 
+import java.io.Serial;
 import org.summerb.validation.ValidationError;
 
 public class MustNotStartWith extends ValidationError {
-  private static final long serialVersionUID = 627529742498471905L;
+  @Serial private static final long serialVersionUID = 627529742498471905L;
 
   public static final String MESSAGE_CODE = "validation.mustNot.startWith";
 

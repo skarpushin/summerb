@@ -6,8 +6,8 @@ public interface QueryFactory {
    * @param <T> type of Row (POJO)
    * @param <F> Query type
    * @param clazz Row (POJO) class which getters will be used to extract field names
-   * @return instance that can be used for both - referring to fields using method references as
-   *     well as string literals
+   * @return instance that can be used for both - referring to fields using method references and
+   *     string literals
    */
   <T, F extends Query<T>> F buildFor(Class<T> clazz);
 

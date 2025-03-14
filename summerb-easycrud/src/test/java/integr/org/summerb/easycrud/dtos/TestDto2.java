@@ -15,13 +15,14 @@
  ******************************************************************************/
 package integr.org.summerb.easycrud.dtos;
 
+import java.io.Serial;
 import java.io.Serializable;
 import org.summerb.easycrud.api.row.HasAuthor;
 import org.summerb.easycrud.api.row.HasAutoincrementId;
 import org.summerb.easycrud.api.row.HasTimestamps;
 
 public class TestDto2 implements HasAutoincrementId, HasAuthor, HasTimestamps, Serializable {
-  private static final long serialVersionUID = -2954623750074589334L;
+  @Serial private static final long serialVersionUID = -2954623750074589334L;
 
   private Long id;
   private String env;

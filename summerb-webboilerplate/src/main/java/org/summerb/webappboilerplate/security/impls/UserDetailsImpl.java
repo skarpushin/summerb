@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.summerb.webappboilerplate.security.impls;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -25,7 +26,7 @@ import org.summerb.users.api.dto.AuthToken;
 import org.summerb.users.api.dto.User;
 
 public class UserDetailsImpl implements UserDetails {
-  protected static final long serialVersionUID = -1939360452604292858L;
+  @Serial private static final long serialVersionUID = -1939360452604292858L;
 
   protected final User user;
   protected final String passwordHash;

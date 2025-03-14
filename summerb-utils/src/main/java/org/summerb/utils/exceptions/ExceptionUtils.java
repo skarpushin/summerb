@@ -17,8 +17,8 @@ package org.summerb.utils.exceptions;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -39,7 +39,7 @@ public class ExceptionUtils {
         break;
       }
 
-      if (ret.length() > 0) {
+      if (!ret.isEmpty()) {
         ret.append(" -> ");
       }
 
@@ -83,10 +83,10 @@ public class ExceptionUtils {
 
   /**
    * We want to ignore these classes when calculating exception code because these classes behave
-   * different fro time to time which negative effect to consistency of ewxception code
+   * different from time to time which negative effect to consistency of exception code
    */
   private static final Set<String> ignoredStackTraceClasses =
-      new HashSet<>(Arrays.asList("org.apache.tomcat.util.net.JIoEndpoint$SocketProcessor"));
+      new HashSet<>(List.of("org.apache.tomcat.util.net.JIoEndpoint$SocketProcessor"));
 
   public static String calculateExceptionCode(Throwable throwable) {
     int lineCount = 0;

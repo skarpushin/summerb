@@ -134,7 +134,7 @@ public class JakartaAnnotationsProcessorsRegistryPackageScanImpl
   @SuppressWarnings("unchecked")
   @SuppressFBWarnings(
       value = "NP_NULL_ON_SOME_PATH",
-      justification = "checked by preceeding Preconditions.checkState")
+      justification = "checked by preceding Preconditions.checkState")
   protected <T extends Annotation> Class<T> getAnnotationClassHandledByAnnotationProcessor(
       Class<? extends AnnotationProcessor<? extends Annotation>> annotationProcessorClass) {
 
@@ -143,10 +143,9 @@ public class JakartaAnnotationsProcessorsRegistryPackageScanImpl
 
     ParameterizedType ourParametrizedType = null;
     for (Type candidate : typesToCheck) {
-      if (!(candidate instanceof ParameterizedType)) {
+      if (!(candidate instanceof ParameterizedType candidatePt)) {
         continue;
       }
-      ParameterizedType candidatePt = (ParameterizedType) candidate;
 
       if (AnnotationProcessor.class.isAssignableFrom((Class<?>) candidatePt.getRawType())) {
         ourParametrizedType = candidatePt;
@@ -154,7 +153,7 @@ public class JakartaAnnotationsProcessorsRegistryPackageScanImpl
       }
     }
 
-    // NOTE: ourParametrizedType will not be null here, thats why we cannot kill pitest mutation
+    // NOTE: ourParametrizedType will not be null here, that's why we haven't killed pitest mutation
     // here. But we still put a check here, just in case
     Preconditions.checkState(
         ourParametrizedType != null,
@@ -171,8 +170,7 @@ public class JakartaAnnotationsProcessorsRegistryPackageScanImpl
   }
 
   protected void findParentTypesToCheck(Class<?> clazz, Set<Type> ret) {
-    Set<Type> founds = new HashSet<>();
-    founds.addAll(Arrays.asList(clazz.getGenericInterfaces()));
+    Set<Type> founds = new HashSet<>(Arrays.asList(clazz.getGenericInterfaces()));
     if (clazz.getGenericSuperclass() != null
         && !Object.class.equals(clazz.getGenericSuperclass())) {
       founds.add(clazz.getGenericSuperclass());

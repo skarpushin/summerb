@@ -16,6 +16,7 @@
 package org.summerb.utils.easycrud.api.dto;
 
 import com.google.common.base.Preconditions;
+import java.io.Serial;
 
 /**
  * Narrow case of pagination params when we're interested only in top N records. In this case we
@@ -24,7 +25,7 @@ import com.google.common.base.Preconditions;
  * @author sergeyk
  */
 public class Top extends PagerParams {
-  private static final long serialVersionUID = 5201858426665248240L;
+  @Serial private static final long serialVersionUID = 5201858426665248240L;
 
   public Top() {}
 

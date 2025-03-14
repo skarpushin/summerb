@@ -53,7 +53,7 @@ public interface SimplifiedPropertyService {
   /**
    * Delete subject properties if any (will not fail if there is no proeprties)
    *
-   * @param subjectId
+   * @param subjectId subject id
    */
   void deleteSubjectProperties(String subjectId);
 

@@ -42,8 +42,7 @@ public class EntityChangedEventAdapterTest {
   private Gson getFixture() {
     GsonBuilder b = new GsonBuilder();
     b.registerTypeAdapter(EntityChangedEvent.class, new EntityChangedEventAdapter());
-    Gson gson = b.create();
-    return gson;
+    return b.create();
   }
 
   @Test

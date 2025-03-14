@@ -23,7 +23,7 @@ import org.summerb.validation.ValidationException;
  *
  * <p>Passwords functionality defined separately from @see {@link UserService} because some
  * implementation can create and update passwords, some could be able to only verify user passwords.
- * FOr example if will try to use ldap as auth provider we'll be able to validate, but unable to
+ * For example if we will try to use ldap as auth provider we'll be able to validate, but unable to
  * modify user passwords
  *
  * @author skarpushin

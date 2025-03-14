@@ -15,8 +15,10 @@
  ******************************************************************************/
 package org.summerb.easycrud.impl.relations.example;
 
+import java.io.Serial;
+
 public class DeviceRow extends RowBase implements HasEnvId {
-  private static final long serialVersionUID = -8271872562969504597L;
+  @Serial private static final long serialVersionUID = -8271872562969504597L;
 
   public static final String FN_IDENTIFIER = "identifier";
   public static final int FN_IDENTIFIER_SIZE = 64;

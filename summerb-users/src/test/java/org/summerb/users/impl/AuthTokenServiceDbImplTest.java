@@ -214,13 +214,13 @@ public class AuthTokenServiceDbImplTest {
   }
 
   @Test
-  public void testDeleteAuthToken_whitebox_expectOkForExistentToken() throws Exception {
+  public void testDeleteAuthToken_whitebox_expectOkForExistentToken() {
     AuthTokenServiceImpl fixture = AuthTokenServiceDbImplFactory.createAuthTokenServiceDbImpl();
     fixture.deleteAuthToken(AuthTokenFactory.AUTH_TOKEN_EXISTENT);
   }
 
   @Test
-  public void testDeleteAuthToken_whitebox_expectOkEvenForNonExistentToken() throws Exception {
+  public void testDeleteAuthToken_whitebox_expectOkEvenForNonExistentToken() {
     AuthTokenServiceImpl fixture = AuthTokenServiceDbImplFactory.createAuthTokenServiceDbImpl();
     fixture.deleteAuthToken(AuthTokenFactory.AUTH_TOKEN_NOT_EXISTENT);
   }

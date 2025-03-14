@@ -107,12 +107,10 @@ public class DomLoaderImpl implements DomLoader {
       Collection<TRowClass> rootRows = ds.get(rowMessageCode).getRows().values();
       // map of already converted entities
       Map<EntityAndId, HasId> cache = new HashMap<>();
-      List<TDomClass> ret =
-          rootRows.stream()
-              .map(mapDtoToDom(rowMessageCode, rootDomClass, refs, ds, cache))
-              .collect(Collectors.toList());
 
-      return ret;
+      return rootRows.stream()
+          .map(mapDtoToDom(rowMessageCode, rootDomClass, refs, ds, cache))
+          .collect(Collectors.toList());
     } catch (Throwable t) {
       throw new RuntimeException(
           "Failed to loadAndConvert DOM " + rootDomClass + " identified by " + ids, t);
@@ -279,8 +277,7 @@ public class DomLoaderImpl implements DomLoader {
 
     Type[] typeArgs = pt.getActualTypeArguments();
     Preconditions.checkArgument(
-        typeArgs != null && typeArgs.length == 1,
-        "Expect exactly one type parameter for this oneToMany relation");
+        typeArgs.length == 1, "Expect exactly one type parameter for this oneToMany relation");
 
     Type retType = typeArgs[0];
     Preconditions.checkArgument(

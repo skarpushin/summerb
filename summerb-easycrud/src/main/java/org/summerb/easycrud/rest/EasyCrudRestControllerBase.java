@@ -72,7 +72,7 @@ import org.summerb.utils.easycrud.api.dto.PaginatedList;
  * Base class for EasyCrud REST API controllers which main responsibility is to serve CRUD requests
  * for entities managed by {@link EasyCrudService}.
  *
- * <p>It designed to be sub-classed. See <a
+ * <p>It designed to be subclassed. See <a
  * href="https://github.com/skarpushin/summerb/wiki/Easy-CRUD#rest-api-controller">for details</a> .
  *
  * <p>NOTE: Exception handling is not implemented here because we rely on RestExceptionTranslator,
@@ -231,7 +231,7 @@ public class EasyCrudRestControllerBase<
             .filter(Objects::nonNull)
             .filter(
                 x -> StringUtils.hasText(x.getDirection()) && StringUtils.hasText(x.getFieldName()))
-            .collect(Collectors.toList());
+            .toList();
     if (list.isEmpty()) {
       return getDefaultOrderBy();
     }
@@ -274,10 +274,8 @@ public class EasyCrudRestControllerBase<
     ds.getTables().put(table.getName(), table);
 
     List<Ref> references =
-        referencesToResolve.stream()
-            .map(name -> referencesRegistry.getRefByName(name))
-            .collect(Collectors.toList());
-    Ref[] refsArr = (Ref[]) references.toArray(new Ref[references.size()]);
+        referencesToResolve.stream().map(name -> referencesRegistry.getRefByName(name)).toList();
+    Ref[] refsArr = references.toArray(new Ref[0]);
     dataSetLoader.loadReferencedObjects(ds, refsArr);
 
     // now remove initial table from dataset because we don't want to
@@ -327,7 +325,7 @@ public class EasyCrudRestControllerBase<
     }
 
     if (row != null && !CollectionUtils.isEmpty(referencesToResolve)) {
-      resolveReferences(referencesToResolve, ret, Arrays.asList(row));
+      resolveReferences(referencesToResolve, ret, List.of(row));
     }
 
     return convertBeforeReturnStrategy.convert(ret);

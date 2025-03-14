@@ -36,7 +36,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import org.summerb.utils.jmx.GuavaCacheMXBeanImpl;
 
 /**
- * This impl represents transaction-bound cache. It ensure that cache changes will respect
+ * This impl represents transaction-bound cache. It ensures that cache changes will respect
  * transaction boundary. If transaction commit, then changes propagated to global cache, otherwise
  * all changes will affect transaction-local cache only
  *
@@ -46,7 +46,7 @@ import org.summerb.utils.jmx.GuavaCacheMXBeanImpl;
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class TransactionBoundCache<K, V> implements LoadingCache<K, V> {
-  private static Logger log = LoggerFactory.getLogger(TransactionBoundCache.class);
+  private static final Logger log = LoggerFactory.getLogger(TransactionBoundCache.class);
 
   private String cacheName;
   private CacheLoader<K, V> loader;
@@ -85,7 +85,7 @@ public class TransactionBoundCache<K, V> implements LoadingCache<K, V> {
     TransactionBoundCacheEntry transactionBoundCacheEntry = transactionBoundCacheEntries.get();
     if (transactionBoundCacheEntry == markerUseGlobalCache) {
       if (log.isTraceEnabled()) {
-        log.trace(cacheName + ": Transaction is committing. Using global cache");
+        log.trace("{}: Transaction is committing. Using global cache", cacheName);
       }
       return actual;
     }
@@ -94,9 +94,9 @@ public class TransactionBoundCache<K, V> implements LoadingCache<K, V> {
     if (transactionBoundCacheEntry != null) {
       if (log.isTraceEnabled()) {
         log.trace(
-            cacheName
-                + ": Using transaction-local (assumming active transaction) cache tran="
-                + curTranName);
+            "{}: Using transaction-local (assuming active transaction) cache tran={}",
+            cacheName,
+            curTranName);
       }
       return transactionBoundCacheEntry.transactionBound;
     }
@@ -106,13 +106,13 @@ public class TransactionBoundCache<K, V> implements LoadingCache<K, V> {
     // that's why we rely on #markerUseGlobalCache
     if (!synchronizationActive) {
       if (log.isTraceEnabled()) {
-        log.trace(cacheName + ": Using global cache");
+        log.trace("{}: Using global cache", cacheName);
       }
       return actual;
     }
 
     if (log.isTraceEnabled()) {
-      log.trace(cacheName + ": Constructing transaction-local cache, tran=" + curTranName);
+      log.trace("{}: Constructing transaction-local cache, tran={}", cacheName, curTranName);
     }
 
     TransactionSynchronizationManager.registerSynchronization(synchronization);
@@ -137,17 +137,17 @@ public class TransactionBoundCache<K, V> implements LoadingCache<K, V> {
           if (transactionBoundCacheEntry == null
               || transactionBoundCacheEntry == markerUseGlobalCache) {
             log.warn(
-                cacheName
-                    + ": Inconsistent state. If we're here - there must be linked threadLocal");
+                "{}: Inconsistent state. If we're here - there must be linked threadLocal",
+                cacheName);
             return;
           }
 
           Set invalidatedKeys = transactionBoundCacheEntry.transactionBoundRemovals;
           if (log.isTraceEnabled()) {
             log.trace(
-                cacheName
-                    + ": Clean-up after transaction commit. Removing invalidated objects from global cache: "
-                    + Arrays.toString(invalidatedKeys.toArray()));
+                "{}: Clean-up after transaction commit. Removing invalidated objects from global cache: {}",
+                cacheName,
+                Arrays.toString(invalidatedKeys.toArray()));
           }
 
           transactionBoundCacheEntries.set(markerUseGlobalCache);
@@ -161,7 +161,7 @@ public class TransactionBoundCache<K, V> implements LoadingCache<K, V> {
           transactionBoundCacheEntries.remove();
           if (log.isTraceEnabled()) {
             String result = status == STATUS_COMMITTED ? "COMMITTED" : "ROLLED_BACK";
-            log.trace(cacheName + ": Transaction-bound cache cleaned-up, status = " + result);
+            log.trace("{}: Transaction-bound cache cleaned-up, status = {}", cacheName, result);
           }
         }
       };
@@ -174,19 +174,19 @@ public class TransactionBoundCache<K, V> implements LoadingCache<K, V> {
               transactionBoundCacheEntries.get();
           if (transactionBoundCacheEntry == null) {
             log.error(
-                cacheName
-                    + ": Weird. We receive removal event, but no transaction-bound cache exists");
+                "{}: Weird. We receive removal event, but no transaction-bound cache exists",
+                cacheName);
             return;
           }
           if (transactionBoundCacheEntry == markerUseGlobalCache) {
             log.error(
-                cacheName + ": Weird. We received removal event, while trasaction is completting");
+                "{}: Weird. We received removal event, while transaction is completing", cacheName);
             return;
           }
 
           if (log.isTraceEnabled()) {
             log.trace(
-                cacheName + ": Element is removed from local cache: " + notification.getKey());
+                "{}: Element is removed from local cache: {}", cacheName, notification.getKey());
           }
 
           transactionBoundCacheEntry.transactionBoundRemovals.add(notification.getKey());

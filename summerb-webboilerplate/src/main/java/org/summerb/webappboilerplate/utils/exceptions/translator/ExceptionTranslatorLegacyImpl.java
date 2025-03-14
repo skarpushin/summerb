@@ -26,8 +26,8 @@ public class ExceptionTranslatorLegacyImpl extends ExceptionTranslatorDelegating
 
   public static List<ExceptionTranslator> buildLegacyTranslatorsList(MessageSource messageSource) {
     return Arrays.asList(
-        (ExceptionTranslator) new ExceptionTranslatorFveImpl(messageSource),
-        (ExceptionTranslator) new ExceptionTranslatorHasMessageImpl(messageSource),
-        (ExceptionTranslator) new ExceptionTranslatorClassNameImpl(messageSource));
+        new ExceptionTranslatorFveImpl(messageSource),
+        new ExceptionTranslatorHasMessageImpl(messageSource),
+        new ExceptionTranslatorClassNameImpl(messageSource));
   }
 }

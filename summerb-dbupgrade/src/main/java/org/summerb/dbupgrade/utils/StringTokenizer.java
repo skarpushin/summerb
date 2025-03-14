@@ -30,7 +30,7 @@ import com.google.common.base.Preconditions;
  * this impl is obliterating compared to initial impl.
  *
  * <p>GC usage could be improved even more if we will not create new instances of {@link SubString}
- * but this will to much for client code I think.
+ * but this will too much for client code I think.
  *
  * @author sergeyk
  */
@@ -44,21 +44,21 @@ public class StringTokenizer {
   /** Current position in the string */
   private int pos = 0;
 
-  /** Holds indexes of each known delimeter */
+  /** Holds indexes of each known delimiter */
   private int[] delimPos;
 
   private int delimLength;
 
-  private int lastSelectedDelimeterIndex = -1;
+  private int lastSelectedDelimiterIndex = -1;
 
-  public StringTokenizer(String stringToTokenize, SubString... delimeters) {
+  public StringTokenizer(String stringToTokenize, SubString... delimiters) {
     this.subject = stringToTokenize;
-    this.delim = delimeters;
-    this.delimLength = delimeters.length;
+    this.delim = delimiters;
+    this.delimLength = delimiters.length;
     this.delimStr = new String[delimLength];
 
     for (int i = 0; i < delimLength; i++) {
-      delimStr[i] = new String(new StringBuilder(delim[i]).toString());
+      delimStr[i] = String.valueOf(delim[i]);
     }
   }
 
@@ -86,7 +86,7 @@ public class StringTokenizer {
     }
 
     if (delimLength > 0) {
-      lastSelectedDelimeterIndex = indexOfNearestDelimeter(delimPos);
+      lastSelectedDelimiterIndex = indexOfNearestDelimiter(delimPos);
     }
 
     return true;
@@ -95,7 +95,7 @@ public class StringTokenizer {
   private void delimNoLongerPresent(int i) {
     Preconditions.checkState(
         delimLength > 0,
-        "Algorithm error - how come we're trying to delete delimeter if delimeters array is empty?");
+        "Algorithm error - how come we're trying to delete delimiter if delimiters array is empty?");
 
     if (delimLength == 1) {
       delimLength = 0;
@@ -109,35 +109,35 @@ public class StringTokenizer {
   }
 
   /**
-   * Updates delimeter positions if needed
+   * Updates delimiter positions if needed
    *
-   * @return index of the delimeter in the delim list, or -1 if none applicable
+   * @return index of the delimiter in the delim list, or -1 if none applicable
    */
   private int updateDelimPositions() {
-    while (lastSelectedDelimeterIndex >= 0 && delimPos[lastSelectedDelimeterIndex] < pos) {
-      if (pos + delim[lastSelectedDelimeterIndex].length() >= subject.length()) {
-        // if this delimeter could not fit anymore in the string
-        delimNoLongerPresent(lastSelectedDelimeterIndex);
+    while (lastSelectedDelimiterIndex >= 0 && delimPos[lastSelectedDelimiterIndex] < pos) {
+      if (pos + delim[lastSelectedDelimiterIndex].length() >= subject.length()) {
+        // if this delimiter could not fit anymore in the string
+        delimNoLongerPresent(lastSelectedDelimiterIndex);
       } else {
-        delimPos[lastSelectedDelimeterIndex] =
-            subject.indexOf(delimStr[lastSelectedDelimeterIndex], pos);
-        if (delimPos[lastSelectedDelimeterIndex] == -1) {
-          delimNoLongerPresent(lastSelectedDelimeterIndex);
+        delimPos[lastSelectedDelimiterIndex] =
+            subject.indexOf(delimStr[lastSelectedDelimiterIndex], pos);
+        if (delimPos[lastSelectedDelimiterIndex] == -1) {
+          delimNoLongerPresent(lastSelectedDelimiterIndex);
         }
       }
 
-      // Ok, now we assume that all delims are now updated and present, need to find
+      // Ok, now we assume that all delimiters are now updated and present, need to find
       // nearest
       if (delimLength == 0) {
         return -1;
       }
 
-      lastSelectedDelimeterIndex = indexOfNearestDelimeter(delimPos);
+      lastSelectedDelimiterIndex = indexOfNearestDelimiter(delimPos);
     }
-    return lastSelectedDelimeterIndex;
+    return lastSelectedDelimiterIndex;
   }
 
-  public int indexOfNearestDelimeter(int... array) {
+  public int indexOfNearestDelimiter(int... array) {
     int ret = 0;
     for (int i = 1; i < delimLength; i++) {
       if (array[i] < array[ret]) {
@@ -149,7 +149,7 @@ public class StringTokenizer {
 
   public SubString next() {
     if (initDelimPos() && delimLength == 0) {
-      // right of the bed we see that there are no delimeters -- just return string
+      // right of the bed we see that there are no delimiters -- just return string
       // itself
       pos = subject.length();
       return new SubString(subject);
@@ -159,20 +159,20 @@ public class StringTokenizer {
       return null;
     }
 
-    int nextDelimeter = updateDelimPositions();
-    if (nextDelimeter == -1) {
+    int nextDelimiter = updateDelimPositions();
+    if (nextDelimiter == -1) {
       SubString ret = new SubString(subject, pos);
       pos = subject.length();
       return ret;
     }
 
-    if (delimPos[nextDelimeter] == pos) {
-      pos += delim[nextDelimeter].length();
-      return delim[nextDelimeter];
+    if (delimPos[nextDelimiter] == pos) {
+      pos += delim[nextDelimiter].length();
+      return delim[nextDelimiter];
     }
 
-    SubString ret = new SubString(subject, pos, delimPos[nextDelimeter]);
-    pos = delimPos[nextDelimeter];
+    SubString ret = new SubString(subject, pos, delimPos[nextDelimiter]);
+    pos = delimPos[nextDelimiter];
     return ret;
   }
 

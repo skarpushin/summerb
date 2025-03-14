@@ -15,8 +15,8 @@
  ******************************************************************************/
 
 /**
- * SummerB offers an ready-to-use and easily extensible/customizable design and impl for working
- * with simple CRUD repositories.
+ * SummerB offers a ready-to-use and easily extensible/customizable design and impl for working with
+ * simple CRUD repositories.
  *
  * <p>It's called EasyCrud.
  *

@@ -15,10 +15,11 @@
  ******************************************************************************/
 package org.summerb.webappboilerplate.security.dto;
 
+import java.io.Serial;
 import org.summerb.utils.DtoBase;
 
 public class LoginParams implements DtoBase {
-  private static final long serialVersionUID = 5895187972995172560L;
+  @Serial private static final long serialVersionUID = 5895187972995172560L;
   public static final String FN_EMAIL = "email";
   public static final String FN_PASSWORD = "password";
   public static final String HEADER_REMEMBER_ME = "rememberMe";

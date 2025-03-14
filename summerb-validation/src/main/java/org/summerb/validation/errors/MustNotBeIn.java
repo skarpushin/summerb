@@ -1,11 +1,12 @@
 package org.summerb.validation.errors;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.Collection;
 import org.summerb.validation.ValidationError;
 
 public class MustNotBeIn extends ValidationError {
-  private static final long serialVersionUID = 7267869071746060380L;
+  @Serial private static final long serialVersionUID = 7267869071746060380L;
 
   public static final String MESSAGE_CODE = "validation.mustNotBe.in";
 

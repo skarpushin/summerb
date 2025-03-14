@@ -103,8 +103,7 @@ public class QueryToSqlMySqlImpl implements QueryToSql {
 
       if (r instanceof FieldCondition) {
         sb.append(buildCondition((FieldCondition) r, params, paramIdx));
-      } else if (r instanceof DisjunctionCondition) {
-        DisjunctionCondition dc = (DisjunctionCondition) r;
+      } else if (r instanceof DisjunctionCondition dc) {
         sb.append("(");
         for (int j = 0; j < dc.getQueries().size(); j++) {
           if (j > 0) {

@@ -15,8 +15,10 @@
  ******************************************************************************/
 package org.summerb.properties.api.exceptions;
 
+import java.io.Serial;
+
 public class PropertyServiceUnexpectedException extends RuntimeException {
-  protected static final long serialVersionUID = -755441433588285795L;
+  @Serial private static final long serialVersionUID = -755441433588285795L;
 
   public PropertyServiceUnexpectedException() {}
 

@@ -17,10 +17,10 @@
  * This package contains core design and impl for validation of input/data. It is primary strong
  * side compared to other approaches is super easy to use and also transparency it gives --
  * validation related to particular entity is contained in 1 place and easily readable and
- * augmentable.
+ * augment-able.
  *
- * <p>It doesn't operate with human-readble text, instead it operates upon message codes (see {@link
- * org.summerb.i18n.HasMessageCode}.
+ * <p>It doesn't operate with human-readable text, instead it operates upon message codes (see
+ * {@link org.summerb.i18n.HasMessageCode}).
  *
  * <p>Also, it supports validation of hierarchical structures.
  *

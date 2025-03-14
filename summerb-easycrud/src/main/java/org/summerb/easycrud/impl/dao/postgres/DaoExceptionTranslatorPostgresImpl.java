@@ -34,10 +34,8 @@ public class DaoExceptionTranslatorPostgresImpl extends DaoExceptionTranslatorAb
   public void translateAndThrowIfApplicable(Throwable t) {
     throwIfDuplicate(t);
 
-    /**
-     * TODO: We should also be able to translate "data too long" exception. See
-     * DaoExceptionUtils#findTruncatedFieldNameIfAny
-     */
+    // TBD: We should also be able to translate "data too long" exception. See
+    // DaoExceptionUtils#findTruncatedFieldNameIfAny
   }
 
   protected void throwIfDuplicate(Throwable t) {
@@ -47,7 +45,7 @@ public class DaoExceptionTranslatorPostgresImpl extends DaoExceptionTranslatorAb
     }
 
     PSQLException dkep = ExceptionUtils.findExceptionOfType(t, PSQLException.class);
-    if (dkep == null) {
+    if (dkep == null || dkep.getServerErrorMessage() == null) {
       return;
     }
 

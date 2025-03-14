@@ -1,9 +1,10 @@
 package org.summerb.validation.errors;
 
+import java.io.Serial;
 import org.summerb.validation.ValidationError;
 
 public class MustNotBeEqualTo extends ValidationError {
-  private static final long serialVersionUID = 255121807437076870L;
+  @Serial private static final long serialVersionUID = 255121807437076870L;
 
   public static final String MESSAGE_CODE = "validation.mustNotBe.equal";
 

@@ -34,7 +34,13 @@ public class StringIdGeneratorUuidImpl implements StringIdGenerator {
   @Override
   public boolean isValidId(String id) {
     try {
-      return id != null && id.length() == 36 && (!strictUuidMode || UUID.fromString(id) != null);
+      if (id == null || id.length() != 36) {
+        return false;
+      }
+      if (strictUuidMode) {
+        UUID.fromString(id);
+      }
+      return true;
     } catch (IllegalArgumentException exc) {
       return false;
     }

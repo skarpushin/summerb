@@ -53,7 +53,7 @@ public class StringTokenizerTest {
     if (next == null) {
       return null;
     }
-    return new StringBuilder(next).toString();
+    return String.valueOf(next);
   }
 
   @Test
@@ -81,7 +81,7 @@ public class StringTokenizerTest {
   }
 
   @Test
-  public void testNextExpectEscapedDelimeterRecognizedFirst() {
+  public void testNextExpectEscapedDelimiterRecognizedFirst() {
     StringTokenizer f = new StringTokenizer(",aaa\\,bbb,", COMMA, ESCAPED_COMMA);
     assertEquals(",", toString(f.next()));
     assertEquals("aaa", toString(f.next()));

@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.summerb.properties.api.dto;
 
+import java.io.Serial;
 import java.io.Serializable;
 import org.summerb.utils.DtoBase;
 import org.summerb.utils.easycrud.api.dto.EntityChangedEvent;
@@ -27,7 +28,7 @@ import org.summerb.utils.easycrud.api.dto.EntityChangedEvent;
  * @author sergey.karpushin
  */
 public class SimplePropertiesSubject implements Serializable, DtoBase {
-  private static final long serialVersionUID = 7630700486193010855L;
+  @Serial private static final long serialVersionUID = 7630700486193010855L;
 
   private String appName;
   private String domainName;

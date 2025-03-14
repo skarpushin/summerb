@@ -15,10 +15,11 @@
  ******************************************************************************/
 package org.summerb.validation.errors;
 
+import java.io.Serial;
 import org.summerb.validation.ValidationError;
 
 public class MustBeValidEmail extends ValidationError {
-  private static final long serialVersionUID = -8119415446133607944L;
+  @Serial private static final long serialVersionUID = -8119415446133607944L;
 
   public static final String MESSAGE_CODE = "validation.mustBe.emailFormat";
 

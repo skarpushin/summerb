@@ -1,8 +1,8 @@
 package org.summerb.webappboilerplate.security.impls;
 
 import com.google.common.base.Preconditions;
+import java.io.Serial;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
@@ -16,10 +16,10 @@ import org.summerb.users.api.dto.User;
 
 public class BackgroundProcessAuthentication<TUserDetails extends UserDetails, TUser extends User>
     implements Authentication {
-  protected static final long serialVersionUID = 3710514197842955814L;
+  @Serial private static final long serialVersionUID = 3710514197842955814L;
 
   public static List<String> AUTHORITIES_STRINGS =
-      new ArrayList<>(Arrays.asList(SecurityConstants.ROLE_BACKGROUND_PROCESS));
+      new ArrayList<>(List.of(SecurityConstants.ROLE_BACKGROUND_PROCESS));
   public static List<? extends GrantedAuthority> AUTHORITIES =
       AUTHORITIES_STRINGS.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
 
@@ -30,7 +30,7 @@ public class BackgroundProcessAuthentication<TUserDetails extends UserDetails, T
   protected Function<TUserDetails, TUser> userGetter;
 
   /**
-   * @param origin some string which is probably suppose to clarify what is the origin of that
+   * @param origin some string which is probably supposed to clarify what is the origin of that
    *     authentication. Not used for any logic - just for tracing/debugging purposes
    * @param userDetails user details
    * @param userGetter a getter that can get {@link User} from {@link UserDetails}
@@ -85,6 +85,6 @@ public class BackgroundProcessAuthentication<TUserDetails extends UserDetails, T
 
   @Override
   public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
-    throw new IllegalStateException("Opearion is not supported");
+    throw new IllegalStateException("Operation is not supported");
   }
 }

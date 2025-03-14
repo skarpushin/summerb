@@ -38,7 +38,7 @@ public interface DataSetLoader {
    * certain type
    *
    * @param ids of objects to load
-   * @param entityTypeName type of entity. Same as returned by it's service
+   * @param entityTypeName type of entity. Same as returned by its service
    * @return loaded objects list
    */
   @SuppressWarnings("rawtypes")
@@ -57,7 +57,7 @@ public interface DataSetLoader {
    * <p>It will NOT load referenced objects. Use {@link #loadReferencedObjects(DataSet, Ref...)} if
    * needed
    *
-   * @param ids map of ids to load. Entitype is mapped to list of ids
+   * @param ids map of ids to load. Entity is mapped to list of ids
    * @param dataSet target for loaded data.
    */
   void loadObjectsByIds(Map<String, Set<Object>> ids, DataSet dataSet)
@@ -67,7 +67,7 @@ public interface DataSetLoader {
    * That method will load into dataset all objects that are referenced by referenceNames but not
    * exists in dataSet yet.
    *
-   * <p>In case dataSet and/or references and/or non of the dataSet rows have matched references -
+   * <p>In case dataSet and/or references and/or none of the dataSet rows have matched references -
    * method will end silently without exceptions.
    *
    * @param dataSet data set with some objects present in it

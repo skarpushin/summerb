@@ -24,8 +24,8 @@ import org.summerb.easycrud.api.relations.ReferencesRegistry;
 import org.summerb.easycrud.api.row.relations.Ref;
 
 /**
- * Simple base class impl that assuming workflow: a). all references discovered and then b). lookup
- * using maps.
+ * Simple base class impl that assuming workflow: (a). all references discovered and then (b).
+ * lookup using maps.
  *
  * <p>Subclass must provide references list.
  *
@@ -85,8 +85,6 @@ public abstract class ReferencesRegistryPreconfiguredAbstract implements Referen
   @Override
   public Collection<Ref> getRefsByAlias(String refsAlias) throws IllegalArgumentException {
     ensureInitialized();
-    Collection<Ref> ret = refsByAlias.get(refsAlias);
-    Preconditions.checkArgument(ret != null, "There is no references alias named as " + refsAlias);
-    return ret;
+    return refsByAlias.get(refsAlias);
   }
 }

@@ -27,7 +27,7 @@ import org.summerb.easycrud.scaffold.api.ScaffoldedMethodFactory;
 
 /**
  * Impl of {@link ScaffoldedMethodFactory} assuming underlying DB is MySQL (but could as well work
- * for other DBs too))
+ * for other DBs too)
  *
  * @author sergeyk
  */

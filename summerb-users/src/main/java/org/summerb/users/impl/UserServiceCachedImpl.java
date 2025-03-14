@@ -56,8 +56,7 @@ public class UserServiceCachedImpl implements UserService, InitializingBean {
   @SuppressWarnings({"rawtypes", "unchecked"})
   @Override
   public void afterPropertiesSet() {
-    CacheBuilder cacheBuilder =
-        (CacheBuilder) CacheBuilder.newBuilder().maximumSize(1000).recordStats();
+    CacheBuilder cacheBuilder = CacheBuilder.newBuilder().maximumSize(1000).recordStats();
     cacheByEmail =
         new TransactionBoundCache<String, User>("UserCacheByEmail", cacheBuilder, loaderByEmail);
     cacheByUuid =
@@ -72,7 +71,7 @@ public class UserServiceCachedImpl implements UserService, InitializingBean {
     }
 
     if (log.isTraceEnabled()) {
-      log.trace("User changed, invalidating cache for " + evt.getValue().getEmail());
+      log.trace("User changed, invalidating cache for {}", evt.getValue().getEmail());
     }
 
     cacheByEmail.invalidate(evt.getValue().getEmail());
@@ -91,7 +90,7 @@ public class UserServiceCachedImpl implements UserService, InitializingBean {
         public User load(String key) throws Exception {
           User ret = userService.getUserByEmail(key);
           if (log.isTraceEnabled()) {
-            log.trace("User loaded by email " + key + " = " + ret);
+            log.trace("User loaded by email {} = {}", key, ret);
           }
           return ret;
         }
@@ -103,7 +102,7 @@ public class UserServiceCachedImpl implements UserService, InitializingBean {
         public User load(String key) throws Exception {
           User ret = userService.getUserByUuid(key);
           if (log.isTraceEnabled()) {
-            log.trace("User loaded by uuid " + key + " = " + ret);
+            log.trace("User loaded by uuid {} = {}", key, ret);
           }
           return ret;
         }

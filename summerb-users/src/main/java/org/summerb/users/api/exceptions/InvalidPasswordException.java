@@ -15,10 +15,11 @@
  ******************************************************************************/
 package org.summerb.users.api.exceptions;
 
+import java.io.Serial;
 import org.summerb.i18n.HasMessageCode;
 
 public class InvalidPasswordException extends UsersServiceException implements HasMessageCode {
-  private static final long serialVersionUID = 2767210717179685812L;
+  @Serial private static final long serialVersionUID = 2767210717179685812L;
 
   public static final String ERROR_LOGIN_INVALID_PASSWORD = "error.login.invalidPassword";
 

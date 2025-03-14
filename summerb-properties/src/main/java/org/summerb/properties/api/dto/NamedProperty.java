@@ -15,11 +15,12 @@
  ******************************************************************************/
 package org.summerb.properties.api.dto;
 
+import java.io.Serial;
 import java.io.Serializable;
 import org.springframework.util.StringUtils;
 
 public class NamedProperty implements Serializable {
-  private static final long serialVersionUID = -4959586964104535553L;
+  @Serial private static final long serialVersionUID = -4959586964104535553L;
 
   private String name;
   private String propertyValue;

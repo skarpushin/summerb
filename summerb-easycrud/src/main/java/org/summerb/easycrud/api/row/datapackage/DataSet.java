@@ -31,7 +31,7 @@ public class DataSet {
   protected Map<String, DataTable> tables;
 
   /**
-   * Get tanle by name
+   * Get table by name
    *
    * @param name table name
    * @return never null instance of {@link DataTable}

@@ -28,7 +28,7 @@ import org.summerb.validation.ValidationException;
  *
  * <p>In case validation rules are the same for both {@link
  * EasyCrudService#create(org.summerb.easycrud.api.row.HasId)} and {@link
- * EasyCrudService#update(org.summerb.easycrud.api.row.HasId)}, consider sub-classing {@link
+ * EasyCrudService#update(org.summerb.easycrud.api.row.HasId)}, consider subclassing {@link
  * EasyCrudValidationStrategyAbstract}
  *
  * @author sergey.karpushin

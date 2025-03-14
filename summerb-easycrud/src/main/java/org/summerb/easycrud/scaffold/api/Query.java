@@ -30,7 +30,7 @@ import org.summerb.easycrud.scaffold.impl.ScaffoldedMethodFactoryMySqlImpl;
  * you just need to execute one custom query.
  *
  * <p>Add this annotation to the method of custom sub-interface of {@link EasyCrudService}, impl of
- * which is instantiated by @link EasyCrudScaffold} (instead of defining class that implements this
+ * which is instantiated by {@link EasyCrudScaffold} (instead of defining class that implements this
  * interface)
  *
  * <p>Please note: when using joins or selecting from different tables, and selecting all fields

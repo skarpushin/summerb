@@ -12,7 +12,7 @@ A super-simple tool to embed you DB upgrade process into your application.
  * It can execute java code (in case you need to impl complicated upgrade logic and sql is just not enough)
  * Keeps track of DB version in dedicated table
  * It can resolve scripts from external folder or from embedded resources
- * It is very extendible
+ * It is very extendable
  * It does not impose requirements on DB version (like Flyway, i.e.)
 
 ## How it works
@@ -58,7 +58,7 @@ public class DbUpgradeConfig extends DbUpgradeConfigAdapter {
 }
 ```
 
-_NOTE: Potentially you can use it even without Spring Context, but you anyways will have to include spring-jdbc in you dependencies_
+_NOTE: Potentially you can use it even without Spring Context, but you anyway will have to include spring-jdbc in you dependencies_
 
 ### Step 4: Ensure DB upgrades will be done prior any other application work
 Configure this by adding `DependsOn` annotation like this
@@ -71,7 +71,7 @@ public class CommonConfig {
 ```
 
 ### Step 5: Profit
-Thats it, you're ready to go.
+That's it, you're ready to go.
 
 ## Alternatives
 In case it is too simple for you, you can try more heavy-weight things

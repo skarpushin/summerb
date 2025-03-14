@@ -30,16 +30,17 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  * @author sergeyk
  */
 public class AfterCommitExecutorThreadLocalImpl implements TransactionSynchronization, Executor {
-  private static Logger log = LoggerFactory.getLogger(AfterCommitExecutorThreadLocalImpl.class);
+  private static final Logger log =
+      LoggerFactory.getLogger(AfterCommitExecutorThreadLocalImpl.class);
 
-  private static final ThreadLocal<Queue<Runnable>> RUNNABLES = new ThreadLocal<>();
+  protected static final ThreadLocal<Queue<Runnable>> RUNNABLES = new ThreadLocal<>();
 
   @Override
   public void execute(Runnable runnable) {
     if (!TransactionSynchronizationManager.isSynchronizationActive()) {
       if (log.isDebugEnabled()) {
         log.debug(
-            "Transaction synchronization is NOT ACTIVE. Executing runnable right now " + runnable);
+            "Transaction synchronization is NOT ACTIVE. Executing runnable right now {}", runnable);
       }
       safeRun(runnable);
       return;
@@ -51,7 +52,7 @@ public class AfterCommitExecutorThreadLocalImpl implements TransactionSynchroniz
       TransactionSynchronizationManager.registerSynchronization(this);
     }
     if (log.isDebugEnabled()) {
-      log.debug("Submitting new runnable to run after commit: " + runnable);
+      log.debug("Submitting new runnable to run after commit: {}", runnable);
     }
     threadRunnables.offer(runnable);
   }
@@ -65,30 +66,16 @@ public class AfterCommitExecutorThreadLocalImpl implements TransactionSynchroniz
 
     if (log.isDebugEnabled()) {
       log.debug(
-          "Transaction successfully committed, executing runnables #" + threadRunnables.size());
+          "Transaction successfully committed, executing runnables #{}", threadRunnables.size());
     }
 
     // TBD: Explain why we should do it async as it was impl before. WHy we can't
     // just run it now
     new RunRunnables(threadRunnables).run();
-
-    // NOTE: We do it in separate thread to ensure they will be execute
-    // outside of current transaction.Guaranteed
-    // executorService.submit(new RunRunnables(threadRunnables));
-    // No need to wait for it actually since handlers are normally outside
-    // of this process boundary
-    // Future<?> future = executorService.submit(new
-    // RunRunnables(threadRunnables));
-    // try {
-    // future.get();
-    // } catch (Throwable t) {
-    // log.warn("Failed to execute deferred runnables after transsaction
-    // commit", t);
-    // }
   }
 
-  private static class RunRunnables implements Runnable {
-    private Queue<Runnable> threadRunnables;
+  protected static class RunRunnables implements Runnable {
+    protected Queue<Runnable> threadRunnables;
 
     public RunRunnables(Queue<Runnable> threadRunnables) {
       this.threadRunnables = threadRunnables;
@@ -99,18 +86,18 @@ public class AfterCommitExecutorThreadLocalImpl implements TransactionSynchroniz
       Runnable runnable;
       while ((runnable = threadRunnables.poll()) != null) {
         if (log.isDebugEnabled()) {
-          log.debug("Executing runnable after TX commit" + runnable);
+          log.debug("Executing runnable after TX commit{}", runnable);
         }
         safeRun(runnable);
       }
     }
   }
 
-  private static void safeRun(Runnable runnable) {
+  protected static void safeRun(Runnable runnable) {
     try {
       runnable.run();
     } catch (Throwable e) {
-      log.error("Failed to execute runnable on transaction commit " + runnable, e);
+      log.error("Failed to execute runnable on transaction commit {}", runnable, e);
     }
   }
 
@@ -119,7 +106,7 @@ public class AfterCommitExecutorThreadLocalImpl implements TransactionSynchroniz
     RUNNABLES.remove();
     if (log.isDebugEnabled()) {
       String result = status == STATUS_COMMITTED ? "COMMITTED" : "ROLLED_BACK";
-      log.debug("Transaction completed with status " + result);
+      log.debug("Transaction completed with status {}", result);
     }
   }
 }

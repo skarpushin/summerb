@@ -15,10 +15,11 @@
  ******************************************************************************/
 package org.summerb.users.api.dto;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 public class AuthToken implements Serializable {
-  private static final long serialVersionUID = -1633738725204366881L;
+  @Serial private static final long serialVersionUID = -1633738725204366881L;
 
   /** Token identifier 1st part, never changes */
   private String uuid;

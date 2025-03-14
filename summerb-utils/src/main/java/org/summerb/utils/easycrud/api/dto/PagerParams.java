@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.summerb.utils.easycrud.api.dto;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -23,7 +24,7 @@ import java.io.Serializable;
  * @author sergey.karpushin
  */
 public class PagerParams implements Serializable {
-  private static final long serialVersionUID = -4006916172860172208L;
+  @Serial private static final long serialVersionUID = -4006916172860172208L;
 
   public static final PagerParams ALL = new PagerParams(0, Integer.MAX_VALUE).unmodifiable();
 
@@ -85,15 +86,14 @@ public class PagerParams implements Serializable {
     if (this == obj) return true;
     if (obj == null) return false;
     // Minor LSP violation
-    if (!(obj instanceof PagerParams)) return false;
-    PagerParams other = (PagerParams) obj;
+    if (!(obj instanceof PagerParams other)) return false;
     if (max != other.max) return false;
     if (offset != other.offset) return false;
     return true;
   }
 
   private static class Unmodifiable extends PagerParams {
-    private static final long serialVersionUID = -6876008468615718964L;
+    @Serial private static final long serialVersionUID = -6876008468615718964L;
 
     public Unmodifiable(PagerParams pagerParams) {
       this.offset = pagerParams.offset;

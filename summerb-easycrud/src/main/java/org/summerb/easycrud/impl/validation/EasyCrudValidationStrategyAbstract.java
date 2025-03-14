@@ -24,8 +24,8 @@ import org.summerb.validation.ValidationContextConfig;
 import org.summerb.validation.ValidationContextFactory;
 
 /**
- * Use this abstract class to implement {@link EasyCrudValidationStrategy} and avoid majority of
- * boiler plate code.
+ * Use this abstract class to implement {@link EasyCrudValidationStrategy} and avoid the majority of
+ * the boilerplate code.
  *
  * <p>if you implement only {@link #validate(Object, ValidationContext)}, then it will be used for
  * both - create and update. If you have separate logic for update, then please:
@@ -39,7 +39,7 @@ import org.summerb.validation.ValidationContextFactory;
  *
  * <p>IMPORTANT: Make sure your class is created as a Spring Bean so that {@link
  * #validationContextFactory} will be autowired (in order for autowiring to work, make sure you
- * import {@link ValidationContextConfig}) or construct neccessary beans yourself.
+ * import {@link ValidationContextConfig}) or construct necessary beans yourself.
  *
  * @author sergeyk
  * @param <TRow> row type
@@ -85,7 +85,7 @@ public abstract class EasyCrudValidationStrategyAbstract<TRow>
 
   /**
    * Validate update operation. By default {@link #validate(Object, ValidationContext)} will be used
-   * (same one as for create operation) But if you need to validate update logic, pelase override
+   * (same one as for create operation) But if you need to validate update logic, please override
    * this method and provide impl
    *
    * @param existingVersion currently persisted version in DB

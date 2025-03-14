@@ -45,13 +45,10 @@ public class MimeTypeResolverImpl implements MimeTypeResolver {
       }
 
       MediaType parsedMediaType = MediaType.parseMediaType(mediaType);
-      if (parsedMediaType == null) {
-        return MediaType.APPLICATION_OCTET_STREAM_VALUE;
-      }
 
       return parsedMediaType.toString();
     } catch (Throwable t) {
-      log.warn("Failed to resolve content type for file name: " + fileName, t);
+      log.warn("Failed to resolve content type for file name: {}", fileName, t);
       return MediaType.APPLICATION_OCTET_STREAM_VALUE;
     }
   }
@@ -70,21 +67,12 @@ public class MimeTypeResolverImpl implements MimeTypeResolver {
     Resource mappingLocation =
         new ClassPathResource("org/springframework/mail/javamail/mime.types");
     if (mappingLocation.exists()) {
-      InputStream inputStream = null;
-      try {
-        inputStream = mappingLocation.getInputStream();
+      try (InputStream inputStream = mappingLocation.getInputStream()) {
         return new MimetypesFileTypeMap(inputStream);
       } catch (IOException ex) {
         // ignore
-      } finally {
-        if (inputStream != null) {
-          try {
-            inputStream.close();
-          } catch (IOException ex) {
-            // ignore
-          }
-        }
       }
+      // ignore
     }
     return FileTypeMap.getDefaultFileTypeMap();
   }

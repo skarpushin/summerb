@@ -15,10 +15,10 @@
  ******************************************************************************/
 package unit.org.summerb.dbupgrade;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +35,7 @@ public abstract class DbUpgradeTestAbstract {
   @Autowired private JdbcTemplate jdbcTemplate;
   @Autowired private VersionTableDbDialect versionTableDbDialect;
 
-  @Before
+  @BeforeEach
   public void cleanUp() {
     safeDeleteTable("upg_pet");
     safeDeleteTable("db_version");
@@ -44,10 +44,10 @@ public abstract class DbUpgradeTestAbstract {
   protected void safeDeleteTable(String tableName) {
     try {
       jdbcTemplate.update("DROP TABLE " + tableName);
-      log.info("Removed table " + tableName);
+      log.info("Removed table {}", tableName);
     } catch (Exception e) {
       if (versionTableDbDialect.isTableMissingException(e)) {
-        log.info("Table was not there " + tableName);
+        log.info("Table was not there {}", tableName);
         return;
       }
       throw new RuntimeException("Failed to clean-up test db", e);
@@ -55,11 +55,12 @@ public abstract class DbUpgradeTestAbstract {
   }
 
   @Test
-  public void testDbUpgradeExpectSmokeTestPass() throws Exception {
+  public void testDbUpgradeExpectSmokeTestPass() {
     assertEquals(-1, dbUpgrade.getCurrentDbVersion());
     assertEquals(3, dbUpgrade.getTargetDbVersion());
     dbUpgrade.upgrade();
-    assertTrue(6 == jdbcTemplate.queryForObject("SELECT count(*) FROM upg_pet", Integer.class));
+    assertEquals(
+        6, (int) jdbcTemplate.queryForObject("SELECT count(*) FROM upg_pet", Integer.class));
   }
 
   public static class CustomUpgradeStep extends UpgradePackageBeanAbstract {

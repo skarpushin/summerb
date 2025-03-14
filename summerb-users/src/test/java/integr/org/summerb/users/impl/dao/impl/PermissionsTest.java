@@ -70,7 +70,7 @@ public class PermissionsTest {
   }
 
   @Test
-  public void testRevokeUserPermissions_expectNoPermissionsAfterRevokation() {
+  public void testRevokeUserPermissions_expectNoPermissionsAfterRevocation() {
     permissionService.grantPermission("domain", "user1", "subject1", "permission");
     permissionService.grantPermission("domain", "user1", "subject2", "permission");
 

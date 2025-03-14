@@ -108,12 +108,13 @@ class ValidationErrorsTest {
         };
     ValidationErrors ret = ctx.validateCollection(Beans::getBeans, validator);
     assertEquals(
-        "beans: \n"
-            + "	0: \n"
-            + "		string2: code = 'validation.length.mustBe.greaterOrEqual', args = [10]\n"
-            + "	1: \n"
-            + "		string1: code = 'validation.must.haveText'\n"
-            + "		string2: code = 'validation.length.mustBe.greaterOrEqual', args = [10]",
+        """
+                    beans:\s
+                    	0:\s
+                    		string2: code = 'validation.length.mustBe.greaterOrEqual', args = [10]
+                    	1:\s
+                    		string1: code = 'validation.must.haveText'
+                    		string2: code = 'validation.length.mustBe.greaterOrEqual', args = [10]""",
         ret.toString());
   }
 

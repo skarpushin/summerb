@@ -2,10 +2,11 @@ package org.summerb.validation.errors;
 
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
+import java.io.Serial;
 import org.summerb.validation.ValidationError;
 
 public class MustNotBeBetween extends ValidationError {
-  private static final long serialVersionUID = 4246268385189876570L;
+  @Serial private static final long serialVersionUID = 4246268385189876570L;
 
   public static final String MESSAGE_CODE = "validation.mustNotBe.between";
 

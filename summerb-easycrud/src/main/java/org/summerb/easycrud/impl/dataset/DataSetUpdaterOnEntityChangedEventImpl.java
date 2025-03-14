@@ -28,9 +28,9 @@ import org.summerb.utils.easycrud.api.dto.EntityChangedEvent.ChangeType;
 /**
  * This impl will simply update dataSet tables with updated entities
  *
- * <p>WARNING: It doesn't not update any back-refs. Only table rows and only if table is created
- * before this operation. Former is actually hard to implement since DataSet is not carrying
- * information regarding references and it's not clear how to avoid n+1 problems.
+ * <p>WARNING: It will update only table rows and only if table is created before this operation.
+ * Back-refs will not be updated since DataSet is not carrying information regarding references and
+ * it's not clear how to avoid n+1 problems.
  *
  * @author sergeyk
  */

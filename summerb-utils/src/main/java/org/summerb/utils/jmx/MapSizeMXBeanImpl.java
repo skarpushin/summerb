@@ -26,7 +26,7 @@ import org.springframework.util.StringUtils;
 
 @SuppressWarnings("rawtypes")
 public class MapSizeMXBeanImpl implements MapSizeMXBean {
-  private static Logger log = LoggerFactory.getLogger(MapSizeMXBeanImpl.class);
+  private static final Logger log = LoggerFactory.getLogger(MapSizeMXBeanImpl.class);
   private Map map;
 
   public MapSizeMXBeanImpl(String cname, Map map) {
@@ -42,7 +42,7 @@ public class MapSizeMXBeanImpl implements MapSizeMXBean {
         server.registerMBean(this, new ObjectName(name));
       }
     } catch (Throwable t) {
-      log.error("Failed to init jmx bean for map " + cname, t);
+      log.error("Failed to init jmx bean for map {}", cname, t);
     }
   }
 

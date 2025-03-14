@@ -15,10 +15,11 @@
  ******************************************************************************/
 package org.summerb.users.api.exceptions;
 
+import java.io.Serial;
 import org.summerb.i18n.HasMessageCode;
 
 public class UserNotFoundException extends UsersServiceException implements HasMessageCode {
-  private static final long serialVersionUID = 1899087866041906798L;
+  @Serial private static final long serialVersionUID = 1899087866041906798L;
 
   public static final String ERROR_LOGIN_USER_NOT_FOUND = "error.login.userNotFound";
 

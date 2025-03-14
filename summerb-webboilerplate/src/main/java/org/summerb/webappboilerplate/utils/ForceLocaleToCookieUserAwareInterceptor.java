@@ -32,7 +32,7 @@ import org.summerb.webappboilerplate.users.i18n.LocaleResolverUserBasedImpl;
  *
  * @author sergey.k
  */
-public class ForceLocaleToCoockieUserAwareInterceptor implements AsyncHandlerInterceptor {
+public class ForceLocaleToCookieUserAwareInterceptor implements AsyncHandlerInterceptor {
   @Override
   public boolean preHandle(
       HttpServletRequest request, HttpServletResponse response, Object handler) {
@@ -43,16 +43,15 @@ public class ForceLocaleToCoockieUserAwareInterceptor implements AsyncHandlerInt
       throw new IllegalStateException(
           "No LocaleResolver found: not in a DispatcherServlet request?");
     }
-    if (!(localeResolver instanceof LocaleResolverUserBasedImpl)) {
+    if (!(localeResolver instanceof LocaleResolverUserBasedImpl cookieLocaleResolver)) {
       return true;
     }
 
     // Check if locale not in cookie.
     // If so, then force it to store in cookie
-    LocaleResolverUserBasedImpl cookieLocaleResolver = (LocaleResolverUserBasedImpl) localeResolver;
     Locale localeFromCookie = cookieLocaleResolver.resolveLocaleFromCookie(request);
     Locale localeFromUser = cookieLocaleResolver.resolveLocale(request);
-    if (localeFromUser != null && !localeFromUser.equals(localeFromCookie)) {
+    if (!localeFromUser.equals(localeFromCookie)) {
       cookieLocaleResolver.setLocale(request, response, localeFromUser);
     }
 

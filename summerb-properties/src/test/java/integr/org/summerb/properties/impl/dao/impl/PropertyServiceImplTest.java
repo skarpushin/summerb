@@ -77,7 +77,7 @@ public class PropertyServiceImplTest {
   }
 
   @Test
-  public void testPutSubjectProperty_whitebox_expectCorretPropertyNames() {
+  public void testPutSubjectProperty_whitebox_expectCorrectPropertyNames() {
     propertyService.putSubjectProperty("test", "test.domain", "1", "some.property1", "value1");
     propertyService.putSubjectProperty("test", "test.domain", "1", "some.property2", "value2");
     propertyService.putSubjectProperty("test", "test.domain", "2", "some.property1", "value3");
@@ -102,7 +102,7 @@ public class PropertyServiceImplTest {
   }
 
   @Test
-  public void testPutSubjectProperties_whitebox_expectCorretPropertyNames() {
+  public void testPutSubjectProperties_whitebox_expectCorrectPropertyNames() {
     List<NamedProperty> propList = new ArrayList<>();
     propList.add(new NamedProperty("some.property1", "value1"));
     propList.add(new NamedProperty("some.property2", "value2"));
@@ -115,7 +115,7 @@ public class PropertyServiceImplTest {
   }
 
   @Test
-  public void testPutSubjectsProperty_whitebox_expectCorretPropertyNames() {
+  public void testPutSubjectsProperty_whitebox_expectCorrectPropertyNames() {
     List<String> subjects = new ArrayList<>();
     subjects.add("1");
     subjects.add("2");
@@ -129,7 +129,7 @@ public class PropertyServiceImplTest {
   }
 
   @Test
-  public void testFindSubjectsProperties_whitebox_expectCorretPropertyNames() {
+  public void testFindSubjectsProperties_whitebox_expectCorrectPropertyNames() {
     List<String> subjects = new ArrayList<>();
     subjects.add("1");
     subjects.add("2");
@@ -147,7 +147,7 @@ public class PropertyServiceImplTest {
   }
 
   @Test
-  public void testFindSubjectsProperty_whitebox_expectCorretPropertyNames() {
+  public void testFindSubjectsProperty_whitebox_expectCorrectPropertyNames() {
     List<String> subjects = new ArrayList<>();
     subjects.add("1");
     subjects.add("2");
@@ -162,7 +162,7 @@ public class PropertyServiceImplTest {
   }
 
   @Test
-  public void testDeleteSubjectProperties_whitebox_expectCorretPropertyNames() {
+  public void testDeleteSubjectProperties_whitebox_expectCorrectPropertyNames() {
     propertyService.putSubjectProperty("test", "test.domain", "1", "some.property2", "value2");
 
     propertyService.deleteSubjectProperties("test", "test.domain", "1");
@@ -172,7 +172,7 @@ public class PropertyServiceImplTest {
   }
 
   @Test
-  public void testDeleteSubjectsProperties_whitebox_expectCorretPropertyNames() {
+  public void testDeleteSubjectsProperties_whitebox_expectCorrectPropertyNames() {
     List<String> subjects = new ArrayList<>();
     subjects.add("1");
     subjects.add("2");

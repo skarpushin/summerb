@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.summerb.easycrud.api.row.datapackage;
 
+import java.io.Serial;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -84,11 +85,9 @@ public class DataTable<TId, T extends HasId<TId>> {
   /**
    * @return data structure that contains back references. Filled automatically by {@link
    *     DataSetLoader} if there are other {@link DataTable} which has rows referencing rows in this
-   *     table
-   * @deprecated TODO: avoid using this -- in future versions it might be removed. Initially I
-   *     thought it's a good idea, but after some time it doesn't appear as one
+   *     table NOTE: avoid using this -- in future versions it might be removed. Initially I thought
+   *     it's a good idea, but after some time it doesn't appear as one
    */
-  @Deprecated
   public RowIdToBackReferencesMap getBackRefs() {
     if (backRefs == null) {
       backRefs = new RowIdToBackReferencesMap();
@@ -107,7 +106,7 @@ public class DataTable<TId, T extends HasId<TId>> {
    * @author sergeyk
    */
   public static class RefToReferencedObjectsIdsMap extends HashMap<String, Set<Object>> {
-    private static final long serialVersionUID = 6272759788167550514L;
+    @Serial private static final long serialVersionUID = 6272759788167550514L;
 
     public Set<Object> getForRef(Ref ref) {
       return get(ref.getName());
@@ -122,7 +121,7 @@ public class DataTable<TId, T extends HasId<TId>> {
    */
   public static class RowIdToBackReferencesMap
       extends HashMap<Object, RefToReferencedObjectsIdsMap> {
-    private static final long serialVersionUID = -4000441053721948805L;
+    @Serial private static final long serialVersionUID = -4000441053721948805L;
 
     @SuppressWarnings("rawtypes")
     public RefToReferencedObjectsIdsMap getForRow(HasId row) {

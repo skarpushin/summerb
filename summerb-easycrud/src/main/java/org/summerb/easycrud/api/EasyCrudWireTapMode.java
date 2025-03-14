@@ -25,7 +25,7 @@ public enum EasyCrudWireTapMode {
    * Compare this instance to other
    *
    * @param other instance to compare to
-   * @return EasyCrudWireTapMode with highest level
+   * @return EasyCrudWireTapMode with the highest level
    */
   public EasyCrudWireTapMode max(EasyCrudWireTapMode other) {
     if (other.level > level) {

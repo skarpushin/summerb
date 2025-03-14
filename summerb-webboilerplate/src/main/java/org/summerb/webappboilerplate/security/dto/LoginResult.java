@@ -15,12 +15,13 @@
  ******************************************************************************/
 package org.summerb.webappboilerplate.security.dto;
 
+import java.io.Serial;
 import java.util.Map;
 import org.summerb.users.api.dto.User;
 import org.summerb.utils.DtoBase;
 
 public class LoginResult implements DtoBase {
-  private static final long serialVersionUID = 252775263464590406L;
+  @Serial private static final long serialVersionUID = 252775263464590406L;
 
   public static final String ATTR_REDIRECT_TO = "redirectTo";
 

@@ -56,7 +56,7 @@ class JakartaAnnotationsProcessorsRegistryPackageScanImplTest {
   }
 
   @Test
-  void test_build_expectErrorOnInsantiation() throws Exception {
+  void test_build_expectErrorOnInstantiation() throws Exception {
     var f =
         new JakartaAnnotationsProcessorsRegistryPackageScanImpl(
             "org.summerb.validation.jakarta.test_data");
@@ -79,7 +79,7 @@ class JakartaAnnotationsProcessorsRegistryPackageScanImplTest {
   }
 
   /**
-   * It would be actually super nice to have this implemented, but I did not found how to traverse
+   * It would be actually super nice to have this implemented, but I did not find how to traverse
    * ParametrizedType hierarchy and extract parameter types from there. So although cases in these
    * packages are fully valid from Java perspective, our impl cannot correctly handle them. See
    * {@link JakartaAnnotationsProcessorsRegistryPackageScanImpl#findParentTypesToCheck(Class, Set)}
@@ -94,7 +94,7 @@ class JakartaAnnotationsProcessorsRegistryPackageScanImplTest {
   }
 
   /**
-   * It would be actually super nice to have this implemented, but I did not found how to traverse
+   * It would be actually super nice to have this implemented, but I did not find how to traverse
    * ParametrizedType hierarchy and extract parameter types from there. So although cases in these
    * packages are fully valid from Java perspective, our impl cannot correctly handle them. See
    * {@link JakartaAnnotationsProcessorsRegistryPackageScanImpl#findParentTypesToCheck(Class, Set)}

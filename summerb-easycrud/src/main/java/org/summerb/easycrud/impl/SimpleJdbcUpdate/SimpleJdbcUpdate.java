@@ -22,12 +22,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
 /**
- * A SimpleJdbcUpdate is a multi-threaded, reusable object providing easy update capabilities for a
- * table. It provides meta data processing to simplify the code needed to construct a basic update
+ * A SimpleJdbcUpdate is a multithreaded, reusable object providing easy update capabilities for a
+ * table. It provides metadata processing to simplify the code needed to construct a basic update
  * statement. All you need to provide is the name of the table and a Map containing the column names
  * and the column values.
  *
- * <p>The meta data processing is based on the DatabaseMetaData provided by the JDBC driver. As long
+ * <p>The metadata processing is based on the DatabaseMetaData provided by the JDBC driver. As long
  * as the JBDC driver can provide the names of the columns for a specified table than we can rely on
  * this auto-detection feature. If that is not the case then the column names must be specified
  * explicitly.

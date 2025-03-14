@@ -15,20 +15,6 @@ public class NowResolverImpl implements NowResolver {
     this.clock = clock;
   }
 
-  //  @Override
-  //  public Instant now() {
-  //    if (clock == null) {
-  //      return Instant.now();
-  //    } else {
-  //      return Instant.now(clock);
-  //    }
-  //  }
-  //
-  //  @Override
-  //  public ZoneId zoneId() {
-  //    return clock.getZone();
-  //  }
-
   @Override
   public Clock clock() {
     return clock;

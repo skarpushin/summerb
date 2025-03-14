@@ -1,9 +1,10 @@
 package org.summerb.validation.errors;
 
+import java.io.Serial;
 import org.summerb.validation.ValidationError;
 
 public class MustBeInPastOrPresent extends ValidationError {
-  private static final long serialVersionUID = -8228585741561780676L;
+  @Serial private static final long serialVersionUID = -8228585741561780676L;
 
   public static final String MESSAGE_CODE = "validation.mustBe.inPastOrPresent";
 

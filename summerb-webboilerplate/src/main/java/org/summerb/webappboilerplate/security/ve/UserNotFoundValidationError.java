@@ -15,12 +15,13 @@
  ******************************************************************************/
 package org.summerb.webappboilerplate.security.ve;
 
+import java.io.Serial;
 import org.summerb.users.api.dto.User;
 import org.summerb.users.api.exceptions.UserNotFoundException;
 import org.summerb.validation.ValidationError;
 
 public class UserNotFoundValidationError extends ValidationError {
-  private static final long serialVersionUID = 5184851404690565907L;
+  @Serial private static final long serialVersionUID = 5184851404690565907L;
 
   public UserNotFoundValidationError() {
     super(User.FN_EMAIL, UserNotFoundException.ERROR_LOGIN_USER_NOT_FOUND);

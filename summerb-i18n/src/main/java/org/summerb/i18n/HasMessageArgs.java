@@ -16,7 +16,7 @@
 package org.summerb.i18n;
 
 /**
- * This interface indicates that class has message args. Usually meaningfull when {@link
+ * This interface indicates that class has message args. Usually meaningful when {@link
  * HasMessageCode} implemented
  *
  * @author Sergey Karpushin

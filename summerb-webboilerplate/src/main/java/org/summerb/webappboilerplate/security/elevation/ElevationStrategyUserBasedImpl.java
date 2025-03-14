@@ -34,7 +34,7 @@ import org.summerb.users.api.dto.User;
 import org.summerb.webappboilerplate.security.impls.UserDetailsImpl;
 
 /**
- * This impl elevates to BackgroundProcess credentials if current user is missing or ANonymous
+ * This impl elevates to BackgroundProcess credentials if current user is missing or AAnonymous
  *
  * @author sergey.karpushin
  */
@@ -89,13 +89,12 @@ public class ElevationStrategyUserBasedImpl implements ElevationStrategy, Initia
             permissionService.findUserPermissionsForSubject(
                 SecurityConstants.DOMAIN, user.getUuid(), null);
         UserDetailsImpl userDetails = new UserDetailsImpl(user, "[NO PASSWORD]", permissions, null);
-        UsernamePasswordAuthenticationToken ret =
+        // NOTE: No details for this kind of authentication
+        authentication =
             new UsernamePasswordAuthenticationToken(
                 userDetails, "[NO PASSWORD]", userDetails.getAuthorities());
-        // NOTE: No details for this kind of authentication
-        authentication = ret;
       } catch (Throwable t) {
-        throw new RuntimeException("Failed to build Authnetication", t);
+        throw new RuntimeException("Failed to build Authentication", t);
       }
     }
     return authentication;

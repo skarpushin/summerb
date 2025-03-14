@@ -11,8 +11,8 @@ import org.summerb.easycrud.rest.dto.SingleItemResult;
 
 /**
  * Impl of {@link PermissionsResolverStrategy} that gets data from {@link
- * EasyCrudAuthorizationPerTableStrategy}. Therefore it provides only table-wide permissions and Row
- * permissions are not filled
+ * EasyCrudAuthorizationPerTableStrategy}. Therefore, it provides only table-wide permissions and
+ * Row permissions are not filled
  *
  * @author Sergey Karpushin
  * @param <TId> type of row id

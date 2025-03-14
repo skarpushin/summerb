@@ -40,7 +40,6 @@ public class NotAuthorizedException extends RuntimeException
 
   public NotAuthorizedException(NotAuthorizedResult result) {
     super(result.getOperationMessageCode());
-    Preconditions.checkArgument(result != null);
     Preconditions.checkArgument(result.getOperationMessageCode() != null);
     Preconditions.checkArgument(result.getMessageCode() != null);
 
@@ -49,7 +48,6 @@ public class NotAuthorizedException extends RuntimeException
 
   public NotAuthorizedException(NotAuthorizedResult result, Throwable cause) {
     super(result.getOperationMessageCode(), cause);
-    Preconditions.checkArgument(result != null);
     Preconditions.checkArgument(result.getOperationMessageCode() != null);
     Preconditions.checkArgument(result.getMessageCode() != null);
 

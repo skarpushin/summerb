@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.summerb.easycrud.api.exceptions;
 
+import java.io.Serial;
 import org.summerb.i18n.HasMessageArgs;
 import org.summerb.i18n.HasMessageCode;
 
@@ -25,7 +26,7 @@ import org.summerb.i18n.HasMessageCode;
  */
 public abstract class EntityNotFoundException extends RuntimeException
     implements HasMessageCode, HasMessageArgs {
-  private static final long serialVersionUID = 3254284449960233351L;
+  @Serial private static final long serialVersionUID = 3254284449960233351L;
 
   protected Object identity;
 

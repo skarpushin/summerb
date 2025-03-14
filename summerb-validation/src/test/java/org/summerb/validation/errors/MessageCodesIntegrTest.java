@@ -34,8 +34,8 @@ class MessageCodesIntegrTest {
    *   <li>Each message code has translation in EN and RU locales
    * </ul>
    *
-   * This is mostly needed as a sanity-check in cases when we add new ValidationErrors but we do not
-   * test them explicitly
+   * This is mostly needed as a sanity-check in cases when we add new ValidationErrors, but we do
+   * not test them explicitly
    *
    * @throws Exception exception
    */

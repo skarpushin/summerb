@@ -96,8 +96,7 @@ public class EasyCrudDaoSqlImpl<TId, TRow extends HasId<TId>> extends TableDaoBa
   protected String sqlPartPaginator;
 
   /**
-   * Constructor for cases when sub-class wants to take full responsibility on instantiation
-   * process.
+   * Constructor for cases when subclass wants to take full responsibility on instantiation process.
    *
    * @deprecated when using this constructor please make sure you're properly initializing required
    *     dependencies: {@link #dataSource}, {@link #tableName} and {@link #rowClass}
@@ -248,15 +247,13 @@ public class EasyCrudDaoSqlImpl<TId, TRow extends HasId<TId>> extends TableDaoBa
 
   @Override
   public void create(TRow row) {
-    if (row instanceof HasUuid) {
-      HasUuid hasUuid = (HasUuid) row;
+    if (row instanceof HasUuid hasUuid) {
       if (!stringIdGenerator.isValidId(hasUuid.getId())) {
         hasUuid.setId(stringIdGenerator.generateNewId(row));
       }
     }
 
-    if (row instanceof HasTimestamps) {
-      HasTimestamps hasTimestamps = (HasTimestamps) row;
+    if (row instanceof HasTimestamps hasTimestamps) {
       long now = nowResolver.clock().millis();
       hasTimestamps.setCreatedAt(now);
       hasTimestamps.setModifiedAt(now);
@@ -280,8 +277,7 @@ public class EasyCrudDaoSqlImpl<TId, TRow extends HasId<TId>> extends TableDaoBa
   public int update(TRow row) {
     MapSqlParameterSource restrictionParams = new MapSqlParameterSource();
     restrictionParams.addValue(HasId.FN_ID, row.getId());
-    if (row instanceof HasTimestamps) {
-      HasTimestamps hasTimestamps = (HasTimestamps) row;
+    if (row instanceof HasTimestamps hasTimestamps) {
       long modifiedAt = hasTimestamps.getModifiedAt();
       hasTimestamps.setModifiedAt(nowResolver.clock().millis());
       restrictionParams.addValue(HasTimestamps.FN_MODIFIED_AT, modifiedAt);
@@ -396,7 +392,7 @@ public class EasyCrudDaoSqlImpl<TId, TRow extends HasId<TId>> extends TableDaoBa
 
     StringBuilder ret = new StringBuilder();
     for (OrderBy orderBy : orderByArr) {
-      if (ret.length() > 0) {
+      if (!ret.isEmpty()) {
         ret.append(", ");
       }
 
@@ -414,7 +410,7 @@ public class EasyCrudDaoSqlImpl<TId, TRow extends HasId<TId>> extends TableDaoBa
           orderBy.getDirection());
       ret.append(orderBy.getDirection());
     }
-    return ret.length() == 0 ? "" : " ORDER BY " + ret;
+    return ret.isEmpty() ? "" : " ORDER BY " + ret;
   }
 
   @Override

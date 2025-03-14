@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.summerb.easycrud.api.exceptions;
 
+import java.io.Serial;
 import org.summerb.i18n.HasMessageArgs;
 import org.summerb.i18n.HasMessageArgsConverters;
 import org.summerb.i18n.HasMessageCode;
@@ -26,7 +27,7 @@ import org.summerb.i18n.MessageCodeMessageArgConverter;
  */
 public class EasyCrudUnexpectedException extends RuntimeException
     implements HasMessageCode, HasMessageArgs, HasMessageArgsConverters {
-  private static final long serialVersionUID = 5053151069728043611L;
+  @Serial private static final long serialVersionUID = 5053151069728043611L;
   protected String messageCode;
   protected String entityMessageCode;
 

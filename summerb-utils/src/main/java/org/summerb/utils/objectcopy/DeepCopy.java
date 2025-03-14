@@ -67,7 +67,7 @@ public class DeepCopy {
       ObjectInputStream in = new ObjectInputStream(fbos.getInputStream());
       return (T) in.readObject();
     } catch (Throwable e) {
-      Throwables.propagateIfPossible(e, NotSerializableException.class);
+      Throwables.throwIfInstanceOf(e, NotSerializableException.class);
       throw new RuntimeException("Failed to make a deep copy of the original object", e);
     }
   }

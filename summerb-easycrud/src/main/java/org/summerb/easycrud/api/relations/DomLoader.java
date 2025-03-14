@@ -34,7 +34,7 @@ import org.summerb.easycrud.api.row.relations.Ref;
  *   <li>for each Dom entity you need to create class
  *   <li>class for Dom entity must extend Row class
  *   <li>Dom entity can have fields to hold referenced Dom entities (could be direct reference to 1
- *       instance or it could be a list)
+ *       instance, or it could be a list)
  *   <li>Name of the field (references) is used to calculate reference name. If class "Env" contains
  *       field "List&lt;Device&gt; devices", then it's expected to have reference with name
  *       "envDevices"

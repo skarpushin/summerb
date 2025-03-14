@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.summerb.validation.errors;
 
+import java.io.Serial;
 import org.summerb.validation.ValidationContext;
 import org.summerb.validation.ValidationError;
 
@@ -25,7 +26,7 @@ import org.summerb.validation.ValidationError;
  * @author Sergey Karpushin
  */
 public class MustNotHaveDuplicateName extends ValidationError {
-  private static final long serialVersionUID = -537217996301287218L;
+  @Serial private static final long serialVersionUID = -537217996301287218L;
 
   public static final String MESSAGE_CODE = "validation.mustNot.haveDuplicateName";
 

@@ -29,8 +29,7 @@ public abstract class DaoBase implements InitializingBean {
   protected NamedParameterJdbcTemplateEx jdbc;
 
   /**
-   * Constructor for cases when sub-class wants to take full responsibility on instantiation
-   * process.
+   * Constructor for cases when subclass wants to take full responsibility on instantiation process.
    *
    * @deprecated when using this constructor please make sure you're properly initializing required
    *     dependencies: {@link #dataSource}

@@ -22,14 +22,10 @@ import org.summerb.properties.internal.StringIdAliasService;
 public class PropertyServiceImplFactory {
 
   public static PropertyServiceImpl createInstance() {
-    PropertyServiceImpl ret =
-        new PropertyServiceImpl(
-            Mockito.mock(PropertyDao.class),
-            Mockito.mock(StringIdAliasService.class),
-            Mockito.mock(StringIdAliasService.class),
-            Mockito.mock(StringIdAliasService.class));
-    // PropertyDao propertyDao = new PropertyStoreDaoMySqlImpl();
-    // ret.setPropertyDao(propertyDao);
-    return ret;
+    return new PropertyServiceImpl(
+        Mockito.mock(PropertyDao.class),
+        Mockito.mock(StringIdAliasService.class),
+        Mockito.mock(StringIdAliasService.class),
+        Mockito.mock(StringIdAliasService.class));
   }
 }

@@ -15,11 +15,11 @@ previously with JPA, Groovy on Grails, Java Server Faces and few other stuff.
 * It is offering a way how to quickly boostrap your CRUD code and a how to naturally evolve it later together with your
   application. Not all libraries can claim that. Some of them would eventually present a bottleneck for your business 
   due to which you'll decide to rewrite application from scratch 
-* Although it provides many features built-in, it allows you to change many (almost all) aspects of it's implementation.
+* Although it provides many features built-in, it allows you to change many (almost all) aspects of its implementation.
   All you need to do is to (A) inject corresponding strategy and/or (B) subclass default implementation. In some cases
   it is even more flexible that Spring itself (less private fields and methods and package visibility -- hence more you
   can override)
-* It simplifies your usual CRUD implementations on **Facade**, **Service** and **Repository** layers and it gives an
+* It simplifies your usual CRUD implementations on **Facade**, **Service** and **Repository** layers, and it gives an
   opinionated view on how **i18n**, **validation** and **authorization** should be handled -- these usually not present
   in other frameworks and you need to add them on top, while here you have it embedded in the core of EasyCrud
 * It is created with the SOLID, DRY and SLAP design principles in mind
@@ -45,7 +45,7 @@ in making it popular :-)
 * It allows you to easily define native queries which implementation is also automatically scaffolded
 * Baseline infrastructure for business validations at different data lifecycle steps
 * Baseline infrastructure for authorizations at different data lifecycle steps (for both per-Table and per-Row)
-* Extension points (Wire Taps) for adding any of your custom pre/post-processors
+* Extension points (Wire Taps) for adding any of your custom pre- / post-processors
 * Automatically handle timestamps and author fields when data is created and updated (sometimes this is called audit fields)
 * Facilities to implement Security-trimmed UI
 
@@ -67,7 +67,7 @@ in making it popular :-)
 
 # How To (with Examples)
 ## Initial EasyCrud configuration
-This is a one-time action to setup beans for EasyCrud facilities that are common between all EasyCrud implementations.
+This is a one-time action to set up beans for EasyCrud facilities that are common between all EasyCrud implementations.
 
 ```java
 @Configuration
@@ -296,7 +296,7 @@ ProjectService projectService(EasyCrudScaffold easyCrudScaffold) {
 NOTES:
 1. Now whenever you'll try to create or update rows, this validation will kick in and validate data.
 2. All validation errors (not just first) will be reported in `ValidationException` and bound to field names
-   so that FE can render them neatly for each relevant field. Also each validation error is denoted by message code,
+   so that FE can render them neatly for each relevant field. Also, each validation error is denoted by message code,
    so FE can translate it to user language. See `summerb-validation` subproject for more details.
 
 ## Add Validation Logic (using imperative approach)
@@ -418,8 +418,8 @@ public class ProjectRowAuthStrategyImpl extends EasyCrudAuthorizationPerRowStrat
 ```
 
 NOTES:
-1. Logic in the above authorization logic is based on both - row data as well as User parameters
-2. If access is allowed, then return `ALLOW` constant. Otherwise return initialized `NotAuthorizedResult`
+1. Logic in the above authorization logic is based on both - row data and User parameters
+2. If access is allowed, then return `ALLOW` constant. Otherwise, return initialized `NotAuthorizedResult`
    that describes why access is not allowed. In the example above method `denyUpdate` from base class is used to
    simplify the implementation, but this can be of course overridden
 2. For fine-grained auth control of each of the four CRUD methods, override more methods from base class
@@ -453,7 +453,7 @@ CurrentUserUuidResolver currentUserUuidResolver() {
 
 NOTES:
 1. EasyCrud knows nothing about the way you manage security in your application. Therefore, you need to provide your 
-   own implementation of the interface `CurrentUserUuidResolver`. Typically you'll create simpl impl to get data from current Authentication
+   own implementation of the interface `CurrentUserUuidResolver`. Typically, you'll create simpl impl to get data from current Authentication
 2. EasyCrud makes hard assumption that your user ID is represented as a String (doesn't have to be UUID though, may be something else alphanumerical) 
 
 ### 2. Augment Row class
@@ -561,13 +561,13 @@ PUT    /rest/divisions/{id} => updateItem
 
 NOTES: 
 1. That's it. This REST controller will provide all CRUD operations including simple filtering functionality
-2. Whenever you need to extend its functionality, check source code in debug mode and you'll see what strategies you 
+2. Whenever you need to extend its functionality, check source code in debug mode, and you'll see what strategies you 
    need to inject to override it's behavior 
 
 ## Add custom code before and/or after default CRUD methods logic 
 
 There are few ways to do so:
-* Use `EasyCrudWireTap` mechanism to supply pre/post code for each CRUD method -- this is my preferred way of doing so 
+* Use `EasyCrudWireTap` mechanism to supply pre- / post-code for each CRUD method -- this is my preferred way of doing so 
   because it fits well within OCP design principle and seems like easiest way of achieving the goal. Validation and 
   Authorization are implemented as WireTaps 
 * Subclass `EasyCrudServiceImpl` and override needed methods
@@ -578,7 +578,7 @@ In order to create your own WireTap just do the following:
 ### 1. Create WireTap 
 
 Create a class that implements interface `EasyCrudWireTap`, easiest way to do so is to extend `EasyCrudWireTapAbstract` 
-because it gives default impl of the interface so you don't have to write boiler-plate code. And just enable method that 
+because it gives default impl of the interface so you don't have to write boilerplate code. And just enable method that 
 you want to implement. 
 
 Let's say you want to set default values to some fields upon creation:
@@ -611,7 +611,7 @@ BackgroundTaskService backgroundTaskService(EasyCrudScaffold easyCrudScaffold) {
 ```
 
 ## Define all interfaces and classes manually
-When Scaffolded functionality is not enough and you want to have full control over Service and Dao logic and 
+When Scaffolded functionality is not enough, and you want to have full control over Service and Dao logic and 
 implementation, you'll need to manually define each "building block":
 1. Row class - _same as with Scaffolding_
 1. DAO interface - own interface that extends `EasyCrudDao`

@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.summerb.i18n.exceptions.dto;
 
+import java.io.Serial;
 import java.io.Serializable;
 import org.summerb.i18n.HasMessageArgs;
 import org.summerb.i18n.HasMessageCode;
@@ -22,7 +23,7 @@ import org.summerb.i18n.exceptions.HasErrorDescriptionObject;
 import org.summerb.utils.DtoBase;
 
 public class ExceptionInfo implements DtoBase {
-  private static final long serialVersionUID = 1857628060664652023L;
+  @Serial private static final long serialVersionUID = 1857628060664652023L;
 
   private String exceptionClassName;
   private String message;

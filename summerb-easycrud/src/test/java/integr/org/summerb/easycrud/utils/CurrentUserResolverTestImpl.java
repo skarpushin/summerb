@@ -16,6 +16,7 @@
 package integr.org.summerb.easycrud.utils;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -31,8 +32,8 @@ public class CurrentUserResolverTestImpl
   public User user2;
 
   public CurrentUserResolverTestImpl() {
-    user1 = new User("user1", "1", Arrays.asList(new SimpleGrantedAuthority(Roles.ROLE_USER)));
-    user2 = new User("user2", "2", Arrays.asList(new SimpleGrantedAuthority(Roles.ROLE_USER)));
+    user1 = new User("user1", "1", List.of(new SimpleGrantedAuthority(Roles.ROLE_USER)));
+    user2 = new User("user2", "2", List.of(new SimpleGrantedAuthority(Roles.ROLE_USER)));
     user = user1;
   }
 

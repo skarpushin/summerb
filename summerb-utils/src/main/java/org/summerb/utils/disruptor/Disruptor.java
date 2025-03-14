@@ -23,7 +23,7 @@ import org.summerb.utils.threads.RecurringBackgroundTask;
  * This class is designed to arrange data processing coming from multiple threads in a way to avoid
  * locking (lock-free) implementation.
  *
- * <p>Drawback is that a lot of data might be stored in memory waiting while it will be processed
+ * <p>Drawback is that a lot of data might be stored in memory waiting while it will be processed,
  * and it will result in intensive garbage collection after, but for some cases this is an
  * acceptable behavior
  *

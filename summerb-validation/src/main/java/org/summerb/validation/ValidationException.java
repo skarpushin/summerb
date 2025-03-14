@@ -16,7 +16,7 @@
 package org.summerb.validation;
 
 import com.google.common.base.Preconditions;
-import java.util.Arrays;
+import java.io.Serial;
 import java.util.List;
 import org.springframework.util.CollectionUtils;
 import org.summerb.i18n.HasMessageCode;
@@ -27,7 +27,7 @@ import org.summerb.i18n.exceptions.HasErrorDescriptionObject;
  */
 public class ValidationException extends RuntimeException
     implements HasMessageCode, HasErrorDescriptionObject<ValidationErrors> {
-  private static final long serialVersionUID = -310812271204903287L;
+  @Serial private static final long serialVersionUID = -310812271204903287L;
 
   public static final String MESSAGE_CODE = "validation.error";
 
@@ -41,7 +41,7 @@ public class ValidationException extends RuntimeException
 
   public ValidationException(ValidationError validationError) {
     Preconditions.checkArgument(validationError != null, "validationError required");
-    this.errors = new ValidationErrors(MESSAGE_CODE, Arrays.asList(validationError));
+    this.errors = new ValidationErrors(MESSAGE_CODE, List.of(validationError));
   }
 
   public ValidationException(List<ValidationError> validationErrors) {

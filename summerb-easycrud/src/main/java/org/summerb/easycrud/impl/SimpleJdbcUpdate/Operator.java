@@ -20,7 +20,7 @@ public enum Operator {
   LESS_THAN("<"),
   GREATER_THAN(">");
 
-  private String op;
+  private final String op;
 
   Operator(final String op) {
     this.op = op;

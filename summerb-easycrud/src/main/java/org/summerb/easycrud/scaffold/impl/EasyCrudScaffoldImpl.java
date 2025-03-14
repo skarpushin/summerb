@@ -118,7 +118,7 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
   }
 
   /**
-   * Set {@link ScaffoldedMethodFactory}. Optional. Requried only if your interface has methods
+   * Set {@link ScaffoldedMethodFactory}. Optional. Required only if your interface has methods
    * annotated with {@link Query}
    *
    * @param scaffoldedMethodFactory scaffoldedMethodFactory
@@ -386,11 +386,9 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
     ParameterizedType easyCrudServiceType = null;
     for (int i = 0; i < serviceInterface.getGenericInterfaces().length; i++) {
       Type candidate = serviceInterface.getGenericInterfaces()[i];
-      if (!(candidate instanceof ParameterizedType)) {
+      if (!(candidate instanceof ParameterizedType candidatePt)) {
         continue;
       }
-
-      ParameterizedType candidatePt = (ParameterizedType) candidate;
 
       if (EasyCrudService.class.equals(candidatePt.getRawType())) {
         easyCrudServiceType = candidatePt;

@@ -65,7 +65,7 @@ public class StringIdAliasServiceTest {
       assertEquals(map.get(name).longValue(), alias);
     }
 
-    // Now let's clear it's cache
+    // Now let's clear its cache
     ((StringIdAliasServiceVisibleForTesting) appAliasService).clearCache();
     for (int i = 0; i < 10; i++) {
       String name = "anyA" + i;

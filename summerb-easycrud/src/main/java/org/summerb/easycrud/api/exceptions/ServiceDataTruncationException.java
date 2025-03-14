@@ -15,13 +15,14 @@
  ******************************************************************************/
 package org.summerb.easycrud.api.exceptions;
 
+import java.io.Serial;
 import java.sql.DataTruncation;
 import org.summerb.easycrud.api.EasyCrudMessageCodes;
 import org.summerb.i18n.HasMessageCode;
 
 /** An Exception that is thrown when data submitted to DB is larger than field accepted size. */
 public class ServiceDataTruncationException extends DataTruncation implements HasMessageCode {
-  private static final long serialVersionUID = -8091580877575496130L;
+  @Serial private static final long serialVersionUID = -8091580877575496130L;
   protected String fieldTokenBeingTruncated;
   protected String message;
   protected Throwable cause;

@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.summerb.easycrud.api.row.relations;
 
+import java.io.Serial;
 import java.io.Serializable;
 import org.summerb.easycrud.api.EasyCrudService;
 
@@ -31,7 +32,7 @@ import org.summerb.easycrud.api.EasyCrudService;
 public class Ref implements Serializable {
   protected static final String SUFFIX_BACK = "_back";
 
-  private static final long serialVersionUID = 1133870870016615282L;
+  @Serial private static final long serialVersionUID = 1133870870016615282L;
 
   protected String name;
 

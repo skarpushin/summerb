@@ -15,6 +15,7 @@
  ******************************************************************************/
 package integr.org.summerb.easycrud.dtos;
 
+import java.io.Serial;
 import java.io.Serializable;
 import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.api.row.HasAuthor;
@@ -22,7 +23,7 @@ import org.summerb.easycrud.api.row.HasTimestamps;
 import org.summerb.easycrud.api.row.HasUuid;
 
 public class TestDto1 implements HasUuid, HasAuthor, HasTimestamps, Serializable {
-  private static final long serialVersionUID = -2954623750074589334L;
+  @Serial private static final long serialVersionUID = -2954623750074589334L;
 
   /**
    * @return shortcut for building {@link Query} for this DTO

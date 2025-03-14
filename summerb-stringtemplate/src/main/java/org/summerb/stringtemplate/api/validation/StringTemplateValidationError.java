@@ -15,10 +15,11 @@
  ******************************************************************************/
 package org.summerb.stringtemplate.api.validation;
 
+import java.io.Serial;
 import org.summerb.validation.ValidationError;
 
 public class StringTemplateValidationError extends ValidationError {
-  private static final long serialVersionUID = -7110646530687463433L;
+  @Serial private static final long serialVersionUID = -7110646530687463433L;
 
   public static final String VALIDATION_MESSAGE_CODE_COMPILATION_ERROR =
       "validation.stringtemplate.compilationError";

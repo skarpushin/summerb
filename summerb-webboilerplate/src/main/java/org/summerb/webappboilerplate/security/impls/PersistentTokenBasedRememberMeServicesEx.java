@@ -29,7 +29,7 @@ import org.summerb.webappboilerplate.security.apis.RememberMeRequestedStrategy;
 
 /**
  * Had to extend standard PersistentTokenBasedRememberMeServices because initially needed to
- * override {@link #rememberMeRequested(HttpServletRequest, String)}, but it's seems weird to extend
+ * override {@link #rememberMeRequested(HttpServletRequest, String)}, but it seems weird to extend
  * whole class to override just one method. So decided to put a strategy here
  *
  * @author sergeyk

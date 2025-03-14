@@ -57,10 +57,6 @@ public class UpgradePackageSqlImpl implements UpgradePackage {
   @Override
   public void apply() throws Exception {
     try (InputStream is = upgradePackageMeta.getSource().get()) {
-      // List<String> statements = sqlPackageParser.getUpgradeScriptsStream(is).map(x
-      // -> x.getStatement())
-      // .collect(Collectors.toList());
-      // jdbcTemplate.batchUpdate(statements.toArray(new String[0]));
       sqlPackageParser.getUpgradeScriptsStream(is).forEach(this::execute);
     }
   }
@@ -75,10 +71,10 @@ public class UpgradePackageSqlImpl implements UpgradePackage {
       return;
     }
     if (upgradeStatement.getStatement().length() < 300) {
-      log.trace("Executing statement: " + upgradeStatement.getStatement());
+      log.trace("Executing statement: {}", upgradeStatement.getStatement());
     } else {
       log.trace(
-          "Executing statement (trimmed): " + upgradeStatement.getStatement().substring(0, 300));
+          "Executing statement (trimmed): {}", upgradeStatement.getStatement().substring(0, 300));
     }
   }
 }

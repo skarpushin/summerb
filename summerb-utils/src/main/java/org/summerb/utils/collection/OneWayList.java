@@ -20,7 +20,7 @@ import java.util.Iterator;
 
 /**
  * This is one way linked list intended for use in concurrent scenarios where we try to avoid using
- * locking (lock-free algorithms). It is not completely lock free, but at least for read it's lock
+ * locking (lock-free algorithms). It is not completely lock free, but at least for read its lock
  * free.
  *
  * @author sergeyk
@@ -115,7 +115,7 @@ public class OneWayList<T> implements Iterable<T> {
         throw new IndexOutOfBoundsException("No more elements");
       }
 
-      OneWayList.this.first = (Entry) cur;
+      OneWayList.this.first = cur;
     }
 
     public void insertNewBeforeCurrent(T newItem) {

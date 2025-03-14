@@ -29,32 +29,7 @@ public class MethodCapturingInterceptor {
 
     // NOTE: You'd think that we'd have to return different default value for different return types
     // (as commented-out below) but it doesn't matter at all. We can just return null regardless of
-    // return type and code will work just fine. See MethodCapturingInterceptorTest -- it prooves
-    // it.
+    // return type and code will work just fine. See MethodCapturingInterceptorTest -- it proves
 
-    //    Class<?> returnType = method.getReturnType();
-    //    if (!returnType.isPrimitive()) {
-    //      return null;
-    //    }
-    //
-    //    if (boolean.class.equals(returnType)) {
-    //      return false;
-    //    } else if (byte.class.equals(returnType)) {
-    //      return (byte) 0;
-    //    } else if (char.class.equals(returnType)) {
-    //      return (char) 0;
-    //    } else if (short.class.equals(returnType)) {
-    //      return (short) 0;
-    //    } else if (int.class.equals(returnType)) {
-    //      return (int) 0;
-    //    } else if (long.class.equals(returnType)) {
-    //      return 0L;
-    //    } else if (float.class.equals(returnType)) {
-    //      return 0f;
-    //    } else if (double.class.equals(returnType)) {
-    //      return 0d;
-    //    } else {
-    //      throw new IllegalStateException("Type not supported " + returnType);
-    //    }
   }
 }

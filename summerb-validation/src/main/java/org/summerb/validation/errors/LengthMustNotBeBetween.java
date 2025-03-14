@@ -1,9 +1,10 @@
 package org.summerb.validation.errors;
 
+import java.io.Serial;
 import org.summerb.validation.ValidationError;
 
 public class LengthMustNotBeBetween extends ValidationError {
-  private static final long serialVersionUID = 6291582559911847149L;
+  @Serial private static final long serialVersionUID = 6291582559911847149L;
 
   public static final String MESSAGE_CODE = "validation.length.mustNotBe.between";
 

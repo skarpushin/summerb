@@ -2,6 +2,7 @@ package org.summerb.methodCapturers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -57,7 +58,7 @@ class MethodCapturerProxyClassFactoryImplTest {
 
     // now let's trigger another time ensure that map will not change (meaning cache worked)
     f.getProxyType(Bean.class);
-    assertTrue(map == f.beanClassToProxyType);
+    assertSame(map, f.beanClassToProxyType);
   }
 
   private static class TestMultiThreaded implements Runnable {
@@ -78,7 +79,7 @@ class MethodCapturerProxyClassFactoryImplTest {
   void test_getProxyType_multi_threaded_double_check() throws InterruptedException {
     var f =
         new MethodCapturerProxyClassFactoryImpl() {
-          Object o = new Object();
+          final Object o = new Object();
           int calls = 0;
 
           @Override
@@ -107,7 +108,7 @@ class MethodCapturerProxyClassFactoryImplTest {
             return super.findProxyInCacheForClass(clazz);
           }
 
-          protected void safeSleep(long duration) {
+          void safeSleep(long duration) {
             try {
               Thread.sleep(duration);
             } catch (InterruptedException e) {

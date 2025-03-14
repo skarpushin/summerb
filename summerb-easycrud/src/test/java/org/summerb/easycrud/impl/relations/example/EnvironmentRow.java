@@ -15,8 +15,10 @@
  ******************************************************************************/
 package org.summerb.easycrud.impl.relations.example;
 
+import java.io.Serial;
+
 public class EnvironmentRow extends RowBase {
-  private static final long serialVersionUID = -8941389959899460385L;
+  @Serial private static final long serialVersionUID = -8941389959899460385L;
 
   public static final String FN_NAME = "name";
   public static final int FN_NAME_SIZE = 40;

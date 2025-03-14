@@ -18,7 +18,7 @@ package org.summerb.easycrud.api;
 public interface StringIdGenerator {
 
   /**
-   * Generate new ID for given DTO. Id doesn't have to depend on DTO, it's purely Voluntarily.
+   * Generate new ID for given DTO. ID doesn't have to depend on DTO, it's purely Voluntarily.
    *
    * @param optionalDto dto to create ID for, could be null
    * @return Some unique string that represents ID

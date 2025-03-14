@@ -38,6 +38,6 @@ public class ExceptionUtilsTest {
   }
 
   protected void doThrow(int i) {
-    throw new IllegalStateException("Some test exception with additonal data: " + i);
+    throw new IllegalStateException("Some test exception with additional data: " + i);
   }
 }

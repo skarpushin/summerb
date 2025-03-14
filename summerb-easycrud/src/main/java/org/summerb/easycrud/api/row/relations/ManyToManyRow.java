@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.summerb.easycrud.api.row.relations;
 
+import java.io.Serial;
 import org.summerb.easycrud.api.row.HasAutoincrementId;
 import org.summerb.utils.DtoBase;
 
@@ -27,7 +28,7 @@ import org.summerb.utils.DtoBase;
  * @param <T2Id> type of referencee id (who is being referenced)
  */
 public class ManyToManyRow<T1Id, T2Id> implements DtoBase, HasAutoincrementId {
-  private static final long serialVersionUID = 2609297133758985L;
+  @Serial private static final long serialVersionUID = 2609297133758985L;
 
   public static final String FN_SRC = "src";
   public static final String FN_DST = "dst";

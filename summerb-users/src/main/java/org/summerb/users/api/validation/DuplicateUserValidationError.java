@@ -15,10 +15,11 @@
  ******************************************************************************/
 package org.summerb.users.api.validation;
 
+import java.io.Serial;
 import org.summerb.validation.ValidationError;
 
 public class DuplicateUserValidationError extends ValidationError {
-  private static final long serialVersionUID = -2231143102381068894L;
+  @Serial private static final long serialVersionUID = -2231143102381068894L;
 
   public static final String VALIDATION_MESSAGE_CODE_DUPLICATE_USER = "duplicate.user";
 

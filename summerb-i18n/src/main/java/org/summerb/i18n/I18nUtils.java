@@ -72,7 +72,7 @@ public abstract class I18nUtils {
       String messageCode, Object[] args, MessageSource messageSource, Locale locale) {
     try {
       return messageSource.getMessage(messageCode, args, locale);
-    } catch (NoSuchMessageException nsme) {
+    } catch (NoSuchMessageException ignored) {
       // as a backup plan just return message code
       return messageCode;
     }

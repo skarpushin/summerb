@@ -46,8 +46,7 @@ public class LocaleResolverUserBasedImpl extends CookieLocaleResolver {
       boolean isRegisteredUser = securityContextResolver.hasRole(SecurityConstants.ROLE_USER);
       if (isRegisteredUser) {
         User user = securityContextResolver.getUser();
-        Locale userLocale = StringUtils.parseLocaleString(user.getLocale());
-        return userLocale;
+        return StringUtils.parseLocaleString(user.getLocale());
       }
     } catch (Throwable t) {
       log.warn("Failed to resolve locale based on user data", t);

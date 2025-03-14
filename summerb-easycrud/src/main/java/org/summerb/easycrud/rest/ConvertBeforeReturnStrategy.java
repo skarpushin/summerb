@@ -31,9 +31,7 @@ public class ConvertBeforeReturnStrategy<TId, TDto extends HasId<TId>> {
       return ret;
     }
     List<TDto> rows = ret.getRows();
-    for (int i = 0; i < rows.size(); i++) {
-      rows.set(i, convert(rows.get(i)));
-    }
+    rows.replaceAll(this::convert);
     return ret;
   }
 

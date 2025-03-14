@@ -15,10 +15,11 @@
  ******************************************************************************/
 package org.summerb.security.api.dto;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 public class ScalarValue<T> implements Serializable {
-  private static final long serialVersionUID = 552482292114371317L;
+  @Serial private static final long serialVersionUID = 552482292114371317L;
 
   private T value;
 

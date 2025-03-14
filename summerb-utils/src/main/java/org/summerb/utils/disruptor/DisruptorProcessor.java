@@ -19,11 +19,11 @@ public interface DisruptorProcessor<T> {
   void disruptionStepStarted(long disruptionIntervalMs);
 
   /**
-   * if false returned that data will not be processed and all subsequent data in same thread will
-   * not be at this disruption cycle
+   * Check if processing should continue in this disruption cycle
    *
-   * @param data
-   * @return
+   * @param data for evaluation purposes
+   * @return flow control flag. If false is returned, then that data will not be processed and all
+   *     subsequent data in same thread will * not be at this disruption cycle
    */
   boolean isStopProcessingThisThreadData(T data);
 

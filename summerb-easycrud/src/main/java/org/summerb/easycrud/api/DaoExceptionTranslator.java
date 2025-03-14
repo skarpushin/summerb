@@ -30,7 +30,7 @@ public interface DaoExceptionTranslator {
 
   /**
    * This method meant to be called from catch clause. If exception cannot be handled by this impl
-   * it should just do nothing. Otherwise it should throw {@link ValidationException} (will be
+   * it should just do nothing. Otherwise, it should throw {@link ValidationException} (will be
    * wrapped in unchecked) or any other exception that is applicable
    *
    * @param t exception

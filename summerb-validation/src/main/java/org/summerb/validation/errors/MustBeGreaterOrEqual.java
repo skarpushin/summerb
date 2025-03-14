@@ -15,10 +15,11 @@
  ******************************************************************************/
 package org.summerb.validation.errors;
 
+import java.io.Serial;
 import org.summerb.validation.ValidationError;
 
 public class MustBeGreaterOrEqual extends ValidationError {
-  private static final long serialVersionUID = -1011940103095989459L;
+  @Serial private static final long serialVersionUID = -1011940103095989459L;
 
   public static final String MESSAGE_CODE = "validation.mustBe.greaterOrEqual";
 

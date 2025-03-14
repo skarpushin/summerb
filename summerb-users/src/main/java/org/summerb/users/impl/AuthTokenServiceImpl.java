@@ -36,9 +36,6 @@ import org.summerb.validation.ValidationError;
 import org.summerb.validation.ValidationException;
 
 public class AuthTokenServiceImpl implements AuthTokenService {
-  // protected static Logger log =
-  // Logger.getLogger(AuthTokenServiceImpl.class);
-
   protected UserService userService;
   protected PasswordService passwordService;
   protected AuthTokenDao authTokenDao;
@@ -252,7 +249,6 @@ public class AuthTokenServiceImpl implements AuthTokenService {
       authTokenDao.deleteAuthToken(authTokenUuid);
     } catch (AuthTokenNotFoundException nfe) {
       // it's ok
-      return;
     } catch (Throwable t) {
       String msg = String.format("Failed to delete auth token '%s'", authTokenUuid);
       throw new UserServiceUnexpectedException(msg, t);

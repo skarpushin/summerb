@@ -39,7 +39,7 @@ public class ExceptionTranslatorDelegatingImpl implements ExceptionTranslator {
 
     Throwable cur = exceptionUnwindingStrategy.getNextMeaningfulExc(t);
     while (cur != null) {
-      if (ret.length() > 0) {
+      if (!ret.isEmpty()) {
         appendJoiner(ret);
       }
 
@@ -75,9 +75,7 @@ public class ExceptionTranslatorDelegatingImpl implements ExceptionTranslator {
       return;
     }
 
-    int scanFrom = Math.max(0, ret.length() - joinerString.length());
-
-    int pos1 = scanFrom;
+    int pos1 = Math.max(0, ret.length() - joinerString.length());
     int pos2 = 0;
 
     for (; pos1 < ret.length(); pos1++) {
@@ -99,7 +97,6 @@ public class ExceptionTranslatorDelegatingImpl implements ExceptionTranslator {
     if (pos2 == 0) {
       ret.append(joinerString);
     } else if (pos2 == joinerString.length()) {
-      return;
     } else {
       ret.append(joinerString.substring(pos2));
     }

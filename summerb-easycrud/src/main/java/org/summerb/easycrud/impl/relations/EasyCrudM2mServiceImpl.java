@@ -47,7 +47,7 @@ import org.summerb.security.api.exceptions.NotAuthorizedException;
  * implementation that can make use of joins -OR- consider caching options.
  *
  * <p>NOTE: Proposed authorization approach is to re-use (with wrapper {@link
- * M2mAuthorizationWireTapImpl}) referencer's authorization. All reads of m2m is considered as
+ * M2mAuthorizationWireTapImpl}) referencer's authorization. All reads of m2m are considered as
  * referencer read, and changes to m2m collection is considered as update operation to referencer
  * object.
  *
@@ -65,7 +65,6 @@ public class EasyCrudM2mServiceImpl<
   protected EasyCrudService<T1Id, T1Dto> serviceA;
   protected EasyCrudService<T2Id, T2Dto> serviceB;
 
-  @SuppressWarnings("deprecation")
   public EasyCrudM2mServiceImpl(
       EasyCrudM2MDaoSqlImpl<T1Id, T1Dto, T2Id, T2Dto> dao,
       EasyCrudService<T1Id, T1Dto> serviceA,

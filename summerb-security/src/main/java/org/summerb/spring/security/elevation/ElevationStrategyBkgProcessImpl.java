@@ -23,7 +23,7 @@ import org.summerb.security.elevation.api.ElevationStrategy;
 import org.summerb.spring.security.auth.BackgroundProcessAuthentication;
 
 /**
- * This impl elevates to BackgroundProcess credentials if current user is missing or ANonymous
+ * This impl elevates to BackgroundProcess credentials if current user is missing or AAnonymous
  *
  * @author sergey.karpushin
  */

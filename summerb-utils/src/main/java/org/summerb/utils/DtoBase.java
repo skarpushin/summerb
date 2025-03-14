@@ -20,7 +20,7 @@ import java.io.Serializable;
 /**
  * Special interface used to mark your DTOs.
  *
- * <p>It might help to correctly handle JSON serialization and it's also required by other parts of
+ * <p>It might help to correctly handle JSON serialization, and it's also required by other parts of
  * the library, like EntityChangedEvent
  *
  * <p>It's also useful for enforcing which classes are allowed to be deserialized when client

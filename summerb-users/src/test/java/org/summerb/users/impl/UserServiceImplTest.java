@@ -307,7 +307,7 @@ public class UserServiceImplTest {
   }
 
   @Test
-  public void testUpdateUser_whitebox_usueOnUnexexpectedException() {
+  public void testUpdateUser_whitebox_usueOnUnexpectedException() {
     UserServiceImpl fixture = UserServiceImplFactory.createUsersServiceImpl();
     doThrow(new IllegalArgumentException("test exception"))
         .when(fixture.getUserDao())

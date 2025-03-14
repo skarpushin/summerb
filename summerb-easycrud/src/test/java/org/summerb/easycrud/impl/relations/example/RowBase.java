@@ -15,13 +15,14 @@
  ******************************************************************************/
 package org.summerb.easycrud.impl.relations.example;
 
+import java.io.Serial;
 import org.summerb.easycrud.api.row.HasAuthor;
 import org.summerb.easycrud.api.row.HasAutoincrementId;
 import org.summerb.easycrud.api.row.HasTimestamps;
 import org.summerb.utils.DtoBase;
 
 public abstract class RowBase implements DtoBase, HasAutoincrementId, HasTimestamps, HasAuthor {
-  private static final long serialVersionUID = 801702724424959230L;
+  @Serial private static final long serialVersionUID = 801702724424959230L;
 
   private Long id;
   private long createdAt;

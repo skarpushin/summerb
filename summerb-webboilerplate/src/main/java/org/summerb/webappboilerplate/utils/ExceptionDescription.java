@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.summerb.webappboilerplate.utils;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -23,7 +24,7 @@ import java.io.Serializable;
  * @author sergeyk
  */
 public class ExceptionDescription implements Serializable {
-  protected static final long serialVersionUID = 2895147359877289381L;
+  @Serial private static final long serialVersionUID = 2895147359877289381L;
 
   protected String className;
   protected String message;

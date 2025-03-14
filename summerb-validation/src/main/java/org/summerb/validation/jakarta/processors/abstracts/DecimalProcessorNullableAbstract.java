@@ -46,7 +46,7 @@ public abstract class DecimalProcessorNullableAbstract<T extends Annotation>
 
   @Override
   protected void internalValidate(Object value, ValidationContext<?> ctx) {
-    Class<? extends Object> valueType = value.getClass();
+    Class<?> valueType = value.getClass();
     Preconditions.checkArgument(
         ALLOWED_TYPES.contains(valueType) || value instanceof CharSequence,
         "Type is not one of allowed %s: %s",

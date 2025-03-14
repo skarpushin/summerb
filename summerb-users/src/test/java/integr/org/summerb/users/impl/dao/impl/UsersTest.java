@@ -47,7 +47,7 @@ public class UsersTest {
   @Autowired private UserService userService;
 
   @Test
-  public void testCreateUser_expectUserWIllBeFoundByIdAfterCreateion() throws Exception {
+  public void testCreateUser_expectUserWIllBeFoundByIdAfterCreation() throws Exception {
     User userToCreate = UserFactory.createNewUserTemplate();
     userToCreate = userService.createUser(userToCreate);
 
@@ -74,7 +74,7 @@ public class UsersTest {
   }
 
   @Test
-  public void testDeleteUser_expectUserWillNotBeFoundAfterDeletition() throws Exception {
+  public void testDeleteUser_expectUserWillNotBeFoundAfterDeletion() throws Exception {
     User userToCreate = UserFactory.createNewUserTemplate();
     userToCreate = userService.createUser(userToCreate);
     userService.deleteUserByUuid(userToCreate.getUuid());

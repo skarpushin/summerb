@@ -123,8 +123,8 @@ public abstract class SqlPackageParserAbstract implements SqlPackageParser {
         sb.append(t);
       }
 
-      // last part of script not closed by semi-colon ";"
-      if (sb.length() > 0) {
+      // last part of script not closed by semicolon ";"
+      if (!sb.isEmpty()) {
         String statement = sb.toString();
         if (StringUtils.hasText(statement)) {
           action.accept(new UpgradeStatement(statement));

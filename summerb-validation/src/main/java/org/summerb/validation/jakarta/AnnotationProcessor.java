@@ -20,7 +20,7 @@ import java.lang.annotation.Annotation;
 import org.summerb.validation.ValidationContext;
 
 /**
- * Impl of this interface is supposed to be statefull (instance created for each annotation on the
+ * Impl of this interface is supposed to be stateful (instance created for each annotation on the
  * bean)
  *
  * @author Sergey Karpushin

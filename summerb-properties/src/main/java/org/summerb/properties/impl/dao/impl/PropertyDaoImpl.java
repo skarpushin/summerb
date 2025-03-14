@@ -34,7 +34,7 @@ public class PropertyDaoImpl extends TableDaoBase implements PropertyDao, Initia
   protected String sqlPutProperty;
   protected String sqlFindSingleSubjectProperty;
   protected String sqlFindAllSubjectProperty;
-  protected String sqlDeleAllSubjectProperties;
+  protected String sqlDeleteAllSubjectProperties;
 
   public PropertyDaoImpl(DataSource dataSource, String tableName /*"props_values"*/) {
     super(dataSource, tableName);
@@ -62,7 +62,7 @@ public class PropertyDaoImpl extends TableDaoBase implements PropertyDao, Initia
             "SELECT name_id, value FROM %s WHERE app_id = :app_id AND domain_id = :domain_id AND subject_id = :subject_id",
             tableName);
 
-    sqlDeleAllSubjectProperties =
+    sqlDeleteAllSubjectProperties =
         String.format(
             "DELETE FROM %s WHERE app_id = :app_id AND domain_id = :domain_id AND subject_id = :subject_id",
             tableName);
@@ -76,7 +76,7 @@ public class PropertyDaoImpl extends TableDaoBase implements PropertyDao, Initia
         public String mapRow(ResultSet rs, int rowNum) throws SQLException {
           String value = rs.getString(VALUE_FIELD_NAME);
           // TOOD: Can somebody explain why we would copy this string?
-          return value == null ? null : new String(value);
+          return value == null ? null : value;
         }
       };
 
@@ -86,8 +86,7 @@ public class PropertyDaoImpl extends TableDaoBase implements PropertyDao, Initia
         public NamedIdProperty mapRow(ResultSet rs, int rowNum) throws SQLException {
           String value = rs.getString(VALUE_FIELD_NAME);
           // TOOD: Can somebody explain why we would copy this string?
-          return new NamedIdProperty(
-              rs.getLong("name_id"), value == null ? null : new String(value));
+          return new NamedIdProperty(rs.getLong("name_id"), value == null ? null : value);
         }
       };
 
@@ -144,7 +143,7 @@ public class PropertyDaoImpl extends TableDaoBase implements PropertyDao, Initia
     params.put("subject_id", subjectId);
 
     try {
-      jdbc.update(sqlDeleAllSubjectProperties, params);
+      jdbc.update(sqlDeleteAllSubjectProperties, params);
     } catch (Exception e) {
       daoExceptionTranslator.translateAndThrowIfApplicableUnchecked(e);
       throw e;

@@ -31,8 +31,7 @@ public class MessageSourceExposableImpl extends ReloadableResourceBundleMessageS
   public Properties getAllMessages(Locale locale) {
     clearCacheIncludingAncestors();
     PropertiesHolder propertiesHolder = getMergedProperties(locale);
-    Properties properties = propertiesHolder.getProperties();
-    return properties;
+    return propertiesHolder.getProperties();
   }
 
   @Override

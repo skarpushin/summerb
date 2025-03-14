@@ -2,6 +2,7 @@ package org.summerb.easycrud_swagger.swagger;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.access.annotation.Secured;
@@ -29,9 +30,7 @@ public class OperationBuilderPluginSecuredAware implements OperationBuilderPlugi
     }
 
     if (!roles.isEmpty()) {
-      context
-          .operationBuilder()
-          .extensions(Arrays.asList(new TrimToRoles(roles.toArray(new String[0]))));
+      context.operationBuilder().extensions(List.of(new TrimToRoles(roles.toArray(new String[0]))));
     }
   }
 

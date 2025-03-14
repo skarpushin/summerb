@@ -23,6 +23,7 @@ public class ExceptionUnwindingStrategyImpl implements ExceptionUnwindingStrateg
   // available, i.e. excluded from classpath. Don
   public static final List<String> CLASS_NAMES_TO_SKIP =
       Arrays.asList(
+          "jakarta.servlet.ServletException",
           "org.springframework.web.util.NestedServletException",
           "java.lang.reflect.UndeclaredThrowableException",
           "java.lang.reflect.InvocationTargetException");

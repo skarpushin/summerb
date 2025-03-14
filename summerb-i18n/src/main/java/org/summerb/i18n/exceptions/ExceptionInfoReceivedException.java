@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.summerb.i18n.exceptions;
 
+import java.io.Serial;
 import org.summerb.i18n.exceptions.dto.ExceptionInfo;
 
 /**
@@ -25,7 +26,7 @@ import org.summerb.i18n.exceptions.dto.ExceptionInfo;
  */
 public class ExceptionInfoReceivedException extends RuntimeException
     implements HasErrorDescriptionObject<ExceptionInfo> {
-  private static final long serialVersionUID = 2846267644114060942L;
+  @Serial private static final long serialVersionUID = 2846267644114060942L;
   private final ExceptionInfo exceptionInfo;
 
   public ExceptionInfoReceivedException(ExceptionInfo exceptionInfo) {

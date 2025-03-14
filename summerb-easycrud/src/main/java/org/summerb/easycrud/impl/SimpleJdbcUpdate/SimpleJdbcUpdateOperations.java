@@ -74,14 +74,14 @@ public interface SimpleJdbcUpdateOperations {
   SimpleJdbcUpdate restrictingColumns(Map<String, Operator> columnsToOperators);
 
   /**
-   * Turn off any processing of column meta data information obtained via JDBC.
+   * Turn off any processing of column metadata information obtained via JDBC.
    *
    * @return the instance of this SimpleJdbcUpdate
    */
   SimpleJdbcUpdateOperations withoutTableColumnMetaDataAccess();
 
   /**
-   * Include synonyms for the column meta data lookups via JDBC. Note: this is only necessary to
+   * Include synonyms for the column metadata lookups via JDBC. Note: this is only necessary to
    * include for Oracle since other databases supporting synonyms seems to include the synonyms
    * automatically.
    *
@@ -90,10 +90,10 @@ public interface SimpleJdbcUpdateOperations {
   SimpleJdbcUpdateOperations includeSynonymsForTableColumnMetaData();
 
   /**
-   * @param flag Use a the provided NativeJdbcExtractor during the column meta data lookups via
-   *     JDBC. Note: this is only necessary to include when running with a connection pool that
-   *     wraps the meta data connection and when using a database like Oracle where it is necessary
-   *     to access the native connection to include synonyms.
+   * @param flag Use a the provided NativeJdbcExtractor during the column metadata lookups via JDBC.
+   *     Note: this is only necessary to include when running with a connection pool that wraps the
+   *     metadata connection and when using a database like Oracle where it is necessary to access
+   *     the native connection to include synonyms.
    * @return the instance of this SimpleJdbcUpdate
    */
   SimpleJdbcUpdateOperations useNativeJdbcExtractorForMetaData(boolean flag);

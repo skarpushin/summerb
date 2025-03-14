@@ -15,11 +15,12 @@
  ******************************************************************************/
 package integr.org.summerb.easycrud.dtos;
 
+import java.io.Serial;
 import java.io.Serializable;
 import org.summerb.easycrud.api.row.HasUuid;
 
 public class TestDto3 implements HasUuid, Serializable {
-  private static final long serialVersionUID = 2232705400887262676L;
+  @Serial private static final long serialVersionUID = 2232705400887262676L;
 
   private String id;
   private String linkToDtoOneOptional;

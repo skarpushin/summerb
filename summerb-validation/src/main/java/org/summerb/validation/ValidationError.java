@@ -17,6 +17,7 @@ package org.summerb.validation;
 
 import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
+import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -46,7 +47,7 @@ import org.summerb.validation.gson.ValidationErrorGsonTypeAdapter;
  * @author sergey.karpushin
  */
 public class ValidationError implements Serializable, HasMessageCode, HasMessageArgs {
-  private static final long serialVersionUID = 2414529436328740490L;
+  @Serial private static final long serialVersionUID = 2414529436328740490L;
 
   public static final Map<String, Class<?>> ALLOWED_ARGS_CLASSES;
 
@@ -97,7 +98,7 @@ public class ValidationError implements Serializable, HasMessageCode, HasMessage
         continue;
       }
       Preconditions.checkArgument(
-          ALLOWED_ARGS_CLASSES.values().contains(arg.getClass()),
+          ALLOWED_ARGS_CLASSES.containsValue(arg.getClass()),
           "Argument %s is of an unacceptable type %s. Only types listed in ValidationError::ALLOWED_ARGS_CLASSES are allowed: %s",
           i,
           arg.getClass(),

@@ -43,7 +43,7 @@ import org.summerb.validation.ValidationException;
  * business logic.
  *
  * <p>EasyCrudService is Row-centric, it's good at working with 1 Row type only, which is mapped to
- * the table in the database. Each Row type requires it's own EasyCrudService.
+ * the table in the database. Each Row type requires its own EasyCrudService.
  *
  * <p>It's not an ORM framework, so if you need to have a reference to a user, you'll create field
  * like "long userId", but not "User user".
@@ -75,7 +75,7 @@ public interface EasyCrudService<TId, TRow extends HasId<TId>> {
    * string literals for field names. Use its result to pass to query search methods.
    *
    * @param getter to obtain field name from
-   * @return instance of {@link OrderByBuilder}, just call one of it's methods {@link
+   * @return instance of {@link OrderByBuilder}, just call one of its methods {@link
    *     OrderByBuilder#asc()} or {@link OrderByBuilder#desc()} to needed instance of {@link
    *     OrderBy}
    */
@@ -88,8 +88,8 @@ public interface EasyCrudService<TId, TRow extends HasId<TId>> {
    * @return newly created row. It is possible that fields will differ due to ID set and other
    *     modifications set by {@link EasyCrudWireTap} injected into this service
    * @throws ValidationException in case of field validation errors. Some data access exceptions
-   *     might be translated into field validatnion errors as well
-   * @throws NotAuthorizedException if user is not authorized o perform this operation
+   *     might be translated into field validation errors as well
+   * @throws NotAuthorizedException if user is not authorized to perform this operation
    */
   @Transactional(rollbackFor = Throwable.class)
   TRow create(TRow row);
@@ -101,8 +101,8 @@ public interface EasyCrudService<TId, TRow extends HasId<TId>> {
    * @return updated row. It is possible that fields will differ due to ID set and other
    *     modifications set by {@link EasyCrudWireTap} injected into this service
    * @throws ValidationException in case of field validation errors. Some data access exceptions
-   *     might be translated into field validatnion errors as well
-   * @throws NotAuthorizedException if user is not authorized o perform this operation
+   *     might be translated into field validation errors as well
+   * @throws NotAuthorizedException if user is not authorized to perform this operation
    * @throws EntityNotFoundException in case entity does not exist
    */
   @Transactional(rollbackFor = Throwable.class)
@@ -111,14 +111,14 @@ public interface EasyCrudService<TId, TRow extends HasId<TId>> {
   /**
    * @param id id of row to find
    * @return row or null if not found
-   * @throws NotAuthorizedException if user is not authorized o perform this operation
+   * @throws NotAuthorizedException if user is not authorized to perform this operation
    */
   TRow findById(TId id);
 
   /**
    * @param id id of row to get
    * @return row, never null. If row not found, throws {@link EntityNotFoundException}
-   * @throws NotAuthorizedException if user is not authorized o perform this operation
+   * @throws NotAuthorizedException if user is not authorized to perform this operation
    * @throws EntityNotFoundException in case entity does not exist
    */
   TRow getById(TId id);
@@ -126,14 +126,14 @@ public interface EasyCrudService<TId, TRow extends HasId<TId>> {
   /**
    * @param query query for locating row
    * @return Row or null if not found. If more than 1 row matched query exception will be thrown
-   * @throws NotAuthorizedException if user is not authorized o perform this operation
+   * @throws NotAuthorizedException if user is not authorized to perform this operation
    */
   TRow findOneByQuery(QueryConditions query);
 
   /**
    * @param query query for locating row
    * @return a Row. If more (or less) than 1 row matched query exception will be thrown
-   * @throws NotAuthorizedException if user is not authorized o perform this operation
+   * @throws NotAuthorizedException if user is not authorized to perform this operation
    */
   TRow getOneByQuery(QueryConditions query);
 
@@ -141,7 +141,7 @@ public interface EasyCrudService<TId, TRow extends HasId<TId>> {
    * @param query query for locating row
    * @param orderBy order by, optional - can be missing/null
    * @return row, never null. If nothing found, throws {@link EntityNotFoundException}
-   * @throws NotAuthorizedException if user is not authorized o perform this operation
+   * @throws NotAuthorizedException if user is not authorized to perform this operation
    * @throws EntityNotFoundException in case entity does not exist
    */
   TRow getFirstByQuery(QueryConditions query, OrderBy... orderBy);
@@ -150,7 +150,7 @@ public interface EasyCrudService<TId, TRow extends HasId<TId>> {
    * @param query query for locating row
    * @param orderBy order by, optional - can be missing/null
    * @return row, or null if not found
-   * @throws NotAuthorizedException if user is not authorized o perform this operation
+   * @throws NotAuthorizedException if user is not authorized to perform this operation
    */
   TRow findFirstByQuery(QueryConditions query, OrderBy... orderBy);
 
@@ -159,7 +159,7 @@ public interface EasyCrudService<TId, TRow extends HasId<TId>> {
    * @param optionalQuery optional Query, might be null
    * @param orderBy optional orderBy, might be missing/null
    * @return results, might be empty, but never null
-   * @throws NotAuthorizedException if user is not authorized o perform this operation
+   * @throws NotAuthorizedException if user is not authorized to perform this operation
    */
   PaginatedList<TRow> find(
       PagerParams pagerParams, QueryConditions optionalQuery, OrderBy... orderBy);
@@ -169,14 +169,14 @@ public interface EasyCrudService<TId, TRow extends HasId<TId>> {
    *     #findAll(OrderBy...)}
    * @param orderBy optional orderBy, might be missing/null
    * @return results, might be empty, but never null
-   * @throws NotAuthorizedException if user is not authorized o perform this operation
+   * @throws NotAuthorizedException if user is not authorized to perform this operation
    */
   List<TRow> findAll(QueryConditions optionalQuery, OrderBy... orderBy);
 
   /**
    * @param orderBy optional orderBy, might be missing/null
    * @return results, might be empty, but never null
-   * @throws NotAuthorizedException if user is not authorized o perform this operation
+   * @throws NotAuthorizedException if user is not authorized to perform this operation
    */
   List<TRow> findAll(OrderBy... orderBy);
 
@@ -194,7 +194,7 @@ public interface EasyCrudService<TId, TRow extends HasId<TId>> {
    * Deletes row by id.
    *
    * @param id id of the row to delete
-   * @throws NotAuthorizedException if user is not authorized o perform this operation
+   * @throws NotAuthorizedException if user is not authorized to perform this operation
    * @throws EntityNotFoundException in case entity does not exist
    */
   @Transactional(rollbackFor = Throwable.class)
@@ -207,7 +207,7 @@ public interface EasyCrudService<TId, TRow extends HasId<TId>> {
    * <p>Deletes row by example
    *
    * @param row row to get id and (optionally) modifiedAt from
-   * @throws NotAuthorizedException if user is not authorized o perform this operation
+   * @throws NotAuthorizedException if user is not authorized to perform this operation
    * @throws EntityNotFoundException in case entity does not exist
    */
   @Transactional(rollbackFor = Throwable.class)
@@ -220,7 +220,7 @@ public interface EasyCrudService<TId, TRow extends HasId<TId>> {
    * @param id id of the row to delete
    * @param modifiedAt timestamp of most recent modification of the row. Used for optimistic locking
    *     logic
-   * @throws NotAuthorizedException if user is not authorized o perform this operation
+   * @throws NotAuthorizedException if user is not authorized to perform this operation
    * @throws EntityNotFoundException in case entity does not exist
    * @throws OptimisticLockingFailureException if row version doesn't match provided one
    */
@@ -232,7 +232,7 @@ public interface EasyCrudService<TId, TRow extends HasId<TId>> {
    *
    * @param query query that used to locate rows for deletion
    * @return number of affected rows
-   * @throws NotAuthorizedException if user is not authorized o perform this operation
+   * @throws NotAuthorizedException if user is not authorized to perform this operation
    */
   @Transactional(rollbackFor = Throwable.class)
   int deleteByQuery(QueryConditions query);

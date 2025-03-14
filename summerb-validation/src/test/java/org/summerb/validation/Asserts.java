@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class Asserts {
 
   /**
-   * Just a conventient shortcut for <code>assertThrows(IllegalArgumentException.class, runnable);
+   * Just a convenient shortcut for <code>assertThrows(IllegalArgumentException.class, runnable);
    * </code>, it just invokes assertThrows
    *
    * @param runnable runnable

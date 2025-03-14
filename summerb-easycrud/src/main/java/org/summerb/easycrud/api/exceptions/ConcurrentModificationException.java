@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.summerb.easycrud.api.exceptions;
 
+import java.io.Serial;
 import org.summerb.easycrud.api.EasyCrudMessageCodes;
 import org.summerb.easycrud.api.row.HasTimestamps;
 import org.summerb.i18n.HasMessageArgs;
@@ -35,7 +36,7 @@ import org.summerb.i18n.MessageCodeMessageArgConverter;
  */
 public class ConcurrentModificationException extends Exception
     implements HasMessageCode, HasMessageArgs, HasMessageArgsConverters {
-  private static final long serialVersionUID = -8553908925129274626L;
+  @Serial private static final long serialVersionUID = -8553908925129274626L;
   protected static final MessageArgConverter[] MESSAGE_ARG_CONVERTERS =
       new MessageArgConverter[] {MessageCodeMessageArgConverter.INSTANCE, null};
 

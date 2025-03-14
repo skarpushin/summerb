@@ -70,9 +70,10 @@ class ValidationExceptionTest {
             Arrays.asList(new MustHaveText("asd"), new MustBeGreater("fgh", 1)));
 
     assertEquals(
-        "validation.error: \n"
-            + "	asd: code = 'validation.must.haveText'\n"
-            + "	fgh: code = 'validation.mustBe.greater', args = [1]",
+        """
+                    validation.error:\s
+                    	asd: code = 'validation.must.haveText'
+                    	fgh: code = 'validation.mustBe.greater', args = [1]""",
         f.toString());
   }
 }

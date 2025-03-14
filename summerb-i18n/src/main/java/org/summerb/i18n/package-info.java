@@ -16,7 +16,7 @@
 /**
  * This package contains core design and impl for i18n aspect of the application.
  *
- * <p>The idea is that back-end will never (or almost never) deal with user-facing text. Instead it
+ * <p>The idea is that back-end will never (or almost never) deal with user-facing text. Instead, it
  * will operate using messageCodes (constants) which then can be translated to a human-readable form
  * upon presentation/rendering OR used for actual logic (since these are constants it's pretty
  * reliable).

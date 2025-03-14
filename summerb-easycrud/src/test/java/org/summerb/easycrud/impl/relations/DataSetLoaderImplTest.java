@@ -89,8 +89,7 @@ public class DataSetLoaderImplTest {
   }
 
   private Set<Object> ids(Object... pids) {
-    Set<Object> ids = new HashSet<>(Arrays.asList(pids));
-    return ids;
+    return new HashSet<>(Arrays.asList(pids));
   }
 
   @Test

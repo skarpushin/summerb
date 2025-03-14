@@ -15,10 +15,11 @@
  ******************************************************************************/
 package org.summerb.users.api.exceptions;
 
+import java.io.Serial;
 import org.summerb.i18n.HasMessageCode;
 
 public class AuthTokenNotFoundException extends UsersServiceException implements HasMessageCode {
-  private static final long serialVersionUID = 6837239999953242494L;
+  @Serial private static final long serialVersionUID = 6837239999953242494L;
 
   @Override
   public String getMessageCode() {

@@ -25,7 +25,7 @@ import java.util.function.Function;
  * Cached impl of {@link PropertyNameResolver}
  *
  * <p>Lambda that is created is tied to a place where it was created, so when same code is executed
- * again and again it will reuse same lambda, which means we can use it to cache results.
+ * again, and again it will reuse same lambda, which means we can use it to cache results.
  *
  * @param <T> type of bean for which we can retrieve propertyNames from method references
  */

@@ -15,10 +15,11 @@
  ******************************************************************************/
 package org.summerb.validation.errors;
 
+import java.io.Serial;
 import org.summerb.validation.ValidationError;
 
 public class LengthMustBeLessOrEqual extends ValidationError {
-  private static final long serialVersionUID = 7170965971828651975L;
+  @Serial private static final long serialVersionUID = 7170965971828651975L;
 
   public static final String MESSAGE_CODE = "validation.length.mustBe.lessOrEqual";
 

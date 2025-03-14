@@ -73,7 +73,7 @@ public class PersistentTokenRepositoryDefaultImpl implements PersistentTokenRepo
           authToken.getTokenValue(),
           new Date(authToken.getLastVerifiedAt()));
     } catch (Throwable e) {
-      log.info("Persistent auth token wasn't found for seriesId " + seriesId);
+      log.info("Persistent auth token wasn't found for seriesId {}", seriesId);
       return null;
     }
   }

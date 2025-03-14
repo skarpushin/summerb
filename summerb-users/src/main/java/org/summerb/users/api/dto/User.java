@@ -15,12 +15,13 @@
  ******************************************************************************/
 package org.summerb.users.api.dto;
 
+import java.io.Serial;
 import java.io.Serializable;
 import org.springframework.util.StringUtils;
 import org.summerb.utils.DtoBase;
 
 public class User implements Serializable, DtoBase {
-  private static final long serialVersionUID = 1404571618064571624L;
+  @Serial private static final long serialVersionUID = 1404571618064571624L;
 
   public static final String FN_EMAIL = "email";
   public static final int FN_EMAIL_SIZE = 45;

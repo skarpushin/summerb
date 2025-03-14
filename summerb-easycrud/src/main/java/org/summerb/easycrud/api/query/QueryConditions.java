@@ -36,7 +36,7 @@ public class QueryConditions {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((conditions == null) ? 0 : conditions.hashCode());
+    result = prime * result + conditions.hashCode();
     return result;
   }
 
@@ -52,11 +52,7 @@ public class QueryConditions {
       return false;
     }
     QueryConditions other = (QueryConditions) obj;
-    if (conditions == null) {
-      if (other.conditions != null) {
-        return false;
-      }
-    } else if (!conditions.equals(other.conditions)) {
+    if (!conditions.equals(other.conditions)) {
       return false;
     }
     return true;

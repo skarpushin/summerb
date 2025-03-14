@@ -15,10 +15,11 @@
  ******************************************************************************/
 package org.summerb.validation.errors;
 
+import java.io.Serial;
 import org.summerb.validation.ValidationError;
 
 public class MustNotBeNull extends ValidationError {
-  private static final long serialVersionUID = -5236960322508069758L;
+  @Serial private static final long serialVersionUID = -5236960322508069758L;
 
   public static final String MESSAGE_CODE = "validation.mustNotBe.null";
 

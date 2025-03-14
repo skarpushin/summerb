@@ -8,7 +8,7 @@ CREATE  TABLE upg_pet (
 
 /* multiline comment in single line */
 INSERT INTO upg_pet (field1) VALUES ('1 --' /*embedded comment*/ );
--- sholud be no problem with next line
+-- should be no problem with next line
 INSERT INTO upg_pet (field1) VALUES ('2 /*asd*/' /*embedded comment*/ );
 
 /* multiline comment 

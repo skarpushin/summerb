@@ -21,10 +21,12 @@ import org.springframework.web.util.NestedServletException;
 public interface ExceptionUnwindingStrategy {
   /**
    * Get first exception that actually might mean something. Impl supposed to skip meaningless
-   * exceptions like {@link NestedServletException}, {@link UndeclaredThrowableException}, etc..
+   * exceptions like {@link jakarta.servlet.ServletException}, {@link NestedServletException},
+   * {@link UndeclaredThrowableException}, etc...
    *
    * @param current current exception at hand
    * @return either the same exception or more meaningful.
    */
+  @SuppressWarnings("deprecation")
   Throwable getNextMeaningfulExc(Throwable current);
 }

@@ -15,10 +15,11 @@
  ******************************************************************************/
 package org.summerb.security.api;
 
+import java.io.Serial;
 import org.summerb.i18n.HasMessageCode;
 
 public class CurrentUserNotFoundException extends RuntimeException implements HasMessageCode {
-  private static final long serialVersionUID = 1899087866041906798L;
+  @Serial private static final long serialVersionUID = 1899087866041906798L;
 
   public static final String ERROR_LOGIN_USER_NOT_FOUND = "error.authenticatedUserExpected";
 

@@ -111,7 +111,7 @@ public class ValidationErrorGsonTypeAdapter
 
   @SuppressFBWarnings(
       value = "NP_NULL_ON_SOME_PATH",
-      justification = "checked by preceeding Preconditions.checkArgument")
+      justification = "checked by preceding Preconditions.checkArgument")
   protected void deserializeArgs(
       ValidationError ret,
       JsonElement args,
@@ -190,7 +190,7 @@ public class ValidationErrorGsonTypeAdapter
       Class<T> ret = (Class<T>) Class.forName(className);
       if (!ValidationError.class.isAssignableFrom(ret)) {
         throw new IllegalArgumentException(
-            "Potentially security breach: attempt to deserilaize something that is not a subtype of ValidationError: "
+            "Potentially security breach: attempt to deserialize something that is not a subtype of ValidationError: "
                 + className);
       }
       return ret;

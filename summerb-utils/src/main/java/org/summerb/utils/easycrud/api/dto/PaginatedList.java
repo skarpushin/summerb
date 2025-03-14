@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.summerb.utils.easycrud.api.dto;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 import org.springframework.util.CollectionUtils;
@@ -25,7 +26,7 @@ import org.springframework.util.CollectionUtils;
  * @author sergey.karpushin
  */
 public class PaginatedList<T> implements Serializable {
-  private static final long serialVersionUID = 1084861445691549809L;
+  @Serial private static final long serialVersionUID = 1084861445691549809L;
 
   private List<T> items;
   private PagerParams pagerParams;

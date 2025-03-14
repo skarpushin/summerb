@@ -31,7 +31,7 @@ import org.springframework.web.util.WebUtils;
  *
  * @author sergey.karpushin
  */
-public class ForceLocaleToCoockieInterceptor implements AsyncHandlerInterceptor {
+public class ForceLocaleToCookieInterceptor implements AsyncHandlerInterceptor {
   @Override
   public boolean preHandle(
       HttpServletRequest request, HttpServletResponse response, Object handler) {

@@ -15,10 +15,11 @@
  ******************************************************************************/
 package org.summerb.properties.api.dto;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 public class Property implements Serializable {
-  private static final long serialVersionUID = -1313040843994092678L;
+  @Serial private static final long serialVersionUID = -1313040843994092678L;
 
   private String appName;
   private String domainName;

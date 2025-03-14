@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.summerb.utils.easycrud.api.dto;
 
+import java.io.Serial;
 import org.summerb.utils.DtoBase;
 
 /**
@@ -26,7 +27,7 @@ import org.summerb.utils.DtoBase;
  * @param <T>
  */
 public class ForeignEntityChangedEvent<T extends DtoBase> extends EntityChangedEvent<T> {
-  private static final long serialVersionUID = -4248659723493913974L;
+  @Serial private static final long serialVersionUID = -4248659723493913974L;
 
   private Object origin;
 

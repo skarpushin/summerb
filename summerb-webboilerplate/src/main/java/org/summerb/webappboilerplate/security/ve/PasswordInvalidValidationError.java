@@ -15,12 +15,13 @@
  ******************************************************************************/
 package org.summerb.webappboilerplate.security.ve;
 
+import java.io.Serial;
 import org.summerb.users.api.exceptions.InvalidPasswordException;
 import org.summerb.validation.ValidationError;
 import org.summerb.webappboilerplate.security.dto.LoginParams;
 
 public class PasswordInvalidValidationError extends ValidationError {
-  private static final long serialVersionUID = 5184851404690565907L;
+  @Serial private static final long serialVersionUID = 5184851404690565907L;
 
   public PasswordInvalidValidationError() {
     super(LoginParams.FN_PASSWORD, InvalidPasswordException.ERROR_LOGIN_INVALID_PASSWORD);

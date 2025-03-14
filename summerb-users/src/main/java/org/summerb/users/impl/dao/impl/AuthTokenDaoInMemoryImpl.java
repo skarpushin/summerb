@@ -128,7 +128,7 @@ public class AuthTokenDaoInMemoryImpl implements AuthTokenDao, InitializingBean,
 
       try (BufferedReader br = new BufferedReader(new FileReader(file))) {
         long now = System.currentTimeMillis();
-        log.info("Loaded tokens from: " + file.getAbsolutePath());
+        log.info("Loaded tokens from: {}", file.getAbsolutePath());
         for (String line; (line = br.readLine()) != null; ) {
           AuthToken token = tryParseToken(line);
           if (token == null || token.getExpiresAt() < now) {
@@ -136,7 +136,7 @@ public class AuthTokenDaoInMemoryImpl implements AuthTokenDao, InitializingBean,
           }
           internalAddToken(token);
         }
-        log.info("Loaded tokens count: " + tokens.size());
+        log.info("Loaded tokens count: {}", tokens.size());
       }
     } catch (Throwable t) {
       log.error("Failed to load persisted tokens", t);
@@ -155,15 +155,15 @@ public class AuthTokenDaoInMemoryImpl implements AuthTokenDao, InitializingBean,
 
       AuthToken ret = new AuthToken();
       ret.setClientIp(parts[0]);
-      ret.setCreatedAt(Long.valueOf(parts[1]));
-      ret.setExpiresAt(Long.valueOf(parts[2]));
-      ret.setLastVerifiedAt(Long.valueOf(parts[3]));
+      ret.setCreatedAt(Long.parseLong(parts[1]));
+      ret.setExpiresAt(Long.parseLong(parts[2]));
+      ret.setLastVerifiedAt(Long.parseLong(parts[3]));
       ret.setTokenValue(parts[4]);
       ret.setUserUuid(parts[5]);
       ret.setUuid(parts[6]);
       return ret;
     } catch (Throwable t) {
-      log.warn("Failed to parse token from line: " + line, t);
+      log.warn("Failed to parse token from line: {}", line, t);
       return null;
     }
   }
@@ -195,28 +195,28 @@ public class AuthTokenDaoInMemoryImpl implements AuthTokenDao, InitializingBean,
           output.flush();
         }
       }
-      log.info("Tokens persisted: " + file.getAbsolutePath());
+      log.info("Tokens persisted: {}", file.getAbsolutePath());
     } catch (Throwable t) {
       log.error("Failed to persist tokens", t);
     }
   }
 
   protected String formatToken(AuthToken t) {
-    StringBuilder sb = new StringBuilder();
-    sb.append(t.getClientIp());
-    sb.append("\t");
-    sb.append(t.getCreatedAt());
-    sb.append("\t");
-    sb.append(t.getExpiresAt());
-    sb.append("\t");
-    sb.append(t.getLastVerifiedAt());
-    sb.append("\t");
-    sb.append(t.getTokenValue());
-    sb.append("\t");
-    sb.append(t.getUserUuid());
-    sb.append("\t");
-    sb.append(t.getUuid());
-    return sb.toString();
+    String sb =
+        t.getClientIp()
+            + "\t"
+            + t.getCreatedAt()
+            + "\t"
+            + t.getExpiresAt()
+            + "\t"
+            + t.getLastVerifiedAt()
+            + "\t"
+            + t.getTokenValue()
+            + "\t"
+            + t.getUserUuid()
+            + "\t"
+            + t.getUuid();
+    return sb;
   }
 
   public String getPathNameToPersistedTokens() {

@@ -34,7 +34,7 @@ public interface StringIdAliasService {
   long getAliasFor(String str);
 
   /**
-   * This is reverse lookup. Find name by it's alias
+   * This is reverse lookup. Find name by its alias
    *
    * @param alias numeric alias for string value
    * @return string value for given numeric alias

@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.summerb.validation.errors;
 
+import java.io.Serial;
 import org.summerb.validation.ValidationError;
 
 /**
@@ -22,7 +23,7 @@ import org.summerb.validation.ValidationError;
  * be detected by DAO layer or implemented in you business logic
  */
 public class DuplicateRecord extends ValidationError {
-  private static final long serialVersionUID = 9024133364770713306L;
+  @Serial private static final long serialVersionUID = 9024133364770713306L;
 
   public static final String MESSAGE_CODE = "validation.duplicateRecord";
 

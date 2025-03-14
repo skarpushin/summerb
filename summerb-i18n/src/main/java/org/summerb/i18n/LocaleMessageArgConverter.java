@@ -20,7 +20,7 @@ import java.util.Locale;
 import org.springframework.context.MessageSource;
 
 /**
- * This convert will convert Locale argument to it's string representation suitable for presentation
+ * This convert will convert Locale argument to its string representation suitable for presentation
  * to user
  *
  * @author skarpushin

@@ -15,8 +15,10 @@
  ******************************************************************************/
 package org.summerb.users.api.exceptions;
 
+import java.io.Serial;
+
 public abstract class UsersServiceException extends Exception {
-  private static final long serialVersionUID = -8926908954341351477L;
+  @Serial private static final long serialVersionUID = -8926908954341351477L;
 
   public UsersServiceException() {}
 

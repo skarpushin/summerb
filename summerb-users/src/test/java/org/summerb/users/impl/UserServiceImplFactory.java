@@ -60,22 +60,22 @@ public class UserServiceImplFactory {
         .thenReturn(UserFactory.createUserWithMissingPassword());
     when(userDao.findUserByUuid(UserFactory.NON_EXISTENT_USER)).thenReturn(null);
     when(userDao.findUserByUuid(UserFactory.USER_RESULT_IN_EXCEPTION))
-        .thenThrow(new IllegalStateException("Simulate unexpected excception"));
+        .thenThrow(new IllegalStateException("Simulate unexpected exception"));
 
     when(userDao.findUserByEmail(UserFactory.EXISTENT_USER_EMAIL)).thenReturn(existingUser);
     when(userDao.findUserByEmail(UserFactory.NON_EXISTENT_USER_EMAIL)).thenReturn(null);
     when(userDao.findUserByEmail(UserFactory.USER_EMAIL_RESULT_IN_EXCEPTION))
-        .thenThrow(new IllegalStateException("Simulate unexpected excception"));
+        .thenThrow(new IllegalStateException("Simulate unexpected exception"));
 
     when(userDao.findUserByDisplayNamePartial(
             eq(UserFactory.EXISTENT_USER), any(PagerParams.class)))
-        .thenThrow(new IllegalStateException("Simulate unexpected excception"));
+        .thenThrow(new IllegalStateException("Simulate unexpected exception"));
 
     when(userDao.findUserByUuid(UserFactory.EXISTENT_USER_WITH_EXPIRED_TOKEN))
         .thenReturn(UserFactory.createUserWithExpiredToken());
 
     when(userDao.updateUser(UserFactory.createDuplicateUser()))
-        .thenThrow(new DuplicateKeyException("Simulate unexpected excception"));
+        .thenThrow(new DuplicateKeyException("Simulate unexpected exception"));
 
     return ret;
   }

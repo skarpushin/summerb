@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.summerb.utils.exceptions.ExceptionUtils;
 
 public class RecurringBackgroundTask implements RecurringBackgroundTaskMXBean {
-  private static Logger log = LoggerFactory.getLogger(RecurringBackgroundTask.class);
+  private static final Logger log = LoggerFactory.getLogger(RecurringBackgroundTask.class);
 
   private Runnable runnable;
   private long delayMs;
@@ -96,25 +96,25 @@ public class RecurringBackgroundTask implements RecurringBackgroundTaskMXBean {
 
               // delay
               try {
+                //noinspection BusyWait
                 Thread.sleep(delayMs);
               } catch (InterruptedException ie) {
                 statsInterruptions++;
                 if (tearDownRequested) {
                   return;
                 } else {
-                  continue;
                 }
               }
             }
           } finally {
-            log.info("Envelope finished for " + runnable);
+            log.info("Envelope finished for {}", runnable);
           }
         }
 
         private void logSafe(Throwable t) {
           try {
             statsLastExceptionMessage = ExceptionUtils.getAllMessagesRaw(t);
-            log.error("Iteration failed for " + runnable, t);
+            log.error("Iteration failed for {}", runnable, t);
           } catch (Throwable exc) {
             // do nothing
           }

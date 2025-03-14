@@ -15,8 +15,10 @@
  ******************************************************************************/
 package org.summerb.easycrud.impl.relations.example;
 
+import java.io.Serial;
+
 public class Device extends DeviceRow {
-  private static final long serialVersionUID = -8296540588721148743L;
+  @Serial private static final long serialVersionUID = -8296540588721148743L;
 
   private Env env;
 

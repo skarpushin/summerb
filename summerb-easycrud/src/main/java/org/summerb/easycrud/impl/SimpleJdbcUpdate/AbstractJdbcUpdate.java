@@ -171,7 +171,7 @@ public abstract class AbstractJdbcUpdate {
   }
 
   /**
-   * @param whereNames the names of any where columns
+   * @param whereNames the names of columns used in WHERE clause
    */
   public void setRestrictingColumns(Map<String, Operator> whereNames) {
     checkIfConfigurationModificationIsAllowed();
@@ -180,8 +180,8 @@ public abstract class AbstractJdbcUpdate {
   }
 
   /**
-   * @param accessTableColumnMetaData specifys whether the parameter metadata for the call should be
-   *     used. The default is true.
+   * @param accessTableColumnMetaData specifies whether the parameter metadata for the call should
+   *     be used. The default is true.
    */
   public void setAccessTableColumnMetaData(boolean accessTableColumnMetaData) {
     this.tableMetaDataContext.setAccessTableColumnMetaData(accessTableColumnMetaData);
@@ -221,7 +221,7 @@ public abstract class AbstractJdbcUpdate {
   // -------------------------------------------------------------------------
 
   /**
-   * Compile this JdbcUpdate using provided parameters and meta data plus other settings. This
+   * Compile this JdbcUpdate using provided parameters and metadata plus other settings. This
    * finalizes the configuration for this object and subsequent attempts to compile are ignored.
    * This will be implicitly called the first time an un-compiled update is executed.
    *
@@ -244,7 +244,7 @@ public abstract class AbstractJdbcUpdate {
       this.compiled = true;
 
       if (logger.isDebugEnabled()) {
-        logger.debug("JdbcUpdate for table [" + getTableName() + "] compiled");
+        logger.debug("JdbcUpdate for table [{}] compiled", getTableName());
       }
     }
   }
@@ -266,7 +266,7 @@ public abstract class AbstractJdbcUpdate {
     columnTypes = tableMetaDataContext.createColumnTypes(columns);
 
     if (logger.isDebugEnabled()) {
-      logger.debug("Compiled JdbcUpdate. Update string is [" + getUpdateString() + "]");
+      logger.debug("Compiled JdbcUpdate. Update string is [{}]", getUpdateString());
     }
 
     onCompileInternal();
@@ -301,7 +301,7 @@ public abstract class AbstractJdbcUpdate {
   }
 
   /**
-   * Method to check whether we are allowd to make any configuration changes at this time. If the
+   * Method to check whether we are allowed to make any configuration changes at this time. If the
    * class has been compiled, then no further changes to the configuration are allowed.
    */
   protected void checkIfConfigurationModificationIsAllowed() {
@@ -355,10 +355,9 @@ public abstract class AbstractJdbcUpdate {
   protected int executeUpdateInternal(List<Object> values) {
     if (logger.isDebugEnabled()) {
       logger.debug(
-          "The following parameters are used for update " + getUpdateString() + " with: " + values);
+          "The following parameters are used for update {} with: {}", getUpdateString(), values);
     }
-    int updateCount = jdbcTemplate.update(updateString, values.toArray(), columnTypes);
-    return updateCount;
+    return jdbcTemplate.update(updateString, values.toArray(), columnTypes);
   }
 
   /**
@@ -367,7 +366,7 @@ public abstract class AbstractJdbcUpdate {
    *
    * @param args the parameter values provided in a Map
    * @param columns columns
-   * @return Map with parameter names and values
+   * @return values for given column names
    */
   protected List<Object> matchInParameterValuesWithUpdateColumns(
       Map<String, Object> args, List<String> columns) {
@@ -375,12 +374,12 @@ public abstract class AbstractJdbcUpdate {
   }
 
   /**
-   * Match the provided in parameter values with regitered parameters and parameters defined via
-   * metedata processing.
+   * Match the provided in parameter values with registered parameters and parameters defined via
+   * metadata processing.
    *
-   * @param parameterSource the parameter vakues provided as a {@link SqlParameterSource}
+   * @param parameterSource the parameter values provided as a {@link SqlParameterSource}
    * @param columns columns
-   * @return Map with parameter names and values
+   * @return values for given column names
    */
   protected List<Object> matchInParameterValuesWithUpdateColumns(
       SqlParameterSource parameterSource, List<String> columns) {

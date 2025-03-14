@@ -28,7 +28,7 @@ import org.summerb.easycrud.impl.EasyCrudServiceImpl;
  * Service ready in couple lines of code
  *
  * <p>You can use generic interface {@link EasyCrudService} or you can subclass it with your own
- * interface and have instance of typed interface. lAtter will give you more clearer code.
+ * interface and have instance of typed interface. lAfter will give you clearer code.
  *
  * @author sergeyk
  */

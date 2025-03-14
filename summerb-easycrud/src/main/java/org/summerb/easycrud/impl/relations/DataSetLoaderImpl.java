@@ -18,9 +18,11 @@ package org.summerb.easycrud.impl.relations;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -152,7 +154,7 @@ public class DataSetLoaderImpl implements DataSetLoader {
       Object id, String entityTypeName, DataSet dataSet, Ref... references)
       throws EntityNotFoundException, NotAuthorizedException {
 
-    loadObjectsByIds(new HashSet<>(Arrays.asList(id)), entityTypeName, dataSet);
+    loadObjectsByIds(new HashSet<>(Collections.singletonList(id)), entityTypeName, dataSet);
     loadReferencedObjects(dataSet, references);
   }
 
@@ -260,7 +262,7 @@ public class DataSetLoaderImpl implements DataSetLoader {
 
   protected static class ManyToManyRefToReferenceesMap
       extends HashMap<Ref, Map<Object, List<HasId>>> {
-    private static final long serialVersionUID = 8251505694174701237L;
+    @Serial private static final long serialVersionUID = 8251505694174701237L;
   }
 
   protected void populateBackReferencesOne2Many(
@@ -305,7 +307,7 @@ public class DataSetLoaderImpl implements DataSetLoader {
    * <p>value - is a list of objects
    */
   protected static class EntityTypeToObjectsMap extends HashMap<String, List<HasId>> {
-    protected static final long serialVersionUID = -522735093281679526L;
+    @Serial private static final long serialVersionUID = -522735093281679526L;
   }
 
   protected void addAllObjects(EntityTypeToObjectsMap loadedObjects, DataSet dataSet) {

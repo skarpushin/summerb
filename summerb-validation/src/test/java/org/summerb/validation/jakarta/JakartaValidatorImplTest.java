@@ -121,7 +121,7 @@ public class JakartaValidatorImplTest {
   }
 
   @Test
-  void test_cosntructor_expectIae() {
+  void test_constructor_expectIae() {
     assertIae(() -> new JakartaValidatorImpl(null));
   }
 
@@ -284,7 +284,7 @@ public class JakartaValidatorImplTest {
     p.setSizeArray(new String[0]);
 
     p.setNotEmptyString("");
-    p.setNotEmptyStringBuilder(new StringBuilder(""));
+    p.setNotEmptyStringBuilder(new StringBuilder());
     p.setNotEmptyCollection(Collections.emptyList());
     p.setNotEmptyMap(Collections.emptyMap());
     p.setNotEmptyArray(new String[0]);

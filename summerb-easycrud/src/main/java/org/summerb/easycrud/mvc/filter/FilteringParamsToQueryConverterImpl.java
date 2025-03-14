@@ -52,7 +52,7 @@ public class FilteringParamsToQueryConverterImpl<TRow>
         boolean isBooleanType = boolean.class.equals(type) || Boolean.class.equals(type);
 
         String command = entry.getValue().getCommand();
-        addFilteringParamToQUery(
+        addFilteringParamToQuery(
             fname, command, values, type, isStringType, isNumericType, isBooleanType, ret);
       }
       return ret;
@@ -61,7 +61,7 @@ public class FilteringParamsToQueryConverterImpl<TRow>
     }
   }
 
-  protected void addFilteringParamToQUery(
+  protected void addFilteringParamToQuery(
       String fname,
       String command,
       String[] values,
@@ -158,8 +158,8 @@ public class FilteringParamsToQueryConverterImpl<TRow>
 
   protected static List<Long> convertToLongs(String[] values) {
     List<Long> ret = new ArrayList<>(values.length);
-    for (int i = 0; i < values.length; i++) {
-      ret.add(Long.parseLong(values[i]));
+    for (String value : values) {
+      ret.add(Long.parseLong(value));
     }
     return ret;
   }

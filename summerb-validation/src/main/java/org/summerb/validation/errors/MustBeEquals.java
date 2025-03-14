@@ -15,13 +15,14 @@
  ******************************************************************************/
 package org.summerb.validation.errors;
 
+import java.io.Serial;
 import org.summerb.i18n.HasMessageArgsConverters;
 import org.summerb.i18n.MessageArgConverter;
 import org.summerb.i18n.MessageCodeMessageArgConverter;
 import org.summerb.validation.ValidationError;
 
 public class MustBeEquals extends ValidationError implements HasMessageArgsConverters {
-  private static final long serialVersionUID = 1269537536170054395L;
+  @Serial private static final long serialVersionUID = 1269537536170054395L;
 
   public static final String MESSAGE_CODE = "validation.mustBe.equalsToEachOther";
 

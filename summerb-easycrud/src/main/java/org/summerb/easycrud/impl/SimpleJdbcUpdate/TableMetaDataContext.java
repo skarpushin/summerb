@@ -46,13 +46,13 @@ public class TableMetaDataContext {
   /** name of schema for call * */
   protected String schemaName;
 
-  /** should we access insert parameter meta data info or not */
+  /** should we access insert parameter metadata info or not */
   protected boolean accessTableColumnMetaData = true;
 
-  /** should we override default for including synonyms for meta data lookups */
+  /** should we override default for including synonyms for metadata lookups */
   protected boolean overrideIncludeSynonymsDefault = false;
 
-  /** the provider of table meta data */
+  /** the provider of table metadata */
   protected TableMetaDataProvider metaDataProvider;
 
   /**
@@ -98,14 +98,14 @@ public class TableMetaDataContext {
   }
 
   /**
-   * @param accessTableColumnMetaData whether we should access table column meta data.
+   * @param accessTableColumnMetaData whether we should access table column metadata.
    */
   public void setAccessTableColumnMetaData(boolean accessTableColumnMetaData) {
     this.accessTableColumnMetaData = accessTableColumnMetaData;
   }
 
   /**
-   * @return Are we accessing table meta data?
+   * @return Are we accessing table metadata?
    */
   public boolean isAccessTableColumnMetaData() {
     return this.accessTableColumnMetaData;
@@ -160,7 +160,7 @@ public class TableMetaDataContext {
   }
 
   /**
-   * Process the current meta data with the provided configuration options.
+   * Process the current metadata with the provided configuration options.
    *
    * @param dataSource data source
    */
@@ -215,9 +215,9 @@ public class TableMetaDataContext {
   public List<Object> sortAndTypeInParameter(
       SqlParameterSource sqlParameterSource, List<String> reconciledUpdatingColumns) {
     List<Object> values = new ArrayList<>();
-    // for parameter source lookups we need to provide caseinsensitive
+    // for parameter source lookups we need to provide case-insensitive
     // lookup support since the
-    // database metadata is not necessarily providing case sensitive column
+    // database metadata is not necessarily providing case-sensitive column
     // names
     Map<?, ?> caseInsensitiveParameterNames = null;
 

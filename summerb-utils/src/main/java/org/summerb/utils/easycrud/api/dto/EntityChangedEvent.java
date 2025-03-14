@@ -16,6 +16,7 @@
 package org.summerb.utils.easycrud.api.dto;
 
 import com.google.common.base.Preconditions;
+import java.io.Serial;
 import java.io.Serializable;
 import org.summerb.utils.DtoBase;
 
@@ -27,7 +28,7 @@ import org.summerb.utils.DtoBase;
  * @param <T> type of dto. Note: T type is limited to {@link DtoBase} for security reasons
  */
 public class EntityChangedEvent<T extends DtoBase> implements Serializable {
-  private static final long serialVersionUID = 8920065013673943648L;
+  @Serial private static final long serialVersionUID = 8920065013673943648L;
 
   public enum ChangeType {
     ADDED,

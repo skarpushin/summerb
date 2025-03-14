@@ -16,8 +16,8 @@
 package org.summerb.validation;
 
 import com.google.common.base.Preconditions;
+import java.io.Serial;
 import java.io.Serializable;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import org.springframework.util.CollectionUtils;
@@ -25,7 +25,7 @@ import org.summerb.utils.DtoBase;
 
 public class ValidationErrors extends ValidationError
     implements Serializable, DtoBase, HasValidationErrors {
-  private static final long serialVersionUID = -8034148535897107069L;
+  @Serial private static final long serialVersionUID = -8034148535897107069L;
 
   protected List<ValidationError> list;
 
@@ -111,9 +111,7 @@ public class ValidationErrors extends ValidationError
     StringBuilder ret = new StringBuilder();
     ret.append(prefix).append(": ");
 
-    Iterator<ValidationError> iter = errors.getList().iterator();
-    while (iter.hasNext()) {
-      ValidationError ve = iter.next();
+    for (ValidationError ve : errors.getList()) {
       ret.append("\n\t");
       ret.append(ve.toString().replaceAll("\n\t", "\n\t\t"));
     }

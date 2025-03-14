@@ -20,7 +20,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 
 /**
- * This translator treats class name as a message code and it's message as a first argument message
+ * This translator treats class name as a message code, and its message as a first argument message
  *
  * @author sergeyk
  */
@@ -35,9 +35,7 @@ public class ExceptionTranslatorClassNameImpl implements ExceptionTranslator {
   public String buildUserMessage(Throwable t, Locale locale) {
     try {
       String className = t.getClass().getName();
-      String messageMappingForClassName =
-          messageSource.getMessage(className, new Object[] {t.getMessage()}, locale);
-      return messageMappingForClassName;
+      return messageSource.getMessage(className, new Object[] {t.getMessage()}, locale);
     } catch (NoSuchMessageException nfe) {
       return t.getClass().getSimpleName() + " (" + t.getLocalizedMessage() + ")";
     }

@@ -22,7 +22,7 @@ import org.summerb.easycrud.impl.dao.ParameterSourceBuilderBeanPropImpl;
 /**
  * Strategy used to build parameter source when creating or updating row using {@link JdbcTemplate}.
  *
- * <p>Normally {@link ParameterSourceBuilderBeanPropImpl} is used but you can provide your own if
+ * <p>Normally {@link ParameterSourceBuilderBeanPropImpl} is used, but you can provide your own if
  * needed
  *
  * @author sergey.karpushin

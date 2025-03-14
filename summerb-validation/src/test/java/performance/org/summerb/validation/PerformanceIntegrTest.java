@@ -33,21 +33,21 @@ public class PerformanceIntegrTest extends SmokeIntegrTest {
       runJakartaValidations(p);
     }
     stopWatch.stop();
-    TaskInfo timingJakartaValidations = stopWatch.getLastTaskInfo();
+    TaskInfo timingJakartaValidations = stopWatch.lastTaskInfo();
 
     stopWatch.start("Test: ValidationContext w/ method references");
     for (int i = 0; i < iterations; i++) {
       runValidationsUsingGetters(p);
     }
     stopWatch.stop();
-    TaskInfo timingMethodReferences = stopWatch.getLastTaskInfo();
+    TaskInfo timingMethodReferences = stopWatch.lastTaskInfo();
 
     stopWatch.start("Test: ValidationContext w/ propertyNames");
     for (int i = 0; i < iterations; i++) {
       runValidationsUsingPropertyNames(p);
     }
     stopWatch.stop();
-    TaskInfo timingPropertyNames = stopWatch.getLastTaskInfo();
+    TaskInfo timingPropertyNames = stopWatch.lastTaskInfo();
 
     log.info("Performance test results: \n{}", stopWatch.prettyPrint());
 

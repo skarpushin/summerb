@@ -49,8 +49,7 @@ public class UserDetailsServiceDefaultImpl implements UserDetailsService {
 
       AuthToken authToken = null;
 
-      UserDetailsImpl ret = new UserDetailsImpl(user, null, permissions, authToken);
-      return ret;
+      return new UserDetailsImpl(user, null, permissions, authToken);
     } catch (UserNotFoundException e) {
       throw new UsernameNotFoundException("User not found", e);
     } catch (ValidationException e) {

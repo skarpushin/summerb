@@ -38,7 +38,7 @@ public class EasyCrudServiceResolverSpringImpl
   protected Logger log = LoggerFactory.getLogger(getClass());
 
   protected ApplicationContext applicationContext;
-  protected Map<String, EasyCrudService> servicesMap;
+  protected volatile Map<String, EasyCrudService> servicesMap;
   protected Map<Class<?>, EasyCrudService> servicesMapByClass;
 
   @Override
@@ -80,12 +80,10 @@ public class EasyCrudServiceResolverSpringImpl
       EasyCrudService wasOverwritten = ret.put(service.getRowMessageCode(), service);
       if (wasOverwritten != null) {
         log.warn(
-            "Ambigious EasyCrudService for same entityTypeMessageCode 1st "
-                + wasOverwritten
-                + " and 2nd "
-                + service
-                + " named "
-                + entry.getKey());
+            "Ambigious EasyCrudService for same entityTypeMessageCode 1st {} and 2nd {} named {}",
+            wasOverwritten,
+            service,
+            entry.getKey());
       }
     }
     return ret;
@@ -102,12 +100,10 @@ public class EasyCrudServiceResolverSpringImpl
       EasyCrudService wasOverwritten = ret.put(service.getRowClass(), service);
       if (wasOverwritten != null) {
         log.warn(
-            "Ambigious EasyCrudService for same rowClass 1st "
-                + wasOverwritten
-                + " and 2nd "
-                + service
-                + " named "
-                + entry.getKey());
+            "Ambigious EasyCrudService for same rowClass 1st {} and 2nd {} named {}",
+            wasOverwritten,
+            service,
+            entry.getKey());
       }
     }
     return ret;

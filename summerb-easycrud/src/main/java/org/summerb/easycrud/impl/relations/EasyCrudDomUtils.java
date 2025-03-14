@@ -36,9 +36,9 @@ public class EasyCrudDomUtils {
    * @param dataSet data set where source and all possible targets are located
    * @param src id of the referencer
    * @param ref description of the reference
-   * @param rowClass DTO class, it's used to avoid cimpiler confusing between TRowDto and TRetDto
+   * @param rowClass DTO class, it's used to avoid compiler confusing between TRowDto and TRetDto
    *     class, since latter one might be a subclass of former one
-   * @param builder function that can take id of an referencee and build new instance. This will be
+   * @param builder function that can take id of a referencee and build new instance. This will be
    *     added to the returned list
    * @param <TSrcId> TSrcId
    * @param <TSrcRow> TSrcRow

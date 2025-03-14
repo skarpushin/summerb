@@ -16,6 +16,7 @@
 package org.summerb.security.api.dto;
 
 import com.google.common.base.Preconditions;
+import java.io.Serial;
 import org.springframework.util.StringUtils;
 import org.summerb.i18n.HasMessageArgs;
 import org.summerb.i18n.HasMessageArgsConverters;
@@ -32,7 +33,7 @@ import org.summerb.utils.DtoBase;
  */
 public class NotAuthorizedResult
     implements DtoBase, HasMessageCode, HasMessageArgs, HasMessageArgsConverters {
-  private static final long serialVersionUID = 1122164433294017483L;
+  @Serial private static final long serialVersionUID = 1122164433294017483L;
 
   public static final String SECURITY_AUTHORIZATION_MISSING_ON_SUBJECT =
       "security.authorization.missingOnSubject";

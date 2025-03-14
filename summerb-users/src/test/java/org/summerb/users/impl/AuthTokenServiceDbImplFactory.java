@@ -17,10 +17,7 @@ package org.summerb.users.impl;
 
 import static org.mockito.Mockito.when;
 
-import java.util.LinkedList;
-import java.util.List;
 import org.mockito.Mockito;
-import org.summerb.users.api.dto.AuthToken;
 import org.summerb.users.api.dto.AuthTokenFactory;
 import org.summerb.users.impl.dao.AuthTokenDao;
 import org.summerb.utils.easycrud.api.dto.PagerParams;
@@ -47,12 +44,6 @@ public class AuthTokenServiceDbImplFactory {
 
     when(authTokenDao.findAuthTokenByUuid(AuthTokenFactory.AUTH_TOKEN_EXPIRED))
         .thenReturn(AuthTokenFactory.createExpiredAuthToken());
-
-    List<AuthToken> expiredTokens = new LinkedList<>();
-    expiredTokens.add(AuthTokenFactory.createExpiredAuthToken());
-
-    // PaginatedList<AuthToken> expiredAuthTokens = new PaginatedList<AuthToken>(new
-    // PagerParams(), expiredTokens, 1);
 
     return ret;
   }

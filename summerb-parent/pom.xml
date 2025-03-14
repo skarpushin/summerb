@@ -20,7 +20,7 @@ http://www.apache.org/licenses/LICENSE-2.0
 	<name>summerb-parent</name>
 
 	<url>https://github.com/skarpushin/summerb</url>
-	<description>summerb - is a set of building blocks for real-world java-based
+	<description>summerb - is a set of building blocks for real-world Java-based
 		web apps</description>
 
 	<distributionManagement>

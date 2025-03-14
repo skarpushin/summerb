@@ -94,7 +94,7 @@ public class DaoExceptionTranslatorMySqlImpl extends DaoExceptionTranslatorAbstr
     }
 
     message = message.substring(pos);
-    if (message.indexOf("'") < 0) {
+    if (!message.contains("'")) {
       return null;
     }
 
@@ -144,7 +144,7 @@ public class DaoExceptionTranslatorMySqlImpl extends DaoExceptionTranslatorAbstr
       return null;
     }
 
-    String[] params = msg.split("\'");
+    String[] params = msg.split("'");
     if (params.length < 2) {
       return null;
     }

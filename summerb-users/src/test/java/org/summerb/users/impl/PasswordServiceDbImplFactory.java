@@ -44,9 +44,9 @@ public class PasswordServiceDbImplFactory {
     when(passwordDao.findPasswordByUserUuid(UserFactory.EXISTENT_USER_WITH_MISSING_PASSWORD))
         .thenReturn(null);
     when(passwordDao.findPasswordByUserUuid(UserFactory.USER_RESULT_IN_EXCEPTION))
-        .thenThrow(new IllegalStateException("Simulate unexpected excception"));
+        .thenThrow(new IllegalStateException("Simulate unexpected exception"));
     when(passwordDao.findPasswordByUserUuid(UserFactory.EXISTENT_USER_2_PROBLEM_WITH_PASSWORD))
-        .thenThrow(new IllegalStateException("Simulate unexpected excception"));
+        .thenThrow(new IllegalStateException("Simulate unexpected exception"));
 
     when(passwordDao.updateUserPassword(eq(UserFactory.EXISTENT_USER), anyString())).thenReturn(1);
     when(passwordDao.updateUserPassword(

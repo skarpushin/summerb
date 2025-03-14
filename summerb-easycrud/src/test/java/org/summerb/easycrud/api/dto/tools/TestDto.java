@@ -15,12 +15,13 @@
  ******************************************************************************/
 package org.summerb.easycrud.api.dto.tools;
 
+import java.io.Serial;
 import java.io.Serializable;
 import org.springframework.util.StringUtils;
 import org.summerb.utils.DtoBase;
 
 public class TestDto implements Serializable, DtoBase {
-  private static final long serialVersionUID = 1404571618064571624L;
+  @Serial private static final long serialVersionUID = 1404571618064571624L;
 
   private String uuid;
   private String displayName;
