@@ -15,18 +15,16 @@
  ******************************************************************************/
 package org.summerb.dbupgrade.impl;
 
+import com.google.common.base.Preconditions;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.stream.Stream;
-
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.summerb.dbupgrade.api.UpgradePackageMeta;
 import org.summerb.dbupgrade.api.UpgradePackageMetaResolver;
-
-import com.google.common.base.Preconditions;
 
 public class UpgradePackageMetaResolverClasspathImpl implements UpgradePackageMetaResolver {
   protected ResourcePatternResolver resourcePatternResolver;

@@ -16,7 +16,6 @@
 package org.summerb.easycrud.api.relations;
 
 import java.util.Collection;
-
 import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.api.row.relations.Ref;
 

@@ -16,7 +16,6 @@
 package org.summerb.webappboilerplate.utils.exceptions.translator;
 
 import java.util.Locale;
-
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 

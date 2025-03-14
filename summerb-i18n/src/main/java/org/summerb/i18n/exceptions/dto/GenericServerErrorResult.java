@@ -30,7 +30,9 @@ public class GenericServerErrorResult implements DtoBase {
     this.exceptionInfo = exceptionInfo;
   }
 
-  /** @return Exception message from whole chain */
+  /**
+   * @return Exception message from whole chain
+   */
   public String getAllErrorsMessage() {
     return allErrorsMessage;
   }

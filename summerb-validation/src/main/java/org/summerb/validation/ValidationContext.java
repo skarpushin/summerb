@@ -15,6 +15,12 @@
  ******************************************************************************/
 package org.summerb.validation;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Range;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -43,10 +49,6 @@ import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
-
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -89,12 +91,6 @@ import org.summerb.validation.errors.MustNotEndWith;
 import org.summerb.validation.errors.MustNotStartWith;
 import org.summerb.validation.errors.MustStartWith;
 import org.summerb.validation.jakarta.JakartaValidator;
-
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Range;
-
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * Validation context provides you with convenience methods to validate Bean instance (DTOs, DOMs,
@@ -260,7 +256,9 @@ public class ValidationContext<T> {
     return nowResolver;
   }
 
-  /** @param nowResolver custom time resolver, usually needed for testing purposes */
+  /**
+   * @param nowResolver custom time resolver, usually needed for testing purposes
+   */
   @VisibleForTesting
   public void setNowResolver(NowResolver nowResolver) {
     Preconditions.checkArgument(nowResolver != null);

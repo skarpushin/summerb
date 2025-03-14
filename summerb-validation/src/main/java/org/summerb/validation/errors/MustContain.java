@@ -7,7 +7,9 @@ public class MustContain extends ValidationError {
 
   public static final String MESSAGE_CODE = "validation.must.contain";
 
-  /** @deprecated used only for serialization */
+  /**
+   * @deprecated used only for serialization
+   */
   public MustContain() {}
 
   public MustContain(String propertyName, String subString) {

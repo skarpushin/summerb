@@ -25,8 +25,8 @@ import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.impl.dao.mysql.EasyCrudDaoInjections;
 import org.summerb.easycrud.scaffold.api.CallableMethod;
-import org.summerb.easycrud.scaffold.api.ScaffoldedMethodFactory;
 import org.summerb.easycrud.scaffold.api.Query;
+import org.summerb.easycrud.scaffold.api.ScaffoldedMethodFactory;
 
 public class EasyCrudServiceScaffoldedImpl implements java.lang.reflect.InvocationHandler {
 

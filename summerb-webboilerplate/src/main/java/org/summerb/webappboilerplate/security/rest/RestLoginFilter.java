@@ -15,16 +15,15 @@
  ******************************************************************************/
 package org.summerb.webappboilerplate.security.rest;
 
+import com.google.common.base.Preconditions;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Base64;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.http.HttpHeaders;
@@ -44,8 +43,6 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.web.filter.GenericFilterBean;
-
-import com.google.common.base.Preconditions;
 
 public class RestLoginFilter extends GenericFilterBean implements ApplicationEventPublisherAware {
   protected static final String AUTHORIZATION_PREFIX = "Basic ";
@@ -158,7 +155,8 @@ public class RestLoginFilter extends GenericFilterBean implements ApplicationEve
     authenticationFailureHandler.onAuthenticationFailure(request, response, failed);
   }
 
-  protected boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
+  protected boolean requiresAuthentication(
+      HttpServletRequest request, HttpServletResponse response) {
     String header = request.getHeader(authorizationHeaderName);
     if (header == null || !header.startsWith(AUTHORIZATION_PREFIX)) {
       return false;

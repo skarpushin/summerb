@@ -7,7 +7,9 @@ public class MustNotStartWith extends ValidationError {
 
   public static final String MESSAGE_CODE = "validation.mustNot.startWith";
 
-  /** @deprecated used only for serialization */
+  /**
+   * @deprecated used only for serialization
+   */
   public MustNotStartWith() {}
 
   public MustNotStartWith(String propertyName, String subString) {

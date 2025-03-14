@@ -16,7 +16,6 @@
 package org.summerb.easycrud.mvc.model;
 
 import java.util.Map;
-
 import org.summerb.easycrud.api.dto.OrderBy;
 import org.summerb.easycrud.mvc.filter.FilteringParam;
 import org.summerb.utils.easycrud.api.dto.PagerParams;

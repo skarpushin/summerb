@@ -1,7 +1,6 @@
 package org.summerb.validation.jakarta.test_data;
 
-import javax.validation.constraints.NotNull;
-
+import jakarta.validation.constraints.NotNull;
 import org.summerb.i18n.HasMessageCode;
 import org.summerb.validation.ValidationContext;
 

@@ -1,7 +1,7 @@
 package org.summerb.users;
 
+import com.google.common.eventbus.EventBus;
 import javax.sql.DataSource;
-
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,8 +25,6 @@ import org.summerb.users.impl.dao.impl.PasswordDaoImpl;
 import org.summerb.users.impl.dao.impl.PermissionDaoImpl;
 import org.summerb.users.impl.dao.impl.UserDaoImpl;
 import org.summerb.validation.ValidationContextFactory;
-
-import com.google.common.eventbus.EventBus;
 
 /**
  * Example configuration for User Service

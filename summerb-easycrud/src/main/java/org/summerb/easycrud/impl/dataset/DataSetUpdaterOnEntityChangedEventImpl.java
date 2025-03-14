@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.summerb.easycrud.impl.dataset;
 
+import com.google.common.base.Preconditions;
 import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.api.EasyCrudServiceResolver;
 import org.summerb.easycrud.api.dataset.DataSetUpdaterOnEntityChangedEvent;
@@ -23,8 +24,6 @@ import org.summerb.easycrud.api.row.datapackage.DataSet;
 import org.summerb.easycrud.api.row.datapackage.DataTable;
 import org.summerb.utils.easycrud.api.dto.EntityChangedEvent;
 import org.summerb.utils.easycrud.api.dto.EntityChangedEvent.ChangeType;
-
-import com.google.common.base.Preconditions;
 
 /**
  * This impl will simply update dataSet tables with updated entities

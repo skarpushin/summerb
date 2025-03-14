@@ -16,7 +16,6 @@
 package org.summerb.users.api.dto;
 
 import java.util.UUID;
-
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.password.StandardPasswordEncoder;
 import org.summerb.users.impl.dom.Password;

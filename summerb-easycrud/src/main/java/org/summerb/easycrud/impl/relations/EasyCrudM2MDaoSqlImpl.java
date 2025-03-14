@@ -16,13 +16,11 @@
 package org.summerb.easycrud.impl.relations;
 
 import javax.sql.DataSource;
-
 import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.api.row.relations.ManyToManyRow;
 import org.summerb.easycrud.impl.dao.mysql.EasyCrudDaoSqlImpl;
 
-public class EasyCrudM2MDaoSqlImpl<
-        T1Id, T1Dto extends HasId<T1Id>, T2Id, T2Dto extends HasId<T2Id>>
+public class EasyCrudM2MDaoSqlImpl<T1Id, T1Dto extends HasId<T1Id>, T2Id, T2Dto extends HasId<T2Id>>
     extends EasyCrudDaoSqlImpl<Long, ManyToManyRow<T1Id, T2Id>> {
 
   @SuppressWarnings("deprecation")

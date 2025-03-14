@@ -15,10 +15,9 @@
  ******************************************************************************/
 package integr.org.summerb.easycrud.testbeans;
 
+import integr.org.summerb.easycrud.dtos.TestDto2;
 import org.summerb.easycrud.impl.auth.EasyCrudAuthorizationPerRowStrategy;
 import org.summerb.security.api.dto.NotAuthorizedResult;
-
-import integr.org.summerb.easycrud.dtos.TestDto2;
 
 public class TestDto2PerRowAuthImpl extends EasyCrudAuthorizationPerRowStrategy<TestDto2> {
   @Override

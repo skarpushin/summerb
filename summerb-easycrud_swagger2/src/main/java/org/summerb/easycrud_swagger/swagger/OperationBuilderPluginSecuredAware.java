@@ -3,11 +3,9 @@ package org.summerb.easycrud_swagger.swagger;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-
 import org.springframework.core.annotation.Order;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Component;
-
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.OperationBuilderPlugin;
 import springfox.documentation.spi.service.contexts.OperationContext;
@@ -20,12 +18,12 @@ public class OperationBuilderPluginSecuredAware implements OperationBuilderPlugi
   @Override
   public void apply(OperationContext context) {
     Set<String> roles = new HashSet<>();
-    Secured controllerAnnotation = context.findControllerAnnotation(Secured.class).orNull();
+    Secured controllerAnnotation = context.findControllerAnnotation(Secured.class).orElse(null);
     if (controllerAnnotation != null) {
       roles.addAll(Arrays.asList(controllerAnnotation.value()));
     }
 
-    Secured methodAnnotation = context.findAnnotation(Secured.class).orNull();
+    Secured methodAnnotation = context.findAnnotation(Secured.class).orElse(null);
     if (methodAnnotation != null) {
       roles.addAll(Arrays.asList(methodAnnotation.value()));
     }

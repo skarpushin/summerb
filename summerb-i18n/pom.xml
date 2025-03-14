@@ -36,7 +36,6 @@
 		<dependency>
 			<groupId>com.github.skarpushin</groupId>
 			<artifactId>summerb-utils</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 

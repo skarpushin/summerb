@@ -16,5 +16,4 @@ public class SqlTypeOverrideEnum extends SqlTypeOverride {
     this.supportsSubclasses = true;
     this.valueConverter = e -> ((Enum<?>) e).name();
   }
-  
 }

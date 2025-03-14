@@ -15,13 +15,11 @@
  ******************************************************************************/
 package org.summerb.i18n;
 
+import com.google.common.base.Preconditions;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Locale;
-
 import org.springframework.context.MessageSource;
-
-import com.google.common.base.Preconditions;
 
 /**
  * This convert will treat arg long value as a time offset from epoch and format it to time-date

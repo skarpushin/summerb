@@ -7,7 +7,9 @@ public class MustNotEndWith extends ValidationError {
 
   public static final String MESSAGE_CODE = "validation.mustNot.endWith";
 
-  /** @deprecated used only for serialization */
+  /**
+   * @deprecated used only for serialization
+   */
   public MustNotEndWith() {}
 
   public MustNotEndWith(String propertyName, String subString) {

@@ -16,7 +16,6 @@
 package org.summerb.users.impl.dao;
 
 import java.util.List;
-
 import org.summerb.users.api.dto.AuthToken;
 
 public interface AuthTokenDao {

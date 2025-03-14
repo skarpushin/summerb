@@ -7,7 +7,9 @@ public class MustMatchPattern extends ValidationError {
 
   public static final String MESSAGE_CODE = "validation.must.matchPattern";
 
-  /** @deprecated used only for serialization */
+  /**
+   * @deprecated used only for serialization
+   */
   public MustMatchPattern() {}
 
   public MustMatchPattern(String propertyName, String messageCode) {

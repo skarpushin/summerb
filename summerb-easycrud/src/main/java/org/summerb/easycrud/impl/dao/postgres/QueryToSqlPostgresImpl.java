@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.summerb.easycrud.impl.dao.postgres;
 
+import com.google.common.base.Preconditions;
 import org.summerb.easycrud.api.QueryToSql;
 import org.summerb.easycrud.api.query.restrictions.Equals;
 import org.summerb.easycrud.api.query.restrictions.In;
@@ -24,8 +25,6 @@ import org.summerb.easycrud.impl.dao.mysql.QueryToSqlMySqlImpl;
 import org.summerb.easycrud.impl.dao.postgres.restrictions.EqualsRestrictionToNativeSql;
 import org.summerb.easycrud.impl.dao.postgres.restrictions.InRestrictionToNativeSql;
 import org.summerb.easycrud.impl.dao.postgres.restrictions.LikeRestrictionToNativeSql;
-
-import com.google.common.base.Preconditions;
 
 /**
  * Postgress specific impl of {@link QueryToSql}

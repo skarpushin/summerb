@@ -1,11 +1,9 @@
 package org.summerb.validation.jakarta.test_data;
 
-import javax.validation.constraints.Size;
-
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import jakarta.validation.constraints.Size;
 import org.summerb.validation.ValidationContext;
 import org.summerb.validation.jakarta.processors.abstracts.AnnotationProcessorNullableAbstract;
-
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 public class NoValidConstructor extends AnnotationProcessorNullableAbstract<Size> {
 

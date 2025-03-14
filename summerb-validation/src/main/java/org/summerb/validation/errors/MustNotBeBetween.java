@@ -1,16 +1,17 @@
 package org.summerb.validation.errors;
 
-import org.summerb.validation.ValidationError;
-
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
+import org.summerb.validation.ValidationError;
 
 public class MustNotBeBetween extends ValidationError {
   private static final long serialVersionUID = 4246268385189876570L;
 
   public static final String MESSAGE_CODE = "validation.mustNotBe.between";
 
-  /** @deprecated used only for serialization */
+  /**
+   * @deprecated used only for serialization
+   */
   public MustNotBeBetween() {}
 
   public <V> MustNotBeBetween(String propertyName, V lowerBoundary, V upperBoundary) {

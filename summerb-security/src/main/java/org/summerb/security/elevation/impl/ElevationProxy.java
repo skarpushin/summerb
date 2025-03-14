@@ -15,14 +15,12 @@
  ******************************************************************************/
 package org.summerb.security.elevation.impl;
 
+import com.google.common.base.Preconditions;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-
 import org.springframework.util.StringUtils;
 import org.summerb.security.elevation.api.ElevationRunner;
-
-import com.google.common.base.Preconditions;
 
 /**
  * Sometimes it's useful to have a bean that is always elevated to a certain permissions level.

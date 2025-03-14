@@ -17,9 +17,7 @@ package org.summerb.easycrud.impl.SimpleJdbcUpdate;
 
 import java.util.Arrays;
 import java.util.Map;
-
 import javax.sql.DataSource;
-
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 

@@ -15,16 +15,15 @@
  ******************************************************************************/
 package unit.org.summerb.dbupgrade;
 
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase.DatabaseType;
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase.RefreshMode;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.annotation.ProfileValueSourceConfiguration;
 import org.springframework.test.annotation.SystemProfileValueSource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
-
-import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
-import io.zonky.test.db.AutoConfigureEmbeddedDatabase.DatabaseType;
-import io.zonky.test.db.AutoConfigureEmbeddedDatabase.RefreshMode;
 import unit.org.summerb.dbupgrade.config.TestMySqlConfig;
 
 @ExtendWith(SpringExtension.class)

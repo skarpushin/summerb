@@ -17,7 +17,6 @@ package org.summerb.utils.spring;
 
 import java.util.Locale;
 import java.util.Properties;
-
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 
 /**

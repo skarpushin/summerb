@@ -15,11 +15,9 @@
  ******************************************************************************/
 package org.summerb.validation.jakarta.processors.abstracts;
 
-import java.lang.annotation.Annotation;
-
-import org.summerb.validation.ValidationContext;
-
 import com.google.common.base.Preconditions;
+import java.lang.annotation.Annotation;
+import org.summerb.validation.ValidationContext;
 
 /**
  * Abstract class for processors of constraints annotations which treat null value is valid

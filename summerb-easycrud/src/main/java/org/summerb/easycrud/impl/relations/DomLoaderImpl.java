@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.summerb.easycrud.impl.relations;
 
+import com.google.common.base.Preconditions;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -32,7 +33,6 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.BeanUtils;
 import org.summerb.easycrud.api.EasyCrudServiceResolver;
 import org.summerb.easycrud.api.relations.DataSetLoader;
@@ -43,8 +43,6 @@ import org.summerb.easycrud.api.row.relations.Ref;
 import org.summerb.utils.DtoBase;
 import org.summerb.utils.Pair;
 import org.summerb.utils.objectcopy.ObjCopyUtils;
-
-import com.google.common.base.Preconditions;
 
 public class DomLoaderImpl implements DomLoader {
   protected DataSetLoader dataSetLoader;

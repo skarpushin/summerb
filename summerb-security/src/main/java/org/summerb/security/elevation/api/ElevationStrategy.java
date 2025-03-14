@@ -18,7 +18,9 @@ package org.summerb.security.elevation.api;
 public interface ElevationStrategy {
   boolean isElevationRequired();
 
-  /** @return a cookie value that must be passed to subsequent call to {@link #deElevate(Object)} */
+  /**
+   * @return a cookie value that must be passed to subsequent call to {@link #deElevate(Object)}
+   */
   Object elevate();
 
   void deElevate(Object cookie);

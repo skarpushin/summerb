@@ -22,7 +22,9 @@ public class LengthMustBeGreaterOrEqual extends ValidationError {
 
   public static final String MESSAGE_CODE = "validation.length.mustBe.greaterOrEqual";
 
-  /** @deprecated used only for serialization */
+  /**
+   * @deprecated used only for serialization
+   */
   public LengthMustBeGreaterOrEqual() {}
 
   public LengthMustBeGreaterOrEqual(String propertyName, int border) {

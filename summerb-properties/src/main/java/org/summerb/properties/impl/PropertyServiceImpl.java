@@ -15,10 +15,10 @@
  ******************************************************************************/
 package org.summerb.properties.impl;
 
+import com.google.common.base.Preconditions;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -30,8 +30,6 @@ import org.summerb.properties.impl.dao.PropertyDao;
 import org.summerb.properties.impl.dto.NamedIdProperty;
 import org.summerb.properties.internal.StringIdAliasService;
 import org.summerb.utils.exceptions.ExceptionUtils;
-
-import com.google.common.base.Preconditions;
 
 public class PropertyServiceImpl implements PropertyService {
   // protected Logger log = LoggerFactory.getLogger(PropertyServiceImpl.class);

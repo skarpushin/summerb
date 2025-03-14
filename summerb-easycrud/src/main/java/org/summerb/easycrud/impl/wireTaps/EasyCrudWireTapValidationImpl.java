@@ -15,10 +15,9 @@
  ******************************************************************************/
 package org.summerb.easycrud.impl.wireTaps;
 
+import com.google.common.base.Preconditions;
 import org.summerb.easycrud.api.EasyCrudValidationStrategy;
 import org.summerb.easycrud.api.EasyCrudWireTapMode;
-
-import com.google.common.base.Preconditions;
 
 /**
  * WireTap which will invoke injected {@link EasyCrudValidationStrategy} before row create and

@@ -15,9 +15,8 @@
  ******************************************************************************/
 package org.summerb.validation.jakarta;
 
-import org.summerb.validation.ValidationContext;
-
 import com.google.common.base.Preconditions;
+import org.summerb.validation.ValidationContext;
 
 public class JakartaValidatorImpl implements JakartaValidator {
   protected final JakartaValidationBeanProcessor jakartaValidationBeanProcessor;

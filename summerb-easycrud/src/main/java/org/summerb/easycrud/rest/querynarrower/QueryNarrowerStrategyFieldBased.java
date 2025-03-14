@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.summerb.easycrud.rest.querynarrower;
 
+import com.google.common.base.Preconditions;
 import org.springframework.util.StringUtils;
 import org.summerb.easycrud.api.query.Condition;
 import org.summerb.easycrud.api.query.DisjunctionCondition;
@@ -22,8 +23,6 @@ import org.summerb.easycrud.api.query.FieldCondition;
 import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.api.query.QueryConditions;
 import org.summerb.easycrud.rest.commonpathvars.PathVariablesMap;
-
-import com.google.common.base.Preconditions;
 
 public abstract class QueryNarrowerStrategyFieldBased<TRow> extends QueryNarrowerStrategy<TRow> {
   protected String fieldName;

@@ -43,39 +43,19 @@ http://www.apache.org/licenses/LICENSE-2.0
 	</licenses>
 
 	<properties>
-		<java.version>11</java.version>
-
 		<modular-name>parent</modular-name>
+
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.compiler.debug>true</maven.compiler.debug>
 		<maven.compiler.debuglevel>lines,vars,source</maven.compiler.debuglevel>
-
 		<skip.unit.tests>false</skip.unit.tests>
+		<java.version>17</java.version>
 
-		<junit.version>4.13.2</junit.version>
-		<junit-jupiter.version>5.9.3</junit-jupiter.version>
-		<dumbster.version>1.6</dumbster.version>
-
-		<servlet-api.version>4.0.1</servlet-api.version>
-		<slf4j.version>1.7.36</slf4j.version>
-		<spring-framework.version>5.3.26</spring-framework.version>
-		<spring-security.version>5.7.7</spring-security.version>
-		<mariadb.version>3.1.3</mariadb.version>
-		<mysql.version>8.0.33</mysql.version>
-		<postgresql.version>42.3.8</postgresql.version>
-		<commons-io.version>2.9.0</commons-io.version>
-		<log4j-core.version>2.20.0</log4j-core.version>
-		<guava.version>31.1-jre</guava.version>
-		<gson.version>2.10.1</gson.version>
-		<springfox-swagger2.version>2.7.0</springfox-swagger2.version>
-		<mail.version>1.4.7</mail.version>
-		<encoder.version>1.2.3</encoder.version> <!-- OWASP encoder -->
+		<commons-io.version>2.18.0</commons-io.version>
+		<guava.version>33.4.0-jre</guava.version>
+		<springfox-swagger2.version>2.10.5</springfox-swagger2.version>
 		<commons-fileupload.version>1.5</commons-fileupload.version>
-		<byte-buddy.version>1.14.4</byte-buddy.version>
-		<hibernate-validator.version>6.2.5.Final</hibernate-validator.version>
-		<spring-boot.version>2.7.12</spring-boot.version>
-		
 	</properties>
 
 	<scm>
@@ -93,32 +73,80 @@ http://www.apache.org/licenses/LICENSE-2.0
 		</developer>
 	</developers>
 
-	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-params</artifactId>
-			<version>${junit-jupiter.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-engine</artifactId>
-			<version>${junit-jupiter.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-junit-jupiter</artifactId>
-			<version>5.3.1</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-dependencies</artifactId>
+				<version>3.4.3</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>com.github.skarpushin</groupId>
+				<artifactId>summerb-dbupgrade</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.skarpushin</groupId>
+				<artifactId>summerb-easycrud</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.skarpushin</groupId>
+				<artifactId>summerb-easycrud</artifactId>
+				<version>${project.version}</version>
+				<type>test-jar</type>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.github.skarpushin</groupId>
+				<artifactId>summerb-easycrud_swagger2</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.skarpushin</groupId>
+				<artifactId>summerb-i18n</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.skarpushin</groupId>
+				<artifactId>summerb-properties</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.skarpushin</groupId>
+				<artifactId>summerb-security</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.skarpushin</groupId>
+				<artifactId>summerb-stringtemplate</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.skarpushin</groupId>
+				<artifactId>summerb-users</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.skarpushin</groupId>
+				<artifactId>summerb-utils</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.skarpushin</groupId>
+				<artifactId>summerb-validation</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.skarpushin</groupId>
+				<artifactId>summerb-webboilerplate</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<build>
 		<testResources>
@@ -132,11 +160,38 @@ http://www.apache.org/licenses/LICENSE-2.0
 				<directory>${project.basedir}/src/test/resources</directory>
 			</testResource>
 		</testResources>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>com.spotify.fmt</groupId>
+					<artifactId>fmt-maven-plugin</artifactId>
+					<version>2.22.1</version>
+					<executions>
+						<execution>
+							<id>fmt-format</id>
+							<goals>
+								<goal>format</goal>
+							</goals>
+						</execution>
+						<execution>
+							<id>fmt-check</id>
+							<goals>
+								<goal>check</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 		<plugins>
+			<plugin>
+				<groupId>com.spotify.fmt</groupId>
+				<artifactId>fmt-maven-plugin</artifactId>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.3.0</version>
+				<version>3.4.2</version>
 				<executions>
 					<execution>
 						<goals>
@@ -155,10 +210,10 @@ http://www.apache.org/licenses/LICENSE-2.0
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.11.0</version>
+				<version>3.14.0</version>
 				<configuration>
-					<source>11</source>
-					<target>11</target>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
 					<compilerArgs>
 						<arg>-parameters</arg>
 					</compilerArgs>
@@ -167,7 +222,7 @@ http://www.apache.org/licenses/LICENSE-2.0
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>flatten-maven-plugin</artifactId>
-				<version>1.5.0</version>
+				<version>1.7.0</version>
 				<configuration>
 					<flattenMode>oss</flattenMode>
 				</configuration>
@@ -192,6 +247,7 @@ http://www.apache.org/licenses/LICENSE-2.0
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>3.1.0</version>
+<!--				<version>3.5.2</version>-->
 				<configuration>
 					<skipTests>${skip.unit.tests}</skipTests>
 					<includes>
@@ -215,7 +271,7 @@ http://www.apache.org/licenses/LICENSE-2.0
 						https://central.sonatype.org/pages/apache-maven.html -->
 						<groupId>org.sonatype.plugins</groupId>
 						<artifactId>nexus-staging-maven-plugin</artifactId>
-						<version>1.6.8</version>
+						<version>1.6.14</version>
 						<extensions>true</extensions>
 						<configuration>
 							<serverId>ossrh</serverId>
@@ -239,7 +295,7 @@ http://www.apache.org/licenses/LICENSE-2.0
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-source-plugin</artifactId>
-						<version>3.2.1</version>
+						<version>3.3.1</version>
 						<executions>
 							<execution>
 								<id>attach-sources</id>
@@ -252,7 +308,7 @@ http://www.apache.org/licenses/LICENSE-2.0
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
-						<version>3.5.0</version>
+						<version>3.11.2</version>
 						<executions>
 							<execution>
 								<id>attach-javadocs</id>

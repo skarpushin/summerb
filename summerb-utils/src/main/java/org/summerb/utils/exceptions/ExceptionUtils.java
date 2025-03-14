@@ -129,4 +129,21 @@ public class ExceptionUtils {
     t.printStackTrace(pw);
     return sw.toString(); // stack trace as a string
   }
+
+  public static String getRootCauseMessage(Throwable t) {
+    Throwable cur = t;
+
+    String lastRootCause = null;
+    while (cur != null) {
+      if (cur == cur.getCause()) {
+        break;
+      }
+
+      lastRootCause = cur.getMessage();
+
+      cur = cur.getCause();
+    }
+
+    return lastRootCause;
+  }
 }

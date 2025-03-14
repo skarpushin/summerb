@@ -15,12 +15,12 @@
  ******************************************************************************/
 package org.summerb.easycrud.impl.relations;
 
+import com.google.common.base.Preconditions;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.ObjectUtils;
 import org.summerb.easycrud.api.row.HasId;
@@ -28,8 +28,6 @@ import org.summerb.easycrud.api.row.datapackage.DataSet;
 import org.summerb.easycrud.api.row.datapackage.DataTable;
 import org.summerb.easycrud.api.row.relations.Ref;
 import org.summerb.easycrud.api.row.relations.RefQuantity;
-
-import com.google.common.base.Preconditions;
 
 public class EasyCrudDomUtils {
   /**

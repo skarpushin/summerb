@@ -25,7 +25,9 @@ public class StringTemplateValidationError extends ValidationError {
 
   private Throwable cause;
 
-  /** @deprecated only for io */
+  /**
+   * @deprecated only for io
+   */
   @Deprecated
   public StringTemplateValidationError() {}
 

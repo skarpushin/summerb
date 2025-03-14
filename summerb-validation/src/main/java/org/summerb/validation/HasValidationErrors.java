@@ -19,9 +19,13 @@ import java.util.List;
 
 public interface HasValidationErrors {
 
-  /** @return list of validation errors, could be empty, never null */
+  /**
+   * @return list of validation errors, could be empty, never null
+   */
   List<ValidationError> getList();
 
-  /** @return true if there is at least 1 error */
+  /**
+   * @return true if there is at least 1 error
+   */
   boolean isHasErrors();
 }

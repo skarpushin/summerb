@@ -15,11 +15,9 @@
  ******************************************************************************/
 package org.summerb.i18n;
 
-import java.util.Locale;
-
-import org.springframework.context.MessageSource;
-
 import com.google.common.base.Preconditions;
+import java.util.Locale;
+import org.springframework.context.MessageSource;
 
 /**
  * This converter will get message arg and treat as a message code and translate it

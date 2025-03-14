@@ -15,9 +15,9 @@
  ******************************************************************************/
 package org.summerb.webappboilerplate.utils;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.AsyncHandlerInterceptor;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
@@ -42,14 +42,13 @@ public class ForceLocaleToCoockieInterceptor implements AsyncHandlerInterceptor 
       throw new IllegalStateException(
           "No LocaleResolver found: not in a DispatcherServlet request?");
     }
-    if (!(localeResolver instanceof CookieLocaleResolver)) {
+    if (!(localeResolver instanceof CookieLocaleResolver cookieLocaleResolver)) {
       return true;
     }
 
     // Check if locale not in cookie.
     // If so, then force it to store in cookie
-    CookieLocaleResolver cookieLocaleResolver = (CookieLocaleResolver) localeResolver;
-    Cookie cookie = WebUtils.getCookie(request, cookieLocaleResolver.getCookieName());
+    Cookie cookie = WebUtils.getCookie(request, CookieLocaleResolver.DEFAULT_COOKIE_NAME);
     if (cookie == null) {
       cookieLocaleResolver.setLocale(request, response, localeResolver.resolveLocale(request));
     }

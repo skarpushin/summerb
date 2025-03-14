@@ -1,15 +1,13 @@
 package org.summerb.stringtemplate.impl;
 
-import java.io.StringReader;
-import java.io.StringWriter;
-
-import org.springframework.util.StringUtils;
-import org.summerb.stringtemplate.api.StringTemplate;
-import org.summerb.stringtemplate.api.StringTemplateFactory;
-
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
+import java.io.StringReader;
+import java.io.StringWriter;
+import org.springframework.util.StringUtils;
+import org.summerb.stringtemplate.api.StringTemplate;
+import org.summerb.stringtemplate.api.StringTemplateFactory;
 
 /**
  * Mustache-based impl of the template.

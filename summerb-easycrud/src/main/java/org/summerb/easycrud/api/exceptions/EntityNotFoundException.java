@@ -29,7 +29,9 @@ public abstract class EntityNotFoundException extends RuntimeException
 
   protected Object identity;
 
-  /** @deprecated Used only for io */
+  /**
+   * @deprecated Used only for io
+   */
   @Deprecated
   public EntityNotFoundException() {}
 

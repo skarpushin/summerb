@@ -15,14 +15,13 @@
  ******************************************************************************/
 package org.summerb.security.api.exceptions;
 
+import com.google.common.base.Preconditions;
 import org.summerb.i18n.HasMessageArgs;
 import org.summerb.i18n.HasMessageArgsConverters;
 import org.summerb.i18n.HasMessageCode;
 import org.summerb.i18n.MessageArgConverter;
 import org.summerb.i18n.exceptions.HasErrorDescriptionObject;
 import org.summerb.security.api.dto.NotAuthorizedResult;
-
-import com.google.common.base.Preconditions;
 
 /**
  * Thrown when user is not authorized to perform operation in general or applicable to specific

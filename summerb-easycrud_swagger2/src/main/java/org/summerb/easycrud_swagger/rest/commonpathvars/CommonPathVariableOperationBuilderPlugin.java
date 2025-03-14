@@ -15,19 +15,16 @@
  ******************************************************************************/
 package org.summerb.easycrud_swagger.rest.commonpathvars;
 
+import com.fasterxml.classmate.TypeResolver;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.summerb.easycrud.rest.commonpathvars.HasCommonPathVariable;
 import org.summerb.easycrud.rest.commonpathvars.HasCommonPathVariables;
-
-import com.fasterxml.classmate.TypeResolver;
-import com.google.common.base.Optional;
-
 import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.schema.ModelRef;
 import springfox.documentation.service.Parameter;

@@ -15,10 +15,9 @@
  ******************************************************************************/
 package org.summerb.utils.disruptor;
 
+import com.google.common.base.Preconditions;
 import org.summerb.utils.collection.OneWayList;
 import org.summerb.utils.threads.RecurringBackgroundTask;
-
-import com.google.common.base.Preconditions;
 
 /**
  * This class is designed to arrange data processing coming from multiple threads in a way to avoid

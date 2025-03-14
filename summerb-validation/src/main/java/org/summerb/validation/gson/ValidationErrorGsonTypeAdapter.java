@@ -15,13 +15,6 @@
  ******************************************************************************/
 package org.summerb.validation.gson;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import org.summerb.validation.ValidationError;
-
 import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -33,8 +26,12 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import org.summerb.validation.ValidationError;
 
 /**
  * {@link Gson} IO helper that can serialize/deserialize {@link ValidationError} according to value

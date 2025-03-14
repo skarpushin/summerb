@@ -16,7 +16,6 @@
 package org.summerb.dbupgrade.impl.mysql;
 
 import java.io.InputStream;
-
 import org.summerb.dbupgrade.impl.SqlPackageParserAbstract;
 import org.summerb.dbupgrade.utils.StringTokenizer;
 import org.summerb.dbupgrade.utils.StringTokenizer.SubString;

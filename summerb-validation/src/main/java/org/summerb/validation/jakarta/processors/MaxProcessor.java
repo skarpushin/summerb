@@ -15,10 +15,8 @@
  ******************************************************************************/
 package org.summerb.validation.jakarta.processors;
 
+import jakarta.validation.constraints.Max;
 import java.math.BigDecimal;
-
-import javax.validation.constraints.Max;
-
 import org.summerb.validation.ValidationContext;
 import org.summerb.validation.jakarta.processors.abstracts.DecimalProcessorNullableAbstract;
 

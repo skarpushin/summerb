@@ -26,7 +26,9 @@ public class DuplicateRecord extends ValidationError {
 
   public static final String MESSAGE_CODE = "validation.duplicateRecord";
 
-  /** @deprecated used only for serialization */
+  /**
+   * @deprecated used only for serialization
+   */
   public DuplicateRecord() {}
 
   public DuplicateRecord(String propertyName) {

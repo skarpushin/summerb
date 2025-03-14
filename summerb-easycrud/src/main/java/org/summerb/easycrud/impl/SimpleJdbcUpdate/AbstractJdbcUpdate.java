@@ -91,57 +91,77 @@ public abstract class AbstractJdbcUpdate {
   // Methods dealing with configuration properties
   // -------------------------------------------------------------------------
 
-  /** @return the name of the table for this update */
+  /**
+   * @return the name of the table for this update
+   */
   public String getTableName() {
     return this.tableMetaDataContext.getTableName();
   }
 
-  /** @param tableName the name of the table for this update */
+  /**
+   * @param tableName the name of the table for this update
+   */
   public void setTableName(String tableName) {
     checkIfConfigurationModificationIsAllowed();
     this.tableMetaDataContext.setTableName(tableName);
   }
 
-  /** @return the name of the schema for this update */
+  /**
+   * @return the name of the schema for this update
+   */
   public String getSchemaName() {
     return this.tableMetaDataContext.getSchemaName();
   }
 
-  /** @param schemaName the name of the schema for this update */
+  /**
+   * @param schemaName the name of the schema for this update
+   */
   public void setSchemaName(String schemaName) {
     checkIfConfigurationModificationIsAllowed();
     this.tableMetaDataContext.setSchemaName(schemaName);
   }
 
-  /** @return the name of the catalog for this update */
+  /**
+   * @return the name of the catalog for this update
+   */
   public String getCatalogName() {
     return this.tableMetaDataContext.getCatalogName();
   }
 
-  /** @param catalogName the name of the catalog for this update */
+  /**
+   * @param catalogName the name of the catalog for this update
+   */
   public void setCatalogName(String catalogName) {
     checkIfConfigurationModificationIsAllowed();
     this.tableMetaDataContext.setCatalogName(catalogName);
   }
 
-  /** @return the names of the columns used */
+  /**
+   * @return the names of the columns used
+   */
   public List<String> getDeclaredUpdatingColumns() {
     return Collections.unmodifiableList(this.declaredUpdatingColumns);
   }
 
-  /** @param declaredNames the names of the columns to be used */
+  /**
+   * @param declaredNames the names of the columns to be used
+   */
   public void setDeclaredUpdatingColumns(List<String> declaredNames) {
     checkIfConfigurationModificationIsAllowed();
     this.declaredUpdatingColumns.clear();
     this.declaredUpdatingColumns.addAll(declaredNames);
   }
 
-  /** @return the names of 'where' columns */
+  /**
+   * @return the names of 'where' columns
+   */
   public Set<String> getRestrictingColumns() {
     return Collections.unmodifiableSet(this.restrictingColumns.keySet());
   }
 
-  /** @param whereNames the names of any primary keys */
+  /**
+   * @param whereNames the names of any primary keys
+   */
   public void setRestrictingColumns(List<String> whereNames) {
     Map<String, Operator> columns = new HashMap<>();
     for (String columnName : whereNames) {
@@ -150,7 +170,9 @@ public abstract class AbstractJdbcUpdate {
     setRestrictingColumns(columns);
   }
 
-  /** @param whereNames the names of any where columns */
+  /**
+   * @param whereNames the names of any where columns
+   */
   public void setRestrictingColumns(Map<String, Operator> whereNames) {
     checkIfConfigurationModificationIsAllowed();
     this.restrictingColumns.clear();
@@ -180,12 +202,16 @@ public abstract class AbstractJdbcUpdate {
     return this.updateString;
   }
 
-  /** @return the array of {@link java.sql.Types} to be used in 'set' clause */
+  /**
+   * @return the array of {@link java.sql.Types} to be used in 'set' clause
+   */
   protected int[] getColumnTypes() {
     return this.columnTypes;
   }
 
-  /** @return the {@link JdbcTemplate} that is configured to be used */
+  /**
+   * @return the {@link JdbcTemplate} that is configured to be used
+   */
   protected JdbcTemplate getJdbcTemplate() {
     return this.jdbcTemplate;
   }

@@ -256,5 +256,4 @@ public class PasswordServiceDbImplTest {
             fixture.isRestorationTokenValid(
                 UserFactory.EXISTENT_USER_2_PROBLEM_WITH_PASSWORD, "asd"));
   }
-
 }

@@ -15,17 +15,14 @@
  ******************************************************************************/
 package org.summerb.utils.jmx;
 
+import com.google.common.base.Preconditions;
 import java.lang.management.ManagementFactory;
 import java.util.Map;
-
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
-
-import com.google.common.base.Preconditions;
 
 @SuppressWarnings("rawtypes")
 public class MapSizeMXBeanImpl implements MapSizeMXBean {

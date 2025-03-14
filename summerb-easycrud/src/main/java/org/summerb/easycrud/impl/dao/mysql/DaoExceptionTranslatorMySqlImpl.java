@@ -17,7 +17,6 @@ package org.summerb.easycrud.impl.dao.mysql;
 
 import java.sql.DataTruncation;
 import java.sql.SQLSyntaxErrorException;
-
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.support.JdbcUtils;
 import org.summerb.easycrud.api.DaoExceptionTranslatorAbstract;

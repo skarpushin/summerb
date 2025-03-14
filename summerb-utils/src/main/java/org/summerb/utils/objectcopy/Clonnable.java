@@ -15,7 +15,9 @@
  ******************************************************************************/
 package org.summerb.utils.objectcopy;
 
-/** @author sergey.karpushin */
+/**
+ * @author sergey.karpushin
+ */
 public interface Clonnable<T> extends java.lang.Cloneable {
   T clone();
 }

@@ -15,10 +15,10 @@
  ******************************************************************************/
 package org.summerb.easycrud.impl;
 
+import com.google.common.base.Preconditions;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -26,8 +26,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.api.EasyCrudServiceResolver;
-
-import com.google.common.base.Preconditions;
 
 /**
  * That impl just finds all beans with {@link EasyCrudService} interface implemented

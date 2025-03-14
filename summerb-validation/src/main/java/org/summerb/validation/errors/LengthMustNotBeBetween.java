@@ -7,7 +7,9 @@ public class LengthMustNotBeBetween extends ValidationError {
 
   public static final String MESSAGE_CODE = "validation.length.mustNotBe.between";
 
-  /** @deprecated used only for serialization */
+  /**
+   * @deprecated used only for serialization
+   */
   public LengthMustNotBeBetween() {}
 
   public LengthMustNotBeBetween(String propertyName, int lowerBoundary, int upperBoundary) {

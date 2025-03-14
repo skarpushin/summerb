@@ -42,7 +42,8 @@ public class PropertyNameResolverFactoryImpl implements PropertyNameResolverFact
       @Override
       public PropertyNameResolver<?> load(Class<?> rowClass) {
         return new PropertyNameResolverCachedImpl(
-            new PropertyNameResolverImpl(() -> methodCapturerProxyClassFactory.buildProxyFor(rowClass)));
+            new PropertyNameResolverImpl(
+                () -> methodCapturerProxyClassFactory.buildProxyFor(rowClass)));
       }
     };
   }

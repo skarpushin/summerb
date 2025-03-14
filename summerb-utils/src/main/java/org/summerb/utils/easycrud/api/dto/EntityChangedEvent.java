@@ -15,11 +15,9 @@
  ******************************************************************************/
 package org.summerb.utils.easycrud.api.dto;
 
-import java.io.Serializable;
-
-import org.summerb.utils.DtoBase;
-
 import com.google.common.base.Preconditions;
+import java.io.Serializable;
+import org.summerb.utils.DtoBase;
 
 /**
  * Data structure used to contain and transmit entities changes within the application as well as
@@ -40,7 +38,9 @@ public class EntityChangedEvent<T extends DtoBase> implements Serializable {
   private T value;
   private ChangeType changeType;
 
-  /** @deprecated fo IO purposes only */
+  /**
+   * @deprecated fo IO purposes only
+   */
   @Deprecated
   public EntityChangedEvent() {}
 

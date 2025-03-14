@@ -18,7 +18,6 @@ package org.summerb.easycrud.impl.auth;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.summerb.security.api.dto.NotAuthorizedResult;
 

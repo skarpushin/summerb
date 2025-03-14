@@ -16,7 +16,6 @@
 package org.summerb.spring.security.impl;
 
 import java.util.Set;
-
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.summerb.security.api.CurrentUserNotFoundException;

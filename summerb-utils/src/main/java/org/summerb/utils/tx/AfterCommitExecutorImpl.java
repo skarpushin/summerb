@@ -15,17 +15,15 @@
  ******************************************************************************/
 package org.summerb.utils.tx;
 
+import com.google.common.base.Preconditions;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
-
-import com.google.common.base.Preconditions;
 
 /**
  * This impl is intended to be scoped for each request. It will NOT work properly if instantiated as

@@ -16,7 +16,6 @@
 package org.summerb.easycrud.rest.dto;
 
 import java.util.Map;
-
 import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.api.row.datapackage.DataSet;
 import org.summerb.easycrud.api.row.relations.Ref;
@@ -25,6 +24,7 @@ public class CrudQueryResult<TId, TRow extends HasId<TId>> {
 
   protected String entityMessageCode;
   protected Map<String, Ref> refsResolved;
+
   /** Resolved references, if any */
   protected DataSet refs;
 

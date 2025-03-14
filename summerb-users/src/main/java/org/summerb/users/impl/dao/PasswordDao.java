@@ -27,6 +27,8 @@ public interface PasswordDao {
    */
   int updateUserPassword(String userUuid, String newPasswordHash);
 
-  /** @return number of database records was updated */
+  /**
+   * @return number of database records was updated
+   */
   int setRestorationToken(String userUuid, String restorationToken);
 }

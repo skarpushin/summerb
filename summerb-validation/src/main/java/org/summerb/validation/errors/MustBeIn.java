@@ -2,7 +2,6 @@ package org.summerb.validation.errors;
 
 import java.util.Arrays;
 import java.util.Collection;
-
 import org.summerb.validation.ValidationError;
 
 public class MustBeIn extends ValidationError {
@@ -10,7 +9,9 @@ public class MustBeIn extends ValidationError {
 
   public static final String MESSAGE_CODE = "validation.mustBe.in";
 
-  /** @deprecated used only for serialization */
+  /**
+   * @deprecated used only for serialization
+   */
   public MustBeIn() {}
 
   public MustBeIn(String propertyName, Collection<?> values) {

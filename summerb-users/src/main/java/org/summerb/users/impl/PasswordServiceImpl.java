@@ -15,8 +15,8 @@
  ******************************************************************************/
 package org.summerb.users.impl;
 
+import com.google.common.base.Preconditions;
 import java.util.UUID;
-
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -28,8 +28,6 @@ import org.summerb.users.impl.dao.PasswordDao;
 import org.summerb.users.impl.dom.Password;
 import org.summerb.validation.ValidationException;
 import org.summerb.validation.errors.MustNotBeNull;
-
-import com.google.common.base.Preconditions;
 
 public class PasswordServiceImpl implements PasswordService {
   protected static final String FN_PASSWORD = "password";

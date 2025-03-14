@@ -22,7 +22,9 @@ public class MustNotBeNull extends ValidationError {
 
   public static final String MESSAGE_CODE = "validation.mustNotBe.null";
 
-  /** @deprecated used only for serialization */
+  /**
+   * @deprecated used only for serialization
+   */
   public MustNotBeNull() {}
 
   public MustNotBeNull(String propertyName) {

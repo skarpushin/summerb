@@ -15,13 +15,11 @@
  ******************************************************************************/
 package org.summerb.easycrud.api.row.datapackage;
 
+import com.google.common.base.Preconditions;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
-
-import com.google.common.base.Preconditions;
 
 /**
  * DataSet represents "data package" that contains several rows from several tables.

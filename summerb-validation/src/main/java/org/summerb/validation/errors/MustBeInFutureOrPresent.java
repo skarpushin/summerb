@@ -7,7 +7,9 @@ public class MustBeInFutureOrPresent extends ValidationError {
 
   public static final String MESSAGE_CODE = "validation.mustBe.inFutureOrPresent";
 
-  /** @deprecated used only for serialization */
+  /**
+   * @deprecated used only for serialization
+   */
   public MustBeInFutureOrPresent() {}
 
   public MustBeInFutureOrPresent(String propertyName) {

@@ -49,8 +49,8 @@ import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapEventBusImpl;
 import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapValidationImpl;
 import org.summerb.easycrud.scaffold.api.EasyCrudScaffold;
 import org.summerb.easycrud.scaffold.api.EasyCrudServiceProxyFactory;
-import org.summerb.easycrud.scaffold.api.ScaffoldedMethodFactory;
 import org.summerb.easycrud.scaffold.api.Query;
+import org.summerb.easycrud.scaffold.api.ScaffoldedMethodFactory;
 import org.summerb.security.api.CurrentUserUuidResolver;
 import org.summerb.utils.DtoBase;
 
@@ -312,8 +312,7 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
   protected <TId, TDto extends HasId<TId>> EasyCrudDao<TId, TDto> buildDao(
       Class<TDto> rowClass, String tableName, Object... injections) throws Exception {
 
-    EasyCrudDaoSqlImpl<TId, TDto> ret =
-        instantiateAndAutowireDao(dataSource, tableName, rowClass);
+    EasyCrudDaoSqlImpl<TId, TDto> ret = instantiateAndAutowireDao(dataSource, tableName, rowClass);
     autowireInjections(injections);
     setDaoInjectionsIfAny(ret, injections);
     ret.afterPropertiesSet();
@@ -322,7 +321,7 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
 
   @SuppressWarnings("unchecked")
   protected <TId, TDto extends HasId<TId>> void setDaoInjectionsIfAny(
-          EasyCrudDaoSqlImpl<TId, TDto> ret, Object... injections) {
+      EasyCrudDaoSqlImpl<TId, TDto> ret, Object... injections) {
 
     var conversionService = find(injections, ConversionService.class);
     if (conversionService != null) {
@@ -370,11 +369,9 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
     return null;
   }
 
-  protected <TDto extends HasId<TId>, TId>
-  EasyCrudDaoSqlImpl<TId, TDto> instantiateAndAutowireDao(
-          DataSource dataSource, String tableName, Class<TDto> rowClass) {
-    EasyCrudDaoSqlImpl<TId, TDto> ret =
-        new EasyCrudDaoSqlImpl<>(dataSource, tableName, rowClass);
+  protected <TDto extends HasId<TId>, TId> EasyCrudDaoSqlImpl<TId, TDto> instantiateAndAutowireDao(
+      DataSource dataSource, String tableName, Class<TDto> rowClass) {
+    EasyCrudDaoSqlImpl<TId, TDto> ret = new EasyCrudDaoSqlImpl<>(dataSource, tableName, rowClass);
     beanFactory.autowireBean(ret);
     return ret;
   }

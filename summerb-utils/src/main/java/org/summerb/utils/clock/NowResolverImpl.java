@@ -1,8 +1,7 @@
 package org.summerb.utils.clock;
 
-import java.time.Clock;
-
 import com.google.common.base.Preconditions;
+import java.time.Clock;
 
 public class NowResolverImpl implements NowResolver {
   private Clock clock;

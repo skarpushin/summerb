@@ -7,7 +7,9 @@ public class MustNotBeEmpty extends ValidationError {
 
   public static final String MESSAGE_CODE = "validation.mustNotBe.empty";
 
-  /** @deprecated used only for serialization */
+  /**
+   * @deprecated used only for serialization
+   */
   public MustNotBeEmpty() {}
 
   public MustNotBeEmpty(String propertyName) {

@@ -3,14 +3,12 @@ package org.summerb.validation;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-
-import org.junit.jupiter.api.Test;
-import org.summerb.validation.gson.ValidationErrorGsonTypeAdapter;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import org.junit.jupiter.api.Test;
+import org.summerb.validation.gson.ValidationErrorGsonTypeAdapter;
 
 class ValidationErrorTest {
 

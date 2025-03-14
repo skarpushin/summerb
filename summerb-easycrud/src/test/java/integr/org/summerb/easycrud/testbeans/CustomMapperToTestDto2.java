@@ -1,10 +1,9 @@
 package integr.org.summerb.easycrud.testbeans;
 
 import integr.org.summerb.easycrud.dtos.TestDto2;
-import org.springframework.jdbc.core.RowMapper;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import org.springframework.jdbc.core.RowMapper;
 
 public class CustomMapperToTestDto2 implements RowMapper<TestDto2> {
 

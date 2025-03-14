@@ -15,8 +15,7 @@
  ******************************************************************************/
 package org.summerb.webappboilerplate.security.impls;
 
-import javax.servlet.http.HttpServletRequest;
-
+import jakarta.servlet.http.HttpServletRequest;
 import org.summerb.webappboilerplate.security.apis.RememberMeRequestedStrategy;
 
 /**

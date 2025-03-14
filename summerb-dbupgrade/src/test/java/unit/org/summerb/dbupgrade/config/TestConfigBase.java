@@ -16,7 +16,6 @@
 package unit.org.summerb.dbupgrade.config;
 
 import javax.sql.DataSource;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -24,7 +23,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.summerb.dbupgrade.DbUpgradeConfigAdapter;
-
 import unit.org.summerb.dbupgrade.DbUpgradeTestAbstract.CustomUpgradeStep;
 
 public abstract class TestConfigBase extends DbUpgradeConfigAdapter {

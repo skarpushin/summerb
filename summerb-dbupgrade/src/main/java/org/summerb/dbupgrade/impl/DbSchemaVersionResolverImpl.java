@@ -15,16 +15,14 @@
  ******************************************************************************/
 package org.summerb.dbupgrade.impl;
 
+import com.google.common.base.Preconditions;
 import javax.sql.DataSource;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.summerb.dbupgrade.api.DbSchemaVersionResolver;
-
-import com.google.common.base.Preconditions;
 
 public class DbSchemaVersionResolverImpl implements DbSchemaVersionResolver {
   protected Logger log = LoggerFactory.getLogger(getClass());

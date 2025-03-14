@@ -15,10 +15,8 @@
  ******************************************************************************/
 package org.summerb.validation.jakarta;
 
+import jakarta.validation.constraints.AssertTrue;
 import java.lang.annotation.Annotation;
-
-import javax.validation.constraints.AssertTrue;
-
 import org.summerb.validation.ValidationContext;
 
 /**

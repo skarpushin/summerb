@@ -15,18 +15,16 @@
  ******************************************************************************/
 package org.summerb.dbupgrade.impl;
 
+import com.google.common.base.Preconditions;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.stream.Stream;
-
 import org.apache.commons.io.FilenameUtils;
 import org.summerb.dbupgrade.api.UpgradePackageMeta;
 import org.summerb.dbupgrade.api.UpgradePackageMetaResolver;
-
-import com.google.common.base.Preconditions;
 
 /**
  * NOTE: Works well with filesystem, but doesn't work when files are embedded in the resources

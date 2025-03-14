@@ -191,8 +191,7 @@ public class EasyCrudIntegrTestConfig {
       EasyCrudM2MDaoSqlImpl<Long, TestDto2, String, TestDto1> dao,
       @Qualifier("testDto2ServiceBasicAuth") EasyCrudService<Long, TestDto2> serviceA,
       @Qualifier("testDto1Service") EasyCrudService<String, TestDto1> serviceB,
-      @Qualifier("testDto2PerRowAuth")
-      EasyCrudAuthorizationPerRowStrategy<TestDto2> serviceAAuth) {
+      @Qualifier("testDto2PerRowAuth") EasyCrudAuthorizationPerRowStrategy<TestDto2> serviceAAuth) {
 
     var ret = new EasyCrudM2mServiceImpl<>(dao, serviceA, serviceB);
     M2mAuthorizationWireTapImpl wireTap = new M2mAuthorizationWireTapImpl(serviceA, serviceAAuth);

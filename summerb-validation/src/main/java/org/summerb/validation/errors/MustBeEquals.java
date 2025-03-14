@@ -25,7 +25,9 @@ public class MustBeEquals extends ValidationError implements HasMessageArgsConve
 
   public static final String MESSAGE_CODE = "validation.mustBe.equalsToEachOther";
 
-  /** @deprecated used only for serialization */
+  /**
+   * @deprecated used only for serialization
+   */
   @Deprecated
   public MustBeEquals() {}
 

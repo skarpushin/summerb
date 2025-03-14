@@ -22,9 +22,7 @@ import org.summerb.stringtemplate.api.StringTemplate;
 
 public class StringTemplateCompilerSpElImplTest {
 
-  /**
-   * The object that is being tested.
-   */
+  /** The object that is being tested. */
   private StringTemplateFactorySpElImpl fixture = new StringTemplateFactorySpElImpl();
 
   /** Run the StringTemplate compile(String) method test */

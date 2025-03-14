@@ -15,16 +15,13 @@
  ******************************************************************************/
 package org.summerb.validation.jakarta.processors;
 
+import com.google.common.base.Preconditions;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Pattern.Flag;
 import java.util.function.Predicate;
-
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Pattern.Flag;
-
 import org.summerb.validation.ValidationContext;
 import org.summerb.validation.errors.MustMatchPattern;
 import org.summerb.validation.jakarta.processors.abstracts.AnnotationProcessorNullableAbstract;
-
-import com.google.common.base.Preconditions;
 
 public class PatternProcessor extends AnnotationProcessorNullableAbstract<Pattern> {
 

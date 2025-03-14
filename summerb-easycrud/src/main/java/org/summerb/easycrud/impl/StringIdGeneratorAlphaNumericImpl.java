@@ -16,7 +16,6 @@
 package org.summerb.easycrud.impl;
 
 import java.util.Random;
-
 import org.summerb.easycrud.api.StringIdGenerator;
 
 /**

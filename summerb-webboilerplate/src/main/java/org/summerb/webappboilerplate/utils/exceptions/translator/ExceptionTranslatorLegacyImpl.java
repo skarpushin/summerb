@@ -17,7 +17,6 @@ package org.summerb.webappboilerplate.utils.exceptions.translator;
 
 import java.util.Arrays;
 import java.util.List;
-
 import org.springframework.context.MessageSource;
 
 public class ExceptionTranslatorLegacyImpl extends ExceptionTranslatorDelegatingImpl {

@@ -16,7 +16,6 @@
 package org.summerb.easycrud.impl.SimpleJdbcUpdate;
 
 import java.util.Map;
-
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
 /**

@@ -42,6 +42,7 @@ public class AuthTokenServiceImpl implements AuthTokenService {
   protected UserService userService;
   protected PasswordService passwordService;
   protected AuthTokenDao authTokenDao;
+
   /**
    * How long token may live even if it's frequently used. After that period of time token will be
    * deleted and user will have to re-login

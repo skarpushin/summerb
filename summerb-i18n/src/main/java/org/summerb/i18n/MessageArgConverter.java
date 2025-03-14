@@ -16,7 +16,6 @@
 package org.summerb.i18n;
 
 import java.util.Locale;
-
 import org.springframework.context.MessageSource;
 
 public abstract class MessageArgConverter {

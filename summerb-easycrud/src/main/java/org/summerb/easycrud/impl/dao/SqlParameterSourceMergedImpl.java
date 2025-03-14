@@ -15,10 +15,9 @@
  ******************************************************************************/
 package org.summerb.easycrud.impl.dao;
 
+import com.google.common.base.Preconditions;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-
-import com.google.common.base.Preconditions;
 
 /**
  * This impl merges several sources to a single parameter source.

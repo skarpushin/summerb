@@ -15,9 +15,8 @@
  ******************************************************************************/
 package org.summerb.stringtemplate.impl;
 
-import org.summerb.stringtemplate.api.StringTemplate;
-
 import com.google.common.base.Preconditions;
+import org.summerb.stringtemplate.api.StringTemplate;
 
 public class StringTemplateStaticImpl implements StringTemplate {
   private final String content;

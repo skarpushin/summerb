@@ -1,9 +1,8 @@
 package org.summerb.easycrud.api.query.restrictions;
 
+import com.google.common.base.Preconditions;
 import org.springframework.util.StringUtils;
 import org.summerb.easycrud.api.query.restrictions.base.NegateableRestriction;
-
-import com.google.common.base.Preconditions;
 
 public class Like extends NegateableRestriction<Like> {
 

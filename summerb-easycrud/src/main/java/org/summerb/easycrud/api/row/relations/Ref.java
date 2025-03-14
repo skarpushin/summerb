@@ -16,7 +16,6 @@
 package org.summerb.easycrud.api.row.relations;
 
 import java.io.Serializable;
-
 import org.summerb.easycrud.api.EasyCrudService;
 
 /**
@@ -63,7 +62,9 @@ public class Ref implements Serializable {
     this.quantity = quantity;
   }
 
-  /** @return returns reversed reference */
+  /**
+   * @return returns reversed reference
+   */
   public Ref reverse() {
     Ref ret = new Ref();
     ret.setName(
@@ -87,7 +88,9 @@ public class Ref implements Serializable {
     return ret;
   }
 
-  /** @return Reference name, must be unique within application */
+  /**
+   * @return Reference name, must be unique within application
+   */
   public String getName() {
     return name;
   }
@@ -120,7 +123,9 @@ public class Ref implements Serializable {
     return quantity == RefQuantity.Many2Many;
   }
 
-  /** @return entity type message code See {@link EasyCrudService#getRowMessageCode()} */
+  /**
+   * @return entity type message code See {@link EasyCrudService#getRowMessageCode()}
+   */
   public String getFromEntity() {
     return fromEntity;
   }
@@ -137,7 +142,9 @@ public class Ref implements Serializable {
     this.fromField = fromField;
   }
 
-  /** @return entity type message code See {@link EasyCrudService#getRowMessageCode()} */
+  /**
+   * @return entity type message code See {@link EasyCrudService#getRowMessageCode()}
+   */
   public String getToEntity() {
     return toEntity;
   }

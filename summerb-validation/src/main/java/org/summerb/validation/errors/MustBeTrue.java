@@ -7,7 +7,9 @@ public class MustBeTrue extends ValidationError {
 
   public static final String MESSAGE_CODE = "validation.mustBe.true";
 
-  /** @deprecated used only for serialization */
+  /**
+   * @deprecated used only for serialization
+   */
   public MustBeTrue() {}
 
   public MustBeTrue(String propertyName) {

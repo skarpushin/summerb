@@ -15,16 +15,16 @@
  ******************************************************************************/
 package org.summerb.validation;
 
+import com.google.common.base.Preconditions;
 import java.util.Arrays;
 import java.util.List;
-
 import org.springframework.util.CollectionUtils;
 import org.summerb.i18n.HasMessageCode;
 import org.summerb.i18n.exceptions.HasErrorDescriptionObject;
 
-import com.google.common.base.Preconditions;
-
-/** @author sergey.karpushin */
+/**
+ * @author sergey.karpushin
+ */
 public class ValidationException extends RuntimeException
     implements HasMessageCode, HasErrorDescriptionObject<ValidationErrors> {
   private static final long serialVersionUID = -310812271204903287L;
@@ -33,7 +33,9 @@ public class ValidationException extends RuntimeException
 
   protected ValidationErrors errors;
 
-  /** @deprecated for io purposes only */
+  /**
+   * @deprecated for io purposes only
+   */
   @Deprecated
   public ValidationException() {}
 

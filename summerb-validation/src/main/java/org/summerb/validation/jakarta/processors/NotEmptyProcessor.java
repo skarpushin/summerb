@@ -15,16 +15,13 @@
  ******************************************************************************/
 package org.summerb.validation.jakarta.processors;
 
+import com.google.common.base.Preconditions;
+import jakarta.validation.constraints.NotEmpty;
 import java.util.Collection;
 import java.util.Map;
-
-import javax.validation.constraints.NotEmpty;
-
 import org.summerb.validation.ValidationContext;
 import org.summerb.validation.errors.MustNotBeEmpty;
 import org.summerb.validation.jakarta.processors.abstracts.AnnotationProcessorAbstract;
-
-import com.google.common.base.Preconditions;
 
 public class NotEmptyProcessor extends AnnotationProcessorAbstract<NotEmpty> {
 

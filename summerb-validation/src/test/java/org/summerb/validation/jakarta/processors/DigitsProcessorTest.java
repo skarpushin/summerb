@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.summerb.validation.Asserts.assertIae;
 
 import java.math.BigDecimal;
-
 import org.junit.jupiter.api.Test;
 
 class DigitsProcessorTest {

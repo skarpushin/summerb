@@ -15,13 +15,12 @@
  ******************************************************************************/
 package org.summerb.dbupgrade.impl;
 
+import com.google.common.base.Preconditions;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.summerb.dbupgrade.api.SqlPackageParser;
 import org.summerb.dbupgrade.api.UpgradePackage;
 import org.summerb.dbupgrade.api.UpgradePackageFactory;
 import org.summerb.dbupgrade.api.UpgradePackageMeta;
-
-import com.google.common.base.Preconditions;
 
 public class UpgradePackageFactorySqlImpl implements UpgradePackageFactory {
   protected static final String EXTENSION = "sql";

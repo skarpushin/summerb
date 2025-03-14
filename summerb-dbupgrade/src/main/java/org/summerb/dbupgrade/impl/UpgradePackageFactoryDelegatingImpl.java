@@ -16,7 +16,6 @@
 package org.summerb.dbupgrade.impl;
 
 import java.util.function.Supplier;
-
 import org.summerb.dbupgrade.api.UpgradePackage;
 import org.summerb.dbupgrade.api.UpgradePackageFactory;
 import org.summerb.dbupgrade.api.UpgradePackageFactoryResolver;

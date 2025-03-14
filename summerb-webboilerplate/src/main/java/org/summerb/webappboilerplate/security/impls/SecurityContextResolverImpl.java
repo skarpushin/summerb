@@ -15,12 +15,11 @@
  ******************************************************************************/
 package org.summerb.webappboilerplate.security.impls;
 
+import com.google.common.base.Preconditions;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.summerb.security.api.CurrentUserNotFoundException;
 import org.summerb.spring.security.impl.SecurityContextResolverAbstract;
 import org.summerb.users.api.dto.User;
-
-import com.google.common.base.Preconditions;
 
 // TZD: Add template parameter for user type
 public class SecurityContextResolverImpl extends SecurityContextResolverAbstract<User> {

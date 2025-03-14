@@ -18,7 +18,6 @@ package org.summerb.easycrud.rest.dto;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import org.summerb.easycrud.api.row.HasId;
 import org.summerb.utils.easycrud.api.dto.PagerParams;
 import org.summerb.utils.easycrud.api.dto.PaginatedList;

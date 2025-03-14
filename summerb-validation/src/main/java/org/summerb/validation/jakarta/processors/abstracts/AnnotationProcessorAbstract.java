@@ -15,12 +15,10 @@
  ******************************************************************************/
 package org.summerb.validation.jakarta.processors.abstracts;
 
+import com.google.common.base.Preconditions;
 import java.lang.annotation.Annotation;
-
 import org.springframework.util.StringUtils;
 import org.summerb.validation.jakarta.AnnotationProcessor;
-
-import com.google.common.base.Preconditions;
 
 public abstract class AnnotationProcessorAbstract<T extends Annotation>
     implements AnnotationProcessor<T> {

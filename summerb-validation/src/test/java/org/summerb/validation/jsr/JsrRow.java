@@ -1,9 +1,8 @@
 package org.summerb.validation.jsr;
 
+import jakarta.validation.constraints.AssertTrue;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-
-import javax.validation.constraints.AssertTrue;
 
 public class JsrRow {
 

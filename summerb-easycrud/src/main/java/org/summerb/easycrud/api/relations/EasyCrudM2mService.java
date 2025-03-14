@@ -18,7 +18,6 @@ package org.summerb.easycrud.api.relations;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.api.row.relations.ManyToManyRow;

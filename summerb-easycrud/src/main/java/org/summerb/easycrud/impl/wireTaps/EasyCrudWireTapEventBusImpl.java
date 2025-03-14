@@ -15,13 +15,12 @@
  ******************************************************************************/
 package org.summerb.easycrud.impl.wireTaps;
 
+import com.google.common.base.Preconditions;
+import com.google.common.eventbus.EventBus;
 import org.summerb.easycrud.api.EasyCrudWireTapMode;
 import org.summerb.utils.DtoBase;
 import org.summerb.utils.easycrud.api.dto.EntityChangedEvent;
 import org.summerb.utils.tx.AfterCommitExecutorThreadLocalImpl;
-
-import com.google.common.base.Preconditions;
-import com.google.common.eventbus.EventBus;
 
 /**
  * WireTap which will send {@link EntityChangedEvent} into injected {@link EventBus} after each

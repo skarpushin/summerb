@@ -15,7 +15,7 @@
  ******************************************************************************/
 package org.summerb.webappboilerplate.security.apis;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Impl of this interface is to make decision if remember me services are requested

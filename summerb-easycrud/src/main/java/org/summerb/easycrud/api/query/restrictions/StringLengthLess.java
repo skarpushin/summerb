@@ -1,8 +1,7 @@
 package org.summerb.easycrud.api.query.restrictions;
 
-import org.summerb.easycrud.api.query.restrictions.base.NegateableRestriction;
-
 import com.google.common.base.Preconditions;
+import org.summerb.easycrud.api.query.restrictions.base.NegateableRestriction;
 
 public class StringLengthLess extends NegateableRestriction<StringLengthLess> {
 

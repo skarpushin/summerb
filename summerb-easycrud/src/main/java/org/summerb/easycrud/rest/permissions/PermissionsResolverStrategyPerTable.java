@@ -1,20 +1,18 @@
 package org.summerb.easycrud.rest.permissions;
 
+import com.google.common.base.Preconditions;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.impl.auth.EasyCrudAuthorizationPerTableStrategy;
 import org.summerb.easycrud.rest.commonpathvars.PathVariablesMap;
 import org.summerb.easycrud.rest.dto.MultipleItemsResult;
 import org.summerb.easycrud.rest.dto.SingleItemResult;
 
-import com.google.common.base.Preconditions;
-
 /**
  * Impl of {@link PermissionsResolverStrategy} that gets data from {@link
- * EasyCrudAuthorizationPerTableStrategy}. Therefore it provides only table-wide permissions and
- * Row permissions are not filled
+ * EasyCrudAuthorizationPerTableStrategy}. Therefore it provides only table-wide permissions and Row
+ * permissions are not filled
  *
  * @author Sergey Karpushin
  * @param <TId> type of row id

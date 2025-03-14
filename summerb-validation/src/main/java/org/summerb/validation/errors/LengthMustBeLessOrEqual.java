@@ -22,7 +22,9 @@ public class LengthMustBeLessOrEqual extends ValidationError {
 
   public static final String MESSAGE_CODE = "validation.length.mustBe.lessOrEqual";
 
-  /** @deprecated used only for serialization */
+  /**
+   * @deprecated used only for serialization
+   */
   public LengthMustBeLessOrEqual() {}
 
   public LengthMustBeLessOrEqual(String propertyName, int maximumLength) {

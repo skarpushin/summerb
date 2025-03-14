@@ -26,5 +26,4 @@ public class EmbeddedDbConfig {
       throw new RuntimeException("Failed to run DB init scripts", e);
     }
   }
-
 }

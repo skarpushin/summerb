@@ -137,5 +137,4 @@ public class EasyCrudExceptionStrategyDefaultImpl<TId, TRow extends HasId<TId>>
     return new EasyCrudUnexpectedException(
         EasyCrudMessageCodes.UNEXPECTED_FAILED_TO_FIND, entityCode, t);
   }
-
 }

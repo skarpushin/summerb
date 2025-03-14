@@ -15,10 +15,9 @@
  ******************************************************************************/
 package org.summerb.easycrud.impl.relations.example;
 
+import java.util.List;
 import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.scaffold.api.Query;
-
-import java.util.List;
 
 public interface DeviceService extends EasyCrudService<Long, DeviceRow> {
   String TERM = "term.device";

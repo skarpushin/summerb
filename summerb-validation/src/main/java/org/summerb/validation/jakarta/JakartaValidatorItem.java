@@ -15,13 +15,11 @@
  ******************************************************************************/
 package org.summerb.validation.jakarta;
 
+import com.google.common.base.Preconditions;
 import java.lang.annotation.Annotation;
 import java.util.function.Function;
-
 import org.springframework.util.StringUtils;
 import org.summerb.validation.ValidationContext;
-
-import com.google.common.base.Preconditions;
 
 public class JakartaValidatorItem {
   private final String propertyName;

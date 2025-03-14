@@ -48,5 +48,4 @@ public interface EasyCrudExceptionStrategy<TId, TRow extends HasId<TId>> {
   RuntimeException handleExceptionAtFind(Throwable t);
 
   RuntimeException handleExceptionAtDeleteByQuery(Throwable t);
-
 }

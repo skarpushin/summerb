@@ -15,9 +15,9 @@
  ******************************************************************************/
 package org.summerb.easycrud.rest.commonpathvars;
 
+import com.google.common.base.Preconditions;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.springframework.beans.ConversionNotSupportedException;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.core.MethodParameter;
@@ -31,8 +31,6 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.View;
-
-import com.google.common.base.Preconditions;
 
 public class PathVariablesMapArgumentResolver implements HandlerMethodArgumentResolver {
   @Override

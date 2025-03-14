@@ -1,10 +1,8 @@
 package org.summerb.easycrud.api.query;
 
-import java.util.List;
-
-import org.springframework.util.CollectionUtils;
-
 import com.google.common.base.Preconditions;
+import java.util.List;
+import org.springframework.util.CollectionUtils;
 
 public class DisjunctionCondition extends Condition {
 

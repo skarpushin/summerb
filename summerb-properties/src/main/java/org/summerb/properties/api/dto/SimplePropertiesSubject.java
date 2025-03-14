@@ -16,7 +16,6 @@
 package org.summerb.properties.api.dto;
 
 import java.io.Serializable;
-
 import org.summerb.utils.DtoBase;
 import org.summerb.utils.easycrud.api.dto.EntityChangedEvent;
 

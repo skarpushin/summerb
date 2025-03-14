@@ -7,7 +7,9 @@ public class MustBeEqualTo extends ValidationError {
 
   public static final String MESSAGE_CODE = "validation.mustBe.equalTo";
 
-  /** @deprecated used only for serialization */
+  /**
+   * @deprecated used only for serialization
+   */
   public MustBeEqualTo() {}
 
   public MustBeEqualTo(String propertyName, Object expectedValue) {

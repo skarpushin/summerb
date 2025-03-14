@@ -22,7 +22,6 @@ import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-
 import org.apache.commons.io.IOUtils;
 import org.springframework.util.StringUtils;
 import org.summerb.dbupgrade.api.SqlPackageParser;

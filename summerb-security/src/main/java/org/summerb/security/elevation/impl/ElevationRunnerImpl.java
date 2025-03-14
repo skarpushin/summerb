@@ -15,12 +15,10 @@
  ******************************************************************************/
 package org.summerb.security.elevation.impl;
 
+import com.google.common.base.Preconditions;
 import java.util.concurrent.Callable;
-
 import org.summerb.security.elevation.api.ElevationRunner;
 import org.summerb.security.elevation.api.ElevationStrategy;
-
-import com.google.common.base.Preconditions;
 
 public class ElevationRunnerImpl implements ElevationRunner {
   private ElevationStrategy elevationStrategy;

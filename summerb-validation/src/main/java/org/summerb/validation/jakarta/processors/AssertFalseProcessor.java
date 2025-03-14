@@ -15,12 +15,10 @@
  ******************************************************************************/
 package org.summerb.validation.jakarta.processors;
 
-import javax.validation.constraints.AssertFalse;
-
+import com.google.common.base.Preconditions;
+import jakarta.validation.constraints.AssertFalse;
 import org.summerb.validation.ValidationContext;
 import org.summerb.validation.jakarta.processors.abstracts.AnnotationProcessorNullableAbstract;
-
-import com.google.common.base.Preconditions;
 
 public class AssertFalseProcessor extends AnnotationProcessorNullableAbstract<AssertFalse> {
 

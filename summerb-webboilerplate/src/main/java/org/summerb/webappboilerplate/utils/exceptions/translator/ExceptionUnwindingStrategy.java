@@ -16,7 +16,6 @@
 package org.summerb.webappboilerplate.utils.exceptions.translator;
 
 import java.lang.reflect.UndeclaredThrowableException;
-
 import org.springframework.web.util.NestedServletException;
 
 public interface ExceptionUnwindingStrategy {

@@ -15,13 +15,12 @@
  ******************************************************************************/
 package org.summerb.easycrud.api;
 
+import com.google.common.eventbus.EventBus;
 import org.summerb.easycrud.impl.EasyCrudServiceImpl;
 import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapDelegatingImpl;
 import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapEventBusImpl;
 import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapNoOpImpl;
 import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapValidationImpl;
-
-import com.google.common.eventbus.EventBus;
 
 /**
  * This interface defines "wire tap" for all common CRUD service methods implemented by {@link

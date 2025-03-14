@@ -15,10 +15,8 @@
  ******************************************************************************/
 package org.summerb.validation.jakarta.processors;
 
+import jakarta.validation.constraints.DecimalMin;
 import java.math.BigDecimal;
-
-import javax.validation.constraints.DecimalMin;
-
 import org.summerb.validation.ValidationContext;
 import org.summerb.validation.jakarta.processors.abstracts.DecimalProcessorNullableAbstract;
 

@@ -4,7 +4,6 @@ import static org.summerb.easycrud.impl.dao.mysql.QueryToSqlMySqlImpl.buildNextP
 
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.summerb.easycrud.api.query.restrictions.In;
 import org.summerb.easycrud.impl.dao.SqlTypeOverrides;

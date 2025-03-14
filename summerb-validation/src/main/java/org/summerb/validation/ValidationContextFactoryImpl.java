@@ -15,11 +15,10 @@
  ******************************************************************************/
 package org.summerb.validation;
 
+import com.google.common.base.Preconditions;
 import org.summerb.methodCapturers.PropertyNameResolver;
 import org.summerb.methodCapturers.PropertyNameResolverFactory;
 import org.summerb.validation.jakarta.JakartaValidator;
-
-import com.google.common.base.Preconditions;
 
 public class ValidationContextFactoryImpl implements ValidationContextFactory {
 
@@ -27,7 +26,7 @@ public class ValidationContextFactoryImpl implements ValidationContextFactory {
   protected final PropertyNameResolverFactory propertyNameResolverFactory;
 
   public ValidationContextFactoryImpl(
-          PropertyNameResolverFactory propertyNameResolverFactory, JakartaValidator jakartaValidator) {
+      PropertyNameResolverFactory propertyNameResolverFactory, JakartaValidator jakartaValidator) {
     Preconditions.checkArgument(propertyNameResolverFactory != null);
     this.propertyNameResolverFactory = propertyNameResolverFactory;
     this.jakartaValidator = jakartaValidator;

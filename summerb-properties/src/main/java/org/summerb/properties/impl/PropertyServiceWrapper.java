@@ -17,7 +17,6 @@ package org.summerb.properties.impl;
 
 import java.util.List;
 import java.util.Map;
-
 import org.summerb.properties.api.PropertyService;
 import org.summerb.properties.api.SimplifiedPropertyService;
 import org.summerb.properties.api.dto.NamedProperty;

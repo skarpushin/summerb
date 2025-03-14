@@ -1,7 +1,6 @@
 package org.summerb.easycrud.impl.dao.mysql.restrictions;
 
 import java.util.function.Supplier;
-
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.summerb.easycrud.api.query.restrictions.Empty;
 import org.summerb.easycrud.impl.dao.SqlTypeOverrides;

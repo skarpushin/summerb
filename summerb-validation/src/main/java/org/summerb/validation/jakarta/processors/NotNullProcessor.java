@@ -15,12 +15,10 @@
  ******************************************************************************/
 package org.summerb.validation.jakarta.processors;
 
-import javax.validation.constraints.NotNull;
-
+import com.google.common.base.Preconditions;
+import jakarta.validation.constraints.NotNull;
 import org.summerb.validation.ValidationContext;
 import org.summerb.validation.jakarta.processors.abstracts.AnnotationProcessorAbstract;
-
-import com.google.common.base.Preconditions;
 
 public class NotNullProcessor extends AnnotationProcessorAbstract<NotNull> {
 

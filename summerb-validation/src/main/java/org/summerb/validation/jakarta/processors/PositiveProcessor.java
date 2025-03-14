@@ -15,8 +15,7 @@
  ******************************************************************************/
 package org.summerb.validation.jakarta.processors;
 
-import javax.validation.constraints.Positive;
-
+import jakarta.validation.constraints.Positive;
 import org.summerb.validation.ValidationContext;
 import org.summerb.validation.errors.MustBeGreater;
 import org.summerb.validation.jakarta.processors.abstracts.NumberProcessorNullableAbstract;

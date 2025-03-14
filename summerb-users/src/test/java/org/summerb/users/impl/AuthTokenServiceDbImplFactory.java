@@ -19,7 +19,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.LinkedList;
 import java.util.List;
-
 import org.mockito.Mockito;
 import org.summerb.users.api.dto.AuthToken;
 import org.summerb.users.api.dto.AuthTokenFactory;

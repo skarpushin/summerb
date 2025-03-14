@@ -15,8 +15,7 @@
  ******************************************************************************/
 package org.summerb.webappboilerplate.utils;
 
-import javax.servlet.http.HttpServletRequest;
-
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.util.StringUtils;
 
 public class AbsoluteUrlBuilderDefaultImpl implements AbsoluteUrlBuilder {

@@ -22,7 +22,9 @@ public class DuplicateUserValidationError extends ValidationError {
 
   public static final String VALIDATION_MESSAGE_CODE_DUPLICATE_USER = "duplicate.user";
 
-  /** @deprecated used only for serialization */
+  /**
+   * @deprecated used only for serialization
+   */
   @Deprecated
   public DuplicateUserValidationError() {
     super();

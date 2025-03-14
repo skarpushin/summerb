@@ -15,13 +15,11 @@
  ******************************************************************************/
 package org.summerb.dbupgrade.impl.mysql;
 
+import com.google.common.base.Preconditions;
 import java.sql.SQLSyntaxErrorException;
-
 import org.springframework.util.StringUtils;
 import org.summerb.dbupgrade.impl.VersionTableDbDialect;
 import org.summerb.utils.exceptions.ExceptionUtils;
-
-import com.google.common.base.Preconditions;
 
 public class VersionTableDbDialectMySqlImpl implements VersionTableDbDialect {
   public static final String TABLE_DEFAULT_NAME = "db_version";

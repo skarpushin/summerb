@@ -7,7 +7,9 @@ public class MustHaveText extends ValidationError {
 
   public static final String MESSAGE_CODE = "validation.must.haveText";
 
-  /** @deprecated used only for serialization */
+  /**
+   * @deprecated used only for serialization
+   */
   public MustHaveText() {}
 
   public MustHaveText(String propertyName) {

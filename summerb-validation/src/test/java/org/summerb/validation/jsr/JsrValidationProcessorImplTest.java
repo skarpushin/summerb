@@ -2,8 +2,8 @@ package org.summerb.validation.jsr;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import jakarta.validation.constraints.AssertTrue;
 import java.lang.reflect.Field;
-import javax.validation.constraints.AssertTrue;
 import org.junit.jupiter.api.Test;
 
 class JsrValidationProcessorImplTest {

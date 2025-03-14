@@ -61,5 +61,4 @@ public class DomLoaderDeviceGatewayTest {
     assertEquals(1, domFields.size());
     assertEquals("devices", domFields.get(0).getValue().getName());
   }
-
 }

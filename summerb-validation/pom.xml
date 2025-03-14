@@ -14,89 +14,95 @@
   License for the specific language governing permissions and limitations under
   the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>com.github.skarpushin</groupId>
-		<artifactId>summerb-parent</artifactId>
-		<version>7.0.0</version>
-		<relativePath>../summerb-parent</relativePath>
-	</parent>
-	<artifactId>summerb-validation</artifactId>
-	<name>summerb-validation</name>
-	<description>An approach for handling validation</description>
+    <parent>
+        <groupId>com.github.skarpushin</groupId>
+        <artifactId>summerb-parent</artifactId>
+        <version>7.0.0</version>
+        <relativePath>../summerb-parent</relativePath>
+    </parent>
+    <artifactId>summerb-validation</artifactId>
+    <name>summerb-validation</name>
+    <description>An approach for handling validation</description>
 
-	<properties>
-		<modular-name>validation</modular-name>
-	</properties>
+    <properties>
+        <modular-name>validation</modular-name>
+    </properties>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.pitest</groupId>
-				<artifactId>pitest-maven</artifactId>
-				<version>1.13.0</version>
-				<configuration>
-					<scmRootDir>${project.basedir}</scmRootDir>
-					<targetClasses>
-						<param>org.summerb.validation.*</param>
-						<param>org.summerb.methodCapturers.*</param>
-					</targetClasses>
-					<targetTests>
-						<param>org.summerb.validation.*</param>
-						<param>org.summerb.methodCapturers.*</param>
-						<!--  <param>org.summerb.validation.jakarta.JakartaValidatorImplTest</param>  -->
-					</targetTests>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest-maven</artifactId>
+                <version>1.18.2</version>
+                <configuration>
+                    <scmRootDir>${project.basedir}</scmRootDir>
+                    <targetClasses>
+                        <param>org.summerb.validation.*</param>
+                        <param>org.summerb.methodCapturers.*</param>
+                    </targetClasses>
+                    <targetTests>
+                        <param>org.summerb.validation.*</param>
+                        <param>org.summerb.methodCapturers.*</param>
+                        <!--  <param>org.summerb.validation.jakarta.JakartaValidatorImplTest</param>  -->
+                    </targetTests>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
-	<dependencies>
-		<dependency>
-			<groupId>com.github.skarpushin</groupId>
-			<artifactId>summerb-i18n</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>net.bytebuddy</groupId>
-			<artifactId>byte-buddy</artifactId>
-			<version>${byte-buddy.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.danilopianini</groupId>
-			<artifactId>gson-extras</artifactId>
-			<version>1.2.0</version>
-		</dependency>
+    <dependencies>
+        <dependency>
+            <groupId>com.github.skarpushin</groupId>
+            <artifactId>summerb-i18n</artifactId>
 
-		<dependency>
-			<groupId>org.hibernate.validator</groupId>
-			<artifactId>hibernate-validator</artifactId>
-			<version>${hibernate-validator.version}</version>
-		</dependency>
+        </dependency>
+        <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.danilopianini</groupId>
+            <artifactId>gson-extras</artifactId>
+            <version>1.2.0</version>
+        </dependency>
 
-		<dependency>
-			<groupId>com.github.spotbugs</groupId>
-			<artifactId>spotbugs-annotations</artifactId>
-			<version>4.7.3</version>
-			<scope>provided</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+        </dependency>
 
-		<dependency>
-			<groupId>org.pitest</groupId>
-			<artifactId>pitest-junit5-plugin</artifactId>
-			<version>1.1.2</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<version>${spring-boot.version}</version>
-			<scope>test</scope>
-		</dependency>
+        <dependency>
+            <groupId>com.github.spotbugs</groupId>
+            <artifactId>spotbugs-annotations</artifactId>
+            <version>4.7.3</version>
+            <scope>provided</scope>
+        </dependency>
 
-
-	</dependencies>
+        <dependency>
+            <groupId>org.pitest</groupId>
+            <artifactId>pitest-junit5-plugin</artifactId>
+            <version>1.2.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
 </project>

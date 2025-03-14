@@ -1,12 +1,10 @@
 package org.summerb.easycrud.api.query;
 
+import com.google.common.base.Preconditions;
 import java.util.LinkedList;
 import java.util.List;
-
 import org.springframework.util.StringUtils;
 import org.summerb.easycrud.api.query.restrictions.base.Restriction;
-
-import com.google.common.base.Preconditions;
 
 public class QueryConditions {
   protected final List<Condition> conditions = new LinkedList<>();

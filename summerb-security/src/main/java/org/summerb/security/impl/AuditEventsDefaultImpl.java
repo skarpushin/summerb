@@ -15,14 +15,12 @@
  ******************************************************************************/
 package org.summerb.security.impl;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.io.Serializable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.summerb.security.api.AuditEvents;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 public class AuditEventsDefaultImpl implements AuditEvents {
   private static Logger audit = LoggerFactory.getLogger("AUDIT");

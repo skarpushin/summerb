@@ -1,20 +1,16 @@
 package org.summerb.easycrud_swagger.swagger;
 
+import io.swagger.models.Path;
+import io.swagger.models.Swagger;
+import io.swagger.models.Tag;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.util.CollectionUtils;
 import org.summerb.spring.security.api.SecurityContextResolver;
-
-import com.google.common.collect.Multimap;
-
-import io.swagger.models.Path;
-import io.swagger.models.Swagger;
-import io.swagger.models.Tag;
 import springfox.documentation.service.ApiListing;
 import springfox.documentation.service.Documentation;
 import springfox.documentation.service.Operation;
@@ -67,7 +63,7 @@ public class ServiceModelToSwagger2MapperImplEx<TUser extends User>
 
   /** This extension will prevent empty controller from appearing in the list (step 1) */
   @Override
-  protected Map<String, Path> mapApiListings(Multimap<String, ApiListing> apiListings) {
+  protected Map<String, Path> mapApiListings(Map<String, List<ApiListing>> apiListings) {
     Map<String, Path> paths = super.mapApiListings(apiListings);
     return paths.entrySet().stream()
         .filter(x -> !x.getValue().isEmpty())

@@ -16,7 +16,6 @@
 package org.summerb.methodCapturers;
 
 import java.lang.reflect.Method;
-
 import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.This;

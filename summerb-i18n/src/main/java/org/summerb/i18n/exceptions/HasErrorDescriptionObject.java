@@ -16,7 +16,6 @@
 package org.summerb.i18n.exceptions;
 
 import java.io.Serializable;
-
 import org.summerb.utils.DtoBase;
 
 /**

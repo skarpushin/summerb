@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.summerb.easycrud.impl.relations;
 
+import com.google.common.base.Preconditions;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.ObjectUtils;
 import org.summerb.easycrud.api.EasyCrudService;
@@ -23,8 +24,6 @@ import org.summerb.easycrud.api.EasyCrudWireTapMode;
 import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.api.row.relations.ManyToManyRow;
 import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapAbstract;
-
-import com.google.common.base.Preconditions;
 
 /**
  * This impl will delegate calls to service responsible for referencers. It might get resource

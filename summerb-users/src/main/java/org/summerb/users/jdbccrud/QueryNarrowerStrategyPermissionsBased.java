@@ -17,7 +17,6 @@ package org.summerb.users.jdbccrud;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.rest.commonpathvars.PathVariablesMap;

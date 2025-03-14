@@ -24,7 +24,9 @@ public class UserNotFoundException extends UsersServiceException implements HasM
 
   private String userIdentifier;
 
-  /** @deprecated constructor exists only for IO purposes */
+  /**
+   * @deprecated constructor exists only for IO purposes
+   */
   @Deprecated
   public UserNotFoundException() {}
 

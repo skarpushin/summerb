@@ -15,12 +15,10 @@
  ******************************************************************************/
 package org.summerb.easycrud.impl.wireTaps;
 
+import com.google.common.base.Preconditions;
 import java.util.List;
-
 import org.summerb.easycrud.api.EasyCrudWireTap;
 import org.summerb.easycrud.api.EasyCrudWireTapMode;
-
-import com.google.common.base.Preconditions;
 
 /**
  * WireTap which will call all injected {@link EasyCrudWireTap} implementations

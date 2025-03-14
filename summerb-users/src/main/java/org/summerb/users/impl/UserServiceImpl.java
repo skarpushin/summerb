@@ -15,8 +15,9 @@
  ******************************************************************************/
 package org.summerb.users.impl;
 
+import com.google.common.base.Preconditions;
+import com.google.common.eventbus.EventBus;
 import java.util.Calendar;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -41,9 +42,6 @@ import org.summerb.validation.ValidationContext;
 import org.summerb.validation.ValidationContextFactory;
 import org.summerb.validation.ValidationException;
 import org.summerb.validation.errors.MustBeValidEmail;
-
-import com.google.common.base.Preconditions;
-import com.google.common.eventbus.EventBus;
 
 public class UserServiceImpl implements UserService, InitializingBean {
   protected UserDao userDao;

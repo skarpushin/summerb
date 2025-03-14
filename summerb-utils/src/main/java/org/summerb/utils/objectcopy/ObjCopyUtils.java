@@ -15,12 +15,10 @@
  ******************************************************************************/
 package org.summerb.utils.objectcopy;
 
+import com.google.common.base.Preconditions;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
-
 import org.springframework.beans.BeanUtils;
-
-import com.google.common.base.Preconditions;
 
 public class ObjCopyUtils {
   /**

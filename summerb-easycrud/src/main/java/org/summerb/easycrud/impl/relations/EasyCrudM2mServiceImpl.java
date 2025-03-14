@@ -15,6 +15,8 @@
  ******************************************************************************/
 package org.summerb.easycrud.impl.relations;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Throwables;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -23,7 +25,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.springframework.util.CollectionUtils;
 import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.api.relations.EasyCrudM2mService;
@@ -33,9 +34,6 @@ import org.summerb.easycrud.api.row.relations.Ref;
 import org.summerb.easycrud.api.row.tools.EasyCrudDtoUtils;
 import org.summerb.easycrud.impl.EasyCrudServiceImpl;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
-
-import com.google.common.base.Preconditions;
-import com.google.common.base.Throwables;
 
 /**
  * This is default impl for {@link EasyCrudM2mService}. This is supposed to be handy in cases when

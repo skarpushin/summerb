@@ -15,11 +15,10 @@
  ******************************************************************************/
 package org.summerb.utils.objectcopy;
 
+import com.google.common.base.Throwables;
 import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-
-import com.google.common.base.Throwables;
 
 /**
  * Got it from: http://javatechniques.com/blog/faster-deep-copies-of-java-objects/

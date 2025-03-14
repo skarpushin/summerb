@@ -15,14 +15,12 @@
  ******************************************************************************/
 package org.summerb.validation.jakarta.processors.abstracts;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
 import java.lang.annotation.Annotation;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-
 import org.summerb.validation.ValidationContext;
-
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
 
 public abstract class NumberProcessorNullableAbstract<T extends Annotation>
     extends AnnotationProcessorNullableAbstract<T> {

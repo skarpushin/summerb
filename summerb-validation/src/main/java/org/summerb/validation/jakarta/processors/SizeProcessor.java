@@ -15,11 +15,9 @@
  ******************************************************************************/
 package org.summerb.validation.jakarta.processors;
 
+import jakarta.validation.constraints.Size;
 import java.util.Collection;
 import java.util.Map;
-
-import javax.validation.constraints.Size;
-
 import org.summerb.validation.ValidationContext;
 import org.summerb.validation.errors.LengthMustBeBetween;
 import org.summerb.validation.jakarta.processors.abstracts.AnnotationProcessorNullableAbstract;

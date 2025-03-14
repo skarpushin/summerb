@@ -1,11 +1,9 @@
 package org.summerb.easycrud.impl.dao;
 
+import com.google.common.base.Preconditions;
 import java.util.Arrays;
 import java.util.Collection;
-
 import org.springframework.util.CollectionUtils;
-
-import com.google.common.base.Preconditions;
 
 public class SqlTypeOverridesDelegatingImpl extends SqlTypeOverridesDefaultImpl {
   protected Collection<SqlTypeOverride> overrides;

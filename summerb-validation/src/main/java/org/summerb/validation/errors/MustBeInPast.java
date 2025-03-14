@@ -7,7 +7,9 @@ public class MustBeInPast extends ValidationError {
 
   public static final String MESSAGE_CODE = "validation.mustBe.inPast";
 
-  /** @deprecated used only for serialization */
+  /**
+   * @deprecated used only for serialization
+   */
   public MustBeInPast() {}
 
   public MustBeInPast(String propertyName) {

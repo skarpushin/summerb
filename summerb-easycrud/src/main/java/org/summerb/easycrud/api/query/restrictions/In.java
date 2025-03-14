@@ -1,13 +1,11 @@
 package org.summerb.easycrud.api.query.restrictions;
 
+import com.google.common.base.Preconditions;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-
 import org.springframework.util.CollectionUtils;
 import org.summerb.easycrud.api.query.restrictions.base.NegateableRestriction;
-
-import com.google.common.base.Preconditions;
 
 public class In extends NegateableRestriction<In> {
 

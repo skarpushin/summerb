@@ -15,7 +15,7 @@
  ******************************************************************************/
 package org.summerb.webappboilerplate.utils.json;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 public interface JsonResponseWriter {
 

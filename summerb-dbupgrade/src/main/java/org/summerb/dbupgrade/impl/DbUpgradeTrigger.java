@@ -15,9 +15,8 @@
  ******************************************************************************/
 package org.summerb.dbupgrade.impl;
 
-import org.summerb.dbupgrade.DbUpgrade;
-
 import com.google.common.base.Preconditions;
+import org.summerb.dbupgrade.DbUpgrade;
 
 public class DbUpgradeTrigger {
   public DbUpgradeTrigger(DbUpgrade dbUpgrade) {

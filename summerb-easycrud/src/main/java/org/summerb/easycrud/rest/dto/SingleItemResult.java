@@ -16,7 +16,6 @@
 package org.summerb.easycrud.rest.dto;
 
 import java.util.Map;
-
 import org.summerb.easycrud.api.row.HasId;
 
 public class SingleItemResult<TId, TRow extends HasId<TId>> extends CrudQueryResult<TId, TRow> {

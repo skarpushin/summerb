@@ -18,7 +18,6 @@ package org.summerb.easycrud.api.row.datapackage;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
 import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.api.relations.DataSetLoader;
 import org.summerb.easycrud.api.row.HasId;
@@ -54,12 +53,16 @@ public class DataTable<TId, T extends HasId<TId>> {
     return name;
   }
 
-  /** @param row to add */
+  /**
+   * @param row to add
+   */
   public void put(T row) {
     rows.put(row.getId(), row);
   }
 
-  /** @param rows rows to add */
+  /**
+   * @param rows rows to add
+   */
   public void putAll(Iterable<T> rows) {
     for (T row : rows) {
       put(row);

@@ -15,6 +15,9 @@
  ******************************************************************************/
 package org.summerb.validation.jakarta;
 
+import com.google.common.base.Preconditions;
+import com.google.common.reflect.ClassPath;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -27,14 +30,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Preconditions;
-import com.google.common.reflect.ClassPath;
-
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * This is an "auto-magical" implementation of {@link JakartaAnnotationsProcessorsRegistry}. It

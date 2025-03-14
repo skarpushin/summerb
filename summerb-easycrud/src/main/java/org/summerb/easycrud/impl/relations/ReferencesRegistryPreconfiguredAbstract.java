@@ -15,15 +15,13 @@
  ******************************************************************************/
 package org.summerb.easycrud.impl.relations;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Multimap;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.summerb.easycrud.api.relations.ReferencesRegistry;
 import org.summerb.easycrud.api.row.relations.Ref;
-
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Multimap;
 
 /**
  * Simple base class impl that assuming workflow: a). all references discovered and then b). lookup

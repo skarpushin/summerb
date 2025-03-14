@@ -15,12 +15,11 @@
  ******************************************************************************/
 package org.summerb.validation.jakarta;
 
-import java.util.List;
-
 import com.google.common.base.Preconditions;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import java.util.List;
 
 public class JakartaValidationBeanProcessorCachedImpl implements JakartaValidationBeanProcessor {
   protected JakartaValidationBeanProcessor actual;

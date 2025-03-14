@@ -1,20 +1,18 @@
 package org.summerb.webappboilerplate.security.impls;
 
+import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.summerb.spring.security.SecurityConstants;
 import org.summerb.users.api.dto.User;
-
-import com.google.common.base.Preconditions;
 
 public class BackgroundProcessAuthentication<TUserDetails extends UserDetails, TUser extends User>
     implements Authentication {

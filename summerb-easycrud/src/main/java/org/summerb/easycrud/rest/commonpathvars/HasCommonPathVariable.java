@@ -19,7 +19,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
 import org.springframework.web.bind.annotation.PathVariable;
 import org.summerb.easycrud.rest.EasyCrudRestControllerBase;
 
@@ -46,7 +45,9 @@ import org.summerb.easycrud.rest.EasyCrudRestControllerBase;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface HasCommonPathVariable {
-  /** @return The URI template variable to bind to. */
+  /**
+   * @return The URI template variable to bind to.
+   */
   String name();
 
   Class<?> type();

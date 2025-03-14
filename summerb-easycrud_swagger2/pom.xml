@@ -36,7 +36,7 @@
 		<dependency>
 			<groupId>com.github.skarpushin</groupId>
 			<artifactId>summerb-easycrud</artifactId>
-			<version>${project.version}</version>
+
 		</dependency>
 		<dependency>
 			<groupId>io.springfox</groupId>

@@ -21,14 +21,18 @@ import org.summerb.i18n.HasMessageCode;
 import org.summerb.i18n.MessageArgConverter;
 import org.summerb.i18n.MessageCodeMessageArgConverter;
 
-/** @author sergey.karpushin */
+/**
+ * @author sergey.karpushin
+ */
 public class EasyCrudUnexpectedException extends RuntimeException
     implements HasMessageCode, HasMessageArgs, HasMessageArgsConverters {
   private static final long serialVersionUID = 5053151069728043611L;
   protected String messageCode;
   protected String entityMessageCode;
 
-  /** @deprecated Used only for io */
+  /**
+   * @deprecated Used only for io
+   */
   @Deprecated
   public EasyCrudUnexpectedException() {}
 

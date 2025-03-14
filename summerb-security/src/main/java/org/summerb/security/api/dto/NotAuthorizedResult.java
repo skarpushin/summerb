@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.summerb.security.api.dto;
 
+import com.google.common.base.Preconditions;
 import org.springframework.util.StringUtils;
 import org.summerb.i18n.HasMessageArgs;
 import org.summerb.i18n.HasMessageArgsConverters;
@@ -22,8 +23,6 @@ import org.summerb.i18n.HasMessageCode;
 import org.summerb.i18n.MessageArgConverter;
 import org.summerb.i18n.MessageCodeMessageArgConverter;
 import org.summerb.utils.DtoBase;
-
-import com.google.common.base.Preconditions;
 
 /**
  * This DTO is used to store authorization failure information. It's designed to be serialized and
@@ -47,7 +46,9 @@ public class NotAuthorizedResult
   private String subjectTitle;
   private String messageCode;
 
-  /** @deprecated used only for IO purposes */
+  /**
+   * @deprecated used only for IO purposes
+   */
   @Deprecated
   public NotAuthorizedResult() {}
 

@@ -17,7 +17,6 @@ package org.summerb.properties.api;
 
 import java.util.List;
 import java.util.Map;
-
 import org.summerb.properties.api.dto.NamedProperty;
 
 public interface PropertyService {
@@ -32,10 +31,14 @@ public interface PropertyService {
 
   String findSubjectProperty(String appName, String domainName, String subjectId, String name);
 
-  /** @return property name to property value map */
+  /**
+   * @return property name to property value map
+   */
   Map<String, String> findSubjectProperties(String appName, String domainName, String subjectId);
 
-  /** @return subject id to (property name to property value) map */
+  /**
+   * @return subject id to (property name to property value) map
+   */
   Map<String, Map<String, String>> findSubjectsProperties(
       String appName, String domainName, List<String> subjectsIds);
 

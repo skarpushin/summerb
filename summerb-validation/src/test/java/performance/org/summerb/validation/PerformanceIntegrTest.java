@@ -2,7 +2,6 @@ package performance.org.summerb.validation;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.util.StopWatch;
 import org.springframework.util.StopWatch.TaskInfo;

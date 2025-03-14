@@ -16,7 +16,6 @@
 package integr.org.summerb.easycrud.dtos;
 
 import java.io.Serializable;
-
 import org.summerb.easycrud.api.row.HasAuthor;
 import org.summerb.easycrud.api.row.HasAutoincrementId;
 import org.summerb.easycrud.api.row.HasTimestamps;

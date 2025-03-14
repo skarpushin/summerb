@@ -14,7 +14,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 public class EmbeddedDbConfig {
   @Bean
   PlatformTransactionManager transactionManager(DataSource dataSource) {
-    //return new DataSourceTransactionManager(dataSource);
+    // return new DataSourceTransactionManager(dataSource);
     return new JdbcTransactionManager(dataSource);
   }
 
@@ -27,5 +27,4 @@ public class EmbeddedDbConfig {
       throw new RuntimeException("Failed to run DB init scripts", e);
     }
   }
-
 }

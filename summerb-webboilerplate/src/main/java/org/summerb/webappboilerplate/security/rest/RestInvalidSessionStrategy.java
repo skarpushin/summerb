@@ -15,8 +15,8 @@
  ******************************************************************************/
 package org.summerb.webappboilerplate.security.rest;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.web.session.InvalidSessionStrategy;
 import org.summerb.security.api.dto.NotAuthorizedResult;
 import org.summerb.spring.security.SecurityMessageCodes;

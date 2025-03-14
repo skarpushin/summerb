@@ -15,13 +15,12 @@
  ******************************************************************************/
 package org.summerb.users.jdbccrud;
 
+import com.google.common.base.Preconditions;
 import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.api.row.HasAuthor;
 import org.summerb.easycrud.rest.commonpathvars.PathVariablesMap;
 import org.summerb.easycrud.rest.querynarrower.QueryNarrowerStrategyFieldBased;
 import org.summerb.security.api.CurrentUserUuidResolver;
-
-import com.google.common.base.Preconditions;
 
 /**
  * This narrower simply trims query to only those items which were created by current user

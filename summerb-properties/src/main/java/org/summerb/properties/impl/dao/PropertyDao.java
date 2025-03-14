@@ -16,7 +16,6 @@
 package org.summerb.properties.impl.dao;
 
 import java.util.List;
-
 import org.summerb.properties.impl.dto.NamedIdProperty;
 
 /**

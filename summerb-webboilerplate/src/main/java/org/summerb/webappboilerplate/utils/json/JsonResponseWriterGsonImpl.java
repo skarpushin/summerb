@@ -15,11 +15,10 @@
  ******************************************************************************/
 package org.summerb.webappboilerplate.utils.json;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
 
 public class JsonResponseWriterGsonImpl implements JsonResponseWriter {
   protected Gson gson;

@@ -17,7 +17,6 @@ package integr.org.summerb.easycrud.utils;
 
 import java.util.Arrays;
 import java.util.Set;
-
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.summerb.security.api.CurrentUserDetailsResolver;

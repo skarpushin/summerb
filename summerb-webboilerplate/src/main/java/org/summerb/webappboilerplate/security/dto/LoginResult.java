@@ -16,7 +16,6 @@
 package org.summerb.webappboilerplate.security.dto;
 
 import java.util.Map;
-
 import org.summerb.users.api.dto.User;
 import org.summerb.utils.DtoBase;
 

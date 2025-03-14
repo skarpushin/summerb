@@ -29,7 +29,9 @@ public class MustNotHaveDuplicateName extends ValidationError {
 
   public static final String MESSAGE_CODE = "validation.mustNot.haveDuplicateName";
 
-  /** @deprecated used only for serialization */
+  /**
+   * @deprecated used only for serialization
+   */
   public MustNotHaveDuplicateName() {}
 
   public MustNotHaveDuplicateName(String propertyName) {

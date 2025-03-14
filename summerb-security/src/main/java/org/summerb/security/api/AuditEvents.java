@@ -16,7 +16,6 @@
 package org.summerb.security.api;
 
 import java.io.Serializable;
-
 import org.summerb.security.api.dto.ScalarValue;
 
 public interface AuditEvents {

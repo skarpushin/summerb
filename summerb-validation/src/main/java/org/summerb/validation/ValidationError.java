@@ -15,6 +15,8 @@
  ******************************************************************************/
 package org.summerb.validation;
 
+import com.google.common.base.Preconditions;
+import com.google.gson.Gson;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -22,14 +24,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.springframework.util.StringUtils;
 import org.summerb.i18n.HasMessageArgs;
 import org.summerb.i18n.HasMessageCode;
 import org.summerb.validation.gson.ValidationErrorGsonTypeAdapter;
-
-import com.google.common.base.Preconditions;
-import com.google.gson.Gson;
 
 /**
  * This is a base class for ValidationError. Most important idea here is to use {@link #messageCode}
@@ -61,7 +59,9 @@ public class ValidationError implements Serializable, HasMessageCode, HasMessage
   /** Message messageArgs */
   private Object[] messageArgs;
 
-  /** @deprecated used only for serialization */
+  /**
+   * @deprecated used only for serialization
+   */
   @Deprecated
   public ValidationError() {}
 

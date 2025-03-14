@@ -15,6 +15,8 @@
  ******************************************************************************/
 package org.summerb.validation.jakarta;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -26,14 +28,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.summerb.methodCapturers.PropertyNameResolverImpl;
-
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
 
 public class JakartaValidationBeanProcessorImpl implements JakartaValidationBeanProcessor {
   protected Logger log = LoggerFactory.getLogger(getClass());

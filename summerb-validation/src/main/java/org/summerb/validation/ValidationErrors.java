@@ -15,15 +15,13 @@
  ******************************************************************************/
 package org.summerb.validation;
 
+import com.google.common.base.Preconditions;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-
 import org.springframework.util.CollectionUtils;
 import org.summerb.utils.DtoBase;
-
-import com.google.common.base.Preconditions;
 
 public class ValidationErrors extends ValidationError
     implements Serializable, DtoBase, HasValidationErrors {
@@ -58,7 +56,9 @@ public class ValidationErrors extends ValidationError
     list.add(validationError);
   }
 
-  /** @param errors errors list, must not be empty */
+  /**
+   * @param errors errors list, must not be empty
+   */
   public void setList(List<ValidationError> errors) {
     Preconditions.checkArgument(errors != null);
     this.list = errors;

@@ -16,7 +16,6 @@
 package org.summerb.i18n.exceptions.dto;
 
 import java.io.Serializable;
-
 import org.summerb.i18n.HasMessageArgs;
 import org.summerb.i18n.HasMessageCode;
 import org.summerb.i18n.exceptions.HasErrorDescriptionObject;
@@ -34,7 +33,9 @@ public class ExceptionInfo implements DtoBase {
 
   private ExceptionInfo cause;
 
-  /** @deprecated It's created for IO purposes only */
+  /**
+   * @deprecated It's created for IO purposes only
+   */
   public ExceptionInfo() {}
 
   public ExceptionInfo(Throwable t) {

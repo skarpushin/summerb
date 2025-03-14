@@ -22,7 +22,9 @@ public class MustBeGreater extends ValidationError {
 
   public static final String MESSAGE_CODE = "validation.mustBe.greater";
 
-  /** @deprecated used only for serialization */
+  /**
+   * @deprecated used only for serialization
+   */
   @Deprecated
   public MustBeGreater() {}
 

@@ -15,9 +15,9 @@
  ******************************************************************************/
 package org.summerb.users.impl;
 
+import com.google.common.base.Preconditions;
 import java.util.List;
 import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
@@ -26,8 +26,6 @@ import org.springframework.util.StringUtils;
 import org.summerb.users.api.PermissionService;
 import org.summerb.users.api.exceptions.UserServiceUnexpectedException;
 import org.summerb.users.impl.dao.PermissionDao;
-
-import com.google.common.base.Preconditions;
 
 public class PermissionServiceImpl implements PermissionService {
   protected static final String DEFAULT = "default";

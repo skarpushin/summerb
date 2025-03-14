@@ -16,7 +16,6 @@
 package org.summerb.easycrud.mvc.filter;
 
 import java.util.Map;
-
 import org.summerb.easycrud.api.query.Query;
 
 public interface FilteringParamsToQueryConverter<TRow> {

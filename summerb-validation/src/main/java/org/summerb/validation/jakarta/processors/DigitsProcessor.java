@@ -17,8 +17,8 @@ package org.summerb.validation.jakarta.processors;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
+import jakarta.validation.constraints.Digits;
 import java.math.BigDecimal;
-import javax.validation.constraints.Digits;
 import org.summerb.validation.ValidationContext;
 import org.summerb.validation.jakarta.processors.abstracts.DecimalProcessorNullableAbstract;
 

@@ -18,7 +18,6 @@ package org.summerb.utils.tx;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.Executor;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.support.TransactionSynchronization;

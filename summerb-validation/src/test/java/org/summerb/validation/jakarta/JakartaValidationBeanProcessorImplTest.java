@@ -3,22 +3,19 @@ package org.summerb.validation.jakarta;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.google.common.base.Preconditions;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.List;
-
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-
 import org.junit.jupiter.api.Test;
 import org.summerb.validation.testDtos.JakartaBean;
 import org.summerb.validation.testDtos.JakartaBeanInvalid1;
 import org.summerb.validation.testDtos.JakartaBeanInvalid2;
 import org.summerb.validation.testDtos.JakartaBeanInvalid3;
-
-import com.google.common.base.Preconditions;
 
 class JakartaValidationBeanProcessorImplTest {
 

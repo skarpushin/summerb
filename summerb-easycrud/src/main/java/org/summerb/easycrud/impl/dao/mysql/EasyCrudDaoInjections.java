@@ -1,5 +1,6 @@
 package org.summerb.easycrud.impl.dao.mysql;
 
+import javax.sql.DataSource;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -10,8 +11,6 @@ import org.summerb.easycrud.api.StringIdGenerator;
 import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.impl.dao.SqlTypeOverrides;
 import org.summerb.utils.clock.NowResolver;
-
-import javax.sql.DataSource;
 
 public interface EasyCrudDaoInjections<TId, TRow extends HasId<TId>> {
   String getTableName();

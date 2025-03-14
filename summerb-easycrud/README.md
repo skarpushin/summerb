@@ -254,14 +254,14 @@ NOTES:
    `ScaffoldedQuery::rowMapper`
 
 ## Add Validation Logic (using annotations)
-Validation annotations are used from package `javax.validation.constraints.*` which are defined in widely used
-Maven artifact `jakarta.validation:jakarta.validation-api:2.0.2`
+Validation annotations are used from package `jakarta.validation.constraints.*` which are defined in widely used
+Maven artifact `jakarta.validation:jakarta.validation-api:3.0.2`
 
 ### 1. Add annotations on your Row class fields
 
 ```java
-import javax.validation.constraints.Max;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.NotBlank;
 
 public class ProjectRow implements HasUuid {
   private String id;

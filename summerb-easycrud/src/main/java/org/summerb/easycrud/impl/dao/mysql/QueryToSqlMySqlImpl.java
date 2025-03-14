@@ -15,11 +15,11 @@
  ******************************************************************************/
 package org.summerb.easycrud.impl.dao.mysql;
 
+import com.google.common.base.Preconditions;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
-
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.summerb.easycrud.api.QueryToSql;
 import org.summerb.easycrud.api.query.Condition;
@@ -48,8 +48,6 @@ import org.summerb.easycrud.impl.dao.mysql.restrictions.LikeRestrictionToNativeS
 import org.summerb.easycrud.impl.dao.mysql.restrictions.RestrictionToNativeSql;
 import org.summerb.easycrud.impl.dao.mysql.restrictions.StringLengthBetweenRestrictionToNativeSql;
 import org.summerb.easycrud.impl.dao.mysql.restrictions.StringLengthLessRestrictionToNativeSql;
-
-import com.google.common.base.Preconditions;
 
 /**
  * MySQL specific impl of {@link QueryToSql}

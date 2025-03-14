@@ -16,7 +16,6 @@
 package integr.org.summerb.easycrud.dtos;
 
 import java.io.Serializable;
-
 import org.summerb.easycrud.api.row.HasUuid;
 
 public class TestDto3 implements HasUuid, Serializable {

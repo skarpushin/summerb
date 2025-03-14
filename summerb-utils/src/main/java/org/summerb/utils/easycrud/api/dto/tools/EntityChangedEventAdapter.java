@@ -15,12 +15,6 @@
  ******************************************************************************/
 package org.summerb.utils.easycrud.api.dto.tools;
 
-import java.lang.reflect.Type;
-
-import org.summerb.utils.DtoBase;
-import org.summerb.utils.easycrud.api.dto.EntityChangedEvent;
-import org.summerb.utils.easycrud.api.dto.EntityChangedEvent.ChangeType;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -30,6 +24,10 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import java.lang.reflect.Type;
+import org.summerb.utils.DtoBase;
+import org.summerb.utils.easycrud.api.dto.EntityChangedEvent;
+import org.summerb.utils.easycrud.api.dto.EntityChangedEvent.ChangeType;
 
 /**
  * {@link Gson} IO helper that can serialize/deserialize {@link EntityChangedEvent} according to

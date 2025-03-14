@@ -16,7 +16,6 @@
 package org.summerb.properties.api.dto;
 
 import java.io.Serializable;
-
 import org.springframework.util.StringUtils;
 
 public class NamedProperty implements Serializable {

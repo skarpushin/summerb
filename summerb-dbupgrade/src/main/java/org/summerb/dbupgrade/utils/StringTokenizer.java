@@ -62,7 +62,9 @@ public class StringTokenizer {
     }
   }
 
-  /** @return true if initialization happened for the first time */
+  /**
+   * @return true if initialization happened for the first time
+   */
   private boolean initDelimPos() {
     if (delimPos != null) {
       return false;

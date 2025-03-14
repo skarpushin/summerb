@@ -15,6 +15,9 @@
  ******************************************************************************/
 package org.summerb.easycrud.impl.relations;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -25,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
 import org.springframework.beans.PropertyAccessor;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.util.CollectionUtils;
@@ -46,10 +48,6 @@ import org.summerb.easycrud.api.row.datapackage.DataTable.RowIdToBackReferencesM
 import org.summerb.easycrud.api.row.relations.Ref;
 import org.summerb.easycrud.api.row.tools.EasyCrudDtoUtils;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
-
-import com.google.common.base.Preconditions;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 
 /**
  * Simple impl that resolves references. It's not 100% efficient, but allows for quick bootstrap.

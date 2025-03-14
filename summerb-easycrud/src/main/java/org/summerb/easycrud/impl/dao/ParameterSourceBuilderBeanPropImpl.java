@@ -45,7 +45,6 @@ import org.summerb.easycrud.api.ParameterSourceBuilder;
  * spends too much time again and again to resolve same data. So here we're using caches a lot
  *
  * @param <TRow> row type
- *
  * @author sergey.karpushin
  */
 public class ParameterSourceBuilderBeanPropImpl<TRow> implements ParameterSourceBuilder<TRow> {

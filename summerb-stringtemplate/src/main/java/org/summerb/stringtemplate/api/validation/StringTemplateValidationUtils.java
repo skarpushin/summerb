@@ -15,10 +15,9 @@
  ******************************************************************************/
 package org.summerb.stringtemplate.api.validation;
 
+import com.google.common.base.Preconditions;
 import org.summerb.stringtemplate.api.StringTemplateFactory;
 import org.summerb.validation.ValidationContext;
-
-import com.google.common.base.Preconditions;
 
 /**
  * Simple utility class which provides validation function(s) for string templates

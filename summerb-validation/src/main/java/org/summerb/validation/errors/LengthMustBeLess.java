@@ -7,7 +7,9 @@ public class LengthMustBeLess extends ValidationError {
 
   public static final String MESSAGE_CODE = "validation.length.mustBe.less";
 
-  /** @deprecated used only for serialization */
+  /**
+   * @deprecated used only for serialization
+   */
   public LengthMustBeLess() {}
 
   public LengthMustBeLess(String propertyName, int boundary) {

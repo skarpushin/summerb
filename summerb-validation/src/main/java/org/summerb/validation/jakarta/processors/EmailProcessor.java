@@ -15,15 +15,12 @@
  ******************************************************************************/
 package org.summerb.validation.jakarta.processors;
 
+import com.google.common.base.Preconditions;
+import jakarta.validation.constraints.Email;
 import java.util.function.Predicate;
-
-import javax.validation.constraints.Email;
-
 import org.summerb.validation.ValidationContext;
 import org.summerb.validation.errors.MustMatchPattern;
 import org.summerb.validation.jakarta.processors.abstracts.AnnotationProcessorNullableAbstract;
-
-import com.google.common.base.Preconditions;
 
 public class EmailProcessor extends AnnotationProcessorNullableAbstract<Email> {
   private Predicate<String> predicate;

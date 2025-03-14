@@ -15,9 +15,8 @@
  ******************************************************************************/
 package org.summerb.utils.collection;
 
-import java.util.Iterator;
-
 import com.google.common.base.Preconditions;
+import java.util.Iterator;
 
 /**
  * This is one way linked list intended for use in concurrent scenarios where we try to avoid using

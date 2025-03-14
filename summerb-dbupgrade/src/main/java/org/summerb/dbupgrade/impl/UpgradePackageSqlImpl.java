@@ -15,8 +15,8 @@
  ******************************************************************************/
 package org.summerb.dbupgrade.impl;
 
+import com.google.common.base.Preconditions;
 import java.io.InputStream;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -24,8 +24,6 @@ import org.summerb.dbupgrade.api.SqlPackageParser;
 import org.summerb.dbupgrade.api.UpgradePackage;
 import org.summerb.dbupgrade.api.UpgradePackageMeta;
 import org.summerb.dbupgrade.api.UpgradeStatement;
-
-import com.google.common.base.Preconditions;
 
 public class UpgradePackageSqlImpl implements UpgradePackage {
   protected Logger log = LoggerFactory.getLogger(getClass());

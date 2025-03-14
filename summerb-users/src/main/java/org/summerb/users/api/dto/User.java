@@ -16,7 +16,6 @@
 package org.summerb.users.api.dto;
 
 import java.io.Serializable;
-
 import org.springframework.util.StringUtils;
 import org.summerb.utils.DtoBase;
 

@@ -19,7 +19,9 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-/** @author sergey.karpushin */
+/**
+ * @author sergey.karpushin
+ */
 public class DummyMapImpl<TKey, TValue> implements Map<TKey, TValue> {
 
   @Override

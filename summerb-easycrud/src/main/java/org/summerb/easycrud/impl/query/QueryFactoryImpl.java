@@ -1,10 +1,9 @@
 package org.summerb.easycrud.impl.query;
 
+import com.google.common.base.Preconditions;
 import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.api.query.QueryFactory;
 import org.summerb.methodCapturers.PropertyNameResolverFactory;
-
-import com.google.common.base.Preconditions;
 
 public class QueryFactoryImpl implements QueryFactory {
 

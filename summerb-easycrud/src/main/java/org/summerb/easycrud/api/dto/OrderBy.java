@@ -23,8 +23,8 @@ package org.summerb.easycrud.api.dto;
  * @author sergey.karpushin
  */
 public class OrderBy {
-  private static final String ORDER_DESC = "DESC";
-  private static final String ORDER_ASC = "ASC";
+  public static final String ORDER_DESC = "DESC";
+  public static final String ORDER_ASC = "ASC";
 
   protected String direction;
   protected String fieldName;
@@ -55,10 +55,6 @@ public class OrderBy {
     return direction;
   }
 
-  public boolean isAsc() {
-    return ORDER_ASC.equals(direction);
-  }
-
   public String getFieldName() {
     return fieldName;
   }
@@ -74,16 +70,30 @@ public class OrderBy {
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj) return true;
-    if (obj == null) return false;
-    if (getClass() != obj.getClass()) return false;
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
     OrderBy other = (OrderBy) obj;
     if (direction == null) {
-      if (other.direction != null) return false;
-    } else if (!direction.equals(other.direction)) return false;
+      if (other.direction != null) {
+        return false;
+      }
+    } else if (!direction.equals(other.direction)) {
+      return false;
+    }
     if (fieldName == null) {
-      if (other.fieldName != null) return false;
-    } else if (!fieldName.equals(other.fieldName)) return false;
+      if (other.fieldName != null) {
+        return false;
+      }
+    } else if (!fieldName.equals(other.fieldName)) {
+      return false;
+    }
     return true;
   }
 }

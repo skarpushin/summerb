@@ -16,7 +16,6 @@
 package org.summerb.easycrud.api.exceptions;
 
 import java.sql.DataTruncation;
-
 import org.summerb.easycrud.api.EasyCrudMessageCodes;
 import org.summerb.i18n.HasMessageCode;
 

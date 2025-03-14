@@ -7,7 +7,9 @@ public class MustBeNull extends ValidationError {
 
   public static final String MESSAGE_CODE = "validation.mustBe.null";
 
-  /** @deprecated used only for serialization */
+  /**
+   * @deprecated used only for serialization
+   */
   public MustBeNull() {}
 
   public MustBeNull(String propertyName) {

@@ -15,11 +15,9 @@
  ******************************************************************************/
 package org.summerb.i18n;
 
-import java.util.Locale;
-
-import org.springframework.context.MessageSource;
-
 import com.google.common.base.Preconditions;
+import java.util.Locale;
+import org.springframework.context.MessageSource;
 
 /**
  * This convert will convert Locale argument to it's string representation suitable for presentation

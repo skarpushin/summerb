@@ -16,9 +16,7 @@
 package org.summerb.easycrud.impl.dao;
 
 import java.util.Map;
-
 import javax.sql.DataSource;
-
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
