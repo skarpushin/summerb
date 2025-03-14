@@ -24,7 +24,7 @@ previously with JPA, Groovy on Grails, Java Server Faces and few other stuff.
   in other frameworks and you need to add them on top, while here you have it embedded in the core of EasyCrud
 * It is created with the SOLID, DRY and SLAP design principles in mind
 
-And now, 9 years later since inception it still serves its intended use. But I guess I'm putting insufficient efforts 
+And now, 10 years later (anniversary!) since inception it still serves its intended use. But I guess I'm putting insufficient efforts 
 in making it popular :-)
 
 ## How it compares to alternatives?
@@ -223,8 +223,8 @@ with Maven you can augment `maven-compiler-plugin` like this:
   <artifactId>maven-compiler-plugin</artifactId>
   <version>3.11.0</version>
   <configuration>
-      <source>11</source>
-      <target>11</target>
+      <source>17</source>
+      <target>17</target>
       <compilerArgs>
         <arg>-parameters</arg>
       </compilerArgs>

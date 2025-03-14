@@ -6,7 +6,7 @@ Short checklist:
  1. `settings.xml`: server "ossrh" defined
  1. `settings.xml`: profile "ossrh" defined with "gpg.passphrase" property settings
  1. gpg key is in local key ring. i.e.: `gpg --import maven-release-singing-key.asc`
- 1. (**!**) Make sure Java 11 is used
+ 1. (**!**) Make sure Java 17 is used
 
 settings.xml example:
 
