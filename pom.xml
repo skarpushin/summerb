@@ -1,34 +1,57 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.github.skarpushin</groupId>
-	<artifactId>summerb</artifactId>
-	<version>7.0.0</version>
-	<packaging>pom</packaging>
+    <groupId>com.github.skarpushin</groupId>
+    <artifactId>summerb</artifactId>
+    <version>7.0.0</version>
+    <packaging>pom</packaging>
 
-	<name>summerb</name>
+    <name>summerb</name>
 
-	<modules>
-		<module>summerb-parent</module>
-		<module>summerb-utils</module>
-		<module>summerb-i18n</module>
-		<module>summerb-validation</module>
-		<module>summerb-stringtemplate</module>
-		<module>summerb-security</module>
-		<module>summerb-easycrud</module>
-		<module>summerb-easycrud_swagger2</module>
-		<module>summerb-properties</module>
-		<module>summerb-users</module>
-		<module>summerb-webboilerplate</module>
-		<module>summerb-dbupgrade</module>
-	</modules>
+    <modules>
+        <module>summerb-parent</module>
+        <module>summerb-utils</module>
+        <module>summerb-i18n</module>
+        <module>summerb-validation</module>
+        <module>summerb-stringtemplate</module>
+        <module>summerb-security</module>
+        <module>summerb-easycrud</module>
+        <module>summerb-easycrud_swagger2</module>
+        <module>summerb-properties</module>
+        <module>summerb-users</module>
+        <module>summerb-webboilerplate</module>
+        <module>summerb-dbupgrade</module>
+    </modules>
 
-	<properties>
-		<maven.deploy.skip>true</maven.deploy.skip>
-		<skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
-	</properties>
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+        <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
+    </properties>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.spotify.fmt</groupId>
+                <artifactId>fmt-maven-plugin</artifactId>
+                <version>2.22.1</version>
+                <executions>
+                    <execution>
+                        <id>fmt-format</id>
+                        <goals>
+                            <goal>format</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>fmt-check</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
