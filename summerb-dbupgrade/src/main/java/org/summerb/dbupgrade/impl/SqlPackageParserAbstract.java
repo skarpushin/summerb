@@ -35,6 +35,7 @@ public abstract class SqlPackageParserAbstract implements SqlPackageParser {
   public static final SubString MULTI_LINE_COMMENT_OPEN = new SubString("/*");
   public static final SubString MULTI_LINE_COMMENT_CLOSE = new SubString("*/");
   public static final SubString NEW_LINE = new SubString("\n");
+  public static final SubString NEW_LINE_CR = new SubString("\r\n");
   public static final SubString STATEMENT_END = new SubString(";");
 
   @Override
@@ -64,7 +65,7 @@ public abstract class SqlPackageParserAbstract implements SqlPackageParser {
 
       while ((t = tokenizer.next()) != null) {
         // Tokens ignoring mode
-        if (NEW_LINE == t) {
+        if (NEW_LINE_CR == t || NEW_LINE == t) {
           if (isWithinSingleLineComment) {
             isWithinSingleLineComment = false;
           }
