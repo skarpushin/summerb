@@ -38,9 +38,7 @@
 		<dependency>
 			<groupId>com.github.skarpushin</groupId>
 			<artifactId>summerb-users</artifactId>
-
 		</dependency>
-
 		<dependency>
 			<groupId>javax.activation</groupId>
 			<artifactId>activation</artifactId>

@@ -41,7 +41,7 @@ public class StringIdGeneratorAlphaNumericImpl implements StringIdGenerator {
   @Override
   public String generateNewId(Object optionalDto) {
     StringBuilder ret = new StringBuilder();
-    while (ret.length() < 8) {
+    while (ret.length() < length) {
       int next = random.nextInt(alphabet.length());
       ret.append(alphabet.charAt(next));
     }
