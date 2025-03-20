@@ -67,6 +67,11 @@ public class NotAuthorizedException extends RuntimeException
   }
 
   @Override
+  public String getMessage() {
+    return result.toString();
+  }
+
+  @Override
   public String getMessageCode() {
     return result.getMessageCode();
   }

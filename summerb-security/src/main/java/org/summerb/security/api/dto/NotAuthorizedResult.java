@@ -17,6 +17,7 @@ package org.summerb.security.api.dto;
 
 import com.google.common.base.Preconditions;
 import java.io.Serial;
+import java.util.StringJoiner;
 import org.springframework.util.StringUtils;
 import org.summerb.i18n.HasMessageArgs;
 import org.summerb.i18n.HasMessageArgsConverters;
@@ -111,5 +112,15 @@ public class NotAuthorizedResult
 
   public void setMessageCode(String messageCode) {
     this.messageCode = messageCode;
+  }
+
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", NotAuthorizedResult.class.getSimpleName() + "[", "]")
+        .add("messageCode='" + messageCode + "'")
+        .add("userName='" + userName + "'")
+        .add("operationMessageCode='" + operationMessageCode + "'")
+        .add("subjectTitle='" + subjectTitle + "'")
+        .toString();
   }
 }
