@@ -35,7 +35,7 @@ public class EmailTransportViaJavaMailImpl implements EmailTransport {
       if (email.getFrom() != null) {
         helper.setFrom(email.getFrom());
       } else if (defaultSender != null) {
-        helper.setFrom(email.getFrom());
+        helper.setFrom(defaultSender);
       }
 
       helper.setTo(email.getTo());
