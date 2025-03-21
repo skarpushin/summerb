@@ -9,6 +9,7 @@ import org.springframework.core.io.ByteArrayResource;
 public class Email implements Serializable {
   private static final long serialVersionUID = -7860044117715437155L;
 
+  private InternetAddress from;
   private InternetAddress[] to;
   private InternetAddress[] cc;
   private InternetAddress[] bcc;
@@ -79,5 +80,13 @@ public class Email implements Serializable {
 
   public void setInline(Map<String, InlineResource> inline) {
     this.inline = inline;
+  }
+
+  public InternetAddress getFrom() {
+    return from;
+  }
+
+  public void setFrom(InternetAddress from) {
+    this.from = from;
   }
 }

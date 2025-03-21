@@ -1,6 +1,7 @@
 package org.summerb.email.impl_javamail;
 
 import jakarta.mail.MessagingException;
+import jakarta.mail.internet.InternetAddress;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.summerb.email.EmailTransport;
 import org.summerb.email.JavaMailTransport;
@@ -8,9 +9,17 @@ import org.summerb.email.dto.Email;
 
 public class EmailTransportViaJavaMailImpl implements EmailTransport {
   protected final JavaMailTransport javaMailTransport;
+  protected final InternetAddress defaultSender;
 
   public EmailTransportViaJavaMailImpl(JavaMailTransport javaMailTransport) {
     this.javaMailTransport = javaMailTransport;
+    this.defaultSender = null;
+  }
+
+  public EmailTransportViaJavaMailImpl(
+      JavaMailTransport javaMailTransport, InternetAddress defaultSender) {
+    this.javaMailTransport = javaMailTransport;
+    this.defaultSender = defaultSender;
   }
 
   @Override
@@ -23,8 +32,12 @@ public class EmailTransportViaJavaMailImpl implements EmailTransport {
     try {
       MimeMessageHelper helper =
           new MimeMessageHelper(javaMailTransport.newMessage(), true, "UTF-8");
-      // helper.setFrom(email.getFrom());// NOTE: From must be defined via sender
-      // impl if needed, not via message
+      if (email.getFrom() != null) {
+        helper.setFrom(email.getFrom());
+      } else if (defaultSender != null) {
+        helper.setFrom(email.getFrom());
+      }
+
       helper.setTo(email.getTo());
       if (email.getCc() != null) {
         helper.setCc(email.getCc());
@@ -42,7 +55,7 @@ public class EmailTransportViaJavaMailImpl implements EmailTransport {
                 try {
                   helper.addInline(k, v.getBytes(), v.getContentType());
                 } catch (MessagingException e) {
-                  throw new RuntimeException("Failedto add inline resource " + k, e);
+                  throw new RuntimeException("Failed to add inline resource " + k, e);
                 }
               });
       email
@@ -52,7 +65,7 @@ public class EmailTransportViaJavaMailImpl implements EmailTransport {
                 try {
                   helper.addAttachment(k, v);
                 } catch (MessagingException e) {
-                  throw new RuntimeException("Failedto add attachment " + k, e);
+                  throw new RuntimeException("Failed to add attachment " + k, e);
                 }
               });
 
