@@ -15,10 +15,20 @@
  ******************************************************************************/
 package org.summerb.security.elevation.api;
 
+import com.google.common.util.concurrent.UncheckedExecutionException;
 import java.util.concurrent.Callable;
 
 public interface ElevationRunner {
   void runElevated(Runnable runnable);
 
   <T> T callElevated(Callable<T> callable) throws Exception;
+
+  default <T> T callElevatedUnchecked(Callable<T> callable) {
+    try {
+      return callElevated(callable);
+    } catch (Exception e) {
+      throw new UncheckedExecutionException(
+          "Underlying call to callElevated() threw an exception", e);
+    }
+  }
 }
