@@ -33,8 +33,8 @@ import org.summerb.users.api.exceptions.UserNotFoundException;
 import org.summerb.users.api.exceptions.UserServiceUnexpectedException;
 import org.summerb.users.api.validation.DuplicateUserValidationError;
 import org.summerb.users.impl.dao.UserDao;
-import org.summerb.utils.clock.NowResolver;
-import org.summerb.utils.clock.NowResolverImpl;
+import org.summerb.utils.clock.ClockResolver;
+import org.summerb.utils.clock.ClockResolverImpl;
 import org.summerb.utils.easycrud.api.dto.EntityChangedEvent;
 import org.summerb.utils.easycrud.api.dto.PagerParams;
 import org.summerb.utils.easycrud.api.dto.PaginatedList;
@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService, InitializingBean {
   protected ValidationContextFactory validationContextFactory;
 
   protected StringIdGenerator stringIdGenerator;
-  protected NowResolver nowResolver;
+  protected ClockResolver clockResolver;
 
   /**
    * This constructor only for subclasses. They have to be sure to initialize all required fields
@@ -74,8 +74,8 @@ public class UserServiceImpl implements UserService, InitializingBean {
       stringIdGenerator = new StringIdGeneratorUuidImpl();
     }
 
-    if (nowResolver == null) {
-      nowResolver = new NowResolverImpl();
+    if (clockResolver == null) {
+      clockResolver = new ClockResolverImpl();
     }
   }
 
@@ -104,7 +104,7 @@ public class UserServiceImpl implements UserService, InitializingBean {
       userToCreate.setUuid(stringIdGenerator.generateNewId(userTemplate));
     }
     if (userToCreate.getRegisteredAt() == 0) {
-      userToCreate.setRegisteredAt(nowResolver.clock().millis());
+      userToCreate.setRegisteredAt(clockResolver.clock().millis());
     }
     if (userToCreate.getLocale() == null) {
       userToCreate.setLocale(LocaleContextHolder.getLocale().toString());
@@ -260,12 +260,12 @@ public class UserServiceImpl implements UserService, InitializingBean {
     this.stringIdGenerator = stringIdGenerator;
   }
 
-  public NowResolver getNowResolver() {
-    return nowResolver;
+  public ClockResolver getClockResolver() {
+    return clockResolver;
   }
 
   @Autowired(required = false)
-  public void setNowResolver(NowResolver nowResolver) {
-    this.nowResolver = nowResolver;
+  public void setClockResolver(ClockResolver clockResolver) {
+    this.clockResolver = clockResolver;
   }
 }

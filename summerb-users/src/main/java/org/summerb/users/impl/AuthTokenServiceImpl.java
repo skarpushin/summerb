@@ -145,7 +145,7 @@ public class AuthTokenServiceImpl implements AuthTokenService {
     return now + authTokenTimeToLiveSeconds * 1000;
   }
 
-  // TODO: Use NowResolver
+  // TBD: Use ClockResolver
   protected long getNow() {
     return new Date().getTime();
   }

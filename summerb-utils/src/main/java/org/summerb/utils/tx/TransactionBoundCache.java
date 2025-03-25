@@ -46,16 +46,16 @@ import org.summerb.utils.jmx.GuavaCacheMXBeanImpl;
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class TransactionBoundCache<K, V> implements LoadingCache<K, V> {
-  private static final Logger log = LoggerFactory.getLogger(TransactionBoundCache.class);
+  protected static final Logger log = LoggerFactory.getLogger(TransactionBoundCache.class);
 
-  private String cacheName;
-  private CacheLoader<K, V> loader;
+  protected String cacheName;
+  protected CacheLoader<K, V> loader;
 
-  private LoadingCache<K, V> actual;
+  protected LoadingCache<K, V> actual;
 
   // NOTE: It's not static because we need it to be bound to specific cache,
   // not to singleton
-  private final ThreadLocal<TransactionBoundCacheEntry> transactionBoundCacheEntries =
+  protected final ThreadLocal<TransactionBoundCacheEntry> transactionBoundCacheEntries =
       new ThreadLocal<>();
 
   /**
@@ -64,7 +64,7 @@ public class TransactionBoundCache<K, V> implements LoadingCache<K, V> {
    * returned. This is a fix for defect found while testing "MSCAR-9 Article A will be evicted from
    * cache if it depends on Article B and Article B was just updated "
    */
-  private final TransactionBoundCacheEntry markerUseGlobalCache =
+  protected final TransactionBoundCacheEntry markerUseGlobalCache =
       new TransactionBoundCacheEntry<>();
 
   public TransactionBoundCache(
@@ -81,7 +81,7 @@ public class TransactionBoundCache<K, V> implements LoadingCache<K, V> {
   }
 
   /** Get for write purpose */
-  private LoadingCache<K, V> get() {
+  protected LoadingCache<K, V> get() {
     TransactionBoundCacheEntry transactionBoundCacheEntry = transactionBoundCacheEntries.get();
     if (transactionBoundCacheEntry == markerUseGlobalCache) {
       if (log.isTraceEnabled()) {
@@ -128,7 +128,7 @@ public class TransactionBoundCache<K, V> implements LoadingCache<K, V> {
     return newCache.transactionBound;
   }
 
-  private TransactionSynchronization synchronization =
+  protected TransactionSynchronization synchronization =
       new TransactionSynchronization() {
         @Override
         public void afterCommit() {
@@ -166,7 +166,7 @@ public class TransactionBoundCache<K, V> implements LoadingCache<K, V> {
         }
       };
 
-  private RemovalListener<? super K, ? super V> localRemovalListener =
+  protected RemovalListener<? super K, ? super V> localRemovalListener =
       new RemovalListener<>() {
         @Override
         public void onRemoval(RemovalNotification<K, V> notification) {
@@ -279,7 +279,7 @@ public class TransactionBoundCache<K, V> implements LoadingCache<K, V> {
     return get().asMap();
   }
 
-  private static class TransactionBoundCacheEntry<K, V> {
+  protected static class TransactionBoundCacheEntry<K, V> {
     LoadingCache<K, V> transactionBound;
     Set<K> transactionBoundRemovals;
   }

@@ -48,7 +48,7 @@ import org.summerb.methodCapturers.MethodCapturerProxyClassFactory;
 import org.summerb.methodCapturers.MethodCapturerProxyClassFactoryImpl;
 import org.summerb.methodCapturers.PropertyNameResolverFactory;
 import org.summerb.methodCapturers.PropertyNameResolverFactoryImpl;
-import org.summerb.utils.clock.NowResolverImpl;
+import org.summerb.utils.clock.ClockResolverImpl;
 import org.summerb.validation.ThrowingRunnable;
 import org.summerb.validation.ValidationContext;
 import org.summerb.validation.ValidationContextFactory;
@@ -133,7 +133,7 @@ public class JakartaValidatorImplTest {
     JakartaValidatorImpl f = new JakartaValidatorImpl(jakartaValidationBeanProcessor);
 
     var ctx = validationContextFactory.buildFor(p);
-    ctx.setNowResolver(new NowResolverImpl(now));
+    ctx.setClockResolver(new ClockResolverImpl(now));
 
     f.findValidationErrors(null, ctx);
 
@@ -146,7 +146,7 @@ public class JakartaValidatorImplTest {
     JakartaFullBean p = buildValidPojo(now);
 
     var ctx = validationContextFactory.buildFor(p);
-    ctx.setNowResolver(new NowResolverImpl(now));
+    ctx.setClockResolver(new ClockResolverImpl(now));
 
     ctx.processJakartaValidations();
     assertEquals(0, ctx.getErrors().size());
@@ -352,7 +352,7 @@ public class JakartaValidatorImplTest {
     p.setPastOrPresentYear(Year.now(future));
 
     var ctx = validationContextFactory.buildFor(p);
-    ctx.setNowResolver(new NowResolverImpl(now));
+    ctx.setClockResolver(new ClockResolverImpl(now));
     ctx.processJakartaValidations();
 
     // check each and every validation error existence

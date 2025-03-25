@@ -34,7 +34,7 @@ import org.summerb.methodCapturers.MethodCapturerProxyClassFactoryImpl;
 import org.summerb.methodCapturers.PropertyNameResolver;
 import org.summerb.methodCapturers.PropertyNameResolverFactory;
 import org.summerb.methodCapturers.PropertyNameResolverFactoryImpl;
-import org.summerb.utils.clock.NowResolverImpl;
+import org.summerb.utils.clock.ClockResolverImpl;
 import org.summerb.validation.errors.LengthMustBeBetween;
 import org.summerb.validation.errors.LengthMustBeGreater;
 import org.summerb.validation.errors.LengthMustBeGreaterOrEqual;
@@ -1342,14 +1342,14 @@ class ValidationContextTest {
   }
 
   @Test
-  void test_NowResolver() {
+  void test_ClockResolver() {
     var f = validationContextFactory.buildFor(new Dated());
 
-    assertThrows(IllegalArgumentException.class, () -> f.setNowResolver(null));
+    assertThrows(IllegalArgumentException.class, () -> f.setClockResolver(null));
 
-    NowResolverImpl resolver = new NowResolverImpl();
-    f.setNowResolver(resolver);
-    assertEquals(resolver, f.getNowResolver());
+    ClockResolverImpl resolver = new ClockResolverImpl();
+    f.setClockResolver(resolver);
+    assertEquals(resolver, f.getClockResolver());
   }
 
   @Test
@@ -1454,7 +1454,7 @@ class ValidationContextTest {
     Dated r = buildNow(clock);
 
     var f = validationContextFactory.buildFor(r);
-    f.setNowResolver(new NowResolverImpl(clock));
+    f.setClockResolver(new ClockResolverImpl(clock));
 
     assertFalse(f.past(Dated::getValueDate));
     assertTrue(f.pastOrPresent(Dated::getValueCalendar));

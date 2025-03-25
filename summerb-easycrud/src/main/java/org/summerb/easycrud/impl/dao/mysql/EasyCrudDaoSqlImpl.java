@@ -56,8 +56,8 @@ import org.summerb.easycrud.impl.dao.ParameterSourceBuilderBeanPropImpl;
 import org.summerb.easycrud.impl.dao.SqlTypeOverrides;
 import org.summerb.easycrud.impl.dao.SqlTypeOverridesDefaultImpl;
 import org.summerb.easycrud.impl.dao.TableDaoBase;
-import org.summerb.utils.clock.NowResolver;
-import org.summerb.utils.clock.NowResolverImpl;
+import org.summerb.utils.clock.ClockResolver;
+import org.summerb.utils.clock.ClockResolverImpl;
 import org.summerb.utils.easycrud.api.dto.PagerParams;
 import org.summerb.utils.easycrud.api.dto.PaginatedList;
 import org.summerb.utils.easycrud.api.dto.Top;
@@ -83,7 +83,7 @@ public class EasyCrudDaoSqlImpl<TId, TRow extends HasId<TId>> extends TableDaoBa
   protected QueryToSql queryToSql;
   protected StringIdGenerator stringIdGenerator;
   protected DaoExceptionTranslator daoExceptionTranslator;
-  protected NowResolver nowResolver;
+  protected ClockResolver clockResolver;
 
   protected SimpleJdbcInsert jdbcInsert;
   protected SimpleJdbcUpdate jdbcUpdate;
@@ -140,8 +140,8 @@ public class EasyCrudDaoSqlImpl<TId, TRow extends HasId<TId>> extends TableDaoBa
       stringIdGenerator = buildDefaultStringIdGenerator();
     }
 
-    if (HasTimestamps.class.isAssignableFrom(rowClass) && nowResolver == null) {
-      nowResolver = buildDefaultNowResolver();
+    if (HasTimestamps.class.isAssignableFrom(rowClass) && clockResolver == null) {
+      clockResolver = buildDefaultClockResolver();
     }
 
     jdbcInsert = buildJdbcInsert();
@@ -149,8 +149,8 @@ public class EasyCrudDaoSqlImpl<TId, TRow extends HasId<TId>> extends TableDaoBa
     buildSqlQueries();
   }
 
-  protected NowResolver buildDefaultNowResolver() {
-    return new NowResolverImpl();
+  protected ClockResolver buildDefaultClockResolver() {
+    return new ClockResolverImpl();
   }
 
   protected StringIdGeneratorUuidImpl buildDefaultStringIdGenerator() {
@@ -254,7 +254,7 @@ public class EasyCrudDaoSqlImpl<TId, TRow extends HasId<TId>> extends TableDaoBa
     }
 
     if (row instanceof HasTimestamps hasTimestamps) {
-      long now = nowResolver.clock().millis();
+      long now = clockResolver.clock().millis();
       hasTimestamps.setCreatedAt(now);
       hasTimestamps.setModifiedAt(now);
     }
@@ -279,7 +279,7 @@ public class EasyCrudDaoSqlImpl<TId, TRow extends HasId<TId>> extends TableDaoBa
     restrictionParams.addValue(HasId.FN_ID, row.getId());
     if (row instanceof HasTimestamps hasTimestamps) {
       long modifiedAt = hasTimestamps.getModifiedAt();
-      hasTimestamps.setModifiedAt(nowResolver.clock().millis());
+      hasTimestamps.setModifiedAt(clockResolver.clock().millis());
       restrictionParams.addValue(HasTimestamps.FN_MODIFIED_AT, modifiedAt);
     }
 
@@ -530,7 +530,7 @@ public class EasyCrudDaoSqlImpl<TId, TRow extends HasId<TId>> extends TableDaoBa
    * @param stringIdGenerator stringIdGenerator
    */
   public void setStringIdGenerator(StringIdGenerator stringIdGenerator) {
-    Preconditions.checkState(rowClass != null, "please set rowClass before callign this method");
+    Preconditions.checkState(rowClass != null, "please set rowClass before calling this method");
     Preconditions.checkArgument(
         !HasUuid.class.isAssignableFrom(rowClass) || stringIdGenerator != null,
         "stringIdGenerator required");
@@ -555,22 +555,22 @@ public class EasyCrudDaoSqlImpl<TId, TRow extends HasId<TId>> extends TableDaoBa
   }
 
   @Override
-  public NowResolver getNowResolver() {
-    return nowResolver;
+  public ClockResolver getClockResolver() {
+    return clockResolver;
   }
 
   /**
-   * Set {@link NowResolver}. This is required only when Row class implements {@link HasTimestamps}.
-   * If nothing set, then default {@link NowResolverImpl} will be used
+   * Set {@link ClockResolver}. This is required only when Row class implements {@link
+   * HasTimestamps}. If nothing set, then default {@link ClockResolverImpl} will be used
    *
-   * @param nowResolver nowResolver
+   * @param clockResolver clockResolver
    */
   @Autowired(required = false)
-  public void setNowResolver(NowResolver nowResolver) {
-    Preconditions.checkState(rowClass != null, "please set rowClass before callign this method");
+  public void setClockResolver(ClockResolver clockResolver) {
+    Preconditions.checkState(rowClass != null, "please set rowClass before calling this method");
     Preconditions.checkArgument(
-        !HasTimestamps.class.isAssignableFrom(rowClass) || nowResolver != null,
-        "nowResolver required");
-    this.nowResolver = nowResolver;
+        !HasTimestamps.class.isAssignableFrom(rowClass) || clockResolver != null,
+        "clockResolver required");
+    this.clockResolver = clockResolver;
   }
 }

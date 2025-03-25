@@ -10,7 +10,7 @@ import org.summerb.easycrud.api.QueryToSql;
 import org.summerb.easycrud.api.StringIdGenerator;
 import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.impl.dao.SqlTypeOverrides;
-import org.summerb.utils.clock.NowResolver;
+import org.summerb.utils.clock.ClockResolver;
 
 public interface EasyCrudDaoInjections<TId, TRow extends HasId<TId>> {
   String getTableName();
@@ -31,7 +31,7 @@ public interface EasyCrudDaoInjections<TId, TRow extends HasId<TId>> {
 
   DaoExceptionTranslator getDaoExceptionTranslator();
 
-  NowResolver getNowResolver();
+  ClockResolver getClockResolver();
 
   NamedParameterJdbcTemplate getJdbc();
 

@@ -20,34 +20,40 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import org.springframework.beans.BeanUtils;
 
-public class ObjCopyUtils {
+public class BeanPropertiesUtils {
   /**
    * Get property values from source object (using getters) and assign to destination (using
-   * setters)
+   * setters) matching them by name
    *
-   * @param src source object
-   * @param dst target object. source class expected to be assignable from destination
+   * @param from source object
+   * @param to target object. source class expected to be assignable from destination
    */
-  public static <TSrc, TDst extends TSrc> void assignFields(TSrc src, TDst dst) {
-    Preconditions.checkArgument(src != null, "Src must not be null");
-    Preconditions.checkArgument(dst != null, "Dst must not be null");
+  public static <TSrc, TDst extends TSrc> void copy(TSrc from, TDst to) {
+    Preconditions.checkArgument(from != null, "Src must not be null");
+    Preconditions.checkArgument(to != null, "Dst must not be null");
     Preconditions.checkArgument(
-        src.getClass().isAssignableFrom(dst.getClass()),
+        from.getClass().isAssignableFrom(to.getClass()),
         "source class expected to be assignable from destination");
 
     try {
-      PropertyDescriptor[] srcProps = BeanUtils.getPropertyDescriptors(src.getClass());
+      PropertyDescriptor[] srcProps = BeanUtils.getPropertyDescriptors(from.getClass());
       for (PropertyDescriptor pd : srcProps) {
         Method writeMethod = pd.getWriteMethod();
-        if (writeMethod == null) {
+        if (writeMethod == null || writeMethod.getParameterCount() != 1) {
           continue;
         }
 
-        Object value = pd.getReadMethod().invoke(src);
-        writeMethod.invoke(dst, value);
+        Class<?> sourceType = pd.getReadMethod().getReturnType();
+        Class<?> targetType = writeMethod.getParameters()[0].getType();
+        if (!targetType.isAssignableFrom(sourceType)) {
+          return;
+        }
+
+        Object value = pd.getReadMethod().invoke(from);
+        writeMethod.invoke(to, value);
       }
     } catch (Throwable t) {
-      throw new RuntimeException("Failed to copy properties from " + src + " to " + dst, t);
+      throw new RuntimeException("Failed to copy properties from " + from + " to " + to, t);
     }
   }
 }

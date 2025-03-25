@@ -42,7 +42,7 @@ import org.summerb.easycrud.api.row.datapackage.DataSet;
 import org.summerb.easycrud.api.row.relations.Ref;
 import org.summerb.utils.DtoBase;
 import org.summerb.utils.Pair;
-import org.summerb.utils.objectcopy.ObjCopyUtils;
+import org.summerb.utils.objectcopy.BeanPropertiesUtils;
 
 public class DomLoaderImpl implements DomLoader {
   protected DataSetLoader dataSetLoader;
@@ -147,7 +147,7 @@ public class DomLoaderImpl implements DomLoader {
 
         // Construct instance of DOM and migrate simple field values
         dom = domClass.newInstance();
-        ObjCopyUtils.assignFields(row, dom);
+        BeanPropertiesUtils.copy(row, dom);
         cache.put(cacheKey, dom);
 
         // Discover fields that represent references

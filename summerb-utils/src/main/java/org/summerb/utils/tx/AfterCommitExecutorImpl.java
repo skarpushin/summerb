@@ -32,7 +32,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  * @author sergeyk
  */
 public class AfterCommitExecutorImpl implements TransactionSynchronization, Executor {
-  private static final Logger log = LoggerFactory.getLogger(AfterCommitExecutorImpl.class);
+  protected static final Logger log = LoggerFactory.getLogger(AfterCommitExecutorImpl.class);
 
   protected ExecutorService executorService;
   protected Queue<Runnable> threadRunnables;
@@ -79,7 +79,7 @@ public class AfterCommitExecutorImpl implements TransactionSynchronization, Exec
   }
 
   protected static class RunRunnables implements Runnable {
-    private Queue<Runnable> threadRunnables;
+    protected Queue<Runnable> threadRunnables;
 
     public RunRunnables(Queue<Runnable> threadRunnables) {
       this.threadRunnables = threadRunnables;

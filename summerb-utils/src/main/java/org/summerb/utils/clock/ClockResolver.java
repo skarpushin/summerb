@@ -2,7 +2,7 @@ package org.summerb.utils.clock;
 
 import java.time.Clock;
 
-public interface NowResolver {
+public interface ClockResolver {
 
   Clock clock();
 }

@@ -102,12 +102,11 @@ public class RecurringBackgroundTask implements RecurringBackgroundTaskMXBean {
                 statsInterruptions++;
                 if (tearDownRequested) {
                   return;
-                } else {
                 }
               }
             }
           } finally {
-            log.info("Envelope finished for {}", runnable);
+            log.debug("Envelope finished for {}", runnable);
           }
         }
 

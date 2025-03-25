@@ -51,8 +51,8 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.summerb.methodCapturers.PropertyNameResolver;
-import org.summerb.utils.clock.NowResolver;
-import org.summerb.utils.clock.NowResolverImpl;
+import org.summerb.utils.clock.ClockResolver;
+import org.summerb.utils.clock.ClockResolverImpl;
 import org.summerb.validation.errors.LengthMustBeBetween;
 import org.summerb.validation.errors.LengthMustBeGreater;
 import org.summerb.validation.errors.LengthMustBeGreaterOrEqual;
@@ -156,14 +156,14 @@ public class ValidationContext<T> {
               Pattern.CASE_INSENSITIVE)
           .asMatchPredicate();
 
-  public static final Map<Class<?>, Function<NowResolver, Comparable<?>>> ALLOWED_TEMPORAL_TYPES;
+  public static final Map<Class<?>, Function<ClockResolver, Comparable<?>>> ALLOWED_TEMPORAL_TYPES;
 
   protected final T bean;
   protected PropertyNameResolver<T> propertyNameResolver;
   protected JakartaValidator jakartaValidator;
   protected ValidationContextFactory validationContextFactory;
 
-  protected NowResolver nowResolver = new NowResolverImpl();
+  protected ClockResolver clockResolver = new ClockResolverImpl();
 
   protected final List<ValidationError> errors = new ArrayList<>();
 
@@ -250,17 +250,17 @@ public class ValidationContext<T> {
             Map.entry(ThaiBuddhistDate.class, nr -> ThaiBuddhistDate.now(nr.clock())));
   }
 
-  public NowResolver getNowResolver() {
-    return nowResolver;
+  public ClockResolver getClockResolver() {
+    return clockResolver;
   }
 
   /**
-   * @param nowResolver custom time resolver, usually needed for testing purposes
+   * @param clockResolver custom time resolver, usually needed for testing purposes
    */
   @VisibleForTesting
-  public void setNowResolver(NowResolver nowResolver) {
-    Preconditions.checkArgument(nowResolver != null);
-    this.nowResolver = nowResolver;
+  public void setClockResolver(ClockResolver clockResolver) {
+    Preconditions.checkArgument(clockResolver != null);
+    this.clockResolver = clockResolver;
   }
 
   /**
@@ -1155,19 +1155,19 @@ public class ValidationContext<T> {
   protected <V extends Comparable<V>> V buildTemporalBoundaryMatchingTypeOfValidationSubject(
       V value) {
     Preconditions.checkArgument(value != null, "value required");
-    Function<NowResolver, V> builder = getTemporalBuilderOfType(value.getClass());
-    return builder.apply(nowResolver);
+    Function<ClockResolver, V> builder = getTemporalBuilderOfType(value.getClass());
+    return builder.apply(clockResolver);
   }
 
   @SuppressWarnings({"unchecked"})
-  protected <V extends Comparable<V>> Function<NowResolver, V> getTemporalBuilderOfType(
+  protected <V extends Comparable<V>> Function<ClockResolver, V> getTemporalBuilderOfType(
       Class<V> clazz) {
-    for (Entry<Class<?>, Function<NowResolver, Comparable<?>>> entry :
+    for (Entry<Class<?>, Function<ClockResolver, Comparable<?>>> entry :
         ALLOWED_TEMPORAL_TYPES.entrySet()) {
       if (entry.getKey().isAssignableFrom(clazz)) {
         // NOTE: if you know how to get rid of this workaround -- please let me know
         Object raw = entry.getValue();
-        return (Function<NowResolver, V>) raw;
+        return (Function<ClockResolver, V>) raw;
       }
     }
 

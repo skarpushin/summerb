@@ -30,7 +30,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  * @author sergeyk
  */
 public class AfterCommitExecutorThreadLocalImpl implements TransactionSynchronization, Executor {
-  private static final Logger log =
+  protected static final Logger log =
       LoggerFactory.getLogger(AfterCommitExecutorThreadLocalImpl.class);
 
   protected static final ThreadLocal<Queue<Runnable>> RUNNABLES = new ThreadLocal<>();
