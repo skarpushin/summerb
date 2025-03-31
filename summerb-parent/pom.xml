@@ -14,7 +14,7 @@ http://www.apache.org/licenses/LICENSE-2.0
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.github.skarpushin</groupId>
-	<version>7.1.0</version>
+	<version>7.1.1</version>
 	<artifactId>summerb-parent</artifactId>
 	<packaging>pom</packaging>
 	<name>summerb-parent</name>
@@ -54,6 +54,7 @@ http://www.apache.org/licenses/LICENSE-2.0
 		<java.version>17</java.version>
 
 		<commons-io.version>2.18.0</commons-io.version>
+		<commons-compress.version>1.27.1</commons-compress.version>
 		<guava.version>33.4.0-jre</guava.version>
 		<springfox-swagger2.version>2.10.5</springfox-swagger2.version>
 		<commons-fileupload.version>1.5</commons-fileupload.version>
@@ -89,6 +90,16 @@ http://www.apache.org/licenses/LICENSE-2.0
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-lang3</artifactId>
 				<version>${commons-lang3.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-compress</artifactId>
+				<version>${commons-compress.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>${commons-io.version}</version>
 			</dependency>
 
 			<dependency>

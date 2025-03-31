@@ -39,7 +39,7 @@ settings.xml example:
 
 Once ready, do: `mvn clean deploy -Prelease`
 
-If you want to retry last failed operation, do `mvn clean deploy -Prelease -rf :summerb-dbupgrade `
+**!!! IMPORTANT !!!** In case of an error DO NOT resume maven build. Start all over again, otherwise only part of your artifacts will be released. 
 
 ## Other stuff
 ### Setup local environment to run integration tests
@@ -48,6 +48,3 @@ Do:
  * `$ cd summerb_tests_db`
  * `$ docker-compose up`
  * Now you can run tests
-
-### Export JAR dependencies run maven with 
-`dependency:copy-dependencies -DincludeScope=runtime`

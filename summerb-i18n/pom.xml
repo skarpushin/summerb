@@ -20,7 +20,7 @@
 	<parent>
 		<groupId>com.github.skarpushin</groupId>
 		<artifactId>summerb-parent</artifactId>
-		<version>7.1.0</version>
+		<version>7.1.1</version>
 		<relativePath>../summerb-parent</relativePath>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>

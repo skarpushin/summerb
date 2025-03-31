@@ -26,8 +26,8 @@ import org.springframework.core.annotation.AliasFor;
  *
  * <pre>
  *   &#064;Bean
- *   public FilterRegistrationBean<ThreadScopeCleanUpFilter> threadScopeCleanUpFilter() {
- *     FilterRegistrationBean<ThreadScopeCleanUpFilter> ret = new FilterRegistrationBean<>();
+ *   public FilterRegistrationBean&lt;ThreadScopeCleanUpFilter&gt; threadScopeCleanUpFilter() {
+ *     FilterRegistrationBean&lt;ThreadScopeCleanUpFilter&gt; ret = new FilterRegistrationBean&lt;&gt;();
  *     ret.setFilter(new ThreadScopeCleanUpFilter());
  *     ret.setOrder(Ordered.HIGHEST_PRECEDENCE + 1);
  *     return ret;
