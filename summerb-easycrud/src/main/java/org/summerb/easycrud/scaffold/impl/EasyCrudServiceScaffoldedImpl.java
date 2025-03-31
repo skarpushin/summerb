@@ -118,5 +118,4 @@ public class EasyCrudServiceScaffoldedImpl implements java.lang.reflect.Invocati
       return method.invoke(service, args);
     }
   }
-
 }
