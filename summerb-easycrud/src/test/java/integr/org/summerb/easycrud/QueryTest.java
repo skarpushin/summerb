@@ -57,6 +57,14 @@ public class QueryTest {
   }
 
   @Test
+  void expect_defaultMethodWorks() {
+    createTestData();
+
+    TestDto1 result = service.getUsingDefault(20);
+    assertEquals("env1", result.getEnv());
+  }
+
+  @Test
   void expect_getEnvCountNoParams_works() {
     createTestData();
 

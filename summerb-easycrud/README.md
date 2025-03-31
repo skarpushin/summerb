@@ -213,6 +213,26 @@ NOTES:
    this is implemented using some heavy-duty bytecode manipulation (ByteBuddy) because Java's reflection does not
    support it.
 
+## Encapsulating queries in the interface definition itself
+So lets say you have your EasyCrudService defined as
+```java
+public interface ProjectService extends EasyCrudService<String, ProjectRow> {
+  String TERM = "term.project";
+}
+```
+And now you'd like to have method in that interface which encapsulates some query logic, but you don't really want to 
+create class that implements this interface. The solution is to just define `default` method which calls `EasyCrudService`
+method `query` like this:
+```java
+public interface ProjectService extends EasyCrudService<String, ProjectRow> {
+  String TERM = "term.project";
+  
+  default List<ProjectRow> findProjectsInDivisions(Set<String> divisionIds) {
+      return query().in(ProjectRow::getDivisionUuid, divisionIds);
+  }
+}
+```
+
 ## Executing queries which are not supported by Query DSL
 ### 1. Parameter names must be included in the bytecode
 Custom queries are using named parameters. So this requires parameter names to be included in the byte code. I.e. 
@@ -232,15 +252,15 @@ with Maven you can augment `maven-compiler-plugin` like this:
 </plugin>
 ```
 
-### 2. Define @ScaffoldedQuery
+### 2. Define @Query
 This is supported only when Service implementation was scaffolded by `EasyCrudScaffold`. Just add a method to the
-interface and mark it with `@ScaffoldedQuery` annotation.
+interface and mark it with `@Query` annotation.
 
 ```java
-@ScaffoldedQuery("SELECT DISTINCT name FROM projects WHERE account_id = :accountId")
+@Query("SELECT DISTINCT name FROM projects WHERE account_id = :accountId")
 List<String> getAccountProjectNames(String accountId);
 
-@ScaffoldedQuery("SELECT pc1.* FROM project_complexity pc1 "
+@Query("SELECT pc1.* FROM project_complexity pc1 "
                + "LEFT JOIN project_complexity pc2 ON (pc1.project_id = pc2.project_id AND pc1.latest_for_fy < pc2.latest_for_fy) "
                + "WHERE pc1.latest_for_fy <= :fy AND pc2.project_id IS NULL AND pc1.project_id IN (:projectIds)")
 List<ProjectComplexityRow> findLatestByFyAndProjects(int fy, Set<String> projectIds);
@@ -252,6 +272,7 @@ NOTES:
 1. If return type is primitive or matches Service row class, then Row mapper is initialized automatically
 1. In case you want some other schema to be returned, provide your own RowMapper class name into
    `ScaffoldedQuery::rowMapper`
+1. If your query modifies data, make sure to clarify this by adding `modifying=true` parameter to `@Query`
 
 ## Add Validation Logic (using annotations)
 Validation annotations are used from package `jakarta.validation.constraints.*` which are defined in widely used
@@ -390,8 +411,11 @@ public class PresaleFeedbackAuthStrategyImpl extends EasyCrudAuthorizationPerTab
 ```
 
 NOTES: 
-1. In the above impl Row instances are not used, logic is based purely on User  
-2. For simple ROLE-based cases, consider using `EasyCrudAuthorizationRoleBasedImpl` (which is a subclass for `EasyCrudAuthorizationPerTableStrategy`)
+1. `getForXXXX` methods means "get permission evaluation result". And result could be `ALLOW` or instance of 
+`NotAuthorizedError` (which would be wrapped into `NotAuthorizedException` and thrown). There are handy methods 
+`denyXXXX()` which helps to construct those instances 
+1. In the above impl Row instances are not used, logic is based purely on Users roles
+1. For simple ROLE-based cases, consider using `EasyCrudAuthorizationRoleBasedImpl` (which is a subclass for `EasyCrudAuthorizationPerTableStrategy`)
    it's a convenient way to define access permissions using conventional user role names
 
 ### 1.b. Define authorization logic - Per Row

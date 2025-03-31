@@ -19,6 +19,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import org.summerb.easycrud.api.EasyCrudService;
@@ -70,7 +71,7 @@ public class EasyCrudServiceScaffoldedImpl implements java.lang.reflect.Invocati
       }
 
       if (method.isDefault()) {
-        invokeDefault(proxy, method, args);
+        return InvocationHandler.invokeDefault(proxy, method, args);
       }
 
       return methodCallers.get(method).call(args);
@@ -118,8 +119,4 @@ public class EasyCrudServiceScaffoldedImpl implements java.lang.reflect.Invocati
     }
   }
 
-  protected void invokeDefault(Object proxy, Method method, Object[] args) {
-    throw new IllegalArgumentException(
-        "default methods invocation is not supported yet. Once we migrate to Java 17+ we can add support for that");
-  }
 }

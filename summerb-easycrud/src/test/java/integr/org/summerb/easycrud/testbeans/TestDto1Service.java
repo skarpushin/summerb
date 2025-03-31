@@ -63,4 +63,10 @@ public interface TestDto1Service extends EasyCrudService<String, TestDto1> {
       modifying = true,
       value = "UPDATE forms_test_1 SET link_to_full_download = :linkToFullDownload WHERE id = :id")
   String updateReturnWrongReturnType(String id, String linkToFullDownload);
+
+  default TestDto1 getUsingDefault(int majorVersion) {
+    return query()
+        .ge(TestDto1::getMajorVersion, majorVersion)
+        .findFirst(orderBy(TestDto1::getMajorVersion).desc());
+  }
 }
