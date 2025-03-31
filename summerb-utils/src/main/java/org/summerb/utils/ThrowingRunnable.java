@@ -1,4 +1,4 @@
-package org.summerb.validation;
+package org.summerb.utils;
 
 @FunctionalInterface
 public interface ThrowingRunnable {

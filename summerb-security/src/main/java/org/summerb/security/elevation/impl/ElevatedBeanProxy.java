@@ -28,11 +28,11 @@ import org.summerb.security.elevation.api.ElevationRunner;
  *
  * @author sergeyk
  */
-public class ElevationProxy implements java.lang.reflect.InvocationHandler {
-  private Object impl;
-  private ElevationRunner elevationRunner;
+public class ElevatedBeanProxy implements java.lang.reflect.InvocationHandler {
+  protected Object impl;
+  protected ElevationRunner elevationRunner;
 
-  private ElevationProxy(Object impl, ElevationRunner elevationRunner) {
+  protected ElevatedBeanProxy(Object impl, ElevationRunner elevationRunner) {
     this.impl = impl;
     this.elevationRunner = elevationRunner;
   }
@@ -56,19 +56,19 @@ public class ElevationProxy implements java.lang.reflect.InvocationHandler {
   }
 
   @SuppressWarnings("unchecked")
-  private static <T> T doCreate(Class<?> interfaceType, T impl, ElevationRunner elevationRunner) {
+  protected static <T> T doCreate(Class<?> interfaceType, T impl, ElevationRunner elevationRunner) {
     Preconditions.checkArgument(impl != null);
     Preconditions.checkArgument(elevationRunner != null);
     ClassLoader cl = interfaceType.getClassLoader();
     Class<?>[] target = new Class<?>[] {interfaceType};
-    ElevationProxy proxyImpl = new ElevationProxy(impl, elevationRunner);
+    ElevatedBeanProxy proxyImpl = new ElevatedBeanProxy(impl, elevationRunner);
     return (T) Proxy.newProxyInstance(cl, target, proxyImpl);
   }
 
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
     try {
-      return elevationRunner.callElevated(() -> method.invoke(impl, args));
+      return elevationRunner.call(() -> method.invoke(impl, args));
     } catch (InvocationTargetException t) {
       throw t.getCause();
     }

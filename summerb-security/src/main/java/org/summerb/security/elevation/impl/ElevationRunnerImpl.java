@@ -16,12 +16,14 @@
 package org.summerb.security.elevation.impl;
 
 import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.UncheckedExecutionException;
 import java.util.concurrent.Callable;
 import org.summerb.security.elevation.api.ElevationRunner;
 import org.summerb.security.elevation.api.ElevationStrategy;
+import org.summerb.utils.ThrowingRunnable;
 
 public class ElevationRunnerImpl implements ElevationRunner {
-  private ElevationStrategy elevationStrategy;
+  protected final ElevationStrategy elevationStrategy;
 
   public ElevationRunnerImpl(ElevationStrategy elevationStrategy) {
     Preconditions.checkArgument(elevationStrategy != null);
@@ -29,7 +31,7 @@ public class ElevationRunnerImpl implements ElevationRunner {
   }
 
   @Override
-  public void runElevated(Runnable runnable) {
+  public void run(Runnable runnable) {
     boolean elevationRequired = elevationStrategy.isElevationRequired();
     Object cookie = null;
     if (elevationRequired) {
@@ -46,7 +48,24 @@ public class ElevationRunnerImpl implements ElevationRunner {
   }
 
   @Override
-  public <T> T callElevated(Callable<T> callable) throws Exception {
+  public void runChecked(ThrowingRunnable runnable) throws Exception {
+    boolean elevationRequired = elevationStrategy.isElevationRequired();
+    Object cookie = null;
+    if (elevationRequired) {
+      cookie = elevationStrategy.elevate();
+    }
+
+    try {
+      runnable.run();
+    } finally {
+      if (elevationRequired) {
+        elevationStrategy.deElevate(cookie);
+      }
+    }
+  }
+
+  @Override
+  public <T> T call(Callable<T> callable) throws Exception {
     boolean elevationRequired = elevationStrategy.isElevationRequired();
     Object cookie = null;
     if (elevationRequired) {
@@ -55,6 +74,25 @@ public class ElevationRunnerImpl implements ElevationRunner {
 
     try {
       return callable.call();
+    } finally {
+      if (elevationRequired) {
+        elevationStrategy.deElevate(cookie);
+      }
+    }
+  }
+
+  @Override
+  public <T> T callUnchecked(Callable<T> callable) {
+    boolean elevationRequired = elevationStrategy.isElevationRequired();
+    Object cookie = null;
+    if (elevationRequired) {
+      cookie = elevationStrategy.elevate();
+    }
+
+    try {
+      return callable.call();
+    } catch (Exception e) {
+      throw new UncheckedExecutionException("Underlying call threw an exception", e);
     } finally {
       if (elevationRequired) {
         elevationStrategy.deElevate(cookie);

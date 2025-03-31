@@ -15,20 +15,29 @@
  ******************************************************************************/
 package org.summerb.security.elevation.api;
 
-import com.google.common.util.concurrent.UncheckedExecutionException;
 import java.util.concurrent.Callable;
+import org.summerb.utils.ThrowingRunnable;
 
 public interface ElevationRunner {
-  void runElevated(Runnable runnable);
+  /** Run {@link Runnable} within security context as defined by underlying elevation strategy */
+  void run(Runnable runnable);
 
-  <T> T callElevated(Callable<T> callable) throws Exception;
+  /**
+   * Run {@link ThrowingRunnable} within security context as defined by underlying elevation
+   * strategy
+   */
+  void runChecked(ThrowingRunnable runnable) throws Exception;
 
-  default <T> T callElevatedUnchecked(Callable<T> callable) {
-    try {
-      return callElevated(callable);
-    } catch (Exception e) {
-      throw new UncheckedExecutionException(
-          "Underlying call to callElevated() threw an exception", e);
-    }
-  }
+  /**
+   * Run {@link Callable} within security context as defined by underlying elevation strategy and
+   * return result of call to that Callable
+   */
+  <T> T call(Callable<T> callable) throws Exception;
+
+  /**
+   * Run {@link Callable} within security context as defined by underlying elevation strategy and
+   * return result of call to that Callable. In case callable throws checked Exception it will get
+   * wrapper into {@link com.google.common.util.concurrent.UncheckedExecutionException}
+   */
+  <T> T callUnchecked(Callable<T> callable);
 }
