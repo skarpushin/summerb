@@ -42,7 +42,7 @@ public class SecurityMessageCodes {
       "security.secondPasswordDoesNotMatchFirst";
   public static final String BAD_CREDENTIALS = "security.badCredentials";
 
-  public static final String LOGIN_REQUIRED = "security.authorizationRequired";
+  public static final String LOGIN_REQUIRED = "security.login.required";
   public static final String ACCESS_DENIED = "security.accessDenied";
   public static final String ANONYMOUS = "security.anonymousUser";
   public static final String INVALID_SESSION = "security.invalidSession";

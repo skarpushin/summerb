@@ -26,7 +26,7 @@ import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapValidationImpl;
  * This interface defines "wire tap" for all common CRUD service methods implemented by {@link
  * EasyCrudServiceImpl}.
  *
- * <p>You can easily tap into the workflow by implementing methods of this interface and injecting
+ * <p>You can tap into the workflow by implementing methods of this interface and injecting
  * it into {@link EasyCrudServiceImpl}.
  *
  * <p>Consider extending {@link EasyCrudWireTapNoOpImpl} class if you don't need to implement all
@@ -40,8 +40,6 @@ import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapValidationImpl;
  *
  * <p>Validation impl of {@link EasyCrudValidationStrategy} can be injected using {@link
  * EasyCrudWireTapValidationImpl}.
- *
- * <p>TODO: Add doc for auth wire taps
  *
  * <p>{@link EventBus}-based events can be injected using {@link EasyCrudWireTapEventBusImpl}.
  *

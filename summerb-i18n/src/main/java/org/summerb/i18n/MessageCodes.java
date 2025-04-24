@@ -19,5 +19,5 @@ public abstract class MessageCodes {
 
   public static final String ERROR_UNEXPECTED = "error.unexpected";
 
-  // TODO: Add known message code here
+  // TBD: Add known message code here
 }

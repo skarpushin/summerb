@@ -259,7 +259,6 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
     }
   }
 
-  // TODO: Test this
   @SuppressWarnings("unchecked")
   @Override
   public <
@@ -311,6 +310,13 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
 
   protected <TId, TDto extends HasId<TId>> EasyCrudDao<TId, TDto> buildDao(
       Class<TDto> rowClass, String tableName, Object... injections) throws Exception {
+
+    for (Object injection : injections) {
+      if (injection instanceof EasyCrudDao<?, ?> dao) {
+        //noinspection unchecked
+        return (EasyCrudDao<TId, TDto>) dao;
+      }
+    }
 
     EasyCrudDaoSqlImpl<TId, TDto> ret = instantiateAndAutowireDao(dataSource, tableName, rowClass);
     autowireInjections(injections);

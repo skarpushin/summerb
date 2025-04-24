@@ -21,11 +21,11 @@ package org.summerb.easycrud.api;
  * @author sergey.karpushin
  */
 public class EasyCrudMessageCodes {
-  public static final String ENTITY_NOT_FOUND = "easycrud.entityNotFound";
-  public static final String UNEXPECTED_FAILED_TO_CREATE = "easycrud.unexpecteFailed.create";
-  public static final String UNEXPECTED_FAILED_TO_DELETE = "easycrud.unexpecteFailed.delete";
-  public static final String UNEXPECTED_FAILED_TO_UPDATE = "easycrud.unexpecteFailed.update";
-  public static final String UNEXPECTED_FAILED_TO_FIND = "easycrud.unexpecteFailed.find";
+  public static final String ENTITY_NOT_FOUND = "db.entityNotFound";
+  public static final String UNEXPECTED_FAILED_TO_CREATE = "db.failedTo.create";
+  public static final String UNEXPECTED_FAILED_TO_DELETE = "db.failedTo.delete";
+  public static final String UNEXPECTED_FAILED_TO_UPDATE = "db.failedTo.update";
+  public static final String UNEXPECTED_FAILED_TO_FIND = "db.failedTo.find";
   public static final String EXCEPTION_DAO_CONCURRENT_MODIFICATION =
       "exception.dao.concurrentModification";
   public static final String EXCEPTION_DAO_DATA_TRUNCATION_ERROR =
