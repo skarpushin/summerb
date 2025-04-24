@@ -21,6 +21,7 @@ import java.util.function.Function;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.JdbcUpdateAffectedIncorrectNumberOfRowsException;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.summerb.easycrud.api.EasyCrudDao;
@@ -32,7 +33,6 @@ import org.summerb.easycrud.api.RowCloner;
 import org.summerb.easycrud.api.StringIdGenerator;
 import org.summerb.easycrud.api.dto.OrderBy;
 import org.summerb.easycrud.api.exceptions.EntityNotFoundException;
-import org.summerb.easycrud.api.exceptions.GenericEntityNotFoundException;
 import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.api.query.QueryCommands;
 import org.summerb.easycrud.api.query.QueryConditions;
@@ -41,6 +41,7 @@ import org.summerb.easycrud.api.row.HasAutoincrementId;
 import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.api.row.HasTimestamps;
 import org.summerb.easycrud.api.row.HasUuid;
+import org.summerb.easycrud.impl.dao.mysql.EasyCrudDaoInjections;
 import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapNoOpImpl;
 import org.summerb.methodCapturers.PropertyNameResolver;
 import org.summerb.methodCapturers.PropertyNameResolverFactory;
@@ -473,7 +474,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
   public TRow getById(TId id) {
     TRow ret = findById(id);
     if (ret == null) {
-      throw new GenericEntityNotFoundException(rowMessageCode, id);
+      throw new EntityNotFoundException(rowMessageCode, id);
     }
     return ret;
   }
@@ -500,9 +501,23 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
   public TRow getOneByQuery(QueryConditions query) {
     TRow ret = findOneByQuery(query);
     if (ret == null) {
-      throw new GenericEntityNotFoundException(rowMessageCode, query);
+      throw new EntityNotFoundException(rowMessageCode, formatQueryForNotFoundException(query));
     }
     return ret;
+  }
+
+  protected <T extends QueryConditions> String formatQueryForNotFoundException(T query) {
+    if (query == null) {
+      return "all";
+    }
+
+    if (dao instanceof EasyCrudDaoInjections<?, ?> daoInjections
+        && daoInjections.getQueryToSql() != null) {
+      return daoInjections
+          .getQueryToSql()
+          .buildWhereClauseAndPopulateParams(query, new MapSqlParameterSource());
+    }
+    return "query";
   }
 
   @Override
@@ -550,7 +565,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
   public TRow getFirstByQuery(QueryConditions query, OrderBy... orderBy) {
     TRow result = findFirstByQuery(query, orderBy);
     if (result == null) {
-      throw new GenericEntityNotFoundException(rowMessageCode, query);
+      throw new EntityNotFoundException(rowMessageCode, formatQueryForNotFoundException(query));
     }
 
     return result;
@@ -560,7 +575,8 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
   public List<TRow> getAll(QueryConditions optionalQuery, OrderBy... orderBy) {
     List<TRow> ret = findAll(optionalQuery, orderBy);
     if (CollectionUtils.isEmpty(ret)) {
-      throw new GenericEntityNotFoundException(rowMessageCode, optionalQuery);
+      throw new EntityNotFoundException(
+          rowMessageCode, formatQueryForNotFoundException(optionalQuery));
     }
 
     return ret;

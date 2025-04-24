@@ -16,19 +16,27 @@
 package org.summerb.easycrud.api.exceptions;
 
 import java.io.Serial;
+import org.summerb.easycrud.api.EasyCrudMessageCodes;
 import org.summerb.i18n.HasMessageArgs;
+import org.summerb.i18n.HasMessageArgsConverters;
 import org.summerb.i18n.HasMessageCode;
+import org.summerb.i18n.MessageArgConverter;
+import org.summerb.i18n.MessageCodeMessageArgConverter;
+import org.summerb.i18n.exceptions.HasErrorDescriptionObject;
 
 /**
  * Base class for exceptions for case when something wasn't found by its identity
  *
  * @author sergey.karpushin
  */
-public abstract class EntityNotFoundException extends RuntimeException
-    implements HasMessageCode, HasMessageArgs {
+public class EntityNotFoundException extends RuntimeException
+    implements HasMessageCode,
+        HasMessageArgs,
+        HasMessageArgsConverters,
+        HasErrorDescriptionObject<EntityNotFoundResult> {
   @Serial private static final long serialVersionUID = 3254284449960233351L;
 
-  protected Object identity;
+  private EntityNotFoundResult errorDescriptionObject;
 
   /**
    * @deprecated Used only for io
@@ -36,29 +44,35 @@ public abstract class EntityNotFoundException extends RuntimeException
   @Deprecated
   public EntityNotFoundException() {}
 
-  public EntityNotFoundException(Object identity) {
-    this(identity, null);
+  public EntityNotFoundException(String entityMessageCode, Object identity) {
+    super("Entity not found, code = " + entityMessageCode + ", id = " + identity);
+    errorDescriptionObject = new EntityNotFoundResult(entityMessageCode, String.valueOf(identity));
   }
 
-  public EntityNotFoundException(Object identity, Throwable cause) {
-    this("Entity identified by '" + identity + "' not found", identity, cause);
-  }
-
-  public EntityNotFoundException(String techMessage, Object identity, Throwable cause) {
-    super(techMessage, cause);
-    this.identity = identity;
+  public EntityNotFoundException(String entityMessageCode, Object identity, Throwable cause) {
+    super("Entity not found, code = " + entityMessageCode + ", id = " + identity, cause);
+    errorDescriptionObject = new EntityNotFoundResult(entityMessageCode, String.valueOf(identity));
   }
 
   @Override
   public Object[] getMessageArgs() {
-    return new Object[] {identity};
+    return new Object[] {
+      errorDescriptionObject.getSubjectTypeMessageCode(), errorDescriptionObject.getIdentity()
+    };
   }
 
-  public Object getIdentity() {
-    return identity;
+  @Override
+  public String getMessageCode() {
+    return EasyCrudMessageCodes.ENTITY_NOT_FOUND;
   }
 
-  public void setIdentity(Object identity) {
-    this.identity = identity;
+  @Override
+  public MessageArgConverter[] getMessageArgsConverters() {
+    return new MessageArgConverter[] {MessageCodeMessageArgConverter.INSTANCE, null};
+  }
+
+  @Override
+  public EntityNotFoundResult getErrorDescriptionObject() {
+    return errorDescriptionObject;
   }
 }

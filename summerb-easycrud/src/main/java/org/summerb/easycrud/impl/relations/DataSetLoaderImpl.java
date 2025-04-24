@@ -36,7 +36,6 @@ import org.springframework.util.CollectionUtils;
 import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.api.EasyCrudServiceResolver;
 import org.summerb.easycrud.api.exceptions.EntityNotFoundException;
-import org.summerb.easycrud.api.exceptions.GenericEntityNotFoundException;
 import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.api.query.QueryShortcuts;
 import org.summerb.easycrud.api.relations.DataSetLoader;
@@ -107,7 +106,7 @@ public class DataSetLoaderImpl implements DataSetLoader {
   }
 
   protected HasId loadOne(Object id, EasyCrudService<Object, HasId<Object>> service)
-      throws NotAuthorizedException, GenericEntityNotFoundException {
+      throws NotAuthorizedException, EntityNotFoundException {
     HasId ret = service.findById(id);
     String entityTypeName = service.getRowMessageCode();
     assertFound(ret != null, entityTypeName, id);
@@ -115,15 +114,15 @@ public class DataSetLoaderImpl implements DataSetLoader {
   }
 
   protected List<HasId> loadMultipleByQuery(Query query, EasyCrudService service)
-      throws NotAuthorizedException, GenericEntityNotFoundException {
+      throws NotAuthorizedException, EntityNotFoundException {
     return new ArrayList<>(service.findAll(query));
   }
 
   protected void assertFound(
       boolean expressionToBeTrue, String subjectTypeMessageCode, Object identifier)
-      throws GenericEntityNotFoundException {
+      throws EntityNotFoundException {
     if (!expressionToBeTrue) {
-      throw new GenericEntityNotFoundException(subjectTypeMessageCode, identifier.toString());
+      throw new EntityNotFoundException(subjectTypeMessageCode, identifier.toString());
     }
   }
 

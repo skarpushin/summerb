@@ -25,7 +25,6 @@ import org.summerb.easycrud.api.EasyCrudExceptionStrategy;
 import org.summerb.easycrud.api.EasyCrudMessageCodes;
 import org.summerb.easycrud.api.exceptions.EasyCrudUnexpectedException;
 import org.summerb.easycrud.api.exceptions.EntityNotFoundException;
-import org.summerb.easycrud.api.exceptions.GenericEntityNotFoundException;
 import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.api.row.HasTimestamps;
 import org.summerb.easycrud.api.validation_errors.ReferencedRowCannotBeDeletedValidationError;
@@ -48,7 +47,7 @@ public class EasyCrudExceptionStrategyDefaultImpl<TId, TRow extends HasId<TId>>
   @Override
   public EntityNotFoundException buildNotFoundException(
       String subjectTypeMessageCode, TId identity) {
-    return new GenericEntityNotFoundException(subjectTypeMessageCode, identity);
+    return new EntityNotFoundException(subjectTypeMessageCode, identity);
   }
 
   @Override

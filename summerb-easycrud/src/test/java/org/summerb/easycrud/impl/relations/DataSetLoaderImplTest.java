@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.api.EasyCrudServiceResolver;
-import org.summerb.easycrud.api.exceptions.GenericEntityNotFoundException;
+import org.summerb.easycrud.api.exceptions.EntityNotFoundException;
 import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.api.relations.ReferencesRegistry;
 import org.summerb.easycrud.api.row.HasId;
@@ -84,8 +84,7 @@ public class DataSetLoaderImplTest {
     when(fixture.getEasyCrudServiceResolver().resolveByRowMessageCode("dto1")).thenReturn(service);
     when(service.findById(1)).thenReturn(null);
 
-    assertThrows(
-        GenericEntityNotFoundException.class, () -> fixture.loadObjectsByIds(ids(1), "dto1"));
+    assertThrows(EntityNotFoundException.class, () -> fixture.loadObjectsByIds(ids(1), "dto1"));
   }
 
   private Set<Object> ids(Object... pids) {
@@ -115,7 +114,7 @@ public class DataSetLoaderImplTest {
     when(service.findAll(any(Query.class))).thenReturn(Collections.emptyList());
 
     assertThrows(
-        GenericEntityNotFoundException.class, () -> fixture.loadObjectsByIds(ids(1L, 2L), "dto1"));
+        EntityNotFoundException.class, () -> fixture.loadObjectsByIds(ids(1L, 2L), "dto1"));
   }
 
   @Test

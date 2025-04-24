@@ -41,8 +41,8 @@ import org.summerb.easycrud.api.ParameterSourceBuilder;
  *
  * <p>2. Support SqlTypeOverride for fields that needs this
  *
- * <p>3. And last but not least - heavily optimized compared to Spring's default implementation, which
- * spends too much time again and again to resolve same data. So here we're using caches a lot
+ * <p>3. And last but not least - heavily optimized compared to Spring's default implementation,
+ * which spends too much time again and again to resolve same data. So here we're using caches a lot
  *
  * @param <TRow> row type
  * @author sergey.karpushin

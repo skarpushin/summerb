@@ -311,11 +311,10 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
   protected <TId, TDto extends HasId<TId>> EasyCrudDao<TId, TDto> buildDao(
       Class<TDto> rowClass, String tableName, Object... injections) throws Exception {
 
-    for (Object injection : injections) {
-      if (injection instanceof EasyCrudDao<?, ?> dao) {
-        //noinspection unchecked
-        return (EasyCrudDao<TId, TDto>) dao;
-      }
+    EasyCrudDao<?, ?> daoFromInjections = find(injections, EasyCrudDao.class);
+    if (daoFromInjections != null) {
+      //noinspection unchecked,CastCanBeRemovedNarrowingVariableType
+      return (EasyCrudDao<TId, TDto>) daoFromInjections;
     }
 
     EasyCrudDaoSqlImpl<TId, TDto> ret = instantiateAndAutowireDao(dataSource, tableName, rowClass);
@@ -367,6 +366,9 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
 
   @SuppressWarnings({"unchecked"})
   protected <T> T find(Object[] injections, Class<T> clazz) {
+    if (injections == null) {
+      return null;
+    }
     for (Object i : injections) {
       if (clazz.isAssignableFrom(i.getClass())) {
         return (T) i;

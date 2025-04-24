@@ -21,7 +21,6 @@ import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.transaction.annotation.Transactional;
 import org.summerb.easycrud.api.dto.OrderBy;
 import org.summerb.easycrud.api.exceptions.EntityNotFoundException;
-import org.summerb.easycrud.api.exceptions.GenericEntityNotFoundException;
 import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.api.query.QueryCommands;
 import org.summerb.easycrud.api.query.QueryConditions;
@@ -181,12 +180,12 @@ public interface EasyCrudService<TId, TRow extends HasId<TId>> {
   List<TRow> findAll(OrderBy... orderBy);
 
   /**
-   * Same as findAll, but will throw {@link GenericEntityNotFoundException} if nothing found
+   * Same as findAll, but will throw {@link EntityNotFoundException} if nothing found
    *
    * @param optionalQuery optional query
    * @param orderBy optional order by
-   * @return list of found items (at least one) or throws {@link GenericEntityNotFoundException} in
-   *     case nothing found
+   * @return list of found items (at least one) or throws {@link EntityNotFoundException} in case
+   *     nothing found
    */
   List<TRow> getAll(QueryConditions optionalQuery, OrderBy... orderBy);
 
