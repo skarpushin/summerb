@@ -423,7 +423,7 @@ Authorization can be checked on a per-row basis.
 ```java
 public class ProjectRowAuthStrategyImpl extends EasyCrudAuthorizationPerRowStrategy<ProjectRow> {
     @Override
-    public NotAuthorizedResult getForRead(ProjectRow presaleRow) {
+    public NotAuthorizedResult getForRead(ProjectRow row) {
         if (currentUserUuidResolver.getUserUuid().equals(row.getCreatedBy())) {
             return ALLOW;
         }
@@ -432,11 +432,11 @@ public class ProjectRowAuthStrategyImpl extends EasyCrudAuthorizationPerRowStrat
     }
 
     @Override
-    public NotAuthorizedResult getForUpdate(ProjectRow persistedVersion, ProjectRow presaleRow) {
+    public NotAuthorizedResult getForUpdate(ProjectRow persistedVersion, ProjectRow newVersion) {
         if (securityContextResolverEx.isCurrentUserSystemUser()) {
             return ALLOW;
         }
-        return denyUpdate(row);
+        return denyUpdate(newVersion);
     }
 }
 ```
