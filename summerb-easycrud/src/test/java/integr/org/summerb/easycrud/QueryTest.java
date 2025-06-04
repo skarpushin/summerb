@@ -170,7 +170,7 @@ public class QueryTest {
     service.create(buildRow("env3", 10));
   }
 
-  private TestDto1 buildRow(String env, int majorVersion) {
+  public static TestDto1 buildRow(String env, int majorVersion) {
     TestDto1 ret = new TestDto1();
     ret.setEnv(env);
     ret.setActive(true);

@@ -16,6 +16,7 @@
 package org.summerb.easycrud.api;
 
 import com.google.common.eventbus.EventBus;
+import java.util.List;
 import org.summerb.easycrud.impl.EasyCrudServiceImpl;
 import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapDelegatingImpl;
 import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapEventBusImpl;
@@ -71,6 +72,32 @@ public interface EasyCrudWireTap<T> {
   void afterRead(T row);
 
   /**
+   * Impl must respond whether {@link #afterRead(List)} must be called on the collection of
+   * retrieved rows
+   *
+   * @return true if must be called, false otherwise.
+   * @since 8.1.0
+   */
+  default boolean requiresOnReadMultiple() {
+    return requiresOnRead();
+  }
+
+  /**
+   * This method is called for a list of rows that were just retrieved from DB. If you override this
+   * method, it means that you want to perform batch processing of the rows after they've been read.
+   * In such a case be mindful of the base implementation of this method -- it will call
+   * afterRead(row) for each row in the list. If you do not need such behavior, do NOT call base
+   * implementation.
+   *
+   * @since 8.1.0
+   */
+  default void afterRead(List<T> rows) {
+    if (requiresOnRead()) {
+      rows.forEach(this::afterRead);
+    }
+  }
+
+  /**
    * Impl must respond whether {@link #beforeUpdate(Object, Object)} and {@link #afterUpdate(Object,
    * Object)} must be called and what amount of information is required
    *
@@ -93,4 +120,29 @@ public interface EasyCrudWireTap<T> {
   void beforeDelete(T row);
 
   void afterDelete(T row);
+
+  /**
+   * Impl must respond whether {@link #beforeDelete(List)} and {@link #afterDelete(List)} must be
+   * called
+   *
+   * @return level of information needed for "Delete" WireTap
+   * @since 8.1.0
+   */
+  default boolean requiresOnDeleteMultiple() {
+    return requiresOnDelete().isDtoNeeded();
+  }
+
+  default void beforeDelete(List<T> rows) {
+    EasyCrudWireTapMode requiresOnDelete = requiresOnDelete();
+    if (requiresOnDelete == EasyCrudWireTapMode.FULL_DTO_NEEDED) {
+      rows.forEach(this::beforeDelete);
+    }
+  }
+
+  default void afterDelete(List<T> rows) {
+    EasyCrudWireTapMode requiresOnDelete = requiresOnDelete();
+    if (requiresOnDelete == EasyCrudWireTapMode.FULL_DTO_NEEDED) {
+      rows.forEach(this::afterDelete);
+    }
+  }
 }

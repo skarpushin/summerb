@@ -31,6 +31,8 @@ import org.summerb.security.api.exceptions.NotAuthorizedException;
 import org.summerb.utils.easycrud.api.dto.PagerParams;
 import org.summerb.utils.easycrud.api.dto.PaginatedList;
 
+// TODO: Also add wrapper that can cache queries
+
 public class EasyCrudServiceWrapper<
         TId, TRow extends HasId<TId>, TActual extends EasyCrudService<TId, TRow>>
     implements EasyCrudService<TId, TRow> {

@@ -205,32 +205,31 @@ public class ScaffoldedQueryMethodImpl<TMethodParameter extends ScaffoldedMethod
       }
 
       EasyCrudWireTap wireTap = service.getWireTap();
-      if (rowMapper == dao.getRowMapper() && wireTap != null && wireTap.requiresOnRead()) {
+      boolean isTriggerWireTap =
+          rowMapper == dao.getRowMapper() && wireTap != null && wireTap.requiresOnRead();
+      if (isTriggerWireTap) {
         wireTap.beforeRead();
       }
 
+      // Case: Collection
       if (isCollectionType(returnType)) {
         List<?> ret = dao.getJdbc().query(query, params, rowMapper);
-        if (!CollectionUtils.isEmpty(ret)
-            && rowMapper == dao.getRowMapper()
-            && wireTap != null
-            && wireTap.requiresOnRead()) {
-          ret.forEach(wireTap::afterRead);
+        boolean isTriggerWireTapMultiple =
+            rowMapper == dao.getRowMapper() && wireTap != null && wireTap.requiresOnReadMultiple();
+        if (!CollectionUtils.isEmpty(ret) && isTriggerWireTapMultiple) {
+          wireTap.afterRead(ret);
         }
         return ret;
       }
 
+      // Case: Single object
       Object ret;
       try {
         ret = dao.getJdbc().queryForObject(query, params, rowMapper);
       } catch (EmptyResultDataAccessException e) {
         return null;
       }
-
-      if (ret != null
-          && rowMapper == dao.getRowMapper()
-          && wireTap != null
-          && wireTap.requiresOnRead()) {
+      if (ret != null && isTriggerWireTap) {
         wireTap.afterRead(ret);
       }
       return ret;

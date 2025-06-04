@@ -22,7 +22,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.summerb.security.api.dto.NotAuthorizedResult;
 
 /**
- * Simple authorization logic which allows access based on user roles.
+ * Simple extension of {@link EasyCrudAuthorizationPerTableStrategy} authorization logic which
+ * allows access based on user roles.
  *
  * @author Sergey Karpushin
  */

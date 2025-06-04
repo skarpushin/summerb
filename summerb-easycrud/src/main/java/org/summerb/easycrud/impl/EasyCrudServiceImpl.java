@@ -131,9 +131,12 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
     }
 
     if (rowCloner == null) {
-      rowCloner = new RowClonerReflectionImpl();
-      // rowCloner = new RowClonerDeepCopyImpl();
+      rowCloner = buildDefaultRowCloner();
     }
+  }
+
+  protected RowClonerReflectionImpl buildDefaultRowCloner() {
+    return new RowClonerReflectionImpl();
   }
 
   protected String buildDefaultRowMessageCode(Class<TRow> rowClass) {
@@ -260,7 +263,8 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
 
       ret = copyDto(row);
 
-      if (wireTap.requiresOnCreate()) {
+      boolean requiresOnCreate = wireTap.requiresOnCreate();
+      if (requiresOnCreate) {
         wireTap.beforeCreate(ret);
       }
 
@@ -284,7 +288,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
             "For DTO with HasUuid id field expected to be filled after creation");
       }
 
-      if (wireTap.requiresOnCreate()) {
+      if (requiresOnCreate) {
         wireTap.afterCreate(ret);
       }
       return ret;
@@ -305,7 +309,8 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
       Preconditions.checkArgument(newVersion != null);
 
       TRow currentVersion = null;
-      if (wireTap.requiresOnUpdate() == EasyCrudWireTapMode.FULL_DTO_AND_CURRENT_VERSION_NEEDED) {
+      EasyCrudWireTapMode requiresOnUpdate = wireTap.requiresOnUpdate();
+      if (requiresOnUpdate == EasyCrudWireTapMode.FULL_DTO_AND_CURRENT_VERSION_NEEDED) {
         currentVersion = dao.findById(newVersion.getId());
         if (currentVersion == null) {
           throw exceptionStrategy.buildNotFoundException(rowMessageCode, newVersion.getId());
@@ -314,7 +319,8 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
 
       ret = copyDto(newVersion);
 
-      if (wireTap.requiresOnUpdate().isNeeded()) {
+      boolean requiresOnUpdateNeeded = requiresOnUpdate.isNeeded();
+      if (requiresOnUpdateNeeded) {
         wireTap.beforeUpdate(currentVersion, ret);
       }
 
@@ -324,7 +330,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
 
       dao.update(ret);
 
-      if (wireTap.requiresOnUpdate().isNeeded()) {
+      if (requiresOnUpdateNeeded) {
         wireTap.afterUpdate(currentVersion, ret);
       }
       return ret;
@@ -352,14 +358,16 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
     try {
       Preconditions.checkArgument(id != null);
 
-      if (wireTap.requiresOnDelete().isDtoNeeded()) {
+      EasyCrudWireTapMode requiresOnDelete = wireTap.requiresOnDelete();
+      if (requiresOnDelete.isDtoNeeded()) {
         existing = findById(id);
         if (existing == null) {
           throw exceptionStrategy.buildNotFoundException(rowMessageCode, id);
         }
       }
 
-      if (wireTap.requiresOnDelete().isNeeded()) {
+      boolean requiresOnDeleteNeeded = requiresOnDelete.isNeeded();
+      if (requiresOnDeleteNeeded) {
         wireTap.beforeDelete(existing);
       }
 
@@ -368,7 +376,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
         throw exceptionStrategy.buildNotFoundException(rowMessageCode, id);
       }
 
-      if (wireTap.requiresOnDelete().isNeeded()) {
+      if (requiresOnDeleteNeeded) {
         wireTap.afterDelete(existing);
       }
     } catch (Throwable t) {
@@ -386,19 +394,21 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
           HasTimestamps.class.isAssignableFrom(rowClass),
           "Delete using optimistic lock is not allowed for DTO which doesn't support HasTimestamps");
 
-      if (wireTap.requiresOnDelete().isDtoNeeded()) {
+      EasyCrudWireTapMode requiresOnDelete = wireTap.requiresOnDelete();
+      if (requiresOnDelete.isDtoNeeded()) {
         existing = findById(id);
         if (existing == null) {
           throw exceptionStrategy.buildNotFoundException(rowMessageCode, id);
         }
       }
-      if (wireTap.requiresOnDelete().isNeeded()) {
+      boolean requiresOnDeleteNeeded = requiresOnDelete.isNeeded();
+      if (requiresOnDeleteNeeded) {
         wireTap.beforeDelete(existing);
       }
 
       dao.delete(id, modifiedAt);
 
-      if (wireTap.requiresOnDelete().isNeeded()) {
+      if (requiresOnDeleteNeeded) {
         wireTap.afterDelete(existing);
       }
     } catch (JdbcUpdateAffectedIncorrectNumberOfRowsException t) {
@@ -413,55 +423,83 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
     try {
       Preconditions.checkArgument(query != null);
 
-      if (wireTap.requiresOnDelete() == EasyCrudWireTapMode.NOT_APPLICABLE) {
+      boolean requiresOnDeleteMultiple = wireTap.requiresOnDeleteMultiple();
+      EasyCrudWireTapMode requiresOnDelete = wireTap.requiresOnDelete();
+      if (!requiresOnDeleteMultiple && requiresOnDelete == EasyCrudWireTapMode.NOT_APPLICABLE) {
         return dao.deleteByQuery(query);
       }
 
-      if (wireTap.requiresOnDelete() == EasyCrudWireTapMode.ONLY_INVOKE_WIRETAP) {
-        wireTap.beforeDelete(null);
-        int ret = dao.deleteByQuery(query);
-        wireTap.afterDelete(null);
-        return ret;
+      // NOTE: We're ignoring HasTimestamps feature here because that would require invoking the
+      // delete command for each row individually, which kinda defeats the purpose of the ability to
+      // delete the bulk of items using a query
+
+      if (wireTap.requiresOnDeleteMultiple()) {
+        return deleteByQueryWireTapBatch(query);
+      } else {
+        return deleteByQueryWireTapIterative(query, requiresOnDelete);
       }
-
-      // TZD: Add special handling for case when only ID is needed - so we load IDs only and do not
-      // load full DTOs
-
-      List<TRow> toDelete = findAll(query);
-      int deleted = 0;
-      for (TRow row : toDelete) {
-        wireTap.beforeDelete(row);
-        if (row instanceof HasTimestamps) {
-          int affected = dao.delete(row.getId(), ((HasTimestamps) row).getModifiedAt());
-          if (affected == 1) {
-            deleted++;
-            wireTap.afterDelete(row);
-          }
-        } else {
-          int affected = dao.delete(row.getId());
-          if (affected == 1) {
-            deleted++;
-            wireTap.afterDelete(row);
-          }
-        }
-      }
-
-      return deleted;
     } catch (Throwable t) {
       throw exceptionStrategy.handleExceptionAtDeleteByQuery(t);
     }
+  }
+
+  protected int deleteByQueryWireTapBatch(QueryConditions query) {
+    List<TRow> toDelete = findAll(query);
+    if (toDelete.isEmpty()) {
+      return 0;
+    }
+
+    wireTap.beforeDelete(toDelete);
+
+    int ret = dao.deleteByQuery(query);
+
+    // NOTE: There is a slight amount of uncertainty in this place. Technically, race condition is
+    // possible which will lead to the invocation of wireTap::afterDelete for rows which were not
+    // deleted.
+    wireTap.afterDelete(toDelete);
+
+    return ret;
+  }
+
+  protected int deleteByQueryWireTapIterative(
+      QueryConditions query, EasyCrudWireTapMode requiresOnDelete) {
+
+    if (requiresOnDelete == EasyCrudWireTapMode.ONLY_INVOKE_WIRETAP) {
+      wireTap.beforeDelete((TRow) null);
+      int ret = dao.deleteByQuery(query);
+      wireTap.afterDelete((TRow) null);
+      return ret;
+    }
+
+    List<TRow> toDelete = findAll(query);
+    if (toDelete.isEmpty()) {
+      return 0;
+    }
+
+    toDelete.forEach(wireTap::beforeDelete);
+
+    int ret = dao.deleteByQuery(query);
+
+    // NOTE: There is a slight amount of uncertainty in this place. Technically, race condition is
+    // possible which will lead to the invocation of wireTap::afterDelete for row which were not
+    // deleted.
+
+    toDelete.forEach(wireTap::afterDelete);
+
+    return ret;
   }
 
   @Override
   public TRow findById(TId id) throws NotAuthorizedException {
     try {
       Preconditions.checkArgument(id != null);
-      if (wireTap.requiresOnRead()) {
+      boolean requiresOnRead = wireTap.requiresOnRead();
+      if (requiresOnRead) {
         wireTap.beforeRead();
       }
 
       TRow ret = dao.findById(id);
-      if (ret != null && wireTap.requiresOnRead()) {
+      if (ret != null && requiresOnRead) {
         wireTap.afterRead(ret);
       }
       return ret;
@@ -483,12 +521,13 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
   public TRow findOneByQuery(QueryConditions query) throws NotAuthorizedException {
     try {
       Preconditions.checkArgument(query != null);
-      if (wireTap.requiresOnRead()) {
+      boolean requiresOnRead = wireTap.requiresOnRead();
+      if (requiresOnRead) {
         wireTap.beforeRead();
       }
 
       TRow ret = dao.findOneByQuery(query);
-      if (ret != null && wireTap.requiresOnRead()) {
+      if (ret != null && requiresOnRead) {
         wireTap.afterRead(ret);
       }
       return ret;
@@ -526,15 +565,15 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
       throws NotAuthorizedException {
     try {
       Preconditions.checkArgument(pagerParams != null, "PagerParams is a must");
-      if (wireTap.requiresOnRead()) {
+      boolean requiresOnRead = wireTap.requiresOnRead();
+      if (requiresOnRead) {
         wireTap.beforeRead();
       }
 
       PaginatedList<TRow> ret = dao.query(pagerParams, optionalQuery, orderBy);
-      if (wireTap.requiresOnRead()) {
-        for (TRow dto : ret.getItems()) {
-          wireTap.afterRead(dto);
-        }
+
+      if (wireTap.requiresOnReadMultiple() && ret.getHasItems()) {
+        wireTap.afterRead(ret.getItems());
       }
       return ret;
     } catch (Throwable t) {

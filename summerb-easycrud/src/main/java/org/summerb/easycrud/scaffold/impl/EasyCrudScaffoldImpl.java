@@ -54,6 +54,10 @@ import org.summerb.easycrud.scaffold.api.ScaffoldedMethodFactory;
 import org.summerb.security.api.CurrentUserUuidResolver;
 import org.summerb.utils.DtoBase;
 
+// TBD: Add the ability to scaffold abstract service class
+
+// TODO: Add BOM pom
+
 /**
  * Default impl of {@link EasyCrudScaffold}
  *

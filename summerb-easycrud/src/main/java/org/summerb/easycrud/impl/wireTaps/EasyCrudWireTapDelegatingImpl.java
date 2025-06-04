@@ -28,27 +28,44 @@ import org.summerb.easycrud.api.EasyCrudWireTapMode;
 public class EasyCrudWireTapDelegatingImpl<TRow> implements EasyCrudWireTap<TRow> {
   protected List<EasyCrudWireTap<TRow>> chain;
 
+  protected final boolean cacheEligibilityResponses;
+  protected Boolean requiresOnCreate;
+  protected Boolean requiresOnRead;
+  protected Boolean requiresOnReadMultiple;
+  protected EasyCrudWireTapMode requiresOnUpdate;
+  protected EasyCrudWireTapMode requiresOnDelete;
+  protected Boolean requiresOnDeleteMultiple;
+
   public EasyCrudWireTapDelegatingImpl(List<EasyCrudWireTap<TRow>> chain) {
     Preconditions.checkArgument(chain != null, "chain list must not be null");
     this.chain = chain;
+    cacheEligibilityResponses = true;
+  }
+
+  public EasyCrudWireTapDelegatingImpl(
+      List<EasyCrudWireTap<TRow>> chain, boolean cacheEligibilityResponses) {
+    Preconditions.checkArgument(chain != null, "chain list must not be null");
+    this.chain = chain;
+    this.cacheEligibilityResponses = cacheEligibilityResponses;
   }
 
   @Override
   public boolean requiresOnCreate() {
+    if (requiresOnCreate != null && cacheEligibilityResponses) {
+      return requiresOnCreate;
+    }
+
     for (EasyCrudWireTap<TRow> tap : chain) {
       if (tap.requiresOnCreate()) {
-        return true;
+        return requiresOnCreate = true;
       }
     }
-    return false;
+    return requiresOnCreate = false;
   }
 
   @Override
   public void beforeCreate(TRow row) {
     for (EasyCrudWireTap<TRow> tap : chain) {
-      if (!tap.requiresOnCreate()) {
-        continue;
-      }
       tap.beforeCreate(row);
     }
   }
@@ -56,29 +73,27 @@ public class EasyCrudWireTapDelegatingImpl<TRow> implements EasyCrudWireTap<TRow
   @Override
   public void afterCreate(TRow row) {
     for (EasyCrudWireTap<TRow> tap : chain) {
-      if (!tap.requiresOnCreate()) {
-        continue;
-      }
       tap.afterCreate(row);
     }
   }
 
   @Override
   public boolean requiresOnRead() {
+    if (requiresOnRead != null && cacheEligibilityResponses) {
+      return requiresOnRead;
+    }
+
     for (EasyCrudWireTap<TRow> tap : chain) {
       if (tap.requiresOnRead()) {
-        return true;
+        return requiresOnRead = true;
       }
     }
-    return false;
+    return requiresOnRead = false;
   }
 
   @Override
   public void beforeRead() {
     for (EasyCrudWireTap<TRow> tap : chain) {
-      if (!tap.requiresOnRead()) {
-        continue;
-      }
       tap.beforeRead();
     }
   }
@@ -86,28 +101,47 @@ public class EasyCrudWireTapDelegatingImpl<TRow> implements EasyCrudWireTap<TRow
   @Override
   public void afterRead(TRow row) {
     for (EasyCrudWireTap<TRow> tap : chain) {
-      if (!tap.requiresOnRead()) {
-        continue;
-      }
       tap.afterRead(row);
     }
   }
 
   @Override
+  public boolean requiresOnReadMultiple() {
+    if (requiresOnReadMultiple != null && cacheEligibilityResponses) {
+      return requiresOnReadMultiple;
+    }
+
+    for (EasyCrudWireTap<TRow> tap : chain) {
+      if (tap.requiresOnReadMultiple()) {
+        return requiresOnReadMultiple = true;
+      }
+    }
+    return requiresOnReadMultiple = false;
+  }
+
+  @Override
+  public void afterRead(List<TRow> rows) {
+    for (EasyCrudWireTap<TRow> tap : chain) {
+      tap.afterRead(rows);
+    }
+  }
+
+  @Override
   public EasyCrudWireTapMode requiresOnUpdate() {
+    if (requiresOnUpdate != null && cacheEligibilityResponses) {
+      return requiresOnUpdate;
+    }
+
     EasyCrudWireTapMode ret = EasyCrudWireTapMode.NOT_APPLICABLE;
     for (EasyCrudWireTap<TRow> tap : chain) {
       ret = ret.max(tap.requiresOnUpdate());
     }
-    return ret;
+    return requiresOnUpdate = ret;
   }
 
   @Override
   public void beforeUpdate(TRow from, TRow to) {
     for (EasyCrudWireTap<TRow> tap : chain) {
-      if (!tap.requiresOnUpdate().isNeeded()) {
-        continue;
-      }
       tap.beforeUpdate(from, to);
     }
   }
@@ -115,28 +149,26 @@ public class EasyCrudWireTapDelegatingImpl<TRow> implements EasyCrudWireTap<TRow
   @Override
   public void afterUpdate(TRow from, TRow to) {
     for (EasyCrudWireTap<TRow> tap : chain) {
-      if (!tap.requiresOnUpdate().isNeeded()) {
-        continue;
-      }
       tap.afterUpdate(from, to);
     }
   }
 
   @Override
   public EasyCrudWireTapMode requiresOnDelete() {
+    if (requiresOnDelete != null && cacheEligibilityResponses) {
+      return requiresOnDelete;
+    }
+
     EasyCrudWireTapMode ret = EasyCrudWireTapMode.NOT_APPLICABLE;
     for (EasyCrudWireTap<TRow> tap : chain) {
       ret = ret.max(tap.requiresOnDelete());
     }
-    return ret;
+    return requiresOnDelete = ret;
   }
 
   @Override
   public void beforeDelete(TRow row) {
     for (EasyCrudWireTap<TRow> tap : chain) {
-      if (!tap.requiresOnUpdate().isNeeded()) {
-        continue;
-      }
       tap.beforeDelete(row);
     }
   }
@@ -145,6 +177,34 @@ public class EasyCrudWireTapDelegatingImpl<TRow> implements EasyCrudWireTap<TRow
   public void afterDelete(TRow row) {
     for (EasyCrudWireTap<TRow> tap : chain) {
       tap.afterDelete(row);
+    }
+  }
+
+  @Override
+  public boolean requiresOnDeleteMultiple() {
+    if (requiresOnDeleteMultiple != null && cacheEligibilityResponses) {
+      return requiresOnDeleteMultiple;
+    }
+
+    for (EasyCrudWireTap<TRow> tap : chain) {
+      if (tap.requiresOnDeleteMultiple()) {
+        return requiresOnDeleteMultiple = true;
+      }
+    }
+    return requiresOnDeleteMultiple = false;
+  }
+
+  @Override
+  public void beforeDelete(List<TRow> rows) {
+    for (EasyCrudWireTap<TRow> tap : chain) {
+      tap.beforeDelete(rows);
+    }
+  }
+
+  @Override
+  public void afterDelete(List<TRow> rows) {
+    for (EasyCrudWireTap<TRow> tap : chain) {
+      tap.afterDelete(rows);
     }
   }
 

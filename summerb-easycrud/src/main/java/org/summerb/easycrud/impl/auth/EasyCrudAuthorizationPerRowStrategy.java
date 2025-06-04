@@ -28,7 +28,7 @@ import org.summerb.security.api.exceptions.NotAuthorizedException;
 import org.summerb.spring.security.api.CurrentUserRolesResolver;
 
 /**
- * This is abstract class for implementing Per-row authorization logic. Per-row means that
+ * This is an abstract class for implementing Per-row authorization logic. Per-row means that
  * authorization is performed based on Row data.
  *
  * <p>You need to provide impl for getForUpdate and getForRead. If you need to customize this logic,
@@ -37,9 +37,9 @@ import org.summerb.spring.security.api.CurrentUserRolesResolver;
  * <p>If your authorization logic for Deletion and Creation is different from Update, please
  * override respective methods getForCreate and getForDelete
  *
- * <p>If you do not need authorization to be performed for some of the CRUD operations you can
- * optimize performance by overriding following methods and disabling calls to this authorization
- * logic:
+ * <p>If you do not need authorization to be performed for some of the CRUD operations, you can
+ * optimize performance by overriding the following methods and disabling calls to this
+ * authorization logic:
  *
  * <ul>
  *   <li>{@link #requiresOnCreate()}
