@@ -24,6 +24,8 @@ import org.summerb.easycrud.scaffold.api.Query;
 
 public interface TestDto1Service extends EasyCrudService<String, TestDto1> {
 
+  String TERM = "forms_test_1";
+
   @Query("SELECT max(env) FROM forms_test_1 WHERE major_version >= :majorVersion")
   String getEnvMaxWithScalarParam(int majorVersion);
 

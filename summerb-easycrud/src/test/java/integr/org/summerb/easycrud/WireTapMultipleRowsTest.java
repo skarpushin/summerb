@@ -59,7 +59,7 @@ public class WireTapMultipleRowsTest {
 
     TestDto1Service service =
         easyCrudScaffold.fromService(
-            TestDto1Service.class, TestDto1.class.getCanonicalName(), "forms_test_1", wireTap);
+            TestDto1Service.class, TestDto1Service.TERM, TestDto1Service.TERM, wireTap);
 
     service.create(buildRow("env1", 30));
     service.create(buildRow("env2", 20));
@@ -108,7 +108,7 @@ public class WireTapMultipleRowsTest {
 
     TestDto1Service service =
         easyCrudScaffold.fromService(
-            TestDto1Service.class, TestDto1.class.getCanonicalName(), "forms_test_1", wireTap);
+            TestDto1Service.class, TestDto1Service.TERM, TestDto1Service.TERM, wireTap);
 
     service.create(buildRow("env1", 30));
     service.create(buildRow("env2", 20));
@@ -152,7 +152,7 @@ public class WireTapMultipleRowsTest {
 
     TestDto1Service service =
         easyCrudScaffold.fromService(
-            TestDto1Service.class, TestDto1.class.getCanonicalName(), "forms_test_1", wireTap);
+            TestDto1Service.class, TestDto1Service.TERM, TestDto1Service.TERM, wireTap);
 
     service.create(buildRow("env1", 30));
     service.create(buildRow("env2", 20));

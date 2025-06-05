@@ -25,11 +25,14 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.util.StringUtils;
 import org.summerb.easycrud.api.DaoExceptionTranslator;
+import org.summerb.easycrud.api.EasyCrudAuthorizationPerRow;
+import org.summerb.easycrud.api.EasyCrudAuthorizationPerTable;
 import org.summerb.easycrud.api.EasyCrudDao;
 import org.summerb.easycrud.api.EasyCrudExceptionStrategy;
 import org.summerb.easycrud.api.EasyCrudService;
@@ -40,6 +43,8 @@ import org.summerb.easycrud.api.QueryToSql;
 import org.summerb.easycrud.api.StringIdGenerator;
 import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.impl.EasyCrudServiceImpl;
+import org.summerb.easycrud.impl.auth.EasyCrudAuthorizationPerRowWireTapAdapter;
+import org.summerb.easycrud.impl.auth.EasyCrudAuthorizationPerTableWireTapAdapter;
 import org.summerb.easycrud.impl.dao.SqlTypeOverrides;
 import org.summerb.easycrud.impl.dao.mysql.EasyCrudDaoInjections;
 import org.summerb.easycrud.impl.dao.mysql.EasyCrudDaoSqlImpl;
@@ -69,6 +74,9 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
   protected ScaffoldedMethodFactory scaffoldedMethodFactory;
 
   protected EasyCrudServiceProxyFactory easyCrudServiceProxyFactory;
+
+  @Autowired(required = false)
+  protected CurrentUserUuidResolver currentUserUuidResolver;
 
   public EasyCrudScaffoldImpl(
       DataSource dataSource,
@@ -154,7 +162,7 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
       var ret = instantiateAndAutowireService(dao, rowClass);
       ret.setRowMessageCode(messageCode);
       autowireInjections(injections);
-      setServiceInjectionsIfAny(ret, injections);
+      setServiceInjectionsIfAny(ret, messageCode, injections);
       ret.afterPropertiesSet();
       return ret;
     } catch (Throwable t) {
@@ -189,7 +197,9 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
 
   @SuppressWarnings("unchecked")
   protected <TId, TRow extends HasId<TId>> void setServiceInjectionsIfAny(
-      EasyCrudServiceImpl<TId, TRow, EasyCrudDao<TId, TRow>> ret, Object... injections) {
+      EasyCrudServiceImpl<TId, TRow, EasyCrudDao<TId, TRow>> ret,
+      String messageCode,
+      Object... injections) {
     var currentUserResolver = find(injections, CurrentUserUuidResolver.class);
     if (currentUserResolver != null) {
       ret.setCurrentUserResolver(currentUserResolver);
@@ -205,7 +215,7 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
       ret.setExceptionStrategy(exceptionStrategy);
     }
 
-    var easyCrudWireTap = buildWireTap(injections);
+    var easyCrudWireTap = buildWireTap(messageCode, injections);
     if (easyCrudWireTap != null) {
       ret.setWireTap((EasyCrudWireTap<TRow>) easyCrudWireTap);
     }
@@ -222,10 +232,10 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   protected <TId, TRow extends HasId<TId>> EasyCrudWireTap<TRow> buildWireTap(
-      Object... injections) {
+      String messageCode, Object... injections) {
     List<EasyCrudWireTap> wireTaps =
         Arrays.stream(injections)
-            .map(this::tryMapServiceInjectionToWireTap)
+            .map(x -> tryMapServiceInjectionToWireTap(x, messageCode))
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
     if (!wireTaps.isEmpty()) {
@@ -250,7 +260,7 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
       EasyCrudServiceImpl<TId, TDto, EasyCrudDao<TId, TDto>> actualService =
           instantiateAndAutowireService(dao, rowClass);
       actualService.setRowMessageCode(messageCode);
-      setServiceInjectionsIfAny(actualService, injections);
+      setServiceInjectionsIfAny(actualService, messageCode, injections);
       actualService.afterPropertiesSet();
 
       //noinspection unchecked
@@ -285,7 +295,7 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
 
       serviceImpl.setDao(dao);
       beanFactory.autowireBean(serviceImpl);
-      setServiceInjectionsIfAny(serviceImpl, injections);
+      setServiceInjectionsIfAny(serviceImpl, serviceImpl.getRowMessageCode(), injections);
       serviceImpl.afterPropertiesSet();
 
       return (TService) serviceImpl;
@@ -295,7 +305,7 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
   }
 
   @SuppressWarnings({"unchecked", "rawtypes"})
-  protected EasyCrudWireTap tryMapServiceInjectionToWireTap(Object inj) {
+  protected EasyCrudWireTap tryMapServiceInjectionToWireTap(Object inj, String messageCode) {
     // Note: I know, OCP smell
     if (inj instanceof EasyCrudWireTap) {
       return (EasyCrudWireTap) inj;
@@ -307,6 +317,16 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
 
     if (inj instanceof EventBus) {
       return new EasyCrudWireTapEventBusImpl<>((EventBus) inj);
+    }
+
+    if (inj instanceof EasyCrudAuthorizationPerRow<?>) {
+      return new EasyCrudAuthorizationPerRowWireTapAdapter(
+          messageCode, currentUserUuidResolver, (EasyCrudAuthorizationPerRow) inj);
+    }
+
+    if (inj instanceof EasyCrudAuthorizationPerTable) {
+      return new EasyCrudAuthorizationPerTableWireTapAdapter(
+          messageCode, currentUserUuidResolver, (EasyCrudAuthorizationPerTable) inj);
     }
 
     return null;

@@ -360,7 +360,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
 
       EasyCrudWireTapMode requiresOnDelete = wireTap.requiresOnDelete();
       if (requiresOnDelete.isDtoNeeded()) {
-        existing = findById(id);
+        existing = dao.findById(id);
         if (existing == null) {
           throw exceptionStrategy.buildNotFoundException(rowMessageCode, id);
         }
@@ -396,7 +396,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
 
       EasyCrudWireTapMode requiresOnDelete = wireTap.requiresOnDelete();
       if (requiresOnDelete.isDtoNeeded()) {
-        existing = findById(id);
+        existing = dao.findById(id);
         if (existing == null) {
           throw exceptionStrategy.buildNotFoundException(rowMessageCode, id);
         }
@@ -444,7 +444,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
   }
 
   protected int deleteByQueryWireTapBatch(QueryConditions query) {
-    List<TRow> toDelete = findAll(query);
+    List<TRow> toDelete = dao.query(PagerParams.ALL, query).getItems();
     if (toDelete.isEmpty()) {
       return 0;
     }
@@ -471,7 +471,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
       return ret;
     }
 
-    List<TRow> toDelete = findAll(query);
+    List<TRow> toDelete = dao.query(PagerParams.ALL, query).getItems();
     if (toDelete.isEmpty()) {
       return 0;
     }
