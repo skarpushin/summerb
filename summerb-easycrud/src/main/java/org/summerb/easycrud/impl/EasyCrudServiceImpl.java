@@ -33,7 +33,6 @@ import org.summerb.easycrud.api.RowCloner;
 import org.summerb.easycrud.api.StringIdGenerator;
 import org.summerb.easycrud.api.dto.OrderBy;
 import org.summerb.easycrud.api.exceptions.EntityNotFoundException;
-import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.api.query.QueryCommands;
 import org.summerb.easycrud.api.query.QueryConditions;
 import org.summerb.easycrud.api.row.HasAuthor;
@@ -619,11 +618,6 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
     }
 
     return ret;
-  }
-
-  @Override
-  public Query<TRow> newQuery() {
-    return Query.n(rowClass);
   }
 
   @Override

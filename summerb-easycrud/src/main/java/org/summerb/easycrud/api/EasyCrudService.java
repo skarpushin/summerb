@@ -21,7 +21,6 @@ import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.transaction.annotation.Transactional;
 import org.summerb.easycrud.api.dto.OrderBy;
 import org.summerb.easycrud.api.exceptions.EntityNotFoundException;
-import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.api.query.QueryCommands;
 import org.summerb.easycrud.api.query.QueryConditions;
 import org.summerb.easycrud.api.row.HasId;
@@ -29,29 +28,29 @@ import org.summerb.easycrud.api.row.HasTimestamps;
 import org.summerb.easycrud.impl.OrderByBuilder;
 import org.summerb.i18n.HasMessageCode;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
-import org.summerb.utils.easycrud.api.dto.PagerParams;
-import org.summerb.utils.easycrud.api.dto.PaginatedList;
 import org.summerb.validation.ValidationException;
 
 /**
- * This service is intended for use with relatively simple Rows (DTO's). It implements simple
+ * This service is intended to be used with relatively simple Rows (DTO's). It implements simple
  * create-read-update-delete operations. Subclasses are welcome to extend this functionality if
- * needed as application evolves.
- *
- * <p>This service is perfect for simple Rows's like dictionaries. But it also can be used for
- * business logic.
+ * needed as the application evolves.
  *
  * <p>EasyCrudService is Row-centric, it's good at working with 1 Row type only, which is mapped to
  * the table in the database. Each Row type requires its own EasyCrudService.
  *
  * <p>It's not an ORM framework, so if you need to have a reference to a user, you'll create field
- * like "long userId", but not "User user".
+ * like <code>long userId</code>, but not </code>User user</code>.
+ *
+ * <p>Please refer to the <a
+ * href="https://github.com/skarpushin/summerb/blob/master/summerb-easycrud/README.md">readme</a>
+ * for extensive explanation on how to use it
  *
  * @author sergey.karpushin
  * @param <TId> type of primary key
  * @param <TRow> type of row
  */
-public interface EasyCrudService<TId, TRow extends HasId<TId>> {
+public interface EasyCrudService<TId, TRow extends HasId<TId>>
+    extends EasyCrudServiceQueryApi<TId, TRow> {
 
   /**
    * Build and get new actionable query. Use it to chain conditions and then call one of the methods
@@ -123,71 +122,11 @@ public interface EasyCrudService<TId, TRow extends HasId<TId>> {
   TRow getById(TId id);
 
   /**
-   * @param query query for locating row
-   * @return Row or null if not found. If more than 1 row matched query exception will be thrown
-   * @throws NotAuthorizedException if user is not authorized to perform this operation
-   */
-  TRow findOneByQuery(QueryConditions query);
-
-  /**
-   * @param query query for locating row
-   * @return a Row. If more (or less) than 1 row matched query exception will be thrown
-   * @throws NotAuthorizedException if user is not authorized to perform this operation
-   */
-  TRow getOneByQuery(QueryConditions query);
-
-  /**
-   * @param query query for locating row
-   * @param orderBy order by, optional - can be missing/null
-   * @return row, never null. If nothing found, throws {@link EntityNotFoundException}
-   * @throws NotAuthorizedException if user is not authorized to perform this operation
-   * @throws EntityNotFoundException in case entity does not exist
-   */
-  TRow getFirstByQuery(QueryConditions query, OrderBy... orderBy);
-
-  /**
-   * @param query query for locating row
-   * @param orderBy order by, optional - can be missing/null
-   * @return row, or null if not found
-   * @throws NotAuthorizedException if user is not authorized to perform this operation
-   */
-  TRow findFirstByQuery(QueryConditions query, OrderBy... orderBy);
-
-  /**
-   * @param pagerParams pagination parameters
-   * @param optionalQuery optional Query, might be null
-   * @param orderBy optional orderBy, might be missing/null
-   * @return results, might be empty, but never null
-   * @throws NotAuthorizedException if user is not authorized to perform this operation
-   */
-  PaginatedList<TRow> find(
-      PagerParams pagerParams, QueryConditions optionalQuery, OrderBy... orderBy);
-
-  /**
-   * @param optionalQuery - optional {@link Query}. If null, then this call is same as {@link
-   *     #findAll(OrderBy...)}
-   * @param orderBy optional orderBy, might be missing/null
-   * @return results, might be empty, but never null
-   * @throws NotAuthorizedException if user is not authorized to perform this operation
-   */
-  List<TRow> findAll(QueryConditions optionalQuery, OrderBy... orderBy);
-
-  /**
    * @param orderBy optional orderBy, might be missing/null
    * @return results, might be empty, but never null
    * @throws NotAuthorizedException if user is not authorized to perform this operation
    */
   List<TRow> findAll(OrderBy... orderBy);
-
-  /**
-   * Same as findAll, but will throw {@link EntityNotFoundException} if nothing found
-   *
-   * @param optionalQuery optional query
-   * @param orderBy optional order by
-   * @return list of found items (at least one) or throws {@link EntityNotFoundException} in case
-   *     nothing found
-   */
-  List<TRow> getAll(QueryConditions optionalQuery, OrderBy... orderBy);
 
   /**
    * Deletes row by id.
@@ -256,10 +195,4 @@ public interface EasyCrudService<TId, TRow extends HasId<TId>> {
    * @return WireTap if any that is used by this service
    */
   EasyCrudWireTap<TRow> getWireTap();
-
-  /**
-   * @return new Query for rows of this service
-   * @deprecated Use {@link #query()} which is more powerful and provides additional "coding sugar"
-   */
-  Query<TRow> newQuery();
 }

@@ -23,6 +23,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import org.summerb.easycrud.api.EasyCrudService;
+import org.summerb.easycrud.api.EasyCrudServiceQueryApi;
 import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.impl.dao.mysql.EasyCrudDaoInjections;
 import org.summerb.easycrud.scaffold.api.CallableMethod;
@@ -84,7 +85,8 @@ public class EasyCrudServiceScaffoldedImpl implements java.lang.reflect.Invocati
       new CacheLoader<>() {
         @Override
         public CallableMethod load(Method method) {
-          if (EasyCrudService.class.equals(method.getDeclaringClass())) {
+          if (EasyCrudService.class.equals(method.getDeclaringClass())
+              || EasyCrudServiceQueryApi.class.equals(method.getDeclaringClass())) {
             return new CallableMethodEasyCrudServiceImpl(method);
           }
 

@@ -271,7 +271,7 @@ NOTES:
    triggered, if any
 1. If return type is primitive or matches Service row class, then Row mapper is initialized automatically
 1. In case you want some other schema to be returned, provide your own RowMapper class name into
-   `ScaffoldedQuery::rowMapper`
+   `Query::rowMapper`
 1. If your query modifies data, make sure to clarify this by adding `modifying=true` parameter to `@Query`
 
 ## Add Validation Logic (using annotations)

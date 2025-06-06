@@ -99,11 +99,11 @@ public class EasyCrudM2mServiceImpl<
     try {
       Preconditions.checkArgument(referencerId != null, "referencerId is required");
       List<ManyToManyRow<T1Id, T2Id>> m2mPairs =
-          findAll(newQuery().eq(ManyToManyRow.FN_SRC, referencerId));
+          query().eq(ManyToManyRow.FN_SRC, referencerId).findAll();
       if (m2mPairs.isEmpty()) {
         return Collections.emptyList();
       }
-      return serviceB.findAll(serviceB.newQuery().in(HasId::getId, collectReferenceeIds(m2mPairs)));
+      return serviceB.query().in(HasId::getId, collectReferenceeIds(m2mPairs)).findAll();
     } catch (Throwable t) {
       throw new RuntimeException(
           "Failed to find "
@@ -130,12 +130,12 @@ public class EasyCrudM2mServiceImpl<
       Preconditions.checkArgument(
           !CollectionUtils.isEmpty(referencerIds), "referencerId is required");
       List<ManyToManyRow<T1Id, T2Id>> m2mPairs =
-          findAll(newQuery().in(ManyToManyRow.FN_SRC, referencerIds));
+          query().in(ManyToManyRow.FN_SRC, referencerIds).findAll();
       if (m2mPairs.isEmpty()) {
         return Collections.emptyMap();
       }
       List<T2Dto> referencee =
-          serviceB.findAll(serviceB.newQuery().in(HasId::getId, collectReferenceeIds(m2mPairs)));
+          serviceB.query().in(HasId::getId, collectReferenceeIds(m2mPairs)).findAll();
       return buildResultForFindReferenceeByReferencer(m2mPairs, referencee);
     } catch (Throwable t) {
       throw new RuntimeException(
@@ -185,10 +185,11 @@ public class EasyCrudM2mServiceImpl<
   @Override
   public void removeReferencee(T1Id referencerId, T2Id referenceeId) throws NotAuthorizedException {
     try {
-      var q = newQuery();
-      q.eq(ManyToManyRow.FN_SRC, referencerId);
-      q.eq(ManyToManyRow.FN_DST, referenceeId);
-      ManyToManyRow<T1Id, T2Id> pair = findOneByQuery(q);
+      ManyToManyRow<T1Id, T2Id> pair =
+          query()
+              .eq(ManyToManyRow::getSrc, referencerId)
+              .eq(ManyToManyRow::getDst, referenceeId)
+              .findOne();
       if (pair != null) {
         deleteById(pair.getId());
       }

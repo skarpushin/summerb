@@ -164,7 +164,7 @@ public class QueryShortcuts<TRow, TypeOfThis extends QueryShortcuts<TRow, TypeOf
   /**
    * Adds IN constraint to field with values provided in var-arg parameter values
    *
-   * <p>NOTE: we're not using overload approach for method name because it confuses Eclipse big
+   * <p>NOTE: we're not using an overload approach for method name because it confuses Eclipse big
    * time. So we have to go with a longer name "inArr" instead of just "in"
    *
    * @param <T> type of field

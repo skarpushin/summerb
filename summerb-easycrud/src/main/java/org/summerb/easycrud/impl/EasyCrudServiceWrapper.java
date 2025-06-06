@@ -23,15 +23,12 @@ import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.api.EasyCrudWireTap;
 import org.summerb.easycrud.api.dto.OrderBy;
 import org.summerb.easycrud.api.exceptions.EntityNotFoundException;
-import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.api.query.QueryCommands;
 import org.summerb.easycrud.api.query.QueryConditions;
 import org.summerb.easycrud.api.row.HasId;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
 import org.summerb.utils.easycrud.api.dto.PagerParams;
 import org.summerb.utils.easycrud.api.dto.PaginatedList;
-
-// TODO: Also add wrapper that can cache queries
 
 public class EasyCrudServiceWrapper<
         TId, TRow extends HasId<TId>, TActual extends EasyCrudService<TId, TRow>>
@@ -142,13 +139,11 @@ public class EasyCrudServiceWrapper<
   }
 
   @Override
-  public Query<TRow> newQuery() {
-    return actual.newQuery();
-  }
-
-  @Override
   public QueryCommands<TId, TRow> query() {
-    return actual.query();
+    // NOTE: Instead of delegating this call to the actual service, we build instance ourselves so
+    // that the query would call us instead of actual service and therefore wrapped methods will be
+    // used instead of original methods
+    return new QueryCommands<>(actual::name, this);
   }
 
   @Override
