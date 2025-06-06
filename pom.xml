@@ -24,6 +24,7 @@
         <module>summerb-webboilerplate</module>
         <module>summerb-dbupgrade</module>
         <module>summerb-email</module>
+        <module>summerb-bom</module>
     </modules>
 
     <properties>
