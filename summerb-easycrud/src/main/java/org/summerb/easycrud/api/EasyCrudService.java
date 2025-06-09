@@ -39,7 +39,7 @@ import org.summerb.validation.ValidationException;
  * the table in the database. Each Row type requires its own EasyCrudService.
  *
  * <p>It's not an ORM framework, so if you need to have a reference to a user, you'll create field
- * like <code>long userId</code>, but not </code>User user</code>.
+ * like <code>long userId</code>, but not <code>User user</code>.
  *
  * <p>Please refer to the <a
  * href="https://github.com/skarpushin/summerb/blob/master/summerb-easycrud/README.md">readme</a>
