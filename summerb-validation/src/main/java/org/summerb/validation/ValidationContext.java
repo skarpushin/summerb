@@ -339,6 +339,17 @@ public class ValidationContext<T> {
     return ValidationErrorsUtils.findErrorOfTypeForField(clazz, propertyName, errors);
   }
 
+  /**
+   * A convenience method to add error
+   *
+   * @param fieldNameGetter POJO field name getter
+   * @param errorMessageCode error message code
+   * @param args optional - message code arguments
+   */
+  public void add(Function<T, ?> fieldNameGetter, String errorMessageCode, Object... args) {
+    add(new ValidationError(getPropertyName(fieldNameGetter), errorMessageCode, args));
+  }
+
   public void add(ValidationError error) {
     Preconditions.checkArgument(error != null);
     Preconditions.checkArgument(
