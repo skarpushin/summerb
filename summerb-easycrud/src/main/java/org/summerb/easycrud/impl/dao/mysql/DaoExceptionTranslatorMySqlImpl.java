@@ -19,7 +19,8 @@ import java.sql.DataTruncation;
 import java.sql.SQLSyntaxErrorException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.support.JdbcUtils;
-import org.summerb.easycrud.api.DaoExceptionTranslatorAbstract;
+import org.springframework.util.StringUtils;
+import org.summerb.easycrud.api.DaoExceptionTranslator;
 import org.summerb.easycrud.api.exceptions.ServiceDataTruncationException;
 import org.summerb.easycrud.api.row.HasId;
 import org.summerb.utils.exceptions.ExceptionUtils;
@@ -31,7 +32,7 @@ import org.summerb.validation.errors.DuplicateRecord;
  *
  * @author sergeyk
  */
-public class DaoExceptionTranslatorMySqlImpl extends DaoExceptionTranslatorAbstract {
+public class DaoExceptionTranslatorMySqlImpl implements DaoExceptionTranslator {
   public static final String MYSQL_CONSTRAINT_PRIMARY = "PRIMARY";
   public static final String MYSQL_CONSTRAINT_UNIQUE = "_UNIQUE";
 
@@ -112,25 +113,24 @@ public class DaoExceptionTranslatorMySqlImpl extends DaoExceptionTranslatorAbstr
    * @param t potential chain with {@link DataTruncation}
    */
   protected void throwIfTruncationError(Throwable t) {
+    String fieldName = null;
     Exception exc = ExceptionUtils.findExceptionOfType(t, DataTruncation.class);
     if (exc == null) {
       exc = ExceptionUtils.findExceptionOfType(t, SQLSyntaxErrorException.class);
-      if (exc == null) {
-        return;
-      }
     }
 
-    String fieldName = findTruncatedFieldNameIfAny(exc.getMessage());
+    if (exc != null) {
+      fieldName = findTruncatedFieldNameIfAny(exc.getMessage());
+    }
 
-    // throw new ValidationException(new
-    // LengthMustBeLessOrEqual(currentSize?, allowedSize?, fieldName));
-
-    // NOTE: We're throwing ServiceDataTruncationException instead of
-    // ValidationException because it feels right (there is commonly known
-    // exception DataTruncation) and because we do not know currentSize and
-    // allowedSize here
-    throw ServiceDataTruncationException.envelopeFor(
-        JdbcUtils.convertUnderscoreNameToPropertyName(fieldName), t);
+    if (StringUtils.hasText(fieldName)) {
+      // NOTE: We're throwing ServiceDataTruncationException instead of
+      // ValidationException because it feels right (there is commonly known
+      // exception DataTruncation) and because we do not know currentSize and
+      // allowedSize here
+      throw ServiceDataTruncationException.envelopeFor(
+          JdbcUtils.convertUnderscoreNameToPropertyName(fieldName), t);
+    }
   }
 
   /**
@@ -140,7 +140,7 @@ public class DaoExceptionTranslatorMySqlImpl extends DaoExceptionTranslatorAbstr
    * @return field name if any, otherwise null
    */
   protected String findTruncatedFieldNameIfAny(String msg) {
-    if (!msg.contains("too long")) {
+    if (!msg.contains("too long") && !msg.contains("'")) {
       return null;
     }
 

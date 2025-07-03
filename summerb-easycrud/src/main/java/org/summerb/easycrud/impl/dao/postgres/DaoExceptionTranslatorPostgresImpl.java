@@ -19,7 +19,7 @@ import org.postgresql.util.PSQLException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.util.StringUtils;
-import org.summerb.easycrud.api.DaoExceptionTranslatorAbstract;
+import org.summerb.easycrud.api.DaoExceptionTranslator;
 import org.summerb.utils.exceptions.ExceptionUtils;
 import org.summerb.validation.ValidationContext;
 import org.summerb.validation.errors.DuplicateRecord;
@@ -29,7 +29,7 @@ import org.summerb.validation.errors.DuplicateRecord;
  *
  * @author sergeyk
  */
-public class DaoExceptionTranslatorPostgresImpl extends DaoExceptionTranslatorAbstract {
+public class DaoExceptionTranslatorPostgresImpl implements DaoExceptionTranslator {
   @Override
   public void translateAndThrowIfApplicable(Throwable t) {
     throwIfDuplicate(t);

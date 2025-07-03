@@ -103,7 +103,7 @@ public class PropertyDaoImpl extends TableDaoBase implements PropertyDao, Initia
     try {
       jdbc.update(sqlPutProperty, params);
     } catch (Exception e) {
-      daoExceptionTranslator.translateAndThrowIfApplicableUnchecked(e);
+      daoExceptionTranslator.translateAndThrowIfApplicable(e);
       throw e;
     }
   }
@@ -145,7 +145,7 @@ public class PropertyDaoImpl extends TableDaoBase implements PropertyDao, Initia
     try {
       jdbc.update(sqlDeleteAllSubjectProperties, params);
     } catch (Exception e) {
-      daoExceptionTranslator.translateAndThrowIfApplicableUnchecked(e);
+      daoExceptionTranslator.translateAndThrowIfApplicable(e);
       throw e;
     }
   }
