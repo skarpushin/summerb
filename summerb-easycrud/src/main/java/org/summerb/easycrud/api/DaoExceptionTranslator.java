@@ -36,12 +36,4 @@ public interface DaoExceptionTranslator {
    * @param t exception
    */
   void translateAndThrowIfApplicable(Throwable t);
-
-  /**
-   * Same as {@link #translateAndThrowIfApplicable(Throwable)} but will wrap exception in unchecked
-   * {@link RuntimeException}
-   *
-   * @param e exception
-   */
-  void translateAndThrowIfApplicableUnchecked(Exception e);
 }

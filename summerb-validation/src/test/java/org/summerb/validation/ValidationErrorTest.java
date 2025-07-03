@@ -7,6 +7,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.LocalDate;
+import java.time.Month;
 import org.junit.jupiter.api.Test;
 import org.summerb.validation.gson.ValidationErrorGsonTypeAdapter;
 
@@ -42,17 +44,10 @@ class ValidationErrorTest {
     // should be accepted ok
     new ValidationError("pn", "mc", null, null);
 
-    // illegal -- unacceptable type
-    IllegalArgumentException ex =
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> new ValidationError("pn", "mc", new ValidationError("asd", "asd")));
-    assertEquals(
-        "Argument 0 is of an unacceptable type class org.summerb.validation.ValidationError. "
-            + "Only types listed in ValidationError::ALLOWED_ARGS_CLASSES are allowed: "
-            + "[class java.math.BigDecimal, class java.lang.Float, class java.lang.Double, class java.lang.Long, class java.lang.Short, class java.lang.Boolean, "
-            + "class java.math.BigInteger, class java.lang.String, class java.lang.Byte, class java.lang.Integer]",
-        ex.getMessage());
+    // translated to toString
+    ValidationError validationError =
+        new ValidationError("pn", "mc", LocalDate.of(2025, Month.APRIL, 1));
+    assertEquals("2025-04-01", validationError.getMessageArgs()[0].toString());
   }
 
   @Test

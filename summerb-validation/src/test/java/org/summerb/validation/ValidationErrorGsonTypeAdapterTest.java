@@ -37,14 +37,6 @@ class ValidationErrorGsonTypeAdapterTest {
     ValidationError ve = gson.fromJson(json, ValidationError.class);
     assertNull(ve.getMessageArgs());
 
-    // empty message args serialized as empty array
-    args = new Object[0];
-    json = gson.toJson(new ValidationError("pn", "mc", args));
-    assertEquals(
-        "{\"propertyName\":\"pn\",\"messageCode\":\"mc\",\"messageArgs\":[],\"__args\":[]}", json);
-    ve = gson.fromJson(json, ValidationError.class);
-    assertEquals(0, ve.getMessageArgs().length);
-
     // null arg
     json = gson.toJson(new ValidationError("pn", "mc", (String) null));
     assertEquals(

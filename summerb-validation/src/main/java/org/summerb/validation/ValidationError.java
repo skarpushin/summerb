@@ -91,18 +91,13 @@ public class ValidationError implements Serializable, HasMessageCode, HasMessage
     ALLOWED_ARGS_CLASSES = Collections.unmodifiableMap(allowed);
   }
 
-  protected void assertMessageArgs(Object[] args) {
+  private void replaceNotAllowedTypesWithToString(Object[] args) {
     for (int i = 0; i < args.length; i++) {
       Object arg = args[i];
-      if (arg == null) {
+      if (arg == null || ALLOWED_ARGS_CLASSES.containsValue(arg.getClass())) {
         continue;
       }
-      Preconditions.checkArgument(
-          ALLOWED_ARGS_CLASSES.containsValue(arg.getClass()),
-          "Argument %s is of an unacceptable type %s. Only types listed in ValidationError::ALLOWED_ARGS_CLASSES are allowed: %s",
-          i,
-          arg.getClass(),
-          ALLOWED_ARGS_CLASSES.values());
+      args[i] = String.valueOf(args[i]);
     }
   }
 
@@ -135,14 +130,15 @@ public class ValidationError implements Serializable, HasMessageCode, HasMessage
   }
 
   public void setMessageArgs(Object[] messageArgs) {
-    if (messageArgs == null) {
+    if (messageArgs == null || messageArgs.length == 0) {
       this.messageArgs = null;
       return;
     }
 
-    assertMessageArgs(messageArgs);
     // NOTE: We clone array to make sure that consumer will not be able to modify it
-    this.messageArgs = messageArgs.clone();
+    Object[] argsArrayCopy = messageArgs.clone();
+    replaceNotAllowedTypesWithToString(argsArrayCopy);
+    this.messageArgs = argsArrayCopy;
   }
 
   @Override
