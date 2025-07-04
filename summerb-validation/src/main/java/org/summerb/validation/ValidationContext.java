@@ -46,6 +46,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
@@ -475,88 +476,117 @@ public class ValidationContext<T> {
   }
 
   public boolean isNull(Function<T, Object> getter) {
-    return isNull(getValue(getter), getPropertyName(getter));
+    return isNull(getValue(getter), () -> getPropertyName(getter));
   }
 
   public boolean isNull(Object value, String propertyName) {
+    return isNull(value, () -> propertyName);
+  }
+
+  public boolean isNull(Object value, Supplier<String> propertyName) {
     if (value == null) {
       return true;
     }
 
-    add(new MustBeNull(propertyName));
+    add(new MustBeNull(propertyName.get()));
     return false;
   }
 
   public boolean notNull(Function<T, Object> getter) {
-    return notNull(getValue(getter), getPropertyName(getter));
+    return notNull(getValue(getter), () -> getPropertyName(getter));
   }
 
   public boolean notNull(Object value, String propertyName) {
+    return notNull(value, () -> propertyName);
+  }
+
+  public boolean notNull(Object value, Supplier<String> propertyName) {
     if (value != null) {
       return true;
     }
 
-    add(new MustNotBeNull(propertyName));
+    add(new MustNotBeNull(propertyName.get()));
     return false;
   }
 
   public boolean isTrue(Function<T, Boolean> getter) {
-    return isTrue(getValue(getter), getPropertyName(getter));
+    return isTrue(getValue(getter), () -> getPropertyName(getter));
   }
 
   public boolean isTrue(Boolean value, String propertyName) {
+    return isTrue(value, () -> propertyName);
+  }
+
+  public boolean isTrue(Boolean value, Supplier<String> propertyName) {
     if (Boolean.TRUE.equals(value)) {
       return true;
     }
 
-    add(new MustBeTrue(propertyName));
+    add(new MustBeTrue(propertyName.get()));
     return false;
   }
 
   public boolean isFalse(Function<T, Boolean> getter) {
-    return isFalse(getValue(getter), getPropertyName(getter));
+    return isFalse(getValue(getter), () -> getPropertyName(getter));
   }
 
   public boolean isFalse(Boolean value, String propertyName) {
+    return isFalse(value, () -> propertyName);
+  }
+
+  public boolean isFalse(Boolean value, Supplier<String> propertyName) {
     if (Boolean.FALSE.equals(value)) {
       return true;
     }
 
-    add(new MustBeFalse(propertyName));
+    add(new MustBeFalse(propertyName.get()));
     return false;
   }
 
   public <V> boolean eq(Function<T, V> getter, V value) {
-    return eq(getValue(getter), value, getPropertyName(getter));
+    return eq(getValue(getter), value, () -> getPropertyName(getter));
   }
 
   public <V> boolean eq(V value, V expectedValue, String propertyName) {
+    return eq(value, expectedValue, () -> propertyName);
+  }
+
+  public <V> boolean eq(V value, V expectedValue, Supplier<String> propertyName) {
     if (ObjectUtils.nullSafeEquals(expectedValue, value)) {
       return true;
     }
 
-    add(new MustBeEqualTo(propertyName, expectedValue));
+    add(new MustBeEqualTo(propertyName.get(), expectedValue));
     return false;
   }
 
   public <V> boolean ne(Function<T, V> getter, V value) {
-    return ne(getValue(getter), value, getPropertyName(getter));
+    return ne(getValue(getter), value, () -> getPropertyName(getter));
   }
 
   public <V> boolean ne(V value, V expectedValue, String propertyName) {
+    return ne(value, expectedValue, () -> propertyName);
+  }
+
+  public <V> boolean ne(V value, V expectedValue, Supplier<String> propertyName) {
     if (!ObjectUtils.nullSafeEquals(expectedValue, value)) {
       return true;
     }
 
-    add(new MustNotBeEqualTo(propertyName, value));
+    add(new MustNotBeEqualTo(propertyName.get(), value));
     return false;
   }
 
   public <V extends Comparable<V>> boolean less(Function<T, V> getter, V boundary) {
-    return less(getValue(getter), boundary, getPropertyName(getter));
+    return less(getValue(getter), boundary, () -> getPropertyName(getter));
   }
 
   public <V extends Comparable<V>> boolean less(V value, V boundary, String propertyName) {
+    return less(value, boundary, () -> propertyName);
+  }
+
+  public <V extends Comparable<V>> boolean less(
+      V value, V boundary, Supplier<String> propertyName) {
     Preconditions.checkArgument(boundary != null, "boundary required");
     if (!notNull(value, propertyName)) {
       return false;
@@ -566,15 +596,19 @@ public class ValidationContext<T> {
       return true;
     }
 
-    add(new MustBeLess(propertyName, boundary));
+    add(new MustBeLess(propertyName.get(), boundary));
     return false;
   }
 
   public <V extends Comparable<V>> boolean le(Function<T, V> getter, V boundary) {
-    return le(getValue(getter), boundary, getPropertyName(getter));
+    return le(getValue(getter), boundary, () -> getPropertyName(getter));
   }
 
   public <V extends Comparable<V>> boolean le(V value, V boundary, String propertyName) {
+    return le(value, boundary, () -> propertyName);
+  }
+
+  public <V extends Comparable<V>> boolean le(V value, V boundary, Supplier<String> propertyName) {
     Preconditions.checkArgument(boundary != null, "boundary required");
     if (!notNull(value, propertyName)) {
       return false;
@@ -584,15 +618,20 @@ public class ValidationContext<T> {
       return true;
     }
 
-    add(new MustBeLessOrEqual(propertyName, boundary));
+    add(new MustBeLessOrEqual(propertyName.get(), boundary));
     return false;
   }
 
   public <V extends Comparable<V>> boolean greater(Function<T, V> getter, V boundary) {
-    return greater(getValue(getter), boundary, getPropertyName(getter));
+    return greater(getValue(getter), boundary, () -> getPropertyName(getter));
   }
 
   public <V extends Comparable<V>> boolean greater(V value, V boundary, String propertyName) {
+    return greater(value, boundary, () -> propertyName);
+  }
+
+  public <V extends Comparable<V>> boolean greater(
+      V value, V boundary, Supplier<String> propertyName) {
     Preconditions.checkArgument(boundary != null, "boundary required");
     if (!notNull(value, propertyName)) {
       return false;
@@ -602,15 +641,19 @@ public class ValidationContext<T> {
       return true;
     }
 
-    add(new MustBeGreater(propertyName, boundary));
+    add(new MustBeGreater(propertyName.get(), boundary));
     return false;
   }
 
   public <V extends Comparable<V>> boolean ge(Function<T, V> getter, V boundary) {
-    return ge(getValue(getter), boundary, getPropertyName(getter));
+    return ge(getValue(getter), boundary, () -> getPropertyName(getter));
   }
 
   public <V extends Comparable<V>> boolean ge(V value, V boundary, String propertyName) {
+    return ge(value, boundary, () -> propertyName);
+  }
+
+  public <V extends Comparable<V>> boolean ge(V value, V boundary, Supplier<String> propertyName) {
     Preconditions.checkArgument(boundary != null, "boundary required");
     if (!notNull(value, propertyName)) {
       return false;
@@ -620,15 +663,19 @@ public class ValidationContext<T> {
       return true;
     }
 
-    add(new MustBeGreaterOrEqual(propertyName, boundary));
+    add(new MustBeGreaterOrEqual(propertyName.get(), boundary));
     return false;
   }
 
   public <V> boolean in(Function<T, V> getter, Collection<V> values) {
-    return in(getValue(getter), values, getPropertyName(getter));
+    return in(getValue(getter), values, () -> getPropertyName(getter));
   }
 
   public <V> boolean in(V value, Collection<V> values, String propertyName) {
+    return in(value, values, () -> propertyName);
+  }
+
+  public <V> boolean in(V value, Collection<V> values, Supplier<String> propertyName) {
     Preconditions.checkArgument(
         !CollectionUtils.isEmpty(values), "values collection must not be empty");
 
@@ -636,15 +683,19 @@ public class ValidationContext<T> {
       return true;
     }
 
-    add(new MustBeIn(propertyName, values));
+    add(new MustBeIn(propertyName.get(), values));
     return false;
   }
 
   public <V> boolean notIn(Function<T, V> getter, Collection<V> values) {
-    return notIn(getValue(getter), values, getPropertyName(getter));
+    return notIn(getValue(getter), values, () -> getPropertyName(getter));
   }
 
   public <V> boolean notIn(V value, Collection<V> values, String propertyName) {
+    return notIn(value, values, () -> propertyName);
+  }
+
+  public <V> boolean notIn(V value, Collection<V> values, Supplier<String> propertyName) {
     Preconditions.checkArgument(
         !CollectionUtils.isEmpty(values), "values collection must not be empty");
 
@@ -652,17 +703,22 @@ public class ValidationContext<T> {
       return true;
     }
 
-    add(new MustNotBeIn(propertyName, values));
+    add(new MustNotBeIn(propertyName.get(), values));
     return false;
   }
 
   public <V extends Comparable<V>> boolean between(
       Function<T, V> getter, V lowerBoundary, V upperBoundary) {
-    return between(getValue(getter), lowerBoundary, upperBoundary, getPropertyName(getter));
+    return between(getValue(getter), lowerBoundary, upperBoundary, () -> getPropertyName(getter));
   }
 
   public <V extends Comparable<V>> boolean between(
       V value, V lowerBoundary, V upperBoundary, String propertyName) {
+    return between(value, lowerBoundary, upperBoundary, () -> propertyName);
+  }
+
+  public <V extends Comparable<V>> boolean between(
+      V value, V lowerBoundary, V upperBoundary, Supplier<String> propertyName) {
     assertRangeBoundaryParams(lowerBoundary, upperBoundary);
 
     if (!notNull(value, propertyName)) {
@@ -673,7 +729,7 @@ public class ValidationContext<T> {
       return true;
     }
 
-    add(new MustBeBetween(propertyName, lowerBoundary, upperBoundary));
+    add(new MustBeBetween(propertyName.get(), lowerBoundary, upperBoundary));
     return false;
   }
 
@@ -687,10 +743,15 @@ public class ValidationContext<T> {
   }
 
   public <V extends Comparable<V>> boolean between(Function<T, V> getter, Range<V> range) {
-    return between(getValue(getter), range, getPropertyName(getter));
+    return between(getValue(getter), range, () -> getPropertyName(getter));
   }
 
   public <V extends Comparable<V>> boolean between(V value, Range<V> range, String propertyName) {
+    return between(value, range, () -> propertyName);
+  }
+
+  public <V extends Comparable<V>> boolean between(
+      V value, Range<V> range, Supplier<String> propertyName) {
     assertRangeParam(range);
 
     if (!notNull(value, propertyName)) {
@@ -701,7 +762,7 @@ public class ValidationContext<T> {
       return true;
     }
 
-    add(new MustBeBetween(propertyName, range));
+    add(new MustBeBetween(propertyName.get(), range));
     return false;
   }
 
@@ -713,11 +774,17 @@ public class ValidationContext<T> {
 
   public <V extends Comparable<V>> boolean notBetween(
       Function<T, V> getter, V lowerBoundary, V upperBoundary) {
-    return notBetween(getValue(getter), lowerBoundary, upperBoundary, getPropertyName(getter));
+    return notBetween(
+        getValue(getter), lowerBoundary, upperBoundary, () -> getPropertyName(getter));
   }
 
   public <V extends Comparable<V>> boolean notBetween(
       V value, V lowerBoundary, V upperBoundary, String propertyName) {
+    return notBetween(value, lowerBoundary, upperBoundary, () -> propertyName);
+  }
+
+  public <V extends Comparable<V>> boolean notBetween(
+      V value, V lowerBoundary, V upperBoundary, Supplier<String> propertyName) {
     assertRangeBoundaryParams(lowerBoundary, upperBoundary);
 
     if (!notNull(value, propertyName)) {
@@ -728,16 +795,21 @@ public class ValidationContext<T> {
       return true;
     }
 
-    add(new MustNotBeBetween(propertyName, lowerBoundary, upperBoundary));
+    add(new MustNotBeBetween(propertyName.get(), lowerBoundary, upperBoundary));
     return false;
   }
 
   public <V extends Comparable<V>> boolean notBetween(Function<T, V> getter, Range<V> range) {
-    return notBetween(getValue(getter), range, getPropertyName(getter));
+    return notBetween(getValue(getter), range, () -> getPropertyName(getter));
   }
 
   public <V extends Comparable<V>> boolean notBetween(
       V value, Range<V> range, String propertyName) {
+    return notBetween(value, range, () -> propertyName);
+  }
+
+  public <V extends Comparable<V>> boolean notBetween(
+      V value, Range<V> range, Supplier<String> propertyName) {
     assertRangeParam(range);
 
     if (!notNull(value, propertyName)) {
@@ -748,16 +820,22 @@ public class ValidationContext<T> {
       return true;
     }
 
-    add(new MustNotBeBetween(propertyName, range));
+    add(new MustNotBeBetween(propertyName.get(), range));
     return false;
   }
 
   public boolean lengthBetween(Function<T, String> getter, int lowerBoundary, int upperBoundary) {
-    return lengthBetween(getValue(getter), lowerBoundary, upperBoundary, getPropertyName(getter));
+    return lengthBetween(
+        getValue(getter), lowerBoundary, upperBoundary, () -> getPropertyName(getter));
   }
 
   public boolean lengthBetween(
       String value, int lowerBoundary, int upperBoundary, String propertyName) {
+    return lengthBetween(value, lowerBoundary, upperBoundary, () -> propertyName);
+  }
+
+  public boolean lengthBetween(
+      String value, int lowerBoundary, int upperBoundary, Supplier<String> propertyName) {
     assertLengthBetweenBoundaries(lowerBoundary, upperBoundary);
 
     int length = value == null ? 0 : value.length();
@@ -765,7 +843,7 @@ public class ValidationContext<T> {
       return true;
     }
 
-    add(new LengthMustBeBetween(propertyName, lowerBoundary, upperBoundary));
+    add(new LengthMustBeBetween(propertyName.get(), lowerBoundary, upperBoundary));
     return false;
   }
 
@@ -778,11 +856,16 @@ public class ValidationContext<T> {
   public boolean lengthNotBetween(
       Function<T, String> getter, int lowerBoundary, int upperBoundary) {
     return lengthNotBetween(
-        getValue(getter), lowerBoundary, upperBoundary, getPropertyName(getter));
+        getValue(getter), lowerBoundary, upperBoundary, () -> getPropertyName(getter));
   }
 
   public boolean lengthNotBetween(
       String value, int lowerBoundary, int upperBoundary, String propertyName) {
+    return lengthNotBetween(value, lowerBoundary, upperBoundary, () -> propertyName);
+  }
+
+  public boolean lengthNotBetween(
+      String value, int lowerBoundary, int upperBoundary, Supplier<String> propertyName) {
     assertLengthBetweenBoundaries(lowerBoundary, upperBoundary);
 
     int length = value == null ? 0 : value.length();
@@ -790,15 +873,19 @@ public class ValidationContext<T> {
       return true;
     }
 
-    add(new LengthMustNotBeBetween(propertyName, lowerBoundary, upperBoundary));
+    add(new LengthMustNotBeBetween(propertyName.get(), lowerBoundary, upperBoundary));
     return false;
   }
 
   public boolean contains(Function<T, String> getter, String subString) {
-    return contains(getValue(getter), subString, getPropertyName(getter));
+    return contains(getValue(getter), subString, () -> getPropertyName(getter));
   }
 
   public boolean contains(String value, String subString, String propertyName) {
+    return contains(value, subString, () -> propertyName);
+  }
+
+  public boolean contains(String value, String subString, Supplier<String> propertyName) {
     Preconditions.checkArgument(subString != null && !subString.isEmpty(), "subString required");
 
     if (!notNull(value, propertyName)) {
@@ -809,15 +896,19 @@ public class ValidationContext<T> {
       return true;
     }
 
-    add(new MustContain(propertyName, subString));
+    add(new MustContain(propertyName.get(), subString));
     return false;
   }
 
   public boolean notContains(Function<T, String> getter, String subString) {
-    return notContains(getValue(getter), subString, getPropertyName(getter));
+    return notContains(getValue(getter), subString, () -> getPropertyName(getter));
   }
 
   public boolean notContains(String value, String subString, String propertyName) {
+    return notContains(value, subString, () -> propertyName);
+  }
+
+  public boolean notContains(String value, String subString, Supplier<String> propertyName) {
     Preconditions.checkArgument(subString != null && !subString.isEmpty(), "subString required");
 
     if (!notNull(value, propertyName)) {
@@ -828,15 +919,19 @@ public class ValidationContext<T> {
       return true;
     }
 
-    add(new MustNotContain(propertyName, subString));
+    add(new MustNotContain(propertyName.get(), subString));
     return false;
   }
 
   public boolean startsWith(Function<T, String> getter, String subString) {
-    return startsWith(getValue(getter), subString, getPropertyName(getter));
+    return startsWith(getValue(getter), subString, () -> getPropertyName(getter));
   }
 
   public boolean startsWith(String value, String subString, String propertyName) {
+    return startsWith(value, subString, () -> propertyName);
+  }
+
+  public boolean startsWith(String value, String subString, Supplier<String> propertyName) {
     Preconditions.checkArgument(subString != null && !subString.isEmpty(), "subString required");
 
     if (!notNull(value, propertyName)) {
@@ -847,15 +942,19 @@ public class ValidationContext<T> {
       return true;
     }
 
-    add(new MustStartWith(propertyName, subString));
+    add(new MustStartWith(propertyName.get(), subString));
     return false;
   }
 
   public boolean notStartsWith(Function<T, String> getter, String subString) {
-    return notStartsWith(getValue(getter), subString, getPropertyName(getter));
+    return notStartsWith(getValue(getter), subString, () -> getPropertyName(getter));
   }
 
   public boolean notStartsWith(String value, String subString, String propertyName) {
+    return notStartsWith(value, subString, () -> propertyName);
+  }
+
+  public boolean notStartsWith(String value, String subString, Supplier<String> propertyName) {
     Preconditions.checkArgument(subString != null && !subString.isEmpty(), "subString required");
 
     if (!notNull(value, propertyName)) {
@@ -866,15 +965,19 @@ public class ValidationContext<T> {
       return true;
     }
 
-    add(new MustNotStartWith(propertyName, subString));
+    add(new MustNotStartWith(propertyName.get(), subString));
     return false;
   }
 
   public boolean endsWith(Function<T, String> getter, String subString) {
-    return endsWith(getValue(getter), subString, getPropertyName(getter));
+    return endsWith(getValue(getter), subString, () -> getPropertyName(getter));
   }
 
   public boolean endsWith(String value, String subString, String propertyName) {
+    return endsWith(value, subString, () -> propertyName);
+  }
+
+  public boolean endsWith(String value, String subString, Supplier<String> propertyName) {
     Preconditions.checkArgument(subString != null && !subString.isEmpty(), "subString required");
 
     if (!notNull(value, propertyName)) {
@@ -885,15 +988,19 @@ public class ValidationContext<T> {
       return true;
     }
 
-    add(new MustEndWith(propertyName, subString));
+    add(new MustEndWith(propertyName.get(), subString));
     return false;
   }
 
   public boolean notEndsWith(Function<T, String> getter, String subString) {
-    return notEndsWith(getValue(getter), subString, getPropertyName(getter));
+    return notEndsWith(getValue(getter), subString, () -> getPropertyName(getter));
   }
 
   public boolean notEndsWith(String value, String subString, String propertyName) {
+    return notEndsWith(value, subString, () -> propertyName);
+  }
+
+  public boolean notEndsWith(String value, String subString, Supplier<String> propertyName) {
     Preconditions.checkArgument(subString != null && !subString.isEmpty(), "subString required");
 
     if (!notNull(value, propertyName)) {
@@ -904,119 +1011,151 @@ public class ValidationContext<T> {
       return true;
     }
 
-    add(new MustNotEndWith(propertyName, subString));
+    add(new MustNotEndWith(propertyName.get(), subString));
     return false;
   }
 
   public boolean hasText(Function<T, String> getter) {
-    return hasText(getValue(getter), getPropertyName(getter));
+    return hasText(getValue(getter), () -> getPropertyName(getter));
   }
 
   public boolean hasText(String value, String propertyName) {
+    return hasText(value, () -> propertyName);
+  }
+
+  public boolean hasText(String value, Supplier<String> propertyName) {
     if (StringUtils.hasText(value)) {
       return true;
     }
 
-    add(new MustHaveText(propertyName));
+    add(new MustHaveText(propertyName.get()));
     return false;
   }
 
   public boolean lengthLe(Function<T, String> getter, int boundary) {
-    return lengthLe(getValue(getter), boundary, getPropertyName(getter));
+    return lengthLe(getValue(getter), boundary, () -> getPropertyName(getter));
   }
 
   public boolean lengthLe(String value, int boundary, String propertyName) {
+    return lengthLe(value, boundary, () -> propertyName);
+  }
+
+  public boolean lengthLe(String value, int boundary, Supplier<String> propertyName) {
     Preconditions.checkArgument(boundary >= 0, "boundary must be non-negative");
     int length = value == null ? 0 : value.length();
     if (length <= boundary) {
       return true;
     }
 
-    add(new LengthMustBeLessOrEqual(propertyName, boundary));
+    add(new LengthMustBeLessOrEqual(propertyName.get(), boundary));
     return false;
   }
 
   public boolean lengthLess(Function<T, String> getter, int boundary) {
-    return lengthLess(getValue(getter), boundary, getPropertyName(getter));
+    return lengthLess(getValue(getter), boundary, () -> getPropertyName(getter));
   }
 
   public boolean lengthLess(String value, int boundary, String propertyName) {
+    return lengthLess(value, boundary, () -> propertyName);
+  }
+
+  public boolean lengthLess(String value, int boundary, Supplier<String> propertyName) {
     Preconditions.checkArgument(boundary > 0, "boundary must be positive");
     int length = value == null ? 0 : value.length();
     if (length < boundary) {
       return true;
     }
 
-    add(new LengthMustBeLess(propertyName, boundary));
+    add(new LengthMustBeLess(propertyName.get(), boundary));
     return false;
   }
 
   public boolean lengthGe(Function<T, String> getter, int boundary) {
-    return lengthGe(getValue(getter), boundary, getPropertyName(getter));
+    return lengthGe(getValue(getter), boundary, () -> getPropertyName(getter));
   }
 
   public boolean lengthGe(String value, int boundary, String propertyName) {
+    return lengthGe(value, boundary, () -> propertyName);
+  }
+
+  public boolean lengthGe(String value, int boundary, Supplier<String> propertyName) {
     Preconditions.checkArgument(boundary >= 0, "boundary must be non-negative");
     int length = value == null ? 0 : value.length();
     if (length >= boundary) {
       return true;
     }
 
-    add(new LengthMustBeGreaterOrEqual(propertyName, boundary));
+    add(new LengthMustBeGreaterOrEqual(propertyName.get(), boundary));
     return false;
   }
 
   public boolean lengthGreater(Function<T, String> getter, int boundary) {
-    return lengthGreater(getValue(getter), boundary, getPropertyName(getter));
+    return lengthGreater(getValue(getter), boundary, () -> getPropertyName(getter));
   }
 
   public boolean lengthGreater(String value, int boundary, String propertyName) {
+    return lengthGreater(value, boundary, () -> propertyName);
+  }
+
+  public boolean lengthGreater(String value, int boundary, Supplier<String> propertyName) {
     Preconditions.checkArgument(boundary >= 0, "boundary must be non-negative");
     int length = value == null ? 0 : value.length();
     if (length > boundary) {
       return true;
     }
 
-    add(new LengthMustBeGreater(propertyName, boundary));
+    add(new LengthMustBeGreater(propertyName.get(), boundary));
     return false;
   }
 
   public boolean empty(Function<T, Collection<?>> getter) {
-    return empty(getValue(getter), getPropertyName(getter));
+    return empty(getValue(getter), () -> getPropertyName(getter));
   }
 
   public boolean empty(Collection<?> value, String propertyName) {
+    return empty(value, () -> propertyName);
+  }
+
+  public boolean empty(Collection<?> value, Supplier<String> propertyName) {
     if (CollectionUtils.isEmpty(value)) {
       return true;
     }
 
-    add(new MustBeEmpty(propertyName));
+    add(new MustBeEmpty(propertyName.get()));
     return false;
   }
 
   public boolean notEmpty(Function<T, Collection<?>> getter) {
-    return notEmpty(getValue(getter), getPropertyName(getter));
+    return notEmpty(getValue(getter), () -> getPropertyName(getter));
   }
 
   public boolean notEmpty(Collection<?> value, String propertyName) {
+    return notEmpty(value, () -> propertyName);
+  }
+
+  public boolean notEmpty(Collection<?> value, Supplier<String> propertyName) {
     if (!CollectionUtils.isEmpty(value)) {
       return true;
     }
 
-    add(new MustNotBeEmpty(propertyName));
+    add(new MustNotBeEmpty(propertyName.get()));
     return false;
   }
 
   public boolean validEmail(Function<T, String> getter) {
-    return validEmail(getValue(getter), getPropertyName(getter));
+    return validEmail(getValue(getter), () -> getPropertyName(getter));
   }
 
   public boolean validEmail(String value, String propertyName) {
+    return validEmail(value, () -> propertyName);
+  }
+
+  public boolean validEmail(String value, Supplier<String> propertyName) {
     if (isValidEmail(value)) {
       return true;
     }
 
-    add(new MustBeValidEmail(propertyName));
+    add(new MustBeValidEmail(propertyName.get()));
     return false;
   }
 
@@ -1065,11 +1204,16 @@ public class ValidationContext<T> {
    */
   public boolean matches(
       Function<T, String> getter, Predicate<String> matcher, String messageCode) {
-    return matches(getValue(getter), matcher, messageCode, getPropertyName(getter));
+    return matches(getValue(getter), matcher, messageCode, () -> getPropertyName(getter));
   }
 
   public boolean matches(
       String value, Predicate<String> matcher, String messageCode, String propertyName) {
+    return matches(value, matcher, messageCode, () -> propertyName);
+  }
+
+  public boolean matches(
+      String value, Predicate<String> matcher, String messageCode, Supplier<String> propertyName) {
 
     Preconditions.checkArgument(matcher != null, "matcher required");
     Preconditions.checkArgument(StringUtils.hasText(messageCode), "messageCode required");
@@ -1082,15 +1226,19 @@ public class ValidationContext<T> {
       return true;
     }
 
-    add(new MustMatchPattern(propertyName, messageCode));
+    add(new MustMatchPattern(propertyName.get(), messageCode));
     return false;
   }
 
   public <V extends Comparable<V>> boolean future(Function<T, V> getter) {
-    return future(getValue(getter), getPropertyName(getter));
+    return future(getValue(getter), () -> getPropertyName(getter));
   }
 
   public <V extends Comparable<V>> boolean future(V value, String propertyName) {
+    return future(value, () -> propertyName);
+  }
+
+  public <V extends Comparable<V>> boolean future(V value, Supplier<String> propertyName) {
     if (!notNull(value, propertyName)) {
       return false;
     }
@@ -1101,15 +1249,19 @@ public class ValidationContext<T> {
       return true;
     }
 
-    add(new MustBeInFuture(propertyName));
+    add(new MustBeInFuture(propertyName.get()));
     return false;
   }
 
   public <V extends Comparable<V>> boolean futureOrPresent(Function<T, V> getter) {
-    return futureOrPresent(getValue(getter), getPropertyName(getter));
+    return futureOrPresent(getValue(getter), () -> getPropertyName(getter));
   }
 
   public <V extends Comparable<V>> boolean futureOrPresent(V value, String propertyName) {
+    return futureOrPresent(value, () -> propertyName);
+  }
+
+  public <V extends Comparable<V>> boolean futureOrPresent(V value, Supplier<String> propertyName) {
     if (!notNull(value, propertyName)) {
       return false;
     }
@@ -1120,15 +1272,19 @@ public class ValidationContext<T> {
       return true;
     }
 
-    add(new MustBeInFutureOrPresent(propertyName));
+    add(new MustBeInFutureOrPresent(propertyName.get()));
     return false;
   }
 
   public <V extends Comparable<V>> boolean past(Function<T, V> getter) {
-    return past(getValue(getter), getPropertyName(getter));
+    return past(getValue(getter), () -> getPropertyName(getter));
   }
 
   public <V extends Comparable<V>> boolean past(V value, String propertyName) {
+    return past(value, () -> propertyName);
+  }
+
+  public <V extends Comparable<V>> boolean past(V value, Supplier<String> propertyName) {
     if (!notNull(value, propertyName)) {
       return false;
     }
@@ -1139,15 +1295,19 @@ public class ValidationContext<T> {
       return true;
     }
 
-    add(new MustBeInPast(propertyName));
+    add(new MustBeInPast(propertyName.get()));
     return false;
   }
 
   public <V extends Comparable<V>> boolean pastOrPresent(Function<T, V> getter) {
-    return pastOrPresent(getValue(getter), getPropertyName(getter));
+    return pastOrPresent(getValue(getter), () -> getPropertyName(getter));
   }
 
   public <V extends Comparable<V>> boolean pastOrPresent(V value, String propertyName) {
+    return pastOrPresent(value, () -> propertyName);
+  }
+
+  public <V extends Comparable<V>> boolean pastOrPresent(V value, Supplier<String> propertyName) {
     if (!notNull(value, propertyName)) {
       return false;
     }
@@ -1158,7 +1318,7 @@ public class ValidationContext<T> {
       return true;
     }
 
-    add(new MustBeInPastOrPresent(propertyName));
+    add(new MustBeInPastOrPresent(propertyName.get()));
     return false;
   }
 
