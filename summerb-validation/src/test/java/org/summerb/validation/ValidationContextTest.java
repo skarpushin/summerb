@@ -523,7 +523,7 @@ class ValidationContextTest {
     assertThrows(IllegalArgumentException.class, () -> f.between(Bean::getiValue1, null, 100));
     assertThrows(IllegalArgumentException.class, () -> f.between(Bean::getiValue1, 100, null));
     assertThrows(IllegalArgumentException.class, () -> f.between(Bean::getiValue1, 100, 50));
-    assertThrows(IllegalArgumentException.class, () -> f.between(Bean::getiValue1, 50, 50));
+    assertThrows(IllegalArgumentException.class, () -> f.between(Bean::getiValue1, 51, 50));
 
     // null value
     assertFalse(f.between(Bean::getiValue2, 25, 100));
@@ -571,7 +571,7 @@ class ValidationContextTest {
     assertThrows(IllegalArgumentException.class, () -> f.notBetween(Bean::getiValue1, null, 100));
     assertThrows(IllegalArgumentException.class, () -> f.notBetween(Bean::getiValue1, 100, null));
     assertThrows(IllegalArgumentException.class, () -> f.notBetween(Bean::getiValue1, 100, 50));
-    assertThrows(IllegalArgumentException.class, () -> f.notBetween(Bean::getiValue1, 50, 50));
+    assertThrows(IllegalArgumentException.class, () -> f.notBetween(Bean::getiValue1, 51, 50));
 
     // null value
     assertFalse(f.notBetween(Bean::getiValue2, 25, 100));

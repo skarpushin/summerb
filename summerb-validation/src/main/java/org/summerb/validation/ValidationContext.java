@@ -738,8 +738,8 @@ public class ValidationContext<T> {
     Preconditions.checkArgument(lowerBoundary != null, "lowerBoundary required");
     Preconditions.checkArgument(upperBoundary != null, "upperBoundary required");
     Preconditions.checkArgument(
-        lowerBoundary.compareTo(upperBoundary) < 0,
-        "lowerBoundary must be smaller than upperBoundary");
+        lowerBoundary.compareTo(upperBoundary) <= 0,
+        "lowerBoundary must be less or equal to the upperBoundary");
   }
 
   public <V extends Comparable<V>> boolean between(Function<T, V> getter, Range<V> range) {
