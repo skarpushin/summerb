@@ -1,12 +1,22 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.github.skarpushin</groupId>
+    <parent>
+        <groupId>com.github.skarpushin</groupId>
+        <artifactId>summerb-parent</artifactId>
+        <version>8.2.0</version>
+        <relativePath>../summerb-parent</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
     <artifactId>summerb-bom</artifactId>
-    <version>8.2.0</version>
+    <name>SummerB bill of materials</name>
+    <description>Just a regular BOM file</description>
+
     <packaging>pom</packaging>
+    <properties>
+        <modular-name>bom</modular-name>
+    </properties>
 
     <dependencyManagement>
         <dependencies>
@@ -67,16 +77,5 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
-    <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-        <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </distributionManagement>
 
 </project>

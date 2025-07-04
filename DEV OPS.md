@@ -1,10 +1,10 @@
 ## Deploy to Maven Central
-Detailed guide: https://central.sonatype.org/publish/publish-maven/
+Guide: https://central.sonatype.org/publish/publish-portal-maven/
 
 Short checklist:
 
- 1. `settings.xml`: server "ossrh" defined
- 1. `settings.xml`: profile "ossrh" defined with "gpg.passphrase" property settings
+ 1. `settings.xml`: server "central" defined
+ 1. `settings.xml`: profile "central" defined with "gpg.passphrase" property settings
  1. gpg key is in local key ring. i.e.: `gpg --import maven-release-singing-key.asc` (you'll need to download & install it from https://www.gpg4win.org/get-gpg4win.html)
  1. (**!**) Make sure Java 17 is used
 
@@ -18,14 +18,14 @@ settings.xml example:
                           https://maven.apache.org/xsd/settings-1.0.0.xsd">
     <servers>
         <server>
-            <id>ossrh</id>
+            <id>central</id>
             <username>USERNAME</username>
             <password>PASSWORD</password>
         </server>
     </servers>
     <profiles>
         <profile>
-            <id>ossrh</id>
+            <id>central</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
