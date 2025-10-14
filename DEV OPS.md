@@ -42,15 +42,11 @@ settings.xml example:
 Before deploying to Maven Central, it's recommended to perform a dry run to verify everything is correct, especially to catch potential javadoc errors:
 
 1. Run the following command to verify javadoc generation:
-   ```
-   mvn clean javadoc:jar -Prelease
-   ```
+   `mvn clean javadoc:jar -Prelease`
    This will generate javadocs for all modules and fail if there are any javadoc errors.
 
 2. To perform a more comprehensive dry run that includes all the steps of the release process without actually deploying:
-   ```
-   mvn clean install -Prelease
-   ```
+   `mvn clean install -Prelease`
    This will:
    - Compile all code
    - Run all tests

@@ -15,16 +15,21 @@
  ******************************************************************************/
 package org.summerb.easycrud.api;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.summerb.easycrud.api.dto.OrderBy;
 import org.summerb.easycrud.api.exceptions.EntityNotFoundException;
 import org.summerb.easycrud.api.query.QueryCommands;
 import org.summerb.easycrud.api.query.QueryConditions;
 import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.api.row.HasTimestamps;
+import org.summerb.easycrud.api.row.tools.EasyCrudDtoUtils;
 import org.summerb.easycrud.impl.OrderByBuilder;
 import org.summerb.i18n.HasMessageCode;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
@@ -195,4 +200,71 @@ public interface EasyCrudService<TId, TRow extends HasId<TId>>
    * @return WireTap if any that is used by this service
    */
   EasyCrudWireTap<TRow> getWireTap();
+
+  /**
+   * Get several rows by their ids
+   *
+   * @param ids ids of rows to retrieve
+   * @return list of rows or empty list if ids are empty or nothing found
+   */
+  default List<TRow> getByIds(Collection<TId> ids) {
+    if (CollectionUtils.isEmpty(ids)) {
+      return List.of();
+    }
+    return query().in(TRow::getId, ids).findAll();
+  }
+
+  /**
+   * Get several rows by their ids
+   *
+   * @param ids ids of rows to retrieve
+   * @return a map of rows or empty map if ids are empty or nothing found. Map key is row id, and
+   *     value is row itself
+   */
+  default Map<TId, TRow> getMapByIds(Collection<TId> ids) {
+    if (CollectionUtils.isEmpty(ids)) {
+      return Map.of();
+    }
+    return EasyCrudDtoUtils.toMapById(getByIds(ids));
+  }
+
+  /**
+   * Get several rows by their ids. Ids are provided indirectly by providing source collection of
+   * some objects and function to extract row id from items of given collection
+   *
+   * @param source collection of objects from which to retrieve IDs of rows to be loaded
+   * @param idGetter a function which extracts row ID of source object
+   * @param <TSource> type of source object
+   * @return list of rows or empty list if ids are empty or nothing found
+   */
+  default <TSource> List<TRow> getByIds(
+      Collection<TSource> source, Function<TSource, TId> idGetter) {
+    if (CollectionUtils.isEmpty(source)) {
+      return List.of();
+    }
+    List<TId> ids = source.stream().map(idGetter).filter(Objects::nonNull).distinct().toList();
+    if (CollectionUtils.isEmpty(ids)) {
+      return List.of();
+    }
+    return query().in(TRow::getId, ids).findAll();
+  }
+
+  /**
+   * Get several rows by their ids. Ids are provided indirectly by providing source collection of
+   * some objects and function to extract row id from items of given collection
+   *
+   * @param source collection of objects from which to retrieve IDs of rows to be loaded
+   * @param idGetter a function which extracts row ID of source object
+   * @param <TSource> type of source object
+   * @return a map of rows or empty map if ids are empty or nothing found. Map key is row id, and
+   *     value is row itself
+   */
+  default <TSource> Map<TId, TRow> getMapByIds(
+      Collection<TSource> source, Function<TSource, TId> idGetter) {
+    List<TRow> list = getByIds(source, idGetter);
+    if (list.isEmpty()) {
+      return Map.of();
+    }
+    return EasyCrudDtoUtils.toMapById(list);
+  }
 }
