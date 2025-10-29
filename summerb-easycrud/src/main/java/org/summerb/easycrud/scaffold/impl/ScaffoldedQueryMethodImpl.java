@@ -23,9 +23,11 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -219,7 +221,7 @@ public class ScaffoldedQueryMethodImpl<TMethodParameter extends ScaffoldedMethod
         if (!CollectionUtils.isEmpty(ret) && isTriggerWireTapMultiple) {
           wireTap.afterRead(ret);
         }
-        return ret;
+        return adjustToReturnType(ret, returnType);
       }
 
       // Case: Single object
@@ -236,6 +238,19 @@ public class ScaffoldedQueryMethodImpl<TMethodParameter extends ScaffoldedMethod
     } catch (Throwable t) {
       throw service.getExceptionStrategy().handleExceptionAtFind(t);
     }
+  }
+
+  protected Object adjustToReturnType(List<?> results, Class<?> returnType) {
+    if (results.getClass().equals(returnType)
+        || List.class.equals(returnType)
+        || Collection.class.equals(returnType)
+        || Iterable.class.equals(returnType)) {
+      return results;
+    }
+    if (Set.class.equals(returnType)) {
+      return new HashSet<>(results);
+    }
+    throw new RuntimeException("Adjusting to return type is not supported for " + returnType);
   }
 
   protected void assertReturnTypeForModifyingQuery(Class<?> returnType) {

@@ -83,6 +83,15 @@ public class QueryTest {
   }
 
   @Test
+  void expect_getEnvsWithArray_worksWithSetAsReturnType() {
+    createTestData();
+
+    Set<String> result = service.getEnvsWithArrayAsSet(new int[] {10, 30});
+    assertEquals(2, result.size());
+    assertEquals(Set.of("env1", "env3"), result);
+  }
+
+  @Test
   void expect_getEnvsWithSet_works() {
     createTestData();
 

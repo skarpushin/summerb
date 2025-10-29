@@ -36,6 +36,9 @@ public interface TestDto1Service extends EasyCrudService<String, TestDto1> {
   List<String> getEnvsWithArray(int[] majorVersions);
 
   @Query("SELECT env FROM forms_test_1 WHERE major_version IN (:majorVersions) ORDER BY env ASC")
+  Set<String> getEnvsWithArrayAsSet(int[] majorVersions);
+
+  @Query("SELECT env FROM forms_test_1 WHERE major_version IN (:majorVersions) ORDER BY env ASC")
   List<String> getEnvsWithSet(Set<Integer> majorVersions);
 
   @Query("SELECT * FROM forms_test_1 WHERE major_version IN (:majorVersions) ORDER BY env ASC")
