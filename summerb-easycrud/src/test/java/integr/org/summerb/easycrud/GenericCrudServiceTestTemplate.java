@@ -541,9 +541,9 @@ public abstract class GenericCrudServiceTestTemplate {
                 new PagerParams(0, 100),
                 Query.n(TestDto1.class).contains("env", "env-"),
                 OrderBy.Asc("minorVersion"));
-    assertEquals("env-prd", result.getItems().get(2).getEnv());
-    assertEquals("env-pilot", result.getItems().get(1).getEnv());
     assertEquals("env-uat", result.getItems().get(0).getEnv());
+    assertEquals("env-pilot", result.getItems().get(1).getEnv());
+    assertEquals("env-prd", result.getItems().get(2).getEnv());
 
     result =
         getTestDto1Service()

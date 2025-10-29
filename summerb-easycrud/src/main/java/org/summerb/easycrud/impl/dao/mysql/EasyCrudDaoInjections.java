@@ -5,6 +5,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.summerb.easycrud.api.DaoExceptionTranslator;
+import org.summerb.easycrud.api.OrderByToSql;
 import org.summerb.easycrud.api.ParameterSourceBuilder;
 import org.summerb.easycrud.api.QueryToSql;
 import org.summerb.easycrud.api.StringIdGenerator;
@@ -24,6 +25,8 @@ public interface EasyCrudDaoInjections<TId, TRow extends HasId<TId>> {
   SqlTypeOverrides getSqlTypeOverrides();
 
   QueryToSql getQueryToSql();
+
+  OrderByToSql getOrderByToSql();
 
   ConversionService getConversionService();
 

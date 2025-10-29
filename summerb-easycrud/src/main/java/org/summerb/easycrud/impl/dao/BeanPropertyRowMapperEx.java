@@ -27,6 +27,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
+import org.summerb.easycrud.impl.dao.mysql.QueryToSqlMySqlImpl;
 
 /**
  * This is the exact copy of Spring jdbc BeanPropertyRowMapper with eliminated slight design flaws
@@ -208,21 +209,7 @@ public class BeanPropertyRowMapperEx<T> implements RowMapper<T> {
    * @see #lowerCaseName
    */
   protected String underscoreName(String name) {
-    if (!StringUtils.hasLength(name)) {
-      return "";
-    }
-
-    StringBuilder result = new StringBuilder();
-    result.append(Character.toLowerCase(name.charAt(0)));
-    for (int i = 1; i < name.length(); i++) {
-      char c = name.charAt(i);
-      if (Character.isUpperCase(c)) {
-        result.append('_').append(Character.toLowerCase(c));
-      } else {
-        result.append(c);
-      }
-    }
-    return result.toString();
+    return QueryToSqlMySqlImpl.snakeCase(name);
   }
 
   /**

@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.util.StringUtils;
 import org.summerb.easycrud.api.QueryToSql;
 import org.summerb.easycrud.api.query.Condition;
 import org.summerb.easycrud.api.query.DisjunctionCondition;
@@ -122,7 +123,7 @@ public class QueryToSqlMySqlImpl implements QueryToSql {
   @SuppressWarnings({"rawtypes", "unchecked"})
   protected String buildCondition(
       FieldCondition c, MapSqlParameterSource params, Supplier<Integer> paramIdx) {
-    String underscoredFieldName = underscore(c.getFieldName());
+    String underscoredFieldName = snakeCase(c.getFieldName());
 
     RestrictionToNativeSql converter = converters.get(c.getRestriction().getClass());
     if (converter == null) {
@@ -137,18 +138,19 @@ public class QueryToSqlMySqlImpl implements QueryToSql {
     return "arg" + nextParameterIndex.get();
   }
 
-  public static String underscore(String name) {
+  public static String snakeCase(String name) {
+    if (!StringUtils.hasLength(name)) {
+      return "";
+    }
+
     StringBuilder result = new StringBuilder();
-    if (name != null && !name.isEmpty()) {
-      result.append(name.substring(0, 1).toLowerCase());
-      for (int i = 1; i < name.length(); i++) {
-        String s = name.substring(i, i + 1);
-        if (s.equals(s.toUpperCase())) {
-          result.append("_");
-          result.append(s.toLowerCase());
-        } else {
-          result.append(s);
-        }
+    result.append(Character.toLowerCase(name.charAt(0)));
+    for (int i = 1; i < name.length(); i++) {
+      char c = name.charAt(i);
+      if (Character.isUpperCase(c)) {
+        result.append('_').append(Character.toLowerCase(c));
+      } else {
+        result.append(c);
       }
     }
     return result.toString();

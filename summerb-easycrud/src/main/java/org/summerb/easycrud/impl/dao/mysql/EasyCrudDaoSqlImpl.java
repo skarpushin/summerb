@@ -15,11 +15,8 @@
  ******************************************************************************/
 package org.summerb.easycrud.impl.dao.mysql;
 
-import static org.summerb.easycrud.impl.dao.mysql.QueryToSqlMySqlImpl.underscore;
-
 import com.google.common.base.Preconditions;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -34,9 +31,9 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.util.StringUtils;
 import org.summerb.easycrud.api.DaoExceptionTranslator;
 import org.summerb.easycrud.api.EasyCrudDao;
+import org.summerb.easycrud.api.OrderByToSql;
 import org.summerb.easycrud.api.ParameterSourceBuilder;
 import org.summerb.easycrud.api.QueryToSql;
 import org.summerb.easycrud.api.StringIdGenerator;
@@ -70,7 +67,6 @@ import org.summerb.utils.easycrud.api.dto.Top;
  */
 public class EasyCrudDaoSqlImpl<TId, TRow extends HasId<TId>> extends TableDaoBase
     implements EasyCrudDao<TId, TRow>, EasyCrudDaoInjections<TId, TRow> {
-  protected static final List<String> allowedSortDirections = Arrays.asList("asc", "desc");
   protected static final String PARAM_MAX = "max";
   protected static final String PARAM_OFFSET = "offset";
 
@@ -84,6 +80,7 @@ public class EasyCrudDaoSqlImpl<TId, TRow extends HasId<TId>> extends TableDaoBa
   protected StringIdGenerator stringIdGenerator;
   protected DaoExceptionTranslator daoExceptionTranslator;
   protected ClockResolver clockResolver;
+  protected OrderByToSql orderByToSql;
 
   protected SimpleJdbcInsert jdbcInsert;
   protected SimpleJdbcUpdate jdbcUpdate;
@@ -130,6 +127,10 @@ public class EasyCrudDaoSqlImpl<TId, TRow extends HasId<TId>> extends TableDaoBa
 
     if (queryToSql == null) {
       queryToSql = buildDefaultQueryToNativeSqlCompiler();
+    }
+
+    if (orderByToSql == null) {
+      orderByToSql = new OrderByToSqlMySqlImpl();
     }
 
     if (daoExceptionTranslator == null) {
@@ -210,9 +211,9 @@ public class EasyCrudDaoSqlImpl<TId, TRow extends HasId<TId>> extends TableDaoBa
     // Configure identification columns - how do we find right record for
     // update
     List<String> restrictingColumns = new ArrayList<>();
-    restrictingColumns.add(QueryToSqlMySqlImpl.underscore(HasId.FN_ID));
+    restrictingColumns.add(QueryToSqlMySqlImpl.snakeCase(HasId.FN_ID));
     if (HasTimestamps.class.isAssignableFrom(rowClass)) {
-      restrictingColumns.add(QueryToSqlMySqlImpl.underscore(HasTimestamps.FN_MODIFIED_AT));
+      restrictingColumns.add(QueryToSqlMySqlImpl.snakeCase(HasTimestamps.FN_MODIFIED_AT));
     }
     ret.setRestrictingColumns(restrictingColumns);
 
@@ -228,10 +229,10 @@ public class EasyCrudDaoSqlImpl<TId, TRow extends HasId<TId>> extends TableDaoBa
           List<String> updatingColumns = new ArrayList<>(tableMetaDataContext.createColumns());
           remove(HasId.FN_ID, updatingColumns);
           if (HasTimestamps.class.isAssignableFrom(rowClass)) {
-            remove(QueryToSqlMySqlImpl.underscore(HasTimestamps.FN_CREATED_AT), updatingColumns);
+            remove(QueryToSqlMySqlImpl.snakeCase(HasTimestamps.FN_CREATED_AT), updatingColumns);
           }
           if (HasAuthor.class.isAssignableFrom(rowClass)) {
-            remove(QueryToSqlMySqlImpl.underscore(HasAuthor.FN_CREATED_BY), updatingColumns);
+            remove(QueryToSqlMySqlImpl.snakeCase(HasAuthor.FN_CREATED_BY), updatingColumns);
           }
           return updatingColumns;
         }
@@ -364,7 +365,7 @@ public class EasyCrudDaoSqlImpl<TId, TRow extends HasId<TId>> extends TableDaoBa
     params.addValue(PARAM_OFFSET, pagerParams.getOffset());
     params.addValue(PARAM_MAX, pagerParams.getMax());
 
-    String query = sqlFindByCustomQuery + whereClause + buildOrderBySubclause(orderBy);
+    String query = sqlFindByCustomQuery + whereClause + orderByToSql.buildOrderBySubclause(orderBy);
     if (!PagerParams.ALL.equals(pagerParams)) {
       query = query + sqlPartPaginator;
     }
@@ -383,34 +384,6 @@ public class EasyCrudDaoSqlImpl<TId, TRow extends HasId<TId>> extends TableDaoBa
     }
 
     return new PaginatedList<>(pagerParams, list, totalResultsCount);
-  }
-
-  protected String buildOrderBySubclause(OrderBy[] orderByArr) {
-    if (orderByArr == null || orderByArr.length == 0) {
-      return "";
-    }
-
-    StringBuilder ret = new StringBuilder();
-    for (OrderBy orderBy : orderByArr) {
-      if (!ret.isEmpty()) {
-        ret.append(", ");
-      }
-
-      if (orderBy == null
-          || !StringUtils.hasText(orderBy.getDirection())
-          || !StringUtils.hasText(orderBy.getFieldName())) {
-        continue;
-      }
-
-      ret.append(underscore(orderBy.getFieldName()));
-      ret.append(" ");
-      Preconditions.checkArgument(
-          allowedSortDirections.contains(orderBy.getDirection().toLowerCase()),
-          "OrderBy not allowed: %s",
-          orderBy.getDirection());
-      ret.append(orderBy.getDirection());
-    }
-    return ret.isEmpty() ? "" : " ORDER BY " + ret;
   }
 
   @Override
@@ -499,6 +472,23 @@ public class EasyCrudDaoSqlImpl<TId, TRow extends HasId<TId>> extends TableDaoBa
   public void setQueryToSql(QueryToSql queryToSql) {
     Preconditions.checkArgument(queryToSql != null, "queryToSql required");
     this.queryToSql = queryToSql;
+  }
+
+  @Override
+  public OrderByToSql getOrderByToSql() {
+    return orderByToSql;
+  }
+
+  /**
+   * Set {@link OrderByToSql}. Optionally autowired from application context. If nothing set, then
+   * {@link OrderByToSqlMySqlImpl} will be used
+   *
+   * @param orderByToSql queryToSql
+   */
+  @Autowired(required = false)
+  public void setOrderByToSql(OrderByToSql orderByToSql) {
+    Preconditions.checkArgument(orderByToSql != null, "orderByToSql required");
+    this.orderByToSql = orderByToSql;
   }
 
   @Override

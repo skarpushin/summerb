@@ -15,7 +15,10 @@
  ******************************************************************************/
 package org.summerb.easycrud.api.dto;
 
-// TBD: Add support for NULLS FIRST, LAST
+import com.google.common.base.Preconditions;
+import java.util.List;
+import java.util.Objects;
+import org.springframework.util.StringUtils;
 
 /**
  * Describes Order By part of the query for a single field
@@ -23,19 +26,29 @@ package org.summerb.easycrud.api.dto;
  * @author sergey.karpushin
  */
 public class OrderBy {
+  public static final String NULLS_LAST = "NULLS LAST";
+  public static final String NULLS_FIRST = "NULLS FIRST";
+
   public static final String ORDER_DESC = "DESC";
   public static final String ORDER_ASC = "ASC";
+  public static final List<String> ALLOWED_SORT_DIRECTIONS = List.of(ORDER_ASC, ORDER_DESC);
 
-  protected String direction;
+  /** This can be used to override default nulls handling for the whole application */
+  public static Boolean defaultNullsLast = null;
+
   protected String fieldName;
+  protected String direction;
+  protected Boolean nullsLast = defaultNullsLast;
+  protected String collate;
 
   /**
    * @param fieldName field name
    * @return OrderBy instance
    */
   public static OrderBy Asc(String fieldName) {
+    Preconditions.checkArgument(StringUtils.hasText(fieldName), "Field name must be provided");
     OrderBy ret = new OrderBy();
-    ret.fieldName = fieldName;
+    ret.setFieldName(fieldName);
     ret.direction = ORDER_ASC;
     return ret;
   }
@@ -45,9 +58,67 @@ public class OrderBy {
    * @return OrderBy instance
    */
   public static OrderBy Desc(String fieldName) {
+    Preconditions.checkArgument(StringUtils.hasText(fieldName), "Field name must be provided");
     OrderBy ret = new OrderBy();
-    ret.fieldName = fieldName;
+    ret.setFieldName(fieldName);
     ret.direction = ORDER_DESC;
+    return ret;
+  }
+
+  public String format() {
+    Preconditions.checkArgument(StringUtils.hasText(fieldName), "Field name must be provided");
+
+    StringBuilder sb = new StringBuilder();
+    sb.append(fieldName);
+
+    if (direction != null) {
+      sb.append(",").append(direction);
+    }
+
+    if (StringUtils.hasText(collate)) {
+      sb.append(",collate ").append(collate);
+    }
+
+    if (nullsLast != null) {
+      sb.append(nullsLast ? ",nulls last" : ",nulls first");
+    }
+
+    return sb.toString();
+  }
+
+  public static OrderBy parse(String orderByStr) {
+    String[] parts = orderByStr.split(",");
+    if (parts.length < 1 || parts.length > 4) {
+      throw new IllegalArgumentException("Invalid order by string: " + orderByStr);
+    }
+
+    OrderBy ret = new OrderBy();
+    ret.setFieldName(parts[0].trim());
+
+    if (parts.length > 1) {
+      ret.direction = parts[1].trim().toUpperCase();
+      if (!ALLOWED_SORT_DIRECTIONS.contains(ret.direction)) {
+        throw new IllegalArgumentException(
+            "Invalid order by direction: " + ret.direction + " for field: " + ret.fieldName);
+      }
+    }
+
+    for (int i = 2; i < parts.length; i++) {
+      String part = parts[i].toLowerCase().trim();
+      if (part.startsWith("collate ")) {
+        ret.setCollate(part.substring("collate ".length()).trim());
+      } else if (part.startsWith("nulls ")) {
+        ret.nullsLast =
+            switch (part.toUpperCase().trim()) {
+              case NULLS_LAST -> true;
+              case NULLS_FIRST -> false;
+              default ->
+                  throw new IllegalArgumentException(
+                      "Invalid order by nullsLast: " + parts[i] + " for field: " + ret.fieldName);
+            };
+      }
+    }
+
     return ret;
   }
 
@@ -55,45 +126,99 @@ public class OrderBy {
     return direction;
   }
 
+  public void setDirection(String direction) {
+    if (direction != null) {
+      Preconditions.checkArgument(
+          ALLOWED_SORT_DIRECTIONS.contains(direction.toUpperCase()),
+          "Invalid sort direction: " + direction);
+    }
+    this.direction = direction;
+  }
+
   public String getFieldName() {
     return fieldName;
   }
 
-  @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((direction == null) ? 0 : direction.hashCode());
-    result = prime * result + ((fieldName == null) ? 0 : fieldName.hashCode());
-    return result;
+  public void setFieldName(String fieldName) {
+    Preconditions.checkArgument(isValidFieldName(fieldName), "Invalid fieldName: " + fieldName);
+    this.fieldName = fieldName;
+  }
+
+  public boolean isValidFieldName(String fieldName) {
+    return fieldName != null
+        && !fieldName.isEmpty()
+        && fieldName
+            .chars()
+            .allMatch(ch -> Character.isLetterOrDigit(ch) || ch == '_' || ch == '.');
+  }
+
+  public String getCollate() {
+    return collate;
+  }
+
+  public void setCollate(String collate) {
+    if (collate == null) {
+      this.collate = null;
+      return;
+    }
+    Preconditions.checkArgument(isValidCollation(collate), "Invalid collation: " + collate);
+    this.collate = collate;
+  }
+
+  public boolean isValidCollation(String collation) {
+    return collation != null
+        && !collation.isEmpty()
+        && collation.chars().allMatch(ch -> Character.isLetterOrDigit(ch) || ch == '_');
+  }
+
+  public OrderBy withCollate(String collate) {
+    setCollate(collate);
+    return this;
+  }
+
+  /**
+   * @return null means default (native) behavior; false means = nulls first; true means nulls last
+   */
+  public Boolean getNullsLast() {
+    return nullsLast;
+  }
+
+  public void setNullsLast(Boolean nullsLast) {
+    this.nullsLast = nullsLast;
+  }
+
+  public OrderBy withNullsLast(boolean nullsLast) {
+    this.nullsLast = nullsLast;
+    return this;
+  }
+
+  public OrderBy nullsLast() {
+    this.nullsLast = true;
+    return this;
+  }
+
+  public OrderBy nullsDefault() {
+    this.nullsLast = null;
+    return this;
+  }
+
+  public OrderBy nullsFirst() {
+    this.nullsLast = false;
+    return this;
   }
 
   @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    OrderBy other = (OrderBy) obj;
-    if (direction == null) {
-      if (other.direction != null) {
-        return false;
-      }
-    } else if (!direction.equals(other.direction)) {
-      return false;
-    }
-    if (fieldName == null) {
-      if (other.fieldName != null) {
-        return false;
-      }
-    } else if (!fieldName.equals(other.fieldName)) {
-      return false;
-    }
-    return true;
+  public boolean equals(Object o) {
+    if (o == null || getClass() != o.getClass()) return false;
+    OrderBy orderBy = (OrderBy) o;
+    return Objects.equals(fieldName, orderBy.fieldName)
+        && Objects.equals(direction, orderBy.direction)
+        && Objects.equals(nullsLast, orderBy.nullsLast)
+        && Objects.equals(collate, orderBy.collate);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(fieldName, direction, nullsLast, collate);
   }
 }

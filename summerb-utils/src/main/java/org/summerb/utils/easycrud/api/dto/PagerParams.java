@@ -17,6 +17,7 @@ package org.summerb.utils.easycrud.api.dto;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Pagination params for queries
@@ -73,23 +74,15 @@ public class PagerParams implements Serializable {
   }
 
   @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + (int) (max ^ (max >>> 32));
-    result = prime * result + (int) (offset ^ (offset >>> 32));
-    return result;
+  public boolean equals(Object o) {
+    if (o == null || getClass() != o.getClass()) return false;
+    PagerParams that = (PagerParams) o;
+    return offset == that.offset && max == that.max;
   }
 
   @Override
-  public boolean equals(Object obj) {
-    if (this == obj) return true;
-    if (obj == null) return false;
-    // Minor LSP violation
-    if (!(obj instanceof PagerParams other)) return false;
-    if (max != other.max) return false;
-    if (offset != other.offset) return false;
-    return true;
+  public int hashCode() {
+    return Objects.hash(offset, max);
   }
 
   private static class Unmodifiable extends PagerParams {

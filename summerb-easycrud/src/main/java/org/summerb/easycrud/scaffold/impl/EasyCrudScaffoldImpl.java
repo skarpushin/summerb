@@ -38,6 +38,7 @@ import org.summerb.easycrud.api.EasyCrudExceptionStrategy;
 import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.api.EasyCrudValidationStrategy;
 import org.summerb.easycrud.api.EasyCrudWireTap;
+import org.summerb.easycrud.api.OrderByToSql;
 import org.summerb.easycrud.api.ParameterSourceBuilder;
 import org.summerb.easycrud.api.QueryToSql;
 import org.summerb.easycrud.api.StringIdGenerator;
@@ -64,6 +65,7 @@ import org.summerb.utils.DtoBase;
  *
  * @author sergeyk
  */
+@SuppressWarnings("rawtypes")
 public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean {
   protected DataSource dataSource;
   protected AutowireCapableBeanFactory beanFactory;
@@ -146,7 +148,7 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
   public <TId, TDto extends HasId<TId>> EasyCrudService<TId, TDto> fromRowClass(
       Class<TDto> rowClass) {
     String messageCode = rowClass.getSimpleName();
-    String tableName = QueryToSqlMySqlImpl.underscore(messageCode);
+    String tableName = QueryToSqlMySqlImpl.snakeCase(messageCode);
     return fromRowClass(rowClass, messageCode, tableName);
   }
 
@@ -155,7 +157,8 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
       Class<TDto> rowClass, String messageCode, String tableName, Object... injections) {
     try {
       EasyCrudDao<TId, TDto> dao = buildDao(rowClass, tableName);
-      var ret = instantiateAndAutowireService(dao, rowClass);
+      EasyCrudServiceImpl<TId, TDto, EasyCrudDao<TId, TDto>> ret =
+          instantiateAndAutowireService(dao, rowClass);
       ret.setRowMessageCode(messageCode);
       autowireInjections(injections);
       setServiceInjectionsIfAny(ret, messageCode, injections);
@@ -196,22 +199,22 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
       EasyCrudServiceImpl<TId, TRow, EasyCrudDao<TId, TRow>> ret,
       String messageCode,
       Object... injections) {
-    var currentUserResolver = find(injections, CurrentUserUuidResolver.class);
+    CurrentUserUuidResolver currentUserResolver = find(injections, CurrentUserUuidResolver.class);
     if (currentUserResolver != null) {
       ret.setCurrentUserResolver(currentUserResolver);
     }
 
-    var stringIdGenerator = find(injections, StringIdGenerator.class);
+    StringIdGenerator stringIdGenerator = find(injections, StringIdGenerator.class);
     if (stringIdGenerator != null) {
       ret.setStringIdGenerator(stringIdGenerator);
     }
 
-    var exceptionStrategy = find(injections, EasyCrudExceptionStrategy.class);
+    EasyCrudExceptionStrategy exceptionStrategy = find(injections, EasyCrudExceptionStrategy.class);
     if (exceptionStrategy != null) {
       ret.setExceptionStrategy(exceptionStrategy);
     }
 
-    var easyCrudWireTap = buildWireTap(messageCode, injections);
+    EasyCrudWireTap<HasId<Object>> easyCrudWireTap = buildWireTap(messageCode, injections);
     if (easyCrudWireTap != null) {
       ret.setWireTap((EasyCrudWireTap<TRow>) easyCrudWireTap);
     }
@@ -221,7 +224,8 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
       EasyCrudServiceImpl<TId, TDto, EasyCrudDao<TId, TDto>> instantiateAndAutowireService(
           EasyCrudDao<TId, TDto> dao, Class<TDto> rowClass) {
 
-    var ret = new EasyCrudServiceImpl<>(dao, rowClass);
+    EasyCrudServiceImpl<TId, TDto, EasyCrudDao<TId, TDto>> ret =
+        new EasyCrudServiceImpl<>(dao, rowClass);
     beanFactory.autowireBean(ret);
     return ret;
   }
@@ -348,37 +352,42 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
   protected <TId, TDto extends HasId<TId>> void setDaoInjectionsIfAny(
       EasyCrudDaoSqlImpl<TId, TDto> ret, Object... injections) {
 
-    var conversionService = find(injections, ConversionService.class);
+    ConversionService conversionService = find(injections, ConversionService.class);
     if (conversionService != null) {
       ret.setConversionService(conversionService);
     }
 
-    var sqlTypeOverrides = find(injections, SqlTypeOverrides.class);
+    SqlTypeOverrides sqlTypeOverrides = find(injections, SqlTypeOverrides.class);
     if (sqlTypeOverrides != null) {
       ret.setSqlTypeOverrides(sqlTypeOverrides);
     }
 
-    var stringIdGenerator = find(injections, StringIdGenerator.class);
+    StringIdGenerator stringIdGenerator = find(injections, StringIdGenerator.class);
     if (stringIdGenerator != null) {
       ret.setStringIdGenerator(stringIdGenerator);
     }
 
-    var rowMapper = find(injections, RowMapper.class);
+    RowMapper rowMapper = find(injections, RowMapper.class);
     if (rowMapper != null) {
       ret.setRowMapper(rowMapper);
     }
 
-    var parameterSourceBuilder = find(injections, ParameterSourceBuilder.class);
+    ParameterSourceBuilder parameterSourceBuilder = find(injections, ParameterSourceBuilder.class);
     if (parameterSourceBuilder != null) {
       ret.setParameterSourceBuilder(parameterSourceBuilder);
     }
 
-    var queryToNativeSqlCompiler = find(injections, QueryToSql.class);
+    QueryToSql queryToNativeSqlCompiler = find(injections, QueryToSql.class);
     if (queryToNativeSqlCompiler != null) {
       ret.setQueryToSql(queryToNativeSqlCompiler);
     }
 
-    var daoExceptionTranslator = find(injections, DaoExceptionTranslator.class);
+    OrderByToSql orderByToSqlCompiler = find(injections, OrderByToSql.class);
+    if (orderByToSqlCompiler != null) {
+      ret.setOrderByToSql(orderByToSqlCompiler);
+    }
+
+    DaoExceptionTranslator daoExceptionTranslator = find(injections, DaoExceptionTranslator.class);
     if (daoExceptionTranslator != null) {
       ret.setDaoExceptionTranslator(daoExceptionTranslator);
     }
