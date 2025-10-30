@@ -1239,6 +1239,8 @@ public class ValidationContext<T> {
   }
 
   public <V extends Comparable<V>> boolean future(V value, Supplier<String> propertyName) {
+    assertTemporalValueIsNotJustTime(value);
+
     if (!notNull(value, propertyName)) {
       return false;
     }
@@ -1262,6 +1264,8 @@ public class ValidationContext<T> {
   }
 
   public <V extends Comparable<V>> boolean futureOrPresent(V value, Supplier<String> propertyName) {
+    assertTemporalValueIsNotJustTime(value);
+
     if (!notNull(value, propertyName)) {
       return false;
     }
@@ -1285,6 +1289,8 @@ public class ValidationContext<T> {
   }
 
   public <V extends Comparable<V>> boolean past(V value, Supplier<String> propertyName) {
+    assertTemporalValueIsNotJustTime(value);
+
     if (!notNull(value, propertyName)) {
       return false;
     }
@@ -1308,6 +1314,8 @@ public class ValidationContext<T> {
   }
 
   public <V extends Comparable<V>> boolean pastOrPresent(V value, Supplier<String> propertyName) {
+    assertTemporalValueIsNotJustTime(value);
+
     if (!notNull(value, propertyName)) {
       return false;
     }
@@ -1320,6 +1328,14 @@ public class ValidationContext<T> {
 
     add(new MustBeInPastOrPresent(propertyName.get()));
     return false;
+  }
+
+  private static <V extends Comparable<V>> void assertTemporalValueIsNotJustTime(V value) {
+    Preconditions.checkArgument(
+        value == null
+            || (!OffsetTime.class.isAssignableFrom(value.getClass())
+                && !LocalTime.class.isAssignableFrom(value.getClass())),
+        "value must not be of OffsetTime or LocalTime type");
   }
 
   @SuppressWarnings("unchecked")

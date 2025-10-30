@@ -25,12 +25,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.api.relations.EasyCrudM2mService;
 import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.api.row.relations.ManyToManyRow;
-import org.summerb.easycrud.api.row.relations.Ref;
 import org.summerb.easycrud.api.row.tools.EasyCrudDtoUtils;
 import org.summerb.easycrud.impl.EasyCrudServiceImpl;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
@@ -76,8 +76,7 @@ public class EasyCrudM2mServiceImpl<
     this.serviceA = serviceA;
     this.serviceB = serviceB;
 
-    this.setRowMessageCode(
-        Ref.buildDefaultM2mEntityName(serviceA.getRowMessageCode(), serviceB.getRowMessageCode()));
+    this.setRowMessageCode(serviceA.getRowMessageCode() + "-" + serviceB.getRowMessageCode());
   }
 
   @Override
@@ -161,6 +160,7 @@ public class EasyCrudM2mServiceImpl<
   }
 
   @Override
+  @Transactional
   public ManyToManyRow<T1Id, T2Id> addReferencee(T1Id referencerId, T2Id referenceeId) {
     try {
       ManyToManyRow<T1Id, T2Id> pair = new ManyToManyRow<>();
@@ -183,6 +183,7 @@ public class EasyCrudM2mServiceImpl<
   }
 
   @Override
+  @Transactional
   public void removeReferencee(T1Id referencerId, T2Id referenceeId) throws NotAuthorizedException {
     try {
       ManyToManyRow<T1Id, T2Id> pair =

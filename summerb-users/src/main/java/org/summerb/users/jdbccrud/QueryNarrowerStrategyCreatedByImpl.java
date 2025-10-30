@@ -16,8 +16,10 @@
 package org.summerb.users.jdbccrud;
 
 import com.google.common.base.Preconditions;
+import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.api.row.HasAuthor;
+import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.rest.commonpathvars.PathVariablesMap;
 import org.summerb.easycrud.rest.querynarrower.QueryNarrowerStrategyFieldBased;
 import org.summerb.security.api.CurrentUserUuidResolver;
@@ -27,20 +29,20 @@ import org.summerb.security.api.CurrentUserUuidResolver;
  *
  * <p>WARNING: It's assumed dto implemented interface {@link HasAuthor}
  */
-public class QueryNarrowerStrategyCreatedByImpl<TRow extends HasAuthor>
-    extends QueryNarrowerStrategyFieldBased<TRow> {
+public class QueryNarrowerStrategyCreatedByImpl<TId, TRow extends HasId<TId> & HasAuthor>
+    extends QueryNarrowerStrategyFieldBased<TId, TRow> {
   protected CurrentUserUuidResolver currentUserUuidResolver;
 
   public QueryNarrowerStrategyCreatedByImpl(
-      Class<TRow> rowClass, CurrentUserUuidResolver currentUserUuidResolver) {
-    super(rowClass, HasAuthor.FN_CREATED_BY);
+      EasyCrudService<TId, TRow> service, CurrentUserUuidResolver currentUserUuidResolver) {
+    super(service, HasAuthor.FN_CREATED_BY);
     Preconditions.checkArgument(
         currentUserUuidResolver != null, "currentUserUuidResolver required");
     this.currentUserUuidResolver = currentUserUuidResolver;
   }
 
   @Override
-  protected Query<TRow> doNarrow(Query<TRow> ret, PathVariablesMap allRequestParams) {
+  protected Query<TId, TRow> doNarrow(Query<TId, TRow> ret, PathVariablesMap allRequestParams) {
     ret.eq(HasAuthor::getCreatedBy, currentUserUuidResolver.getUserUuid());
     return ret;
   }

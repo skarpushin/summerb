@@ -23,8 +23,7 @@ import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.api.EasyCrudWireTap;
 import org.summerb.easycrud.api.dto.OrderBy;
 import org.summerb.easycrud.api.exceptions.EntityNotFoundException;
-import org.summerb.easycrud.api.query.QueryCommands;
-import org.summerb.easycrud.api.query.QueryConditions;
+import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.api.row.HasId;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
 import org.summerb.utils.easycrud.api.dto.PagerParams;
@@ -56,13 +55,13 @@ public class EasyCrudServiceWrapper<
   }
 
   @Override
-  public TRow findOneByQuery(QueryConditions query) throws NotAuthorizedException {
+  public TRow findOneByQuery(Query<TId, TRow> query) throws NotAuthorizedException {
     return actual.findOneByQuery(query);
   }
 
   @Override
   public PaginatedList<TRow> find(
-      PagerParams pagerParams, QueryConditions optionalQuery, OrderBy... orderBy)
+      PagerParams pagerParams, Query<TId, TRow> optionalQuery, OrderBy... orderBy)
       throws NotAuthorizedException {
     return actual.find(pagerParams, optionalQuery, orderBy);
   }
@@ -79,7 +78,7 @@ public class EasyCrudServiceWrapper<
   }
 
   @Override
-  public int deleteByQuery(QueryConditions query) throws NotAuthorizedException {
+  public int deleteByQuery(Query<TId, TRow> query) throws NotAuthorizedException {
     return actual.deleteByQuery(query);
   }
 
@@ -109,17 +108,17 @@ public class EasyCrudServiceWrapper<
   }
 
   @Override
-  public TRow getFirstByQuery(QueryConditions query, OrderBy... orderBy) {
+  public TRow getFirstByQuery(Query<TId, TRow> query, OrderBy... orderBy) {
     return actual.getFirstByQuery(query, orderBy);
   }
 
   @Override
-  public TRow findFirstByQuery(QueryConditions query, OrderBy... orderBy) {
+  public TRow findFirstByQuery(Query<TId, TRow> query, OrderBy... orderBy) {
     return actual.findFirstByQuery(query, orderBy);
   }
 
   @Override
-  public List<TRow> findAll(QueryConditions optionalQuery, OrderBy... orderBy) {
+  public List<TRow> findAll(Query<TId, TRow> optionalQuery, OrderBy... orderBy) {
     return actual.findAll(optionalQuery, orderBy);
   }
 
@@ -129,7 +128,7 @@ public class EasyCrudServiceWrapper<
   }
 
   @Override
-  public List<TRow> getAll(QueryConditions optionalQuery, OrderBy... orderBy) {
+  public List<TRow> getAll(Query<TId, TRow> optionalQuery, OrderBy... orderBy) {
     return actual.getAll(optionalQuery, orderBy);
   }
 
@@ -139,11 +138,11 @@ public class EasyCrudServiceWrapper<
   }
 
   @Override
-  public QueryCommands<TId, TRow> query() {
+  public Query<TId, TRow> query() {
     // NOTE: Instead of delegating this call to the actual service, we build instance ourselves so
     // that the query would call us instead of actual service and therefore wrapped methods will be
     // used instead of original methods
-    return new QueryCommands<>(actual::name, this);
+    return new Query<>(actual::name, this);
   }
 
   @Override
@@ -157,7 +156,7 @@ public class EasyCrudServiceWrapper<
   }
 
   @Override
-  public TRow getOneByQuery(QueryConditions query) {
+  public TRow getOneByQuery(Query<TId, TRow> query) {
     return actual.getOneByQuery(query);
   }
 }

@@ -20,7 +20,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.api.query.Query;
+import org.summerb.easycrud.api.row.HasId;
 
 /**
  * @author sergeyk
@@ -28,21 +30,27 @@ import org.summerb.easycrud.api.query.Query;
  *     but don't want to over-engineer. In behavior needs to be changed one can override this class
  *     or provide other impl
  */
-public class FilteringParamsToQueryConverterImpl<TRow>
-    implements FilteringParamsToQueryConverter<TRow> {
+public class FilteringParamsToQueryConverterImpl<TId, TRow extends HasId<TId>>
+    implements FilteringParamsToQueryConverter<TId, TRow> {
+
+  private final EasyCrudService<TId, TRow> service;
+
+  public FilteringParamsToQueryConverterImpl(EasyCrudService<TId, TRow> service) {
+    this.service = service;
+  }
 
   @Override
-  public Query<TRow> convert(Map<String, FilteringParam> filterParams, Class<TRow> rowClazz) {
+  public Query<TId, TRow> convert(Map<String, FilteringParam> filterParams) {
     if (filterParams == null || filterParams.isEmpty()) {
       return null;
     }
 
     try {
-      Query<TRow> ret = Query.FACTORY.buildFor(rowClazz);
+      Query<TId, TRow> ret = service.query();
       for (Entry<String, FilteringParam> entry : filterParams.entrySet()) {
         String fname = entry.getKey();
         String[] values = entry.getValue().getValues();
-        Class<?> type = getFieldType(rowClazz, fname);
+        Class<?> type = getFieldType(service.getRowClass(), fname);
         boolean isStringType = String.class.equals(type);
         boolean isNumericType =
             int.class.equals(type)
@@ -69,7 +77,7 @@ public class FilteringParamsToQueryConverterImpl<TRow>
       boolean isStringType,
       boolean isNumericType,
       boolean isBooleanType,
-      Query<TRow> ret) {
+      Query<TId, TRow> ret) {
     switch (command) {
       case FilteringParam.CMD_BETWEEN:
         if (isNumericType) {

@@ -15,17 +15,21 @@
  ******************************************************************************/
 package org.summerb.easycrud.rest.querynarrower;
 
+import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.api.query.Query;
+import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.rest.commonpathvars.PathVariablesMap;
 
-public class QueryNarrowerByCommonPathVariable<TRow> extends QueryNarrowerStrategyFieldBased<TRow> {
+public class QueryNarrowerByCommonPathVariable<TId, TRow extends HasId<TId>>
+    extends QueryNarrowerStrategyFieldBased<TId, TRow> {
 
-  public QueryNarrowerByCommonPathVariable(Class<TRow> rowClazz, String commonParamName) {
-    super(rowClazz, commonParamName);
+  public QueryNarrowerByCommonPathVariable(
+      EasyCrudService<TId, TRow> service, String commonParamName) {
+    super(service, commonParamName);
   }
 
   @Override
-  protected Query<TRow> doNarrow(Query<TRow> ret, PathVariablesMap allRequestParams) {
+  protected Query<TId, TRow> doNarrow(Query<TId, TRow> ret, PathVariablesMap allRequestParams) {
     ret.eq(fieldName, allRequestParams.get(fieldName));
     return ret;
   }

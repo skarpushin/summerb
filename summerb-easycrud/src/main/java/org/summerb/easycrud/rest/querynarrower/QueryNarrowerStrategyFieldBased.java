@@ -17,30 +17,32 @@ package org.summerb.easycrud.rest.querynarrower;
 
 import com.google.common.base.Preconditions;
 import org.springframework.util.StringUtils;
+import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.api.query.Condition;
 import org.summerb.easycrud.api.query.DisjunctionCondition;
 import org.summerb.easycrud.api.query.FieldCondition;
 import org.summerb.easycrud.api.query.Query;
-import org.summerb.easycrud.api.query.QueryConditions;
+import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.rest.commonpathvars.PathVariablesMap;
 
-public abstract class QueryNarrowerStrategyFieldBased<TRow> extends QueryNarrowerStrategy<TRow> {
+public abstract class QueryNarrowerStrategyFieldBased<TId, TRow extends HasId<TId>>
+    extends QueryNarrowerStrategy<TId, TRow> {
   protected String fieldName;
-  protected Class<TRow> rowClazz;
+  protected EasyCrudService<TId, TRow> service;
 
-  public QueryNarrowerStrategyFieldBased(Class<TRow> rowClazz, String fieldName) {
-    Preconditions.checkArgument(rowClazz != null, "rowClazz required");
+  public QueryNarrowerStrategyFieldBased(EasyCrudService<TId, TRow> service, String fieldName) {
+    Preconditions.checkNotNull(service, "service required");
     Preconditions.checkArgument(StringUtils.hasText(fieldName), "fieldName required");
 
     this.fieldName = fieldName;
-    this.rowClazz = rowClazz;
+    this.service = service;
   }
 
   @Override
-  public Query<TRow> narrow(Query<TRow> optionalQuery, PathVariablesMap pathVariables) {
-    Query<TRow> ret;
+  public Query<TId, TRow> narrow(Query<TId, TRow> optionalQuery, PathVariablesMap pathVariables) {
+    Query<TId, TRow> ret;
     if (optionalQuery == null) {
-      ret = Query.n(rowClazz);
+      ret = service.query();
     } else {
       if (hasRestrictionOnField(optionalQuery, fieldName)) {
         return optionalQuery;
@@ -53,14 +55,15 @@ public abstract class QueryNarrowerStrategyFieldBased<TRow> extends QueryNarrowe
     return ret;
   }
 
-  protected boolean hasRestrictionOnField(QueryConditions query, String fieldName) {
+  protected boolean hasRestrictionOnField(Query<TId, TRow> query, String fieldName) {
     for (Condition condition : query.getConditions()) {
       if (condition instanceof FieldCondition) {
         if (fieldName.equals(((FieldCondition) condition).getFieldName())) {
           return true;
         }
       } else if (condition instanceof DisjunctionCondition) {
-        for (QueryConditions subQuery : ((DisjunctionCondition) condition).getQueries()) {
+        for (Query<TId, TRow> subQuery :
+            ((DisjunctionCondition<TId, TRow>) condition).getQueries()) {
           if (hasRestrictionOnField(subQuery, fieldName)) {
             return true;
           }
@@ -70,5 +73,6 @@ public abstract class QueryNarrowerStrategyFieldBased<TRow> extends QueryNarrowe
     return false;
   }
 
-  protected abstract Query<TRow> doNarrow(Query<TRow> ret, PathVariablesMap allRequestParams);
+  protected abstract Query<TId, TRow> doNarrow(
+      Query<TId, TRow> ret, PathVariablesMap allRequestParams);
 }

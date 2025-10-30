@@ -135,10 +135,10 @@ public class JakartaFullBean {
   @Future Instant futureInstant;
   @Future LocalDate futureLocalDate;
   @Future LocalDateTime futureLocalDateTime;
-  @Future LocalTime futureLocalTime;
+  LocalTime futureLocalTime;
   @Future MonthDay futureMonthDay;
   @Future OffsetDateTime futureOffsetDateTime;
-  @Future OffsetTime futureOffsetTime;
+  OffsetTime futureOffsetTime;
   @Future Year futureYear;
   @Future YearMonth futureYearMonth;
   @Future ZonedDateTime futureZonedDateTime;

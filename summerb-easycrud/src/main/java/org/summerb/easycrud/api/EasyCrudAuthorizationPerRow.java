@@ -2,7 +2,7 @@ package org.summerb.easycrud.api;
 
 import java.util.List;
 import org.summerb.easycrud.api.dto.OrderBy;
-import org.summerb.easycrud.api.query.QueryConditions;
+import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.api.row.HasId;
 import org.summerb.utils.easycrud.api.dto.PagerParams;
 
@@ -31,10 +31,10 @@ public interface EasyCrudAuthorizationPerRow<T> {
    *
    * @param rows rows to check read permissions for. In some cases there will be just 1 row (in case
    *     you called {@link EasyCrudService#getById(Object)}, {@link
-   *     EasyCrudService#findOneByQuery(QueryConditions)}, etc) but could also be called for
-   *     multiple entries which were retrieved via {@link EasyCrudService#find(PagerParams,
-   *     QueryConditions, OrderBy...)} or via scaffolded service method marked with annotation
-   *     {@link org.summerb.easycrud.scaffold.api.Query} which returns List of service's rows
+   *     EasyCrudService#findOneByQuery(Query)}, etc) but could also be called for multiple entries
+   *     which were retrieved via {@link EasyCrudService#find(PagerParams, Query, OrderBy...)} or
+   *     via scaffolded service method marked with annotation {@link
+   *     org.summerb.easycrud.scaffold.api.Query} which returns List of service's rows
    * @return true if the current user is allowed to read a given row(s), false otherwise
    */
   boolean isAllowedToRead(List<T> rows);
@@ -79,9 +79,8 @@ public interface EasyCrudAuthorizationPerRow<T> {
    * This is called before the delete operation will take place.
    *
    * @param rows the row(s) that about to be deleted. When you call {@link
-   *     EasyCrudService#deleteByQuery(QueryConditions)} this method will receive a collection of
-   *     objects matching the query, in other cases it will be just one row that is about to be
-   *     deleted.
+   *     EasyCrudService#deleteByQuery(Query)} this method will receive a collection of objects
+   *     matching the query, in other cases it will be just one row that is about to be deleted.
    * @return true if the current user is allowed to delete the given row(s), false otherwise.
    */
   boolean isAllowedToDelete(List<T> rows);

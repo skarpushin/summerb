@@ -4,6 +4,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.summerb.easycrud.api.EasyCrudService;
+import org.summerb.methodCapturers.PropertyNameResolver;
 
 public class QueryTest {
 
@@ -17,8 +20,9 @@ public class QueryTest {
     assertNotEquals(buildQuery(false), buildQuery(true));
   }
 
-  protected Query<?> buildQuery(boolean alternate) {
-    Query<?> q = Query.n();
+  protected Query<?, ?> buildQuery(boolean alternate) {
+    Query<?, ?> q =
+        new Query(Mockito.mock(PropertyNameResolver.class), Mockito.mock(EasyCrudService.class));
 
     q.isNull("fn");
     q.isNotNull("fn");

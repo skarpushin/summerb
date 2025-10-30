@@ -25,8 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.summerb.easycrud.api.dto.OrderBy;
 import org.summerb.easycrud.api.exceptions.EntityNotFoundException;
-import org.summerb.easycrud.api.query.QueryCommands;
-import org.summerb.easycrud.api.query.QueryConditions;
+import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.api.row.HasTimestamps;
 import org.summerb.easycrud.api.row.tools.EasyCrudDtoUtils;
@@ -61,9 +60,9 @@ public interface EasyCrudService<TId, TRow extends HasId<TId>>
    * Build and get new actionable query. Use it to chain conditions and then call one of the methods
    * like get, find, etc...
    *
-   * @return new instance of {@link QueryCommands}
+   * @return new instance of {@link Query}
    */
-  QueryCommands<TId, TRow> query();
+  Query<TId, TRow> query();
 
   /**
    * This is a short convenient method for obtaining field name from getter
@@ -178,7 +177,7 @@ public interface EasyCrudService<TId, TRow extends HasId<TId>>
    * @throws NotAuthorizedException if user is not authorized to perform this operation
    */
   @Transactional(rollbackFor = Throwable.class)
-  int deleteByQuery(QueryConditions query);
+  int deleteByQuery(Query<TId, TRow> query);
 
   /**
    * @return class of Row served by this service

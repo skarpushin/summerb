@@ -16,6 +16,7 @@
 package org.summerb.easycrud.rest.querynarrower;
 
 import org.summerb.easycrud.api.query.Query;
+import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.rest.commonpathvars.PathVariablesMap;
 
 /**
@@ -26,8 +27,8 @@ import org.summerb.easycrud.rest.commonpathvars.PathVariablesMap;
  *
  * @author sergeyk
  */
-public class QueryNarrowerStrategy<TRow> {
-  public Query<TRow> narrow(Query<TRow> optionalQuery, PathVariablesMap pathVariables) {
+public class QueryNarrowerStrategy<TId, TRow extends HasId<TId>> {
+  public Query<TId, TRow> narrow(Query<TId, TRow> optionalQuery, PathVariablesMap pathVariables) {
     return optionalQuery;
   }
 }

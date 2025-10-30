@@ -20,15 +20,11 @@ import io.swagger.v3.oas.annotations.Parameter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.http.MediaType;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,14 +37,8 @@ import org.springframework.web.filter.GenericFilterBean;
 import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.api.EasyCrudWireTap;
 import org.summerb.easycrud.api.dto.OrderBy;
-import org.summerb.easycrud.api.exceptions.EntityNotFoundException;
 import org.summerb.easycrud.api.query.Query;
-import org.summerb.easycrud.api.relations.DataSetLoader;
-import org.summerb.easycrud.api.relations.ReferencesRegistry;
 import org.summerb.easycrud.api.row.HasId;
-import org.summerb.easycrud.api.row.datapackage.DataSet;
-import org.summerb.easycrud.api.row.datapackage.DataTable;
-import org.summerb.easycrud.api.row.relations.Ref;
 import org.summerb.easycrud.impl.EasyCrudServiceImpl;
 import org.summerb.easycrud.impl.auth.EasyCrudAuthorizationPerRowStrategy;
 import org.summerb.easycrud.impl.auth.EasyCrudAuthorizationPerTableStrategy;
@@ -57,7 +47,6 @@ import org.summerb.easycrud.mvc.filter.FilteringParamsToQueryConverter;
 import org.summerb.easycrud.mvc.filter.FilteringParamsToQueryConverterImpl;
 import org.summerb.easycrud.mvc.model.EasyCrudQueryParams;
 import org.summerb.easycrud.rest.commonpathvars.PathVariablesMap;
-import org.summerb.easycrud.rest.dto.CrudQueryResult;
 import org.summerb.easycrud.rest.dto.MultipleItemsResult;
 import org.summerb.easycrud.rest.dto.SingleItemResult;
 import org.summerb.easycrud.rest.permissions.PermissionsResolverStrategy;
@@ -90,16 +79,13 @@ public class EasyCrudRestControllerBase<
       "Cannot provide permissions since permissionsResolverStrategy is not set";
 
   protected TEasyCrudService service;
-  protected DataSetLoader dataSetLoader;
-  protected ReferencesRegistry referencesRegistry;
 
   protected ConvertBeforeReturnStrategy<TId, TRow> convertBeforeReturnStrategy =
       new ConvertBeforeReturnStrategy<>();
 
-  protected QueryNarrowerStrategy<TRow> queryNarrowerStrategy = new QueryNarrowerStrategy<>();
+  protected QueryNarrowerStrategy<TId, TRow> queryNarrowerStrategy = new QueryNarrowerStrategy<>();
   protected PermissionsResolverStrategy<TId, TRow> permissionsResolverStrategy;
-  protected FilteringParamsToQueryConverter<TRow> filteringParamsToQueryConverter =
-      new FilteringParamsToQueryConverterImpl<>();
+  protected FilteringParamsToQueryConverter<TId, TRow> filteringParamsToQueryConverter;
   protected OrderBy[] defaultOrderBy;
   protected PagerParams defaultPagerParams = new PagerParams();
 
@@ -108,6 +94,7 @@ public class EasyCrudRestControllerBase<
   public EasyCrudRestControllerBase(TEasyCrudService service) {
     Preconditions.checkArgument(service != null, "Service required");
     this.service = service;
+    this.filteringParamsToQueryConverter = new FilteringParamsToQueryConverterImpl<>(service);
   }
 
   @Override
@@ -178,28 +165,17 @@ public class EasyCrudRestControllerBase<
     OrderBy[] orderBy = clarifyOrderBy(optionalOrderBy);
     PagerParams pagerParams = clarifyPagerParams(optionalPagerParams);
 
-    Query<TRow> query = narrowQuery(null, pathVariables);
+    Query<TId, TRow> query = narrowQuery(null, pathVariables);
     PaginatedList<TRow> rows = queryRows(orderBy, pagerParams, query);
 
     MultipleItemsResult<TId, TRow> ret = buildMultipleItemsResult(rows);
     fillMultipleItemsResultWithPermissionsInfo(ret, needPerms, pathVariables);
-    resolveMultipleItemsResultReferences(ret, referencesToResolve, rows);
 
     return convert(ret);
   }
 
   protected MultipleItemsResult<TId, TRow> convert(MultipleItemsResult<TId, TRow> ret) {
     return convertBeforeReturnStrategy.convert(ret);
-  }
-
-  protected void resolveMultipleItemsResultReferences(
-      MultipleItemsResult<TId, TRow> ret,
-      List<String> referencesToResolve,
-      PaginatedList<TRow> rows)
-      throws EntityNotFoundException, NotAuthorizedException {
-    if (rows.getHasItems() && !CollectionUtils.isEmpty(referencesToResolve)) {
-      resolveReferences(referencesToResolve, ret, rows.getItems());
-    }
   }
 
   protected void fillMultipleItemsResultWithPermissionsInfo(
@@ -244,48 +220,21 @@ public class EasyCrudRestControllerBase<
   }
 
   protected PaginatedList<TRow> queryRows(
-      OrderBy[] orderBy, PagerParams pagerParams, Query<TRow> query) throws NotAuthorizedException {
+      OrderBy[] orderBy, PagerParams pagerParams, Query<TId, TRow> query)
+      throws NotAuthorizedException {
     return service.find(pagerParams, query, orderBy);
   }
 
-  protected Query<TRow> buildQuery(
+  protected Query<TId, TRow> buildQuery(
       EasyCrudQueryParams filteringParams, PathVariablesMap pathVariables) {
-    Query<TRow> query =
-        filteringParamsToQueryConverter.convert(
-            filteringParams.getFilterParams(), service.getRowClass());
+    Query<TId, TRow> query =
+        filteringParamsToQueryConverter.convert(filteringParams.getFilterParams());
     query = narrowQuery(query, pathVariables);
     return query;
   }
 
-  protected Query<TRow> narrowQuery(Query<TRow> query, PathVariablesMap pathVariables) {
+  protected Query<TId, TRow> narrowQuery(Query<TId, TRow> query, PathVariablesMap pathVariables) {
     return queryNarrowerStrategy.narrow(query, pathVariables);
-  }
-
-  protected void resolveReferences(
-      List<String> referencesToResolve, CrudQueryResult<TId, TRow> ret, List<TRow> items)
-      throws EntityNotFoundException, NotAuthorizedException {
-    Preconditions.checkState(
-        dataSetLoader != null, "DataSetLoader is required to resolve references");
-    Preconditions.checkState(
-        referencesRegistry != null, "referencesRegistry is required to resolve references");
-    DataSet ds = new DataSet();
-    DataTable<TId, TRow> table = new DataTable<>(service.getRowMessageCode());
-    table.putAll(items);
-    ds.getTables().put(table.getName(), table);
-
-    List<Ref> references =
-        referencesToResolve.stream().map(name -> referencesRegistry.getRefByName(name)).toList();
-    Ref[] refsArr = references.toArray(new Ref[0]);
-    dataSetLoader.loadReferencedObjects(ds, refsArr);
-
-    // now remove initial table from dataset because we don't want to
-    // duplicate this. It's already populated to rows
-    ds.getTables().remove(table.getName());
-
-    // x. ret
-    ret.setRefsResolved(
-        references.stream().collect(Collectors.toMap(Ref::getName, Function.identity())));
-    ret.setRefs(ds);
   }
 
   @PostMapping(path = "/query")
@@ -299,12 +248,11 @@ public class EasyCrudRestControllerBase<
     OrderBy[] orderBy = clarifyOrderBy(filteringParams.getOrderBy());
     PagerParams pagerParams = clarifyPagerParams(filteringParams.getPagerParams());
 
-    Query<TRow> query = buildQuery(filteringParams, pathVariables);
+    Query<TId, TRow> query = buildQuery(filteringParams, pathVariables);
     PaginatedList<TRow> rows = queryRows(orderBy, pagerParams, query);
 
     MultipleItemsResult<TId, TRow> ret = buildMultipleItemsResult(rows);
     fillMultipleItemsResultWithPermissionsInfo(ret, needPerms, pathVariables);
-    resolveMultipleItemsResultReferences(ret, referencesToResolve, rows);
 
     return convert(ret);
   }
@@ -322,10 +270,6 @@ public class EasyCrudRestControllerBase<
     if (needPerms && row != null) {
       Preconditions.checkArgument(permissionsResolverStrategy != null, PERM_RESOLVER_REQ);
       permissionsResolverStrategy.resolvePermissions(ret, null);
-    }
-
-    if (row != null && !CollectionUtils.isEmpty(referencesToResolve)) {
-      resolveReferences(referencesToResolve, ret, List.of(row));
     }
 
     return convertBeforeReturnStrategy.convert(ret);
@@ -366,24 +310,6 @@ public class EasyCrudRestControllerBase<
   @DeleteMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
   public void deleteItem(@PathVariable("id") TId id) {
     service.deleteById(id);
-  }
-
-  public DataSetLoader getDataSetLoader() {
-    return dataSetLoader;
-  }
-
-  @Autowired(required = false)
-  public void setDataSetLoader(DataSetLoader dataSetLoader) {
-    this.dataSetLoader = dataSetLoader;
-  }
-
-  public ReferencesRegistry getReferencesRegistry() {
-    return referencesRegistry;
-  }
-
-  @Autowired(required = false)
-  public void setReferencesRegistry(ReferencesRegistry referencesRegistry) {
-    this.referencesRegistry = referencesRegistry;
   }
 
   @Override

@@ -26,7 +26,7 @@ import org.summerb.easycrud.api.QueryToSql;
 import org.summerb.easycrud.api.query.Condition;
 import org.summerb.easycrud.api.query.DisjunctionCondition;
 import org.summerb.easycrud.api.query.FieldCondition;
-import org.summerb.easycrud.api.query.QueryConditions;
+import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.api.query.restrictions.Between;
 import org.summerb.easycrud.api.query.restrictions.Empty;
 import org.summerb.easycrud.api.query.restrictions.Equals;
@@ -55,6 +55,7 @@ import org.summerb.easycrud.impl.dao.mysql.restrictions.StringLengthLessRestrict
  *
  * @author sergey.karpushin
  */
+@SuppressWarnings("rawtypes")
 public class QueryToSqlMySqlImpl implements QueryToSql {
 
   protected Map<Class<? extends Restriction>, RestrictionToNativeSql<? extends Restriction>>
@@ -81,8 +82,7 @@ public class QueryToSqlMySqlImpl implements QueryToSql {
   }
 
   @Override
-  public String buildWhereClauseAndPopulateParams(
-      QueryConditions query, MapSqlParameterSource params) {
+  public String buildWhereClauseAndPopulateParams(Query query, MapSqlParameterSource params) {
     StringBuilder sb = new StringBuilder();
     ParamIdxIncrementer paramIdx = new ParamIdxIncrementer();
     buildWhereClauseAndPopulateParams(query, params, paramIdx, sb);
@@ -90,10 +90,7 @@ public class QueryToSqlMySqlImpl implements QueryToSql {
   }
 
   protected void buildWhereClauseAndPopulateParams(
-      QueryConditions query,
-      MapSqlParameterSource params,
-      Supplier<Integer> paramIdx,
-      StringBuilder sb) {
+      Query query, MapSqlParameterSource params, Supplier<Integer> paramIdx, StringBuilder sb) {
     sb.append("(");
     List<Condition> rr = query.getConditions();
     for (int i = 0; i < rr.size(); i++) {
@@ -110,7 +107,7 @@ public class QueryToSqlMySqlImpl implements QueryToSql {
           if (j > 0) {
             sb.append(" OR ");
           }
-          buildWhereClauseAndPopulateParams(dc.getQueries().get(j), params, paramIdx, sb);
+          buildWhereClauseAndPopulateParams((Query) dc.getQueries().get(j), params, paramIdx, sb);
         }
         sb.append(")");
       } else {

@@ -18,7 +18,6 @@ package org.summerb.easycrud.api;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.summerb.easycrud.api.query.Query;
-import org.summerb.easycrud.api.query.QueryConditions;
 import org.summerb.easycrud.impl.dao.mysql.QueryToSqlMySqlImpl;
 
 /**
@@ -31,6 +30,7 @@ import org.summerb.easycrud.impl.dao.mysql.QueryToSqlMySqlImpl;
  * @author sergey.karpushin
  * @see QueryToSqlMySqlImpl
  */
+@SuppressWarnings("rawtypes")
 public interface QueryToSql {
-  String buildWhereClauseAndPopulateParams(QueryConditions query, MapSqlParameterSource params);
+  String buildWhereClauseAndPopulateParams(Query query, MapSqlParameterSource params);
 }

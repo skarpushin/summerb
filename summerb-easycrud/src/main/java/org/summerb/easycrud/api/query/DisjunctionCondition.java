@@ -2,53 +2,37 @@ package org.summerb.easycrud.api.query;
 
 import com.google.common.base.Preconditions;
 import java.util.List;
+import java.util.Objects;
 import org.springframework.util.CollectionUtils;
+import org.summerb.easycrud.api.row.HasId;
 
-public class DisjunctionCondition extends Condition {
+public class DisjunctionCondition<TId, TRow extends HasId<TId>> extends Condition {
 
-  protected List<? extends QueryConditions> queries;
+  protected List<Query<TId, TRow>> queries;
 
-  public DisjunctionCondition(List<? extends QueryConditions> disjunctions) {
+  public DisjunctionCondition(List<Query<TId, TRow>> disjunctions) {
     Preconditions.checkArgument(
         !CollectionUtils.isEmpty(disjunctions), "non-empty queries required");
     this.queries = disjunctions;
   }
 
-  public List<? extends QueryConditions> getQueries() {
+  public List<Query<TId, TRow>> getQueries() {
     return queries;
   }
 
-  public void setQueries(List<? extends QueryConditions> queries) {
+  public void setQueries(List<Query<TId, TRow>> queries) {
     this.queries = queries;
   }
 
   @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((queries == null) ? 0 : queries.hashCode());
-    return result;
+  public boolean equals(Object o) {
+    if (o == null || getClass() != o.getClass()) return false;
+    DisjunctionCondition<?, ?> that = (DisjunctionCondition<?, ?>) o;
+    return Objects.equals(queries, that.queries);
   }
 
   @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    DisjunctionCondition other = (DisjunctionCondition) obj;
-    if (queries == null) {
-      if (other.queries != null) {
-        return false;
-      }
-    } else if (!queries.equals(other.queries)) {
-      return false;
-    }
-    return true;
+  public int hashCode() {
+    return Objects.hashCode(queries);
   }
 }

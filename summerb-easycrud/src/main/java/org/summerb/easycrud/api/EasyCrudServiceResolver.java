@@ -15,13 +15,9 @@
  ******************************************************************************/
 package org.summerb.easycrud.api;
 
-import org.summerb.easycrud.api.relations.DataSetLoader;
-
 /**
  * Interface used to resolve services by {@link EasyCrudService#getRowMessageCode()} or {@link
  * EasyCrudService#getRowClass()}
- *
- * <p>Supposed to be used mostly by {@link DataSetLoader}
  *
  * @author sergeyk
  */

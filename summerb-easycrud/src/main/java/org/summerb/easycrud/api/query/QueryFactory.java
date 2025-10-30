@@ -1,20 +1,16 @@
 package org.summerb.easycrud.api.query;
 
-public interface QueryFactory {
+import org.summerb.easycrud.api.EasyCrudService;
+import org.summerb.easycrud.api.row.HasId;
 
+public interface QueryFactory {
   /**
-   * @param <T> type of Row (POJO)
+   * @param <TRow> type of Row (POJO)
    * @param <F> Query type
-   * @param clazz Row (POJO) class which getters will be used to extract field names
+   * @param service service implementation for this row class
    * @return instance that can be used for both - referring to fields using method references and
    *     string literals
    */
-  <T, F extends Query<T>> F buildFor(Class<T> clazz);
-
-  /**
-   * @return instance that can be used only to refer to fields using string literals. Not
-   *     recommended as in such case you'll use string literals and loose all power of IDE and
-   *     Compiler static code analysis
-   */
-  Query<?> build();
+  <TId, TRow extends HasId<TId>, F extends Query<TId, TRow>> F buildFor(
+      EasyCrudService<TId, TRow> service);
 }

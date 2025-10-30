@@ -1366,10 +1366,10 @@ class ValidationContextTest {
     assertTrue(f.past(Dated::getValueInstant));
     assertTrue(f.past(Dated::getValueLocalDate));
     assertTrue(f.past(Dated::getValueLocalDateTime));
-    assertTrue(f.past(Dated::getValueLocalTime));
+    assertThrows(IllegalArgumentException.class, () -> f.past(Dated::getValueLocalTime));
     assertTrue(f.past(Dated::getValueMonthDay));
     assertTrue(f.past(Dated::getValueOffsetDateTime));
-    assertTrue(f.past(Dated::getValueOffsetTime));
+    assertThrows(IllegalArgumentException.class, () -> f.past(Dated::getValueOffsetTime));
     assertTrue(f.past(Dated::getValueYear));
     assertTrue(f.past(Dated::getValueYearMonth));
     assertTrue(f.past(Dated::getValueZonedDateTime));
@@ -1383,10 +1383,8 @@ class ValidationContextTest {
     assertTrue(f.pastOrPresent(Dated::getValueInstant));
     assertTrue(f.pastOrPresent(Dated::getValueLocalDate));
     assertTrue(f.pastOrPresent(Dated::getValueLocalDateTime));
-    assertTrue(f.pastOrPresent(Dated::getValueLocalTime));
     assertTrue(f.pastOrPresent(Dated::getValueMonthDay));
     assertTrue(f.pastOrPresent(Dated::getValueOffsetDateTime));
-    assertTrue(f.pastOrPresent(Dated::getValueOffsetTime));
     assertTrue(f.pastOrPresent(Dated::getValueYear));
     assertTrue(f.pastOrPresent(Dated::getValueYearMonth));
     assertTrue(f.pastOrPresent(Dated::getValueZonedDateTime));
@@ -1400,10 +1398,8 @@ class ValidationContextTest {
     assertFalse(f.future(Dated::getValueInstant));
     assertFalse(f.future(Dated::getValueLocalDate));
     assertFalse(f.future(Dated::getValueLocalDateTime));
-    assertFalse(f.future(Dated::getValueLocalTime));
     assertFalse(f.future(Dated::getValueMonthDay));
     assertFalse(f.future(Dated::getValueOffsetDateTime));
-    assertFalse(f.future(Dated::getValueOffsetTime));
     assertFalse(f.future(Dated::getValueYear));
     assertFalse(f.future(Dated::getValueYearMonth));
     assertFalse(f.future(Dated::getValueZonedDateTime));
@@ -1417,10 +1413,8 @@ class ValidationContextTest {
     assertFalse(f.futureOrPresent(Dated::getValueInstant));
     assertFalse(f.futureOrPresent(Dated::getValueLocalDate));
     assertFalse(f.futureOrPresent(Dated::getValueLocalDateTime));
-    assertFalse(f.futureOrPresent(Dated::getValueLocalTime));
     assertFalse(f.futureOrPresent(Dated::getValueMonthDay));
     assertFalse(f.futureOrPresent(Dated::getValueOffsetDateTime));
-    assertFalse(f.futureOrPresent(Dated::getValueOffsetTime));
     assertFalse(f.futureOrPresent(Dated::getValueYear));
     assertFalse(f.futureOrPresent(Dated::getValueYearMonth));
     assertFalse(f.futureOrPresent(Dated::getValueZonedDateTime));

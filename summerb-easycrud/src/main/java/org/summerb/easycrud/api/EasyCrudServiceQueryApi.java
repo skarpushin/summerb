@@ -19,7 +19,6 @@ import java.util.List;
 import org.summerb.easycrud.api.dto.OrderBy;
 import org.summerb.easycrud.api.exceptions.EntityNotFoundException;
 import org.summerb.easycrud.api.query.Query;
-import org.summerb.easycrud.api.query.QueryConditions;
 import org.summerb.easycrud.api.row.HasId;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
 import org.summerb.utils.easycrud.api.dto.PagerParams;
@@ -27,7 +26,7 @@ import org.summerb.utils.easycrud.api.dto.PaginatedList;
 
 /**
  * These service methods are declared in own interface (instead of {@link EasyCrudService}) to
- * decrease coupling between {@link org.summerb.easycrud.api.query.QueryCommands} and {@link
+ * decrease coupling between {@link org.summerb.easycrud.api.query.Query} and {@link
  * EasyCrudService}
  *
  * @param <TId> type of primary key
@@ -39,14 +38,14 @@ public interface EasyCrudServiceQueryApi<TId, TRow extends HasId<TId>> {
    * @return Row or null if not found. If more than 1 row matched query exception will be thrown
    * @throws NotAuthorizedException if user is not authorized to perform this operation
    */
-  TRow findOneByQuery(QueryConditions query);
+  TRow findOneByQuery(Query<TId, TRow> query);
 
   /**
    * @param query query for locating row
    * @return a Row. If more (or less) than 1 row matched query exception will be thrown
    * @throws NotAuthorizedException if user is not authorized to perform this operation
    */
-  TRow getOneByQuery(QueryConditions query);
+  TRow getOneByQuery(Query<TId, TRow> query);
 
   /**
    * @param query query for locating row
@@ -55,7 +54,7 @@ public interface EasyCrudServiceQueryApi<TId, TRow extends HasId<TId>> {
    * @throws NotAuthorizedException if user is not authorized to perform this operation
    * @throws EntityNotFoundException in case entity does not exist
    */
-  TRow getFirstByQuery(QueryConditions query, OrderBy... orderBy);
+  TRow getFirstByQuery(Query<TId, TRow> query, OrderBy... orderBy);
 
   /**
    * @param query query for locating row
@@ -63,7 +62,7 @@ public interface EasyCrudServiceQueryApi<TId, TRow extends HasId<TId>> {
    * @return row, or null if not found
    * @throws NotAuthorizedException if user is not authorized to perform this operation
    */
-  TRow findFirstByQuery(QueryConditions query, OrderBy... orderBy);
+  TRow findFirstByQuery(Query<TId, TRow> query, OrderBy... orderBy);
 
   /**
    * @param pagerParams pagination parameters
@@ -73,7 +72,7 @@ public interface EasyCrudServiceQueryApi<TId, TRow extends HasId<TId>> {
    * @throws NotAuthorizedException if user is not authorized to perform this operation
    */
   PaginatedList<TRow> find(
-      PagerParams pagerParams, QueryConditions optionalQuery, OrderBy... orderBy);
+      PagerParams pagerParams, Query<TId, TRow> optionalQuery, OrderBy... orderBy);
 
   /**
    * @param optionalQuery - optional {@link Query}. If null, then similar to findAll()
@@ -81,7 +80,7 @@ public interface EasyCrudServiceQueryApi<TId, TRow extends HasId<TId>> {
    * @return results, might be empty, but never null
    * @throws NotAuthorizedException if user is not authorized to perform this operation
    */
-  List<TRow> findAll(QueryConditions optionalQuery, OrderBy... orderBy);
+  List<TRow> findAll(Query<TId, TRow> optionalQuery, OrderBy... orderBy);
 
   /**
    * Same as findAll, but will throw {@link EntityNotFoundException} if nothing found
@@ -91,5 +90,5 @@ public interface EasyCrudServiceQueryApi<TId, TRow extends HasId<TId>> {
    * @return list of found items (at least one) or throws {@link EntityNotFoundException} in case
    *     nothing found
    */
-  List<TRow> getAll(QueryConditions optionalQuery, OrderBy... orderBy);
+  List<TRow> getAll(Query<TId, TRow> optionalQuery, OrderBy... orderBy);
 }

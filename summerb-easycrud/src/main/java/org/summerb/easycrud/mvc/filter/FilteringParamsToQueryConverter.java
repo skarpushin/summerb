@@ -17,7 +17,8 @@ package org.summerb.easycrud.mvc.filter;
 
 import java.util.Map;
 import org.summerb.easycrud.api.query.Query;
+import org.summerb.easycrud.api.row.HasId;
 
-public interface FilteringParamsToQueryConverter<TRow> {
-  Query<TRow> convert(Map<String, FilteringParam> filterParams, Class<TRow> rowClazz);
+public interface FilteringParamsToQueryConverter<TId, TRow extends HasId<TId>> {
+  Query<TId, TRow> convert(Map<String, FilteringParam> filterParams);
 }

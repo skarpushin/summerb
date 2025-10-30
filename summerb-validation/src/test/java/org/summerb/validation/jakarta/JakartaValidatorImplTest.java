@@ -421,10 +421,8 @@ public class JakartaValidatorImplTest {
     assertVe(ctx, MustBeInFuture.class, JakartaFullBean::getFutureInstant);
     assertVe(ctx, MustBeInFuture.class, JakartaFullBean::getFutureLocalDate);
     assertVe(ctx, MustBeInFuture.class, JakartaFullBean::getFutureLocalDateTime);
-    assertVe(ctx, MustBeInFuture.class, JakartaFullBean::getFutureLocalTime);
     assertVe(ctx, MustBeInFuture.class, JakartaFullBean::getFutureMonthDay);
     assertVe(ctx, MustBeInFuture.class, JakartaFullBean::getFutureOffsetDateTime);
-    assertVe(ctx, MustBeInFuture.class, JakartaFullBean::getFutureOffsetTime);
     assertVe(ctx, MustBeInFuture.class, JakartaFullBean::getFutureYear);
     assertVe(ctx, MustBeInFuture.class, JakartaFullBean::getFutureYearMonth);
     assertVe(ctx, MustBeInFuture.class, JakartaFullBean::getFutureZonedDateTime);
@@ -444,7 +442,7 @@ public class JakartaValidatorImplTest {
     assertVe(ctx, MustBeFalse.class, JakartaFullBean::isAssertFalseBoolean);
 
     // now just check count
-    int expectedErrors = 62;
+    int expectedErrors = 60;
     if (ctx.getErrors().size() != expectedErrors) {
       System.out.println(new org.summerb.validation.ValidationErrors(ctx.getErrors()));
     }

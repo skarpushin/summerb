@@ -17,6 +17,7 @@ package org.summerb.users.jdbccrud;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import org.summerb.easycrud.api.EasyCrudService;
 import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.rest.commonpathvars.PathVariablesMap;
@@ -30,8 +31,8 @@ import org.summerb.users.api.PermissionService;
  * <p>WARNING: DO NOT USE it if you anticipate MANY objects of this type per user. As no pagination
  * is implemented here -- all ids retrieved at once
  */
-public class QueryNarrowerStrategyPermissionsBased<TRow extends HasId<?>>
-    extends QueryNarrowerStrategyFieldBased<TRow> {
+public class QueryNarrowerStrategyPermissionsBased<TId, TRow extends HasId<TId>>
+    extends QueryNarrowerStrategyFieldBased<TId, TRow> {
   protected PermissionService permissionService;
   protected String optionalDomain;
   protected String optionalRequiredPermission;
@@ -39,13 +40,13 @@ public class QueryNarrowerStrategyPermissionsBased<TRow extends HasId<?>>
   protected Class<?> idClass;
 
   public QueryNarrowerStrategyPermissionsBased(
-      Class<TRow> rowClass,
+      EasyCrudService<TId, TRow> service,
       PermissionService permissionService,
       CurrentUserUuidResolver currentUserUuidResolver,
       Class<?> idClass,
       String optionalDomain,
       String optionalRequiredPermission) {
-    super(rowClass, HasId.FN_ID);
+    super(service, HasId.FN_ID);
     this.permissionService = permissionService;
     this.currentUserUuidResolver = currentUserUuidResolver;
     this.idClass = idClass;
@@ -54,7 +55,7 @@ public class QueryNarrowerStrategyPermissionsBased<TRow extends HasId<?>>
   }
 
   @Override
-  protected Query<TRow> doNarrow(Query<TRow> ret, PathVariablesMap allRequestParams) {
+  protected Query<TId, TRow> doNarrow(Query<TId, TRow> ret, PathVariablesMap allRequestParams) {
     List<String> idsStrs =
         permissionService.findSubjectsUserHasPermissionsFor(
             optionalDomain, currentUserUuidResolver.getUserUuid(), optionalRequiredPermission);

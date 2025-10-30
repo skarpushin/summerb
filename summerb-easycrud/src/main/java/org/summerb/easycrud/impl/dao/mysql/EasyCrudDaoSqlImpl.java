@@ -39,7 +39,6 @@ import org.summerb.easycrud.api.QueryToSql;
 import org.summerb.easycrud.api.StringIdGenerator;
 import org.summerb.easycrud.api.dto.OrderBy;
 import org.summerb.easycrud.api.query.Query;
-import org.summerb.easycrud.api.query.QueryConditions;
 import org.summerb.easycrud.api.row.HasAuthor;
 import org.summerb.easycrud.api.row.HasAutoincrementId;
 import org.summerb.easycrud.api.row.HasId;
@@ -334,7 +333,7 @@ public class EasyCrudDaoSqlImpl<TId, TRow extends HasId<TId>> extends TableDaoBa
   }
 
   @Override
-  public TRow findOneByQuery(QueryConditions query) {
+  public TRow findOneByQuery(Query<TId, TRow> query) {
     MapSqlParameterSource params = new MapSqlParameterSource();
     String whereClause = queryToSql.buildWhereClauseAndPopulateParams(query, params);
 
@@ -348,7 +347,7 @@ public class EasyCrudDaoSqlImpl<TId, TRow extends HasId<TId>> extends TableDaoBa
   }
 
   @Override
-  public int deleteByQuery(QueryConditions query) {
+  public int deleteByQuery(Query<TId, TRow> query) {
     MapSqlParameterSource params = new MapSqlParameterSource();
     String whereClause = queryToSql.buildWhereClauseAndPopulateParams(query, params);
     return jdbc.update(sqlDeleteByCustomQuery + whereClause, params);
@@ -356,7 +355,7 @@ public class EasyCrudDaoSqlImpl<TId, TRow extends HasId<TId>> extends TableDaoBa
 
   @Override
   public PaginatedList<TRow> query(
-      PagerParams pagerParams, QueryConditions optionalQuery, OrderBy... orderBy) {
+      PagerParams pagerParams, Query<TId, TRow> optionalQuery, OrderBy... orderBy) {
     MapSqlParameterSource params = new MapSqlParameterSource();
     String whereClause =
         optionalQuery == null || optionalQuery.isEmpty()
@@ -449,8 +448,8 @@ public class EasyCrudDaoSqlImpl<TId, TRow extends HasId<TId>> extends TableDaoBa
    * class to describe such conversion.
    *
    * @param sqlTypeOverrides overrides for SQL types for {@link #create(HasId)}, {@link
-   *     #update(HasId)}, {@link #query(PagerParams, QueryConditions, OrderBy...)} (and other
-   *     methods which uses {@link Query})
+   *     #update(HasId)}, {@link #query(PagerParams, Query, OrderBy...)} (and other methods which
+   *     uses {@link Query})
    */
   @Autowired(required = false)
   public void setSqlTypeOverrides(SqlTypeOverrides sqlTypeOverrides) {

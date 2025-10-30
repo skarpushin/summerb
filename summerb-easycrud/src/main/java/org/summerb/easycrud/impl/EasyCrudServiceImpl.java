@@ -22,6 +22,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.JdbcUpdateAffectedIncorrectNumberOfRowsException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.summerb.easycrud.api.EasyCrudDao;
@@ -33,8 +34,7 @@ import org.summerb.easycrud.api.RowCloner;
 import org.summerb.easycrud.api.StringIdGenerator;
 import org.summerb.easycrud.api.dto.OrderBy;
 import org.summerb.easycrud.api.exceptions.EntityNotFoundException;
-import org.summerb.easycrud.api.query.QueryCommands;
-import org.summerb.easycrud.api.query.QueryConditions;
+import org.summerb.easycrud.api.query.Query;
 import org.summerb.easycrud.api.row.HasAuthor;
 import org.summerb.easycrud.api.row.HasAutoincrementId;
 import org.summerb.easycrud.api.row.HasId;
@@ -341,6 +341,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
   }
 
   @Override
+  @Transactional
   public void delete(TRow row) {
     Preconditions.checkArgument(row != null);
     Preconditions.checkArgument(row.getId() != null);
@@ -418,7 +419,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
   }
 
   @Override
-  public int deleteByQuery(QueryConditions query) throws NotAuthorizedException {
+  public int deleteByQuery(Query<TId, TRow> query) throws NotAuthorizedException {
     try {
       Preconditions.checkArgument(query != null);
 
@@ -442,7 +443,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
     }
   }
 
-  protected int deleteByQueryWireTapBatch(QueryConditions query) {
+  protected int deleteByQueryWireTapBatch(Query<TId, TRow> query) {
     List<TRow> toDelete = dao.query(PagerParams.ALL, query).getItems();
     if (toDelete.isEmpty()) {
       return 0;
@@ -461,7 +462,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
   }
 
   protected int deleteByQueryWireTapIterative(
-      QueryConditions query, EasyCrudWireTapMode requiresOnDelete) {
+      Query<TId, TRow> query, EasyCrudWireTapMode requiresOnDelete) {
 
     if (requiresOnDelete == EasyCrudWireTapMode.ONLY_INVOKE_WIRETAP) {
       wireTap.beforeDelete((TRow) null);
@@ -517,7 +518,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
   }
 
   @Override
-  public TRow findOneByQuery(QueryConditions query) throws NotAuthorizedException {
+  public TRow findOneByQuery(Query<TId, TRow> query) throws NotAuthorizedException {
     try {
       Preconditions.checkArgument(query != null);
       boolean requiresOnRead = wireTap.requiresOnRead();
@@ -536,7 +537,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
   }
 
   @Override
-  public TRow getOneByQuery(QueryConditions query) {
+  public TRow getOneByQuery(Query<TId, TRow> query) {
     TRow ret = findOneByQuery(query);
     if (ret == null) {
       throw new EntityNotFoundException(rowMessageCode, formatQueryForNotFoundException(query));
@@ -544,7 +545,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
     return ret;
   }
 
-  protected <T extends QueryConditions> String formatQueryForNotFoundException(T query) {
+  protected <T extends Query> String formatQueryForNotFoundException(T query) {
     if (query == null) {
       return "all";
     }
@@ -560,7 +561,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
 
   @Override
   public PaginatedList<TRow> find(
-      PagerParams pagerParams, QueryConditions optionalQuery, OrderBy... orderBy)
+      PagerParams pagerParams, Query<TId, TRow> optionalQuery, OrderBy... orderBy)
       throws NotAuthorizedException {
     try {
       Preconditions.checkArgument(pagerParams != null, "PagerParams is a must");
@@ -581,7 +582,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
   }
 
   @Override
-  public List<TRow> findAll(QueryConditions optionalQuery, OrderBy... orderBy) {
+  public List<TRow> findAll(Query<TId, TRow> optionalQuery, OrderBy... orderBy) {
     return find(PagerParams.ALL, optionalQuery, orderBy).getItems();
   }
 
@@ -591,7 +592,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
   }
 
   @Override
-  public TRow findFirstByQuery(QueryConditions query, OrderBy... orderBy) {
+  public TRow findFirstByQuery(Query<TId, TRow> query, OrderBy... orderBy) {
     PaginatedList<TRow> results = find(TOP_ONE, query, orderBy);
     if (results.getItems().isEmpty()) {
       return null;
@@ -600,7 +601,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
   }
 
   @Override
-  public TRow getFirstByQuery(QueryConditions query, OrderBy... orderBy) {
+  public TRow getFirstByQuery(Query<TId, TRow> query, OrderBy... orderBy) {
     TRow result = findFirstByQuery(query, orderBy);
     if (result == null) {
       throw new EntityNotFoundException(rowMessageCode, formatQueryForNotFoundException(query));
@@ -610,7 +611,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
   }
 
   @Override
-  public List<TRow> getAll(QueryConditions optionalQuery, OrderBy... orderBy) {
+  public List<TRow> getAll(Query<TId, TRow> optionalQuery, OrderBy... orderBy) {
     List<TRow> ret = findAll(optionalQuery, orderBy);
     if (CollectionUtils.isEmpty(ret)) {
       throw new EntityNotFoundException(
@@ -621,8 +622,8 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
   }
 
   @Override
-  public QueryCommands<TId, TRow> query() {
-    return new QueryCommands<>(getNameResolver(), this);
+  public Query<TId, TRow> query() {
+    return new Query<>(getNameResolver(), this);
   }
 
   @Override
