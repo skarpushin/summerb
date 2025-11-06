@@ -16,12 +16,12 @@
 package org.summerb.users.jdbccrud;
 
 import com.google.common.base.Preconditions;
-import org.summerb.easycrud.api.EasyCrudService;
-import org.summerb.easycrud.api.query.Query;
-import org.summerb.easycrud.api.row.HasAuthor;
-import org.summerb.easycrud.api.row.HasId;
+import org.summerb.easycrud.EasyCrudService;
+import org.summerb.easycrud.query.Query;
 import org.summerb.easycrud.rest.commonpathvars.PathVariablesMap;
 import org.summerb.easycrud.rest.querynarrower.QueryNarrowerStrategyFieldBased;
+import org.summerb.easycrud.row.HasAuthor;
+import org.summerb.easycrud.row.HasId;
 import org.summerb.security.api.CurrentUserUuidResolver;
 
 /**

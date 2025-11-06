@@ -9,23 +9,23 @@ first-class citizens.
 ## Philosophy
 
 When I created it, I pursued the concept of having some auto-magical implementation of CRUD functionality for real-world 
-applications, that can be easily configured and yet totally extensible so that I would not hit a wall the way I did 
+applications, that can be easily configured and yet totally extensible so that I would NOT "hit a wall" the way I did 
 previously with JPA, Groovy on Grails, Java Server Faces and few other stuff.   
 
-* It is offering a way how to quickly boostrap your CRUD code and a how to naturally evolve it later together with your
-  application. Not all libraries can claim that. Some of them would eventually present a bottleneck for your business 
-  due to which you'll decide to rewrite application from scratch 
+* It is offering a way how to quickly boostrap your CRUD code and how to naturally evolve it later together with your
+  application. Not all libraries can claim that. Some of them advertise as "create Blog in 15 minutes" but then 
+  eventually present a bottleneck for your business due to which you'll decide to rewrite application from scratch 
 * Although it provides many features built-in, it allows you to change many (almost all) aspects of its implementation.
   All you need to do is to (A) inject corresponding strategy and/or (B) subclass default implementation. In some cases
-  it is even more flexible that Spring itself (less private fields and methods and package visibility -- hence more you
+  it is even more flexible that Spring itself (less private fields and methods and package visibility — hence more you
   can override)
-* It simplifies your usual CRUD implementations on **Facade**, **Service** and **Repository** layers, and it gives an
-  opinionated view on how **i18n**, **validation** and **authorization** should be handled -- these usually not present
-  in other frameworks and you need to add them on top, while here you have it embedded in the core of EasyCrud
+* It simplifies your usual CRUD implementations on **Facade**, **Service** and **Repository** layers. It gives an
+  opinionated view on how **i18n**, **validation** and **authorization** should be handled — these usually not present
+  in other frameworks, and you need to add them on top, while here you have it embedded in the core of EasyCrud
 * It is created with the SOLID, DRY and SLAP design principles in mind
 
-And now, 10 years later (anniversary!) since inception it still serves its intended use. But I guess I'm putting insufficient efforts 
-in making it popular :-)
+And now, 10 years later (anniversary!) since the inception, it still serves its intended use. But I guess I'm putting 
+insufficient efforts in making it popular :-)
 
 ## How it compares to alternatives?
 
@@ -43,6 +43,7 @@ in making it popular :-)
 * It provides simplistic Query DSL that has a killer-feature that is based on identifier names (not String literals, so 
   your code is protected by compiler and supported by refactoring and static code analysis)
 * It allows you to easily define native queries which implementation is also automatically scaffolded
+* It allows you to perform simple Join queries too (nothing fancy, but covers usual cases for usual UX scenarios)
 * Baseline infrastructure for business validations at different data lifecycle steps
 * Baseline infrastructure for authorizations at different data lifecycle steps (for both per-Table and per-Row)
 * Extension points (Wire Taps) for adding any of your custom pre- / post-processors
@@ -57,63 +58,32 @@ in making it popular :-)
 ### What is out of scope?
 
 * You'll need to create DB schema somehow else, EasyCrud is not doing this for you.
-* Again, it is not an ORM framework. Although there is some beta/draft impl for loading referenced objects, there are 
-  no facilities to serialize object graphs.
+* Again, it is not an ORM framework. Although there is some functionality to load referenced rows (see JoinQuery), there
+  are no facilities to serialize object graphs.
 
 ## Tested with
 
 * Java 8, 11, 17
-* MariaDB (MySQL) / Postgress
+* MariaDB (MySQL) / Postgres
 
 # How To (with Examples)
 ## Initial EasyCrud configuration
-This is a one-time action to set up beans for EasyCrud facilities that are common between all EasyCrud implementations.
+This is a one-time action to set up beans for EasyCrud facilities that are common among all EasyCrud implementations.
 
 ```java
 @Configuration
-@Import({ValidationContextConfig.class})
-public class EasyCrudBaselineConfig {
-  @Bean
-  StringIdGenerator stringIdGenerator() {
-    return new StringIdGeneratorUuidImpl();
-  }
-
-  @Bean
-  QueryToSql queryToNativeSqlCompiler(SqlTypeOverrides sqlTypeOverrides) {
-    return new QueryToSqlMySqlImpl(sqlTypeOverrides);
-  }
-
-  @Bean
-  EasyCrudServiceProxyFactory easyCrudServiceProxyFactory(
-      ScaffoldedMethodFactory scaffoldedMethodFactory) {
-    return new EasyCrudServiceProxyFactoryImpl(scaffoldedMethodFactory);
-  }
-
-  @Bean
-  SqlTypeOverrides sqlTypeOverrides() {
-    return new SqlTypeOverridesDefaultImpl();
-  }
-
-  @Bean
-  ScaffoldedMethodFactory scaffoldedMethodFactory() {
-    return new ScaffoldedMethodFactoryMySqlImpl();
-  }
-
-  @Bean
-  EasyCrudScaffold easyCrudScaffold(
-      DataSource dataSource,
-      AutowireCapableBeanFactory beanFactory,
-      ScaffoldedMethodFactory scaffoldedMethodFactory) {
-    return new EasyCrudScaffoldImpl(dataSource, beanFactory, scaffoldedMethodFactory);
-  }
+@Import({ ValidationContextConfig.class, EasyCrudConfigPostgres.class })
+public class EasyCrudConfiguration {
+    // That's it
+    
+    // You can override methods if/when needed to override standard EasyCrud beans  
 }
 ```
 
 NOTES:
 1. Notice `ValidationContextConfig` is imported here. This is needed for validation logic as well as for Query DSL that
-   utilizes getters instead of String literals for referencing fields in queries
-2. When using Postgress use different implementations for 2 beans: `DaoExceptionToFveTranslatorPostgresImpl` and 
-   `QueryToNativeSqlCompilerPostgresImpl`
+   uses getters instead of String literals for referencing fields in queries
+2. When using MySql (MariaDB) use different config to import: `EasyCrudConfigMySql`
 
 ## Minimal code to get EasyCrud Service up and running
 ### 1. Define Row class
@@ -129,14 +99,14 @@ public class ProjectRow implements HasUuid {
 ```
 
 NOTES:
-1. Row is a simple java bean with fields and respective getters/setters.
+1. Row is a simple java bean (POJO) with fields and respective getters/setters.
 1. It basically should mimic row in a table, all the same fields (except that in DB they're expected to be `snake_case`
    while in Java they're `camelCase`)
 1. You can have non-standard field types, but then you'll need to customize (de)serialization, see below for examples.
 1. There must be no business logic in this class.
-1. When you need to put a reference to other entity then you need to add a field that resembles a foreign key. I.e.
+1. When you need to put a reference to the other entity, then you need to add a field that resembles a foreign key. I.e.
    if `Document` refers to `User` then `Document` Row will have field `private long userId`
-1. Class Implements interface `HasUuid`. It means that ID will be generated by DAO upon row creation. Bean of type 
+1. Class Implements interface `HasUuid`. It means that ID will be generated by the DAO upon row creation. Bean of type 
    `StringIdGenerator` will be used to generate value for ID field. You can use more conventional `HasAutoincrementId` 
    for usual numeric ID generation by DB engine
 
@@ -169,8 +139,8 @@ public interface ProjectService extends EasyCrudService<String, ProjectRow> {
 ```
 
 NOTES:
-1. Notice constant `TERM` -- it will be used as a message code in errors and exceptions. Your FE (or facade layer) are 
-   responsible then for translating it to user language  
+1. Notice constant `TERM` — it will be used as a message code in errors and exceptions. Your FE (or facade layer) is 
+   responsible then for translating it to the user language  
 
 ### 4. Define Service bean
 ```java
@@ -208,10 +178,33 @@ measurementService
 ```
 
 NOTES:
-1. We are using POJO field getters to identify field names - this helps a lot to use IDEs features to find usages of
+1. We are using POJO field getters to identify field names — this helps a lot to use IDEs features to find usages of
    fields and also will be automatically renamed if you use IDE's Refactoring feature to rename field. Under the hood
    this is implemented using some heavy-duty bytecode manipulation (ByteBuddy) because Java's reflection does not
    support it.
+
+## Executing simple Join Queries using Query DSL
+JoinQuery is a special type of query that allows to join multiple tables together. First, you need to create individual 
+queries (with optional filtering criteria) for each table you want to join. Then you can join them together using 
+`JoinQuery.join()` method.  
+
+Lets say you want to retrieve all Employees who belong to Departments which have name starting with "Sales". This is 
+how you do it:
+```java
+    Query<Long, EmployeeRow> qEmployee = employeeRowService.query();
+    Query<Long, DepartmentRow> qDepartment = departmentRowService.query().startsWith(DepartmentRow::getName, "Sales");
+    
+    List<EmployeeRow> employees = qEmployee.toJoin()
+            .join(qDepartment, EmployeeRow::getDepartmentId)
+            .select().findAll(qEmployee.orderBy(EmployeeRow::getName).asc());
+```
+
+NOTES:
+1. Please refer to the Javadoc for more information on how to use this (and other) feature
+1. You can execute query and to retrieve data from one or several joined tables (be mindful of performance implications)
+1. You can filter, sort and paginate data using JoinQuery. Left joins are available too. But for complex queries you 
+   might want to resort to raw SQL (see below)
+1. All the wiretaps (i.e. security), row mappers, etc from original RowServices are re-used
 
 ## Encapsulating queries in the interface definition itself
 So lets say you have your EasyCrudService defined as
@@ -221,7 +214,7 @@ public interface ProjectService extends EasyCrudService<String, ProjectRow> {
 }
 ```
 And now you'd like to have method in that interface which encapsulates some query logic, but you don't really want to 
-create class that implements this interface. The solution is to just define `default` method which calls `EasyCrudService`
+create class that implements this interface. The solution is to define `default` method which calls `EasyCrudService`
 method `query` like this:
 ```java
 public interface ProjectService extends EasyCrudService<String, ProjectRow> {
@@ -269,7 +262,7 @@ List<ProjectComplexityRow> findLatestByFyAndProjects(int fy, Set<String> project
 NOTES:
 1. In case return type matches Service row class, then Service WireTap `beforeRead` and `afterRead` hooks will be
    triggered, if any
-1. If return type is primitive or matches Service row class, then Row mapper is initialized automatically
+1. If the return type is primitive or matches Service row class, then Row mapper is initialized automatically
 1. In case you want some other schema to be returned, provide your own RowMapper class name into
    `Query::rowMapper`
 1. If your query modifies data, make sure to clarify this by adding `modifying=true` parameter to `@Query`
@@ -315,13 +308,14 @@ ProjectService projectService(EasyCrudScaffold easyCrudScaffold) {
 ```
 
 NOTES:
-1. Now whenever you'll try to create or update rows, this validation will kick in and validate data.
+1. Now whenever you try to create or update rows, this validation will kick in and validate data.
 2. All validation errors (not just first) will be reported in `ValidationException` and bound to field names
-   so that FE can render them neatly for each relevant field. Also, each validation error is denoted by message code,
-   so FE can translate it to user language. See `summerb-validation` subproject for more details.
+   so that FE can render them neatly for each relevant field. Also, each validation error has message code and, 
+   potentially, arguments, so FE can translate it to the user language. See `summerb-validation` subproject for more 
+   details.
 
 ## Add Validation Logic (using imperative approach)
-Sometimes validation logic might be more complex than basic annotations can handle. In such case you'll want to define
+Sometimes validation logic might be more complex than basic annotations can handle. In such a case you'll want to define
 such validation explicitly in Java code.
 
 ### 1. Define class that performs validation
@@ -374,79 +368,81 @@ EptMetricService eptMetricService(EptMetricAuth eptMetricAuth) {
 
 ## Add Authorization logic
 By using EasyCrud WireTaps mechanism, you can make sure that user authorization is being verified whenever data is being
-accessed or modified. So it doesn't matter from which facade layer data is used -- authorization check will always be performed.
+accessed or modified. So it doesn't matter from which facade layer data is used — authorization check will always be performed.
 
-### 1.a. Define authorization logic - Per Table
+### 1.a. Define authorization logic Per Table
 Authorization can be checked per table-wide.
 
 ```java
-public class PresaleFeedbackAuthStrategyImpl extends EasyCrudAuthorizationPerTableStrategy {
-    @Autowired
-    private SecurityContextResolverEx securityContextResolverEx;
-
-    public PresaleFeedbackAuthStrategyImpl() {
-        super(PresaleFeedbackRowService.TERM);
+public class PresaleFeedbackAuthStrategyImpl implements EasyCrudAuthorizationPerTable {
+    @Override
+    public boolean isAllowedToRead() {
+        // evaluate custom condition per you business logic and return true or false
+        return true;
     }
 
     @Override
-    public NotAuthorizedResult getForRead() {
-        if (securityContextResolverEx.isCurrentUserSystemUser()
-                || securityContextResolverEx.isCurrentUserDoEOrAbove()
-                || currentUserRolesResolver.hasAnyRole(
-                SecurityConstantsEx.ROLE_EDM, SecurityConstantsEx.ROLE_POM)) {
-            return ALLOW;
-        }
-
-        return denyRead();
+    public boolean isAllowedToCreate() {
+        return false;
     }
 
     @Override
-    public NotAuthorizedResult getForUpdate() {
-        if (securityContextResolverEx.isCurrentUserSystemUser()) {
-            return ALLOW;
-        }
-        return denyUpdate();
+    public boolean isAllowedToUpdate() {
+        return false;
     }
+
+    @Override
+    public boolean isAllowedToDelete() {
+        return false;
+    }    
 }
 ```
 
 NOTES: 
-1. `getForXXXX` methods means "get permission evaluation result". And result could be `ALLOW` or instance of 
-`NotAuthorizedError` (which would be wrapped into `NotAuthorizedException` and thrown). There are handy methods 
-`denyXXXX()` which helps to construct those instances 
-1. In the above impl Row instances are not used, logic is based purely on Users roles
-1. For simple ROLE-based cases, consider using `EasyCrudAuthorizationRoleBasedImpl` (which is a subclass for `EasyCrudAuthorizationPerTableStrategy`)
-   it's a convenient way to define access permissions using conventional user role names
+1. In the above impl Row instances are not used, because logic is the same for the whole table
+1. The example above is a high-level approach. There is also a lower-level (wiretaps based) implementation available 
+   `EasyCrudAuthorizationPerTableStrategy`  
+1. For simple ROLE-based cases, consider using `EasyCrudAuthorizationRoleBasedImpl` it's a convenient way to define 
+   access permissions using conventional user role names
 
-### 1.b. Define authorization logic - Per Row
+### 1.b. Define authorization logic Per Row
 Authorization can be checked on a per-row basis.
 ```java
-public class ProjectRowAuthStrategyImpl extends EasyCrudAuthorizationPerRowStrategy<ProjectRow> {
+public class ProjectRowAuthStrategyImpl extends EasyCrudAuthorizationPerRow<UserRow> {
     @Override
-    public NotAuthorizedResult getForRead(ProjectRow row) {
-        if (currentUserUuidResolver.getUserUuid().equals(row.getCreatedBy())) {
-            return ALLOW;
-        }
-
-        return denyRead(row);
+    public boolean isAllowedToCreate(UserRow row) {
+        // implement your logic here in the context of the given row instance
+        return true;
     }
 
     @Override
-    public NotAuthorizedResult getForUpdate(ProjectRow persistedVersion, ProjectRow newVersion) {
-        if (securityContextResolverEx.isCurrentUserSystemUser()) {
-            return ALLOW;
-        }
-        return denyUpdate(newVersion);
+    public boolean isAllowedToRead(List<UserRow> rows) {
+        return true; // ... same here
+    }
+
+    @Override
+    public boolean isAllowedToUpdate(UserRow currentVersion, UserRow newVersion) {
+        return true; // ... same here
+    }
+
+    @Override
+    public boolean isAllowedToDelete(List<UserRow> rows) {
+        return true; // ... same here
+    }
+
+    @Override
+    public boolean isCurrentVersionNeededForUpdatePermissionCheck() {
+        // when true, then EasyCrud will also fetch current version of the row and pass it to the currentVersion 
+        // parameter of the isAllowedToUpdate(...) method 
+        return true;
     }
 }
 ```
 
 NOTES:
-1. Logic in the above authorization logic is based on both - row data and User parameters
-2. If access is allowed, then return `ALLOW` constant. Otherwise, return initialized `NotAuthorizedResult`
-   that describes why access is not allowed. In the example above method `denyUpdate` from base class is used to
-   simplify the implementation, but this can be of course overridden
-2. For fine-grained auth control of each of the four CRUD methods, override more methods from base class
+1. Logic in the above implementation is based on the row data. You can do usual user role checks and fields of the 
+   data that is being accessed or manipulated
+2. If you need fine grain control as to when authorization is being kicked-in, you can extend lower-level implementation
    `EasyCrudAuthorizationPerRowStrategy`
 
 ### 2. Augment service configuration
@@ -477,8 +473,10 @@ CurrentUserUuidResolver currentUserUuidResolver() {
 
 NOTES:
 1. EasyCrud knows nothing about the way you manage security in your application. Therefore, you need to provide your 
-   own implementation of the interface `CurrentUserUuidResolver`. Typically, you'll create simpl impl to get data from current Authentication
-2. EasyCrud makes hard assumption that your user ID is represented as a String (doesn't have to be UUID though, may be something else alphanumerical) 
+   own implementation of the interface `CurrentUserUuidResolver`. Typically, you'll create simple impl to get data from 
+   current Authentication
+2. EasyCrud makes hard assumption that your user ID is represented as a String (doesn't have to be UUID though, may be 
+   something else alphanumerical) 
 
 ### 2. Augment Row class
 Add `HasAuthor` interface to your Row class and add corresponding fields:
@@ -559,6 +557,11 @@ public class NumberToYearWeekConverter implements Converter<Number, YearWeek> {
 ```
 
 ## Define REST controller for CRUD operations
+
+NOTE: This functionality gives you a head-start with creating REST API bound to your data. It's not a replacement for
+full-fledged REST API implementation, but it's a good starting point. You can customize it to a certain degree, but it 
+is not flexible as the EasyCrud core.
+
 Define REST Controller class:
 
 ```java
@@ -591,7 +594,7 @@ NOTES:
 ## Add custom code before and/or after default CRUD methods logic 
 
 There are few ways to do so:
-* Use `EasyCrudWireTap` mechanism to supply pre- / post-code for each CRUD method -- this is my preferred way of doing so 
+* Use `EasyCrudWireTap` mechanism to supply pre- / post-code for each CRUD method — this is my preferred way of doing so 
   because it fits well within OCP design principle and seems like easiest way of achieving the goal. Validation and 
   Authorization are implemented as WireTaps 
 * Subclass `EasyCrudServiceImpl` and override needed methods
@@ -651,6 +654,6 @@ implementation, you'll need to manually define each "building block":
 
 # Post-Scriptum
 I hope this gave you enough outlook for a head start. EasyCrud actually provides more than I described here, but then 
-this document might get too boring. Whenever you need to adjust behavior of EasyCrud just look in the source code of underlying 
-implementation (I myself do this all the time with Spring and other libs :-)), I bet you'll quickly see extension points where 
-you can adjust behavior as needed. Or ask me.
+this document might get too boring. Whenever you need to adjust the behavior of EasyCrud just look in the source code 
+of the underlying implementation (I myself do this all the time with Spring and other libs :-)), I bet you'll quickly 
+see extension points where you can adjust behavior as needed. Or ask me in github issues.

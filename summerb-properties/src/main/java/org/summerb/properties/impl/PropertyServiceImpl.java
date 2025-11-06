@@ -22,7 +22,7 @@ import java.util.Map;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
-import org.summerb.easycrud.api.exceptions.ServiceDataTruncationException;
+import org.summerb.easycrud.exceptions.ServiceDataTruncationException;
 import org.summerb.properties.api.PropertyService;
 import org.summerb.properties.api.dto.NamedProperty;
 import org.summerb.properties.api.exceptions.PropertyServiceUnexpectedException;

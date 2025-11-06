@@ -17,10 +17,11 @@ package integr.org.summerb.easycrud;
 
 import static org.junit.Assert.assertThrows;
 
-import integr.org.summerb.easycrud.config.EasyCrudIntegrTestConfig;
+import integr.org.summerb.easycrud.config.EasyCrudConfig;
+import integr.org.summerb.easycrud.config.EasyCrudServiceBeansConfig;
 import integr.org.summerb.easycrud.config.EmbeddedDbConfig;
-import integr.org.summerb.easycrud.dtos.TestDto1;
-import integr.org.summerb.easycrud.dtos.TestDto2;
+import integr.org.summerb.easycrud.dtos.PostRow;
+import integr.org.summerb.easycrud.dtos.UserRow;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase.DatabaseType;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase.RefreshMode;
@@ -29,56 +30,55 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.annotation.ProfileValueSourceConfiguration;
-import org.springframework.test.annotation.SystemProfileValueSource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
-import org.summerb.easycrud.api.EasyCrudService;
+import org.summerb.easycrud.EasyCrudService;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {EmbeddedDbConfig.class, EasyCrudIntegrTestConfig.class})
-@ProfileValueSourceConfiguration(SystemProfileValueSource.class)
+@ContextConfiguration(
+    classes = {EmbeddedDbConfig.class, EasyCrudConfig.class, EasyCrudServiceBeansConfig.class})
+@ProfileValueSourceConfiguration()
 @Transactional
 @AutoConfigureEmbeddedDatabase(type = DatabaseType.MARIADB, refresh = RefreshMode.AFTER_CLASS)
 public class EasyCrudServicePerRowAuthTest extends GenericCrudServiceTestTemplate {
 
   @Autowired
-  @Qualifier("testDto1ServiceBasicAuth")
-  private EasyCrudService<String, TestDto1> testDto1Service;
+  @Qualifier("userRowServiceBasicAuth")
+  private EasyCrudService<String, UserRow> userRowService;
 
   @Autowired
-  @Qualifier("testDto2ServiceBasicAuth")
-  private EasyCrudService<Long, TestDto2> testDto2ServiceBasicAuth;
+  @Qualifier("postRowServiceBasicAuth")
+  private EasyCrudService<Long, PostRow> postRowServiceBasicAuth;
 
   @Autowired
-  @Qualifier("testDto1ServiceBasicAuthEb")
-  private EasyCrudService<String, TestDto1> testDto1ServiceEb;
+  @Qualifier("userBasicAuthEb")
+  private EasyCrudService<String, UserRow> userRowServiceEb;
 
   @Override
-  public EasyCrudService<String, TestDto1> getTestDto1Service() {
-    return testDto1Service;
+  public EasyCrudService<String, UserRow> getUserRowService() {
+    return userRowService;
   }
 
   @Override
-  public EasyCrudService<Long, TestDto2> getTestDto2Service() {
-    return testDto2ServiceBasicAuth;
+  public EasyCrudService<Long, PostRow> getPostRowServiceBasicAuth() {
+    return postRowServiceBasicAuth;
   }
 
   @Override
-  public EasyCrudService<String, TestDto1> getTestDto1ServiceEb() {
-    return testDto1ServiceEb;
+  public EasyCrudService<String, UserRow> getUserRowServiceEb() {
+    return userRowServiceEb;
   }
 
   @Test
   public void testCreateDto2ExpectNae() {
-    TestDto2 dto = new TestDto2();
-    dto.setActive(true);
-    dto.setEnv("throwNaeOnCreate");
-    dto.setLinkToFullDownload("link-to-full-download1");
-    dto.setMajorVersion(5);
-    dto.setMinorVersion(6);
-
-    assertThrows(NotAuthorizedException.class, () -> testDto2ServiceBasicAuth.create(dto));
+    PostRow dto = new PostRow();
+    dto.setTitle("throwNaeOnCreate");
+    dto.setBody("link-to-full-download1");
+    dto.setLikes(5);
+    dto.setDislikes(6);
+    dto.setAuthorId("someid");
+    assertThrows(NotAuthorizedException.class, () -> postRowServiceBasicAuth.create(dto));
   }
 }

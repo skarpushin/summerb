@@ -1,0 +1,108 @@
+package org.summerb.easycrud.sql_builder.mysql;
+
+import com.google.common.base.Preconditions;
+import org.springframework.util.StringUtils;
+import org.summerb.easycrud.join_query.JoinQuery;
+import org.summerb.easycrud.query.OrderBy;
+import org.summerb.easycrud.query.OrderByQueryResolver;
+import org.summerb.easycrud.query.Query;
+import org.summerb.easycrud.sql_builder.OrderByToSql;
+
+public class OrderByToSqlMySqlImpl implements OrderByToSql {
+
+  public OrderByToSqlMySqlImpl() {}
+
+  @Override
+  public String buildOrderBySubclause(OrderBy[] orderByArr) {
+    if (orderByArr == null || orderByArr.length == 0) {
+      return "";
+    }
+
+    StringBuilder ret = new StringBuilder();
+    for (OrderBy orderBy : orderByArr) {
+      if (orderBy == null || !StringUtils.hasText(orderBy.getFieldName())) {
+        continue;
+      }
+
+      if (!ret.isEmpty()) {
+        ret.append(", ");
+      }
+
+      appendFieldName(ret, orderBy);
+      appendCollation(ret, orderBy);
+      appendDirection(orderBy, ret);
+      appendNullsHandling(orderBy, ret);
+    }
+    return ret.isEmpty() ? "" : "\nORDER BY " + ret;
+  }
+
+  @Override
+  public void appendOrderByElements(
+      OrderBy[] orderByArr, JoinQuery<?, ?> joinQuery, StringBuilder ret) {
+    if (orderByArr == null) {
+      return;
+    }
+
+    boolean added = false;
+    for (OrderBy orderBy : orderByArr) {
+      Preconditions.checkArgument(
+          orderBy != null && StringUtils.hasText(orderBy.getFieldName()), "valid orderBy required");
+
+      Query<?, ?> query = OrderByQueryResolver.get(orderBy);
+      Preconditions.checkNotNull(
+          query,
+          "Can't find query for order by field '%s'. OrderBy for join query must be instantiated via Query class.",
+          orderBy.getFieldName());
+
+      if (added) {
+        ret.append(", ");
+      }
+
+      if (orderBy.getFieldName().contains(".")) {
+        // This might be the case when fields were already pre-processed and prefixed with
+        // necessary aliases, i.e., as a part of the parsing / translation effort
+        appendFieldName(ret, orderBy);
+      } else {
+        appendFieldName(ret, orderBy, joinQuery, query);
+      }
+      appendCollation(ret, orderBy);
+      appendDirection(orderBy, ret);
+      appendNullsHandling(orderBy, ret);
+
+      added = true;
+    }
+  }
+
+  protected void appendFieldName(
+      StringBuilder ret, OrderBy orderBy, JoinQuery<?, ?> joinQuery, Query<?, ?> query) {
+    ret.append(query.getAlias())
+        .append(".")
+        .append(QueryToSqlMySqlImpl.snakeCase(orderBy.getFieldName()));
+  }
+
+  protected void appendFieldName(StringBuilder ret, OrderBy orderBy) {
+    ret.append(QueryToSqlMySqlImpl.snakeCase(orderBy.getFieldName()));
+  }
+
+  protected void appendNullsHandling(OrderBy orderBy, StringBuilder ret) {
+    if (orderBy.getNullsLast() != null) {
+      throw new IllegalArgumentException("MySQL doesn't support NULLS LAST/FIRST clause");
+    }
+  }
+
+  protected void appendDirection(OrderBy orderBy, StringBuilder ret) {
+    if (OrderBy.ORDER_ASC.equals(orderBy.getDirection())) {
+      return;
+    }
+    if (orderBy.getDirection() != null
+        && !OrderBy.ORDER_ASC.equalsIgnoreCase(orderBy.getDirection())) {
+      ret.append(" ").append(orderBy.getDirection());
+    }
+  }
+
+  protected void appendCollation(StringBuilder ret, OrderBy orderBy) {
+    if (StringUtils.hasText(orderBy.getCollate())) {
+      ret.append(" COLLATE ").append(orderBy.getCollate());
+    }
+  }
+}

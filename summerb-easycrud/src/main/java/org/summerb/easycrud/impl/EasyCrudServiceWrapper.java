@@ -18,13 +18,16 @@ package org.summerb.easycrud.impl;
 import com.google.common.base.Preconditions;
 import java.util.List;
 import java.util.function.Function;
-import org.summerb.easycrud.api.EasyCrudExceptionStrategy;
-import org.summerb.easycrud.api.EasyCrudService;
-import org.summerb.easycrud.api.EasyCrudWireTap;
-import org.summerb.easycrud.api.dto.OrderBy;
-import org.summerb.easycrud.api.exceptions.EntityNotFoundException;
-import org.summerb.easycrud.api.query.Query;
-import org.summerb.easycrud.api.row.HasId;
+import org.summerb.easycrud.EasyCrudService;
+import org.summerb.easycrud.exceptions.EasyCrudExceptionStrategy;
+import org.summerb.easycrud.exceptions.EntityNotFoundException;
+import org.summerb.easycrud.join_query.JoinQuery;
+import org.summerb.easycrud.query.OrderBy;
+import org.summerb.easycrud.query.OrderByBuilder;
+import org.summerb.easycrud.query.Query;
+import org.summerb.easycrud.row.HasId;
+import org.summerb.easycrud.wireTaps.EasyCrudWireTap;
+import org.summerb.methodCapturers.PropertyNameResolver;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
 import org.summerb.utils.easycrud.api.dto.PagerParams;
 import org.summerb.utils.easycrud.api.dto.PaginatedList;
@@ -103,6 +106,16 @@ public class EasyCrudServiceWrapper<
   }
 
   @Override
+  public JoinQuery<TId, TRow> buildJoinQuery(Query<TId, TRow> query) {
+    return actual.buildJoinQuery(query);
+  }
+
+  @Override
+  public PropertyNameResolver<TRow> getNameResolver() {
+    return actual.getNameResolver();
+  }
+
+  @Override
   public TRow getById(TId id) {
     return actual.getById(id);
   }
@@ -142,7 +155,22 @@ public class EasyCrudServiceWrapper<
     // NOTE: Instead of delegating this call to the actual service, we build instance ourselves so
     // that the query would call us instead of actual service and therefore wrapped methods will be
     // used instead of original methods
-    return new Query<>(actual::name, this);
+    return new Query<>(this);
+  }
+
+  @Override
+  public Query<TId, TRow> query(String alias) {
+    return new Query<>(this, alias);
+  }
+
+  @Override
+  public int count() {
+    return actual.count();
+  }
+
+  @Override
+  public int count(Query<TId, TRow> query) {
+    return actual.count(query);
   }
 
   @Override
@@ -153,6 +181,16 @@ public class EasyCrudServiceWrapper<
   @Override
   public OrderByBuilder<TRow> orderBy(Function<TRow, ?> getter) {
     return actual.orderBy(getter);
+  }
+
+  @Override
+  public OrderBy[] parseOrderBy(String semicolonSeparatedValues) {
+    return actual.parseOrderBy(semicolonSeparatedValues);
+  }
+
+  @Override
+  public OrderBy[] parseOrderBy(String[] orderByStr) {
+    return actual.parseOrderBy(orderByStr);
   }
 
   @Override

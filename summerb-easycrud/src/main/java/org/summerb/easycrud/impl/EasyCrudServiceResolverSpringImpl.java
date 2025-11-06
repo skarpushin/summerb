@@ -24,8 +24,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.summerb.easycrud.api.EasyCrudService;
-import org.summerb.easycrud.api.EasyCrudServiceResolver;
+import org.summerb.easycrud.EasyCrudService;
+import org.summerb.easycrud.EasyCrudServiceResolver;
 
 /**
  * That impl just finds all beans with {@link EasyCrudService} interface implemented

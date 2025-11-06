@@ -30,33 +30,36 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.util.StringUtils;
-import org.summerb.easycrud.api.DaoExceptionTranslator;
-import org.summerb.easycrud.api.EasyCrudAuthorizationPerRow;
-import org.summerb.easycrud.api.EasyCrudAuthorizationPerTable;
-import org.summerb.easycrud.api.EasyCrudDao;
-import org.summerb.easycrud.api.EasyCrudExceptionStrategy;
-import org.summerb.easycrud.api.EasyCrudService;
-import org.summerb.easycrud.api.EasyCrudValidationStrategy;
-import org.summerb.easycrud.api.EasyCrudWireTap;
-import org.summerb.easycrud.api.OrderByToSql;
-import org.summerb.easycrud.api.ParameterSourceBuilder;
-import org.summerb.easycrud.api.QueryToSql;
-import org.summerb.easycrud.api.StringIdGenerator;
-import org.summerb.easycrud.api.row.HasId;
+import org.summerb.easycrud.EasyCrudService;
+import org.summerb.easycrud.auth.EasyCrudAuthorizationPerRow;
+import org.summerb.easycrud.auth.EasyCrudAuthorizationPerRowWireTapAdapter;
+import org.summerb.easycrud.auth.EasyCrudAuthorizationPerTable;
+import org.summerb.easycrud.auth.EasyCrudAuthorizationPerTableWireTapAdapter;
+import org.summerb.easycrud.dao.EasyCrudDao;
+import org.summerb.easycrud.dao.EasyCrudDaoInjections;
+import org.summerb.easycrud.dao.EasyCrudDaoSqlImpl;
+import org.summerb.easycrud.dao.ParameterSourceBuilder;
+import org.summerb.easycrud.dao.SqlTypeOverrides;
+import org.summerb.easycrud.exceptions.DaoExceptionTranslator;
+import org.summerb.easycrud.exceptions.EasyCrudExceptionStrategy;
 import org.summerb.easycrud.impl.EasyCrudServiceImpl;
-import org.summerb.easycrud.impl.auth.EasyCrudAuthorizationPerRowWireTapAdapter;
-import org.summerb.easycrud.impl.auth.EasyCrudAuthorizationPerTableWireTapAdapter;
-import org.summerb.easycrud.impl.dao.SqlTypeOverrides;
-import org.summerb.easycrud.impl.dao.mysql.EasyCrudDaoInjections;
-import org.summerb.easycrud.impl.dao.mysql.EasyCrudDaoSqlImpl;
-import org.summerb.easycrud.impl.dao.mysql.QueryToSqlMySqlImpl;
-import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapDelegatingImpl;
-import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapEventBusImpl;
-import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapValidationImpl;
-import org.summerb.easycrud.scaffold.api.EasyCrudScaffold;
-import org.summerb.easycrud.scaffold.api.EasyCrudServiceProxyFactory;
-import org.summerb.easycrud.scaffold.api.Query;
-import org.summerb.easycrud.scaffold.api.ScaffoldedMethodFactory;
+import org.summerb.easycrud.join_query.JoinQueryFactory;
+import org.summerb.easycrud.row.HasId;
+import org.summerb.easycrud.scaffold.EasyCrudScaffold;
+import org.summerb.easycrud.scaffold.EasyCrudServiceProxyFactory;
+import org.summerb.easycrud.scaffold.Query;
+import org.summerb.easycrud.scaffold.ScaffoldedMethodFactory;
+import org.summerb.easycrud.sql_builder.FieldsEnlister;
+import org.summerb.easycrud.sql_builder.OrderByToSql;
+import org.summerb.easycrud.sql_builder.QueryToSql;
+import org.summerb.easycrud.sql_builder.SqlBuilder;
+import org.summerb.easycrud.sql_builder.mysql.QueryToSqlMySqlImpl;
+import org.summerb.easycrud.tools.StringIdGenerator;
+import org.summerb.easycrud.validation.EasyCrudValidationStrategy;
+import org.summerb.easycrud.wireTaps.EasyCrudWireTap;
+import org.summerb.easycrud.wireTaps.EasyCrudWireTapDelegatingImpl;
+import org.summerb.easycrud.wireTaps.EasyCrudWireTapEventBusImpl;
+import org.summerb.easycrud.wireTaps.EasyCrudWireTapValidationImpl;
 import org.summerb.security.api.CurrentUserUuidResolver;
 import org.summerb.utils.DtoBase;
 
@@ -70,7 +73,6 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
   protected DataSource dataSource;
   protected AutowireCapableBeanFactory beanFactory;
   protected ScaffoldedMethodFactory scaffoldedMethodFactory;
-
   protected EasyCrudServiceProxyFactory easyCrudServiceProxyFactory;
 
   @Autowired(required = false)
@@ -214,6 +216,16 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
       ret.setExceptionStrategy(exceptionStrategy);
     }
 
+    JoinQueryFactory joinQueryFactory = find(injections, JoinQueryFactory.class);
+    if (joinQueryFactory != null) {
+      ret.setJoinQueryFactory(joinQueryFactory);
+    }
+
+    FieldsEnlister fieldsEnlister = find(injections, FieldsEnlister.class);
+    if (fieldsEnlister != null) {
+      ret.setFieldsEnlister(fieldsEnlister);
+    }
+
     EasyCrudWireTap<HasId<Object>> easyCrudWireTap = buildWireTap(messageCode, injections);
     if (easyCrudWireTap != null) {
       ret.setWireTap((EasyCrudWireTap<TRow>) easyCrudWireTap);
@@ -352,6 +364,11 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
   protected <TId, TDto extends HasId<TId>> void setDaoInjectionsIfAny(
       EasyCrudDaoSqlImpl<TId, TDto> ret, Object... injections) {
 
+    SqlBuilder sqlBuilder = find(injections, SqlBuilder.class);
+    if (sqlBuilder != null) {
+      ret.setSqlBuilder(sqlBuilder);
+    }
+
     ConversionService conversionService = find(injections, ConversionService.class);
     if (conversionService != null) {
       ret.setConversionService(conversionService);
@@ -377,19 +394,21 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
       ret.setParameterSourceBuilder(parameterSourceBuilder);
     }
 
+    DaoExceptionTranslator daoExceptionTranslator = find(injections, DaoExceptionTranslator.class);
+    if (daoExceptionTranslator != null) {
+      ret.setDaoExceptionTranslator(daoExceptionTranslator);
+    }
+
     QueryToSql queryToNativeSqlCompiler = find(injections, QueryToSql.class);
     if (queryToNativeSqlCompiler != null) {
-      ret.setQueryToSql(queryToNativeSqlCompiler);
+      throw new IllegalArgumentException(
+          "Please upgrade your beans. Since 9.0.0 QueryToSql is not injected directly into DAO. Inject SqlBuilder instead");
     }
 
     OrderByToSql orderByToSqlCompiler = find(injections, OrderByToSql.class);
     if (orderByToSqlCompiler != null) {
-      ret.setOrderByToSql(orderByToSqlCompiler);
-    }
-
-    DaoExceptionTranslator daoExceptionTranslator = find(injections, DaoExceptionTranslator.class);
-    if (daoExceptionTranslator != null) {
-      ret.setDaoExceptionTranslator(daoExceptionTranslator);
+      throw new IllegalArgumentException(
+          "Please upgrade your beans. Since 9.0.0 OrderByToSql is not injected directly into DAO. Inject SqlBuilder instead");
     }
   }
 

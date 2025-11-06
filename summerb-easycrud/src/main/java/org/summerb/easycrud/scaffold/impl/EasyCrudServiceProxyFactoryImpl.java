@@ -17,11 +17,11 @@ package org.summerb.easycrud.scaffold.impl;
 
 import com.google.common.base.Preconditions;
 import java.lang.reflect.Proxy;
-import org.summerb.easycrud.api.EasyCrudService;
-import org.summerb.easycrud.api.row.HasId;
-import org.summerb.easycrud.impl.dao.mysql.EasyCrudDaoInjections;
-import org.summerb.easycrud.scaffold.api.EasyCrudServiceProxyFactory;
-import org.summerb.easycrud.scaffold.api.ScaffoldedMethodFactory;
+import org.summerb.easycrud.EasyCrudService;
+import org.summerb.easycrud.dao.EasyCrudDaoInjections;
+import org.summerb.easycrud.row.HasId;
+import org.summerb.easycrud.scaffold.EasyCrudServiceProxyFactory;
+import org.summerb.easycrud.scaffold.ScaffoldedMethodFactory;
 
 public class EasyCrudServiceProxyFactoryImpl implements EasyCrudServiceProxyFactory {
   protected ScaffoldedMethodFactory scaffoldedMethodFactory;

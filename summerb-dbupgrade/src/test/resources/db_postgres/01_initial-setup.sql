@@ -17,6 +17,6 @@ INSERT INTO upg_pet (field1) VALUES ('2 /*asd*/' /*embedded comment*/ );
     lines */
 INSERT INTO upg_pet (field1) VALUES ('3 /* -- */' /*embedded comment*/ );
 
--- Note that in Postgress string literal marker is escaped by duplicating string literal marker
+-- Note that in Postgres string literal marker is escaped by duplicating string literal marker
 INSERT INTO upg_pet (field1) VALUES ('4 /* '' */' /* -- */ );
 

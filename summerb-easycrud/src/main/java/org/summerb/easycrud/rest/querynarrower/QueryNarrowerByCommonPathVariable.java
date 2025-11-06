@@ -15,10 +15,10 @@
  ******************************************************************************/
 package org.summerb.easycrud.rest.querynarrower;
 
-import org.summerb.easycrud.api.EasyCrudService;
-import org.summerb.easycrud.api.query.Query;
-import org.summerb.easycrud.api.row.HasId;
+import org.summerb.easycrud.EasyCrudService;
+import org.summerb.easycrud.query.Query;
 import org.summerb.easycrud.rest.commonpathvars.PathVariablesMap;
+import org.summerb.easycrud.row.HasId;
 
 public class QueryNarrowerByCommonPathVariable<TId, TRow extends HasId<TId>>
     extends QueryNarrowerStrategyFieldBased<TId, TRow> {

@@ -3,11 +3,11 @@ package org.summerb.easycrud.rest.permissions;
 import com.google.common.base.Preconditions;
 import java.util.HashMap;
 import java.util.Map;
-import org.summerb.easycrud.api.row.HasId;
-import org.summerb.easycrud.impl.auth.EasyCrudAuthorizationPerTableStrategy;
+import org.summerb.easycrud.auth.legacy.EasyCrudAuthorizationPerTableStrategy;
 import org.summerb.easycrud.rest.commonpathvars.PathVariablesMap;
-import org.summerb.easycrud.rest.dto.MultipleItemsResult;
-import org.summerb.easycrud.rest.dto.SingleItemResult;
+import org.summerb.easycrud.rest.model.MultipleItemsResult;
+import org.summerb.easycrud.rest.model.SingleItemResult;
+import org.summerb.easycrud.row.HasId;
 
 /**
  * Impl of {@link PermissionsResolverStrategy} that gets data from {@link

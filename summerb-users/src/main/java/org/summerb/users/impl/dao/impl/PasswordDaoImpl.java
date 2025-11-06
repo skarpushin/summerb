@@ -22,7 +22,7 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
-import org.summerb.easycrud.impl.dao.TableDaoBase;
+import org.summerb.easycrud.dao.TableDaoBase;
 import org.summerb.users.impl.dao.PasswordDao;
 import org.summerb.users.impl.dom.Password;
 

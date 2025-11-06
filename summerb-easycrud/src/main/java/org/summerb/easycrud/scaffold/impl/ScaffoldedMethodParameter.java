@@ -15,7 +15,7 @@
  ******************************************************************************/
 package org.summerb.easycrud.scaffold.impl;
 
-import org.summerb.easycrud.impl.dao.SqlTypeOverride;
+import org.summerb.easycrud.dao.SqlTypeOverride;
 
 public class ScaffoldedMethodParameter {
   protected SqlTypeOverride sqlTypeOverride;

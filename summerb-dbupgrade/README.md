@@ -23,7 +23,7 @@ A super-simple tool to embed you DB upgrade process into your application.
 
 ## Tested with databases
  * MariaDB (MySQL)
- * Postgress
+ * Postgres
  
 ## Usage
 

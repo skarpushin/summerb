@@ -17,13 +17,13 @@ package org.summerb.easycrud.rest.querynarrower;
 
 import com.google.common.base.Preconditions;
 import org.springframework.util.StringUtils;
-import org.summerb.easycrud.api.EasyCrudService;
-import org.summerb.easycrud.api.query.Condition;
-import org.summerb.easycrud.api.query.DisjunctionCondition;
-import org.summerb.easycrud.api.query.FieldCondition;
-import org.summerb.easycrud.api.query.Query;
-import org.summerb.easycrud.api.row.HasId;
+import org.summerb.easycrud.EasyCrudService;
+import org.summerb.easycrud.query.Condition;
+import org.summerb.easycrud.query.DisjunctionCondition;
+import org.summerb.easycrud.query.FieldCondition;
+import org.summerb.easycrud.query.Query;
 import org.summerb.easycrud.rest.commonpathvars.PathVariablesMap;
+import org.summerb.easycrud.row.HasId;
 
 public abstract class QueryNarrowerStrategyFieldBased<TId, TRow extends HasId<TId>>
     extends QueryNarrowerStrategy<TId, TRow> {

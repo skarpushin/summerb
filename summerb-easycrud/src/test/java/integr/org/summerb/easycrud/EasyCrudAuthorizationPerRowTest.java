@@ -18,10 +18,11 @@ package integr.org.summerb.easycrud;
 import static integr.org.summerb.easycrud.QueryTest.buildRow;
 import static org.junit.jupiter.api.Assertions.*;
 
-import integr.org.summerb.easycrud.config.EasyCrudIntegrTestConfig;
+import integr.org.summerb.easycrud.config.EasyCrudConfig;
+import integr.org.summerb.easycrud.config.EasyCrudServiceBeansConfig;
 import integr.org.summerb.easycrud.config.EmbeddedDbConfig;
-import integr.org.summerb.easycrud.dtos.TestDto1;
-import integr.org.summerb.easycrud.testbeans.TestDto1Service;
+import integr.org.summerb.easycrud.dtos.UserRow;
+import integr.org.summerb.easycrud.testbeans.UserRowService;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase.DatabaseType;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase.RefreshMode;
@@ -35,52 +36,53 @@ import org.springframework.test.annotation.ProfileValueSourceConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
-import org.summerb.easycrud.api.EasyCrudAuthorizationPerRow;
-import org.summerb.easycrud.impl.auth.EasyCrudAuthorizationPerRowAbstract;
-import org.summerb.easycrud.impl.auth.EasyCrudAuthorizationPerRowWireTapAdapter;
+import org.summerb.easycrud.auth.EasyCrudAuthorizationPerRow;
+import org.summerb.easycrud.auth.EasyCrudAuthorizationPerRowAbstract;
+import org.summerb.easycrud.auth.EasyCrudAuthorizationPerRowWireTapAdapter;
 import org.summerb.easycrud.rest.permissions.Permissions;
-import org.summerb.easycrud.scaffold.api.EasyCrudScaffold;
+import org.summerb.easycrud.scaffold.EasyCrudScaffold;
 import org.summerb.security.api.CurrentUserUuidResolver;
 import org.summerb.security.api.dto.NotAuthorizedResult;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {EmbeddedDbConfig.class, EasyCrudIntegrTestConfig.class})
+@ContextConfiguration(
+    classes = {EmbeddedDbConfig.class, EasyCrudConfig.class, EasyCrudServiceBeansConfig.class})
 @ProfileValueSourceConfiguration()
 @Transactional
 @AutoConfigureEmbeddedDatabase(type = DatabaseType.MARIADB, refresh = RefreshMode.AFTER_CLASS)
 public class EasyCrudAuthorizationPerRowTest {
   @Autowired private EasyCrudScaffold easyCrudScaffold;
-  @Autowired TestDto1Service testDto1Service;
+  @Autowired UserRowService userRowService;
   @Autowired CurrentUserUuidResolver currentUserUuidResolver;
 
   @Test
   public void testAuthorizationExceptionsWouldBeThrown() {
-    TestDto1 row1 = testDto1Service.create(buildRow("env1", 30));
-    TestDto1 row2 = testDto1Service.create(buildRow("env2", 20));
-    TestDto1 row3 = testDto1Service.create(buildRow("env3", 10));
+    UserRow row1 = userRowService.create(buildRow("env1", 30));
+    UserRow row2 = userRowService.create(buildRow("env2", 20));
+    UserRow row3 = userRowService.create(buildRow("env3", 10));
 
-    EasyCrudAuthorizationPerRow<TestDto1> auth =
+    EasyCrudAuthorizationPerRow<UserRow> auth =
         new EasyCrudAuthorizationPerRowAbstract<>() {
           @Override
-          protected boolean isAllowedToModify(TestDto1 testDto1) {
+          protected boolean isAllowedToModify(UserRow row) {
             return false;
           }
 
           @Override
-          public boolean isAllowedToRead(List<TestDto1> rows) {
+          public boolean isAllowedToRead(List<UserRow> rows) {
             return false;
           }
         };
 
     // NOTE: Here we're wrapping EasyCrudAuthorizationPerRow into
     // EasyCrudAuthorizationPerRowWireTapAdapter ourselves
-    EasyCrudAuthorizationPerRowWireTapAdapter<TestDto1> wireTap =
+    EasyCrudAuthorizationPerRowWireTapAdapter<UserRow> wireTap =
         new EasyCrudAuthorizationPerRowWireTapAdapter<>(
-            TestDto1Service.TERM, currentUserUuidResolver, auth);
-    TestDto1Service service =
+            UserRowService.TERM, currentUserUuidResolver, auth);
+    UserRowService service =
         easyCrudScaffold.fromService(
-            TestDto1Service.class, TestDto1Service.TERM, "forms_test_1", wireTap);
+            UserRowService.class, UserRowService.TERM, "users_table", wireTap);
 
     try {
       service.create(buildRow("envX", 30));
@@ -89,7 +91,7 @@ public class EasyCrudAuthorizationPerRowTest {
       NotAuthorizedResult err = nae.getErrorDescriptionObject();
       assertEquals("user1", err.getUserName());
       assertEquals(Permissions.CREATE, err.getOperationMessageCode());
-      assertEquals(TestDto1Service.TERM + ":new_row", err.getSubjectTitle());
+      assertEquals(UserRowService.TERM + ":new_row", err.getSubjectTitle());
     }
 
     try {
@@ -99,32 +101,29 @@ public class EasyCrudAuthorizationPerRowTest {
       NotAuthorizedResult err = nae.getErrorDescriptionObject();
       assertEquals("user1", err.getUserName());
       assertEquals(Permissions.READ, err.getOperationMessageCode());
-      assertEquals(TestDto1Service.TERM + ":" + row1.getId(), err.getSubjectTitle());
+      assertEquals(UserRowService.TERM + ":" + row1.getId(), err.getSubjectTitle());
     }
 
     try {
-      service
-          .query()
-          .ge(TestDto1::getMajorVersion, 20)
-          .findAll(service.orderBy(TestDto1::getMajorVersion).asc());
+      service.query().ge(UserRow::getKarma, 20).findAll(service.orderBy(UserRow::getKarma).asc());
       fail("Suppose to throw exception");
     } catch (NotAuthorizedException nae) {
       NotAuthorizedResult err = nae.getErrorDescriptionObject();
       assertEquals("user1", err.getUserName());
       assertEquals(Permissions.READ, err.getOperationMessageCode());
       assertEquals(
-          TestDto1Service.TERM + ":" + row2.getId() + "," + row1.getId(), err.getSubjectTitle());
+          UserRowService.TERM + ":" + row2.getId() + "," + row1.getId(), err.getSubjectTitle());
     }
 
     try {
-      row1.setLinkToFullDownload("" + System.currentTimeMillis());
+      row1.setName("env" + System.currentTimeMillis());
       service.update(row1);
       fail("Suppose to throw exception");
     } catch (NotAuthorizedException nae) {
       NotAuthorizedResult err = nae.getErrorDescriptionObject();
       assertEquals("user1", err.getUserName());
       assertEquals(Permissions.UPDATE, err.getOperationMessageCode());
-      assertEquals(TestDto1Service.TERM + ":" + row1.getId(), err.getSubjectTitle());
+      assertEquals(UserRowService.TERM + ":" + row1.getId(), err.getSubjectTitle());
     }
 
     try {
@@ -134,53 +133,53 @@ public class EasyCrudAuthorizationPerRowTest {
       NotAuthorizedResult err = nae.getErrorDescriptionObject();
       assertEquals("user1", err.getUserName());
       assertEquals(Permissions.DELETE, err.getOperationMessageCode());
-      assertEquals(TestDto1Service.TERM + ":" + row1.getId(), err.getSubjectTitle());
+      assertEquals(UserRowService.TERM + ":" + row1.getId(), err.getSubjectTitle());
     }
 
     try {
-      service.deleteByQuery(service.query().ge(TestDto1::getMajorVersion, 30));
+      service.deleteByQuery(service.query().ge(UserRow::getKarma, 30));
       fail("Suppose to throw exception");
     } catch (NotAuthorizedException nae) {
       NotAuthorizedResult err = nae.getErrorDescriptionObject();
       assertEquals("user1", err.getUserName());
       assertEquals(Permissions.DELETE, err.getOperationMessageCode());
-      assertEquals(TestDto1Service.TERM + ":" + row1.getId(), err.getSubjectTitle());
+      assertEquals(UserRowService.TERM + ":" + row1.getId(), err.getSubjectTitle());
     }
   }
 
   @Test
   public void testAuthorizationMethodsAreInvoked() {
-    TestDto1 row1 = buildRow("env1", 30);
+    UserRow row1 = buildRow("env1", 30);
     String initialUuid = UUID.randomUUID().toString();
-    row1.setLinkToFullDownload(initialUuid);
-    row1 = testDto1Service.create(row1);
+    row1.setAbout(initialUuid);
+    row1 = userRowService.create(row1);
 
-    TestDto1 row2 = testDto1Service.create(buildRow("env2", 20));
-    TestDto1 row3 = testDto1Service.create(buildRow("env3", 10));
+    UserRow row2 = userRowService.create(buildRow("env2", 20));
+    UserRow row3 = userRowService.create(buildRow("env3", 10));
 
-    List<TestDto1> isAllowedToCreate = new ArrayList<>();
-    List<List<TestDto1>> isAllowedToRead = new ArrayList<>();
-    List<TestDto1> isAllowedToUpdateCurrent = new ArrayList<>();
-    List<TestDto1> isAllowedToUpdate = new ArrayList<>();
-    List<List<TestDto1>> isAllowedToDelete = new ArrayList<>();
+    List<UserRow> isAllowedToCreate = new ArrayList<>();
+    List<List<UserRow>> isAllowedToRead = new ArrayList<>();
+    List<UserRow> isAllowedToUpdateCurrent = new ArrayList<>();
+    List<UserRow> isAllowedToUpdate = new ArrayList<>();
+    List<List<UserRow>> isAllowedToDelete = new ArrayList<>();
 
-    EasyCrudAuthorizationPerRow<TestDto1> auth =
+    EasyCrudAuthorizationPerRow<UserRow> auth =
         new EasyCrudAuthorizationPerRow<>() {
 
           @Override
-          public boolean isAllowedToCreate(TestDto1 row) {
+          public boolean isAllowedToCreate(UserRow row) {
             isAllowedToCreate.add(row);
             return true;
           }
 
           @Override
-          public boolean isAllowedToRead(List<TestDto1> rows) {
+          public boolean isAllowedToRead(List<UserRow> rows) {
             isAllowedToRead.add(rows);
             return true;
           }
 
           @Override
-          public boolean isAllowedToUpdate(TestDto1 currentVersion, TestDto1 newVersion) {
+          public boolean isAllowedToUpdate(UserRow currentVersion, UserRow newVersion) {
             isAllowedToUpdateCurrent.add(currentVersion);
             isAllowedToUpdate.add(newVersion);
             return true;
@@ -192,7 +191,7 @@ public class EasyCrudAuthorizationPerRowTest {
           }
 
           @Override
-          public boolean isAllowedToDelete(List<TestDto1> rows) {
+          public boolean isAllowedToDelete(List<UserRow> rows) {
             isAllowedToDelete.add(rows);
             return true;
           }
@@ -200,51 +199,48 @@ public class EasyCrudAuthorizationPerRowTest {
 
     // NOTE: Here we're injecting just instance of interface EasyCrudAuthorizationPerRow, expecting
     // easyCrudScaffold to wrap this in EasyCrudAuthorizationPerRowWireTapAdapter
-    TestDto1Service service =
+    UserRowService service =
         easyCrudScaffold.fromService(
-            TestDto1Service.class, TestDto1Service.TERM, "forms_test_1", auth);
+            UserRowService.class, UserRowService.TERM, "users_table", auth);
 
     // create
-    TestDto1 row4 = service.create(buildRow("envX", 40));
+    UserRow row4 = service.create(buildRow("envX", 40));
     assertEquals(1, isAllowedToCreate.size());
-    assertEquals("envX", isAllowedToCreate.get(0).getEnv());
+    assertEquals("envX", isAllowedToCreate.get(0).getName());
 
     // read one
     service.getById(row1.getId());
     assertEquals(1, isAllowedToRead.size());
     assertEquals(1, isAllowedToRead.get(0).size());
-    assertEquals("env1", isAllowedToRead.get(0).get(0).getEnv());
+    assertEquals("env1", isAllowedToRead.get(0).get(0).getName());
 
     // read many
-    service
-        .query()
-        .ge(TestDto1::getMajorVersion, 30)
-        .findAll(service.orderBy(TestDto1::getMajorVersion).asc());
+    service.query().ge(UserRow::getKarma, 30).findAll(service.orderBy(UserRow::getKarma).asc());
     assertEquals(2, isAllowedToRead.size());
     assertEquals(2, isAllowedToRead.get(1).size());
-    assertEquals("env1", isAllowedToRead.get(1).get(0).getEnv());
-    assertEquals("envX", isAllowedToRead.get(1).get(1).getEnv());
+    assertEquals("env1", isAllowedToRead.get(1).get(0).getName());
+    assertEquals("envX", isAllowedToRead.get(1).get(1).getName());
 
     // update
     String newUuid = UUID.randomUUID().toString();
-    row1.setLinkToFullDownload(newUuid);
+    row1.setAbout(newUuid);
     row1 = service.update(row1);
     assertEquals(1, isAllowedToUpdateCurrent.size());
-    assertEquals(initialUuid, isAllowedToUpdateCurrent.get(0).getLinkToFullDownload());
+    assertEquals(initialUuid, isAllowedToUpdateCurrent.get(0).getAbout());
     assertEquals(1, isAllowedToUpdate.size());
-    assertEquals(newUuid, isAllowedToUpdate.get(0).getLinkToFullDownload());
+    assertEquals(newUuid, isAllowedToUpdate.get(0).getAbout());
 
     // delete single
     service.delete(row1);
     assertEquals(1, isAllowedToDelete.size());
     assertEquals(1, isAllowedToDelete.get(0).size());
-    assertEquals("env1", isAllowedToDelete.get(0).get(0).getEnv());
+    assertEquals("env1", isAllowedToDelete.get(0).get(0).getName());
 
     // delete single
-    service.deleteByQuery(service.query().ge(TestDto1::getMajorVersion, 20));
+    service.deleteByQuery(service.query().ge(UserRow::getKarma, 20));
     assertEquals(2, isAllowedToDelete.size());
     assertEquals(2, isAllowedToDelete.get(1).size());
-    assertTrue(isAllowedToDelete.get(1).stream().anyMatch(x -> x.getEnv().equals("env2")));
-    assertTrue(isAllowedToDelete.get(1).stream().anyMatch(x -> x.getEnv().equals("envX")));
+    assertTrue(isAllowedToDelete.get(1).stream().anyMatch(x -> x.getName().equals("env2")));
+    assertTrue(isAllowedToDelete.get(1).stream().anyMatch(x -> x.getName().equals("envX")));
   }
 }

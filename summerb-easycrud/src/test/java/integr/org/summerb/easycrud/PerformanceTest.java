@@ -15,11 +15,12 @@
  ******************************************************************************/
 package integr.org.summerb.easycrud;
 
-import integr.org.summerb.easycrud.config.EasyCrudIntegrTestConfig;
+import integr.org.summerb.easycrud.config.EasyCrudConfig;
+import integr.org.summerb.easycrud.config.EasyCrudServiceBeansConfig;
 import integr.org.summerb.easycrud.config.EmbeddedDbConfig;
-import integr.org.summerb.easycrud.dtos.TestDto1;
-import integr.org.summerb.easycrud.dtos.TestEnumFieldType;
-import integr.org.summerb.easycrud.testbeans.TestDto1Service;
+import integr.org.summerb.easycrud.dtos.UserRow;
+import integr.org.summerb.easycrud.dtos.UserStatus;
+import integr.org.summerb.easycrud.testbeans.UserRowService;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase.DatabaseType;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase.RefreshMode;
@@ -34,12 +35,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Disabled
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {EmbeddedDbConfig.class, EasyCrudIntegrTestConfig.class})
+@ContextConfiguration(
+    classes = {EmbeddedDbConfig.class, EasyCrudConfig.class, EasyCrudServiceBeansConfig.class})
 @ProfileValueSourceConfiguration()
 @Transactional
 @AutoConfigureEmbeddedDatabase(type = DatabaseType.MARIADB, refresh = RefreshMode.AFTER_CLASS)
 public class PerformanceTest {
-  @Autowired private TestDto1Service service;
+  @Autowired private UserRowService service;
 
   @Test
   void massiveAdditions() {
@@ -50,10 +52,10 @@ public class PerformanceTest {
 
   @Test
   void massiveUpdates() {
-    TestDto1 row = service.create(buildRow("env", 1));
+    UserRow row = service.create(buildRow("env", 1));
     for (int i = 2; i < 100000; i++) {
-      row.setMajorVersion(i);
-      row.setEnv("env" + i);
+      row.setKarma(i);
+      row.setName("env" + i);
       row = service.update(row);
     }
 
@@ -63,15 +65,13 @@ public class PerformanceTest {
     // to optimize update performance. SO for now I'm leaving it as is.
   }
 
-  private TestDto1 buildRow(String env, int majorVersion) {
-    TestDto1 ret = new TestDto1();
-    ret.setEnv(env);
+  private UserRow buildRow(String env, int majorVersion) {
+    UserRow ret = new UserRow();
+    ret.setName(env);
     ret.setActive(true);
-    ret.setMajorVersion(majorVersion);
-    ret.setMinorVersion(1);
-    ret.setLinkToFullDownload("link 1");
-    ret.setLinkToPatchToNextVersion(
-        majorVersion % 2 == 0 ? TestEnumFieldType.ACTIVE : TestEnumFieldType.INACTIVE);
+    ret.setKarma(majorVersion);
+    ret.setAbout("link 1");
+    ret.setStatus(majorVersion % 2 == 0 ? UserStatus.ACTIVE : UserStatus.INACTIVE);
     return ret;
   }
 }

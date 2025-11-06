@@ -23,7 +23,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.summerb.easycrud.impl.dao.TableDaoBase;
+import org.summerb.easycrud.dao.TableDaoBase;
 import org.summerb.users.api.dto.AuthToken;
 import org.summerb.users.impl.dao.AuthTokenDao;
 

@@ -24,7 +24,7 @@ import java.util.Map;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jdbc.core.RowMapper;
-import org.summerb.easycrud.impl.dao.TableDaoBase;
+import org.summerb.easycrud.dao.TableDaoBase;
 import org.summerb.users.impl.dao.PermissionDao;
 
 public class PermissionDaoImpl extends TableDaoBase implements InitializingBean, PermissionDao {

@@ -21,27 +21,37 @@ import java.util.function.Function;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.JdbcUpdateAffectedIncorrectNumberOfRowsException;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
-import org.summerb.easycrud.api.EasyCrudDao;
-import org.summerb.easycrud.api.EasyCrudExceptionStrategy;
-import org.summerb.easycrud.api.EasyCrudService;
-import org.summerb.easycrud.api.EasyCrudWireTap;
-import org.summerb.easycrud.api.EasyCrudWireTapMode;
-import org.summerb.easycrud.api.RowCloner;
-import org.summerb.easycrud.api.StringIdGenerator;
-import org.summerb.easycrud.api.dto.OrderBy;
-import org.summerb.easycrud.api.exceptions.EntityNotFoundException;
-import org.summerb.easycrud.api.query.Query;
-import org.summerb.easycrud.api.row.HasAuthor;
-import org.summerb.easycrud.api.row.HasAutoincrementId;
-import org.summerb.easycrud.api.row.HasId;
-import org.summerb.easycrud.api.row.HasTimestamps;
-import org.summerb.easycrud.api.row.HasUuid;
-import org.summerb.easycrud.impl.dao.mysql.EasyCrudDaoInjections;
-import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapNoOpImpl;
+import org.summerb.easycrud.EasyCrudService;
+import org.summerb.easycrud.dao.EasyCrudDao;
+import org.summerb.easycrud.dao.EasyCrudDaoInjections;
+import org.summerb.easycrud.exceptions.EasyCrudExceptionStrategy;
+import org.summerb.easycrud.exceptions.EasyCrudExceptionStrategyDefaultImpl;
+import org.summerb.easycrud.exceptions.EntityNotFoundException;
+import org.summerb.easycrud.join_query.JoinQuery;
+import org.summerb.easycrud.join_query.JoinQueryFactory;
+import org.summerb.easycrud.query.OrderBy;
+import org.summerb.easycrud.query.OrderByBuilder;
+import org.summerb.easycrud.query.Query;
+import org.summerb.easycrud.row.HasAuthor;
+import org.summerb.easycrud.row.HasAutoincrementId;
+import org.summerb.easycrud.row.HasId;
+import org.summerb.easycrud.row.HasTimestamps;
+import org.summerb.easycrud.row.HasUuid;
+import org.summerb.easycrud.scaffold.EasyCrudScaffold;
+import org.summerb.easycrud.sql_builder.FieldsEnlister;
+import org.summerb.easycrud.sql_builder.impl.FieldsEnlisterCachingImpl;
+import org.summerb.easycrud.sql_builder.impl.FieldsEnlisterImpl;
+import org.summerb.easycrud.sql_builder.model.FromAndWhere;
+import org.summerb.easycrud.tools.RowCloner;
+import org.summerb.easycrud.tools.RowClonerReflectionImpl;
+import org.summerb.easycrud.tools.StringIdGenerator;
+import org.summerb.easycrud.tools.StringIdGeneratorUuidImpl;
+import org.summerb.easycrud.wireTaps.EasyCrudWireTap;
+import org.summerb.easycrud.wireTaps.EasyCrudWireTapMode;
+import org.summerb.easycrud.wireTaps.EasyCrudWireTapNoOpImpl;
 import org.summerb.methodCapturers.PropertyNameResolver;
 import org.summerb.methodCapturers.PropertyNameResolverFactory;
 import org.summerb.security.api.CurrentUserUuidResolver;
@@ -81,6 +91,8 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
   protected PropertyNameResolverFactory propertyNameResolverFactory;
   protected PropertyNameResolver<TRow> nameResolver;
   protected RowCloner rowCloner;
+  protected JoinQueryFactory joinQueryFactory;
+  protected FieldsEnlister fieldsEnlister;
 
   /**
    * Constructor for cases when subclass wants to take full responsibility on instantiation process.
@@ -92,8 +104,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
 
   /**
    * This is also for subclasses, mostly for cases when used in conjunction with {@link
-   * org.summerb.easycrud.scaffold.api.EasyCrudScaffold#fromService(Class, EasyCrudServiceImpl,
-   * String, Object...)}
+   * EasyCrudScaffold#fromService(Class, EasyCrudServiceImpl, String, Object...)}
    */
   protected EasyCrudServiceImpl(Class<TRow> rowClass) {
     this.rowClass = rowClass;
@@ -132,6 +143,14 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
     if (rowCloner == null) {
       rowCloner = buildDefaultRowCloner();
     }
+
+    if (fieldsEnlister == null) {
+      fieldsEnlister = buildDefaultFieldsEnlister();
+    }
+  }
+
+  private FieldsEnlister buildDefaultFieldsEnlister() {
+    return new FieldsEnlisterCachingImpl(new FieldsEnlisterImpl());
   }
 
   protected RowClonerReflectionImpl buildDefaultRowCloner() {
@@ -213,6 +232,14 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
   @Override
   public EasyCrudWireTap<TRow> getWireTap() {
     return wireTap;
+  }
+
+  @Override
+  public JoinQuery<TId, TRow> buildJoinQuery(Query<TId, TRow> query) {
+    Preconditions.checkState(
+        joinQueryFactory != null, "joinQueryFactory is required for invoking this method");
+    Preconditions.checkArgument(query != null, "query required");
+    return joinQueryFactory.build(query);
   }
 
   /**
@@ -545,16 +572,18 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
     return ret;
   }
 
-  protected <T extends Query> String formatQueryForNotFoundException(T query) {
+  protected <T extends Query<?, ?>> String formatQueryForNotFoundException(T query) {
     if (query == null) {
       return "all";
     }
 
     if (dao instanceof EasyCrudDaoInjections<?, ?> daoInjections
-        && daoInjections.getQueryToSql() != null) {
-      return daoInjections
-          .getQueryToSql()
-          .buildWhereClauseAndPopulateParams(query, new MapSqlParameterSource());
+        && daoInjections.getSqlBuilder() != null) {
+
+      FromAndWhere fromAndWhere =
+          daoInjections.getSqlBuilder().fromAndWhere(daoInjections.getTableName(), query);
+
+      return fromAndWhere.getSql();
     }
     return "query";
   }
@@ -623,7 +652,22 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
 
   @Override
   public Query<TId, TRow> query() {
-    return new Query<>(getNameResolver(), this);
+    return new Query<>(this);
+  }
+
+  @Override
+  public Query<TId, TRow> query(String alias) {
+    return new Query<>(this, alias);
+  }
+
+  @Override
+  public int count() {
+    return count(null);
+  }
+
+  @Override
+  public int count(Query<TId, TRow> query) {
+    return dao.count(query);
   }
 
   @Override
@@ -636,7 +680,39 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
     return new OrderByBuilder<>(getNameResolver(), getter);
   }
 
-  protected PropertyNameResolver<TRow> getNameResolver() {
+  @Override
+  public OrderBy[] parseOrderBy(String semicolonSeparatedValues) {
+    if (!StringUtils.hasText(semicolonSeparatedValues)) {
+      return null;
+    }
+
+    return parseOrderBy(semicolonSeparatedValues.split(";"));
+  }
+
+  @Override
+  public OrderBy[] parseOrderBy(String[] orderByArrStr) {
+    if (orderByArrStr == null || orderByArrStr.length == 0) {
+      return null;
+    }
+
+    OrderBy[] ret = new OrderBy[orderByArrStr.length];
+    for (int i = 0; i < orderByArrStr.length; i++) {
+      String orderByStr = orderByArrStr[i];
+      ret[i] = OrderBy.parse(orderByStr);
+      validateFieldName(ret[i].getFieldName());
+    }
+
+    return ret;
+  }
+
+  protected void validateFieldName(String fieldName) {
+    List<String> fields = fieldsEnlister.findInClass(rowClass);
+    Preconditions.checkArgument(
+        fields.contains(fieldName), "Field not found in row class: " + rowClass);
+  }
+
+  @Override
+  public PropertyNameResolver<TRow> getNameResolver() {
     if (nameResolver == null) {
       Preconditions.checkState(
           propertyNameResolverFactory != null,
@@ -657,5 +733,23 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
   @Autowired(required = false)
   public void setRowCloner(RowCloner rowCloner) {
     this.rowCloner = rowCloner;
+  }
+
+  public JoinQueryFactory getJoinQueryFactory() {
+    return joinQueryFactory;
+  }
+
+  @Autowired(required = false)
+  public void setJoinQueryFactory(JoinQueryFactory joinQueryFactory) {
+    this.joinQueryFactory = joinQueryFactory;
+  }
+
+  public FieldsEnlister getFieldsEnlister() {
+    return fieldsEnlister;
+  }
+
+  @Autowired(required = false)
+  public void setFieldsEnlister(FieldsEnlister fieldsEnlister) {
+    this.fieldsEnlister = fieldsEnlister;
   }
 }

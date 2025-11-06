@@ -15,7 +15,7 @@
  ******************************************************************************/
 package integr.org.summerb.easycrud.utils;
 
-import org.summerb.easycrud.impl.auth.EasyCrudAuthorizationPerRowStrategy;
+import org.summerb.easycrud.auth.legacy.EasyCrudAuthorizationPerRowStrategy;
 import org.summerb.security.api.dto.NotAuthorizedResult;
 
 public class EasyCrudPerRowAuthStrategyTestImpl<T> extends EasyCrudAuthorizationPerRowStrategy<T> {

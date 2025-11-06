@@ -1,45 +1,55 @@
-CREATE  TABLE forms_test_1 (
-  id CHAR(36) NOT NULL ,
-  env VARCHAR(45) NOT NULL ,
-  active BIT NOT NULL ,
-  major_version INT NOT NULL,
-  minor_version INT NOT NULL,
-  created_at BIGINT NOT NULL ,
-  modified_at BIGINT NOT NULL ,
-  created_by VARCHAR(36) NOT NULL ,
-  modified_by VARCHAR(36) NOT NULL ,
-  link_to_full_download VARCHAR(512) NOT NULL ,
-  link_to_patch_to_next_version VARCHAR(512) NULL ,
-  PRIMARY KEY (id) 
+CREATE TABLE users_table
+(
+    id          CHAR(36)     NOT NULL,
+
+    name        VARCHAR(45)  NOT NULL,
+    about       VARCHAR(45)  NULL,
+    active      BIT          NOT NULL,
+    karma       INT          NOT NULL,
+    status      VARCHAR(45)  NULL,
+
+    created_at  BIGINT       NOT NULL,
+    modified_at BIGINT       NOT NULL,
+    created_by  VARCHAR(255) NOT NULL,
+    modified_by VARCHAR(255) NOT NULL,
+
+    PRIMARY KEY (id)
 );
 
-CREATE  TABLE forms_test_2 (
-  id INT NOT NULL AUTO_INCREMENT ,
-  env VARCHAR(45) NOT NULL ,
-  active BIT NOT NULL ,
-  major_version INT NOT NULL,
-  minor_version INT NOT NULL,
-  created_at BIGINT NOT NULL ,
-  modified_at BIGINT NOT NULL ,
-  created_by VARCHAR(36) NOT NULL ,
-  modified_by VARCHAR(36) NOT NULL ,
-  link_to_full_download VARCHAR(512) NOT NULL ,
-  link_to_patch_to_next_version VARCHAR(512) NULL ,
-  PRIMARY KEY (id) 
-);
+CREATE TABLE posts
+(
+    id          BIGINT AUTO_INCREMENT PRIMARY KEY,
+    title       VARCHAR(255) NOT NULL,
+    body        VARCHAR(255),
+    likes       INT          NOT NULL DEFAULT 0,
+    dislikes    INT          NOT NULL DEFAULT 0,
+    author_id   VARCHAR(255) NOT NULL,
+    pinned_by   VARCHAR(255) NULL,
 
-CREATE  TABLE forms_test_3 (
-  id CHAR(36) NOT NULL ,
-  link_To_Dto_One_Optional VARCHAR(36) NULL ,
-  link_To_Dto_Two BIGINT NOT NULL ,
-  link_To_Dto_Two_Optional BIGINT NULL ,
-  link_To_Self_Optional VARCHAR(36) NULL ,
-  PRIMARY KEY (id) 
-);
+    created_at  BIGINT       NOT NULL,
+    modified_at BIGINT       NOT NULL,
+    created_by  VARCHAR(255) NOT NULL,
+    modified_by VARCHAR(255) NOT NULL
+) ENGINE=InnoDB;
 
-CREATE  TABLE forms_mtom (
-  id INT NOT NULL AUTO_INCREMENT ,
-  src BIGINT NOT NULL ,
-  dst VARCHAR(36) NOT NULL ,
-  PRIMARY KEY (id) 
+CREATE TABLE comments
+(
+    id          BIGINT AUTO_INCREMENT PRIMARY KEY,
+
+    post_id     BIGINT       NOT NULL,
+    author_id   VARCHAR(255) NOT NULL,
+    comment     VARCHAR(255) NOT NULL,
+
+    created_at  BIGINT       NOT NULL,
+    modified_at BIGINT       NOT NULL,
+    created_by  VARCHAR(255) NOT NULL,
+    modified_by VARCHAR(255) NOT NULL
+) ENGINE=InnoDB;
+
+CREATE TABLE forms_mtom
+(
+    id  INT         NOT NULL AUTO_INCREMENT,
+    src BIGINT      NOT NULL,
+    dst VARCHAR(36) NOT NULL,
+    PRIMARY KEY (id)
 );

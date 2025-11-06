@@ -32,6 +32,6 @@ import unit.org.summerb.dbupgrade.config.TestMySqlConfig;
 @AutoConfigureEmbeddedDatabase(type = DatabaseType.MYSQL, refresh = RefreshMode.AFTER_CLASS)
 public class DbUpgradeMySqlTest extends DbUpgradeTestAbstract {
   // NOTE: All impl is in parent. The only difference is config whether we use
-  // MySql or Postgress specifics
+  // MySql or Postgres specifics
 
 }

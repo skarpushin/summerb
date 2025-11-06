@@ -15,10 +15,10 @@
  ******************************************************************************/
 package org.summerb.easycrud.rest.permissions;
 
-import org.summerb.easycrud.api.row.HasId;
 import org.summerb.easycrud.rest.commonpathvars.PathVariablesMap;
-import org.summerb.easycrud.rest.dto.MultipleItemsResult;
-import org.summerb.easycrud.rest.dto.SingleItemResult;
+import org.summerb.easycrud.rest.model.MultipleItemsResult;
+import org.summerb.easycrud.rest.model.SingleItemResult;
+import org.summerb.easycrud.row.HasId;
 
 /**
  * Impl of this interface will be used to resolve permissions and communicate it to consumer along

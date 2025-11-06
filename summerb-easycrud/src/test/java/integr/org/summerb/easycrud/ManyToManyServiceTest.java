@@ -18,10 +18,11 @@ package integr.org.summerb.easycrud;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import integr.org.summerb.easycrud.config.EasyCrudIntegrTestConfig;
+import integr.org.summerb.easycrud.config.EasyCrudConfig;
+import integr.org.summerb.easycrud.config.EasyCrudServiceBeansConfig;
 import integr.org.summerb.easycrud.config.EmbeddedDbConfig;
-import integr.org.summerb.easycrud.dtos.TestDto1;
-import integr.org.summerb.easycrud.dtos.TestDto2;
+import integr.org.summerb.easycrud.dtos.PostRow;
+import integr.org.summerb.easycrud.dtos.UserRow;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase.DatabaseType;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase.RefreshMode;
@@ -38,54 +39,56 @@ import org.springframework.test.annotation.ProfileValueSourceConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
-import org.summerb.easycrud.api.EasyCrudService;
-import org.summerb.easycrud.api.relations.EasyCrudM2mService;
-import org.summerb.easycrud.api.row.tools.EasyCrudDtoUtils;
+import org.summerb.easycrud.EasyCrudService;
+import org.summerb.easycrud.relations.EasyCrudM2mService;
+import org.summerb.easycrud.tools.EasyCrudDtoUtils;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {EmbeddedDbConfig.class, EasyCrudIntegrTestConfig.class})
+@ContextConfiguration(
+    classes = {EmbeddedDbConfig.class, EasyCrudConfig.class, EasyCrudServiceBeansConfig.class})
 @ProfileValueSourceConfiguration()
 @Transactional
 @AutoConfigureEmbeddedDatabase(type = DatabaseType.MARIADB, refresh = RefreshMode.AFTER_CLASS)
 public class ManyToManyServiceTest {
 
   @Autowired
-  @Qualifier("testDto2ServiceBasicAuth")
-  private EasyCrudService<Long, TestDto2> testDto2ServiceBasicAuth;
+  @Qualifier("postRowServiceBasicAuth")
+  private EasyCrudService<Long, PostRow> postRowServiceBasicAuth;
 
   @Autowired
-  @Qualifier("testDto1Service")
-  private EasyCrudService<String, TestDto1> testDto1Service;
+  @Qualifier("userRowService")
+  private EasyCrudService<String, UserRow> userRowService;
 
   @Autowired
   @Qualifier("m2mService")
-  private EasyCrudM2mService<Long, TestDto2, String, TestDto1> m2mService;
+  private EasyCrudM2mService<Long, PostRow, String, UserRow> m2mService;
 
   @Test
   public void testAddReferenceeExpectFoundAfterAddition() {
-    TestDto2 d2i1 = new TestDto2();
-    d2i1.setEnv("required");
-    d2i1.setLinkToFullDownload("required");
-    d2i1 = testDto2ServiceBasicAuth.create(d2i1);
+    PostRow d2i1 = new PostRow();
+    d2i1.setTitle("required");
+    d2i1.setBody("required");
+    d2i1.setAuthorId("someid");
+    d2i1 = postRowServiceBasicAuth.create(d2i1);
 
-    TestDto1 d3i1 = new TestDto1();
-    d3i1.setEnv("required");
-    d3i1.setLinkToFullDownload("required");
-    d3i1 = testDto1Service.create(d3i1);
+    UserRow d3i1 = new UserRow();
+    d3i1.setName("required");
+    d3i1.setAbout("required");
+    d3i1 = userRowService.create(d3i1);
 
     m2mService.addReferencee(d2i1.getId(), d3i1.getId());
 
-    List<TestDto1> ree = m2mService.findReferenceeByReferencer(d2i1.getId());
+    List<UserRow> ree = m2mService.findReferenceeByReferencer(d2i1.getId());
 
     assertNotNull(ree);
     assertEquals(1, ree.size());
 
     // add another
-    TestDto1 d3i2 = new TestDto1();
-    d3i2.setEnv("required");
-    d3i2.setLinkToFullDownload("required");
-    d3i2 = testDto1Service.create(d3i2);
+    UserRow d3i2 = new UserRow();
+    d3i2.setName("required");
+    d3i2.setAbout("required");
+    d3i2 = userRowService.create(d3i2);
     m2mService.addReferencee(d2i1.getId(), d3i2.getId());
     ree = m2mService.findReferenceeByReferencer(d2i1.getId());
     assertNotNull(ree);
@@ -94,15 +97,16 @@ public class ManyToManyServiceTest {
 
   @Test
   public void testAddReferenceeExpectNaeIfNotAllowedToUpdateSrc() {
-    TestDto2 d2i1n = new TestDto2();
-    d2i1n.setEnv("throwNaeOnUpdate");
-    d2i1n.setLinkToFullDownload("required");
-    TestDto2 d2i1 = testDto2ServiceBasicAuth.create(d2i1n);
+    PostRow d2i1n = new PostRow();
+    d2i1n.setTitle("throwNaeOnUpdate");
+    d2i1n.setBody("required");
+    d2i1n.setAuthorId("someid");
+    PostRow d2i1 = postRowServiceBasicAuth.create(d2i1n);
 
-    TestDto1 d3i1n = new TestDto1();
-    d3i1n.setEnv("required");
-    d3i1n.setLinkToFullDownload("required");
-    TestDto1 d3i1 = testDto1Service.create(d3i1n);
+    UserRow d3i1n = new UserRow();
+    d3i1n.setName("required");
+    d3i1n.setAbout("required");
+    UserRow d3i1 = userRowService.create(d3i1n);
 
     assertThrows(
         NotAuthorizedException.class, () -> m2mService.addReferencee(d2i1.getId(), d3i1.getId()));
@@ -110,34 +114,36 @@ public class ManyToManyServiceTest {
 
   @Test
   public void testAddReferenceeExpectMultipleFoundAfterAddition() {
-    TestDto2 d2i1 = new TestDto2();
-    d2i1.setEnv("required");
-    d2i1.setLinkToFullDownload("required");
-    d2i1 = testDto2ServiceBasicAuth.create(d2i1);
-    TestDto2 d2i2 = new TestDto2();
-    d2i2.setEnv("required");
-    d2i2.setLinkToFullDownload("required");
-    d2i2 = testDto2ServiceBasicAuth.create(d2i2);
+    PostRow d2i1 = new PostRow();
+    d2i1.setTitle("required");
+    d2i1.setBody("required");
+    d2i1.setAuthorId("someid");
+    d2i1 = postRowServiceBasicAuth.create(d2i1);
+    PostRow d2i2 = new PostRow();
+    d2i2.setTitle("required");
+    d2i2.setBody("required");
+    d2i2.setAuthorId("someid");
+    d2i2 = postRowServiceBasicAuth.create(d2i2);
 
-    TestDto1 d3i1 = new TestDto1();
-    d3i1.setEnv("required");
-    d3i1.setLinkToFullDownload("required");
-    d3i1 = testDto1Service.create(d3i1);
-    TestDto1 d3i2 = new TestDto1();
-    d3i2.setEnv("required");
-    d3i2.setLinkToFullDownload("required");
-    d3i2 = testDto1Service.create(d3i2);
-    TestDto1 d3i3 = new TestDto1();
-    d3i3.setEnv("required");
-    d3i3.setLinkToFullDownload("required");
-    d3i3 = testDto1Service.create(d3i3);
+    UserRow d3i1 = new UserRow();
+    d3i1.setName("required");
+    d3i1.setAbout("required");
+    d3i1 = userRowService.create(d3i1);
+    UserRow d3i2 = new UserRow();
+    d3i2.setName("required");
+    d3i2.setAbout("required");
+    d3i2 = userRowService.create(d3i2);
+    UserRow d3i3 = new UserRow();
+    d3i3.setName("required");
+    d3i3.setAbout("required");
+    d3i3 = userRowService.create(d3i3);
 
     m2mService.addReferencee(d2i1.getId(), d3i1.getId());
     m2mService.addReferencee(d2i1.getId(), d3i2.getId());
     m2mService.addReferencee(d2i2.getId(), d3i2.getId());
     m2mService.addReferencee(d2i2.getId(), d3i3.getId());
 
-    Map<Long, List<TestDto1>> result =
+    Map<Long, List<UserRow>> result =
         m2mService.findReferenceeByReferencers(
             new HashSet<>(Arrays.asList(d2i1.getId(), d2i2.getId())));
 
@@ -157,23 +163,25 @@ public class ManyToManyServiceTest {
 
   @Test
   public void testAddReferenceeExpectGracefulResponseIfReferencesNotFound() {
-    TestDto2 d2i1 = new TestDto2();
-    d2i1.setEnv("required");
-    d2i1.setLinkToFullDownload("required");
-    d2i1 = testDto2ServiceBasicAuth.create(d2i1);
-    TestDto2 d2i2 = new TestDto2();
-    d2i2.setEnv("required");
-    d2i2.setLinkToFullDownload("required");
-    d2i2 = testDto2ServiceBasicAuth.create(d2i2);
+    PostRow d2i1 = new PostRow();
+    d2i1.setTitle("required");
+    d2i1.setBody("required");
+    d2i1.setAuthorId("someid");
+    d2i1 = postRowServiceBasicAuth.create(d2i1);
+    PostRow d2i2 = new PostRow();
+    d2i2.setTitle("required");
+    d2i2.setBody("required");
+    d2i2.setAuthorId("someid");
+    d2i2 = postRowServiceBasicAuth.create(d2i2);
 
-    TestDto1 d3i1 = new TestDto1();
-    d3i1.setEnv("required");
-    d3i1.setLinkToFullDownload("required");
-    d3i1 = testDto1Service.create(d3i1);
+    UserRow d3i1 = new UserRow();
+    d3i1.setName("required");
+    d3i1.setAbout("required");
+    d3i1 = userRowService.create(d3i1);
 
     m2mService.addReferencee(d2i1.getId(), d3i1.getId());
 
-    Map<Long, List<TestDto1>> result =
+    Map<Long, List<UserRow>> result =
         m2mService.findReferenceeByReferencers(
             new HashSet<>(Arrays.asList(d2i1.getId(), d2i2.getId())));
 
@@ -187,18 +195,19 @@ public class ManyToManyServiceTest {
 
   @Test
   public void testAddReferenceeExpectNotFoundAfterDeleted() {
-    TestDto2 d2i1 = new TestDto2();
-    d2i1.setEnv("required");
-    d2i1.setLinkToFullDownload("required");
-    d2i1 = testDto2ServiceBasicAuth.create(d2i1);
+    PostRow d2i1 = new PostRow();
+    d2i1.setTitle("required");
+    d2i1.setBody("required");
+    d2i1.setAuthorId("someid");
+    d2i1 = postRowServiceBasicAuth.create(d2i1);
 
-    TestDto1 d3i1 = new TestDto1();
-    d3i1.setEnv("required");
-    d3i1.setLinkToFullDownload("required");
-    d3i1 = testDto1Service.create(d3i1);
+    UserRow d3i1 = new UserRow();
+    d3i1.setName("required");
+    d3i1.setAbout("required");
+    d3i1 = userRowService.create(d3i1);
 
     m2mService.addReferencee(d2i1.getId(), d3i1.getId());
-    List<TestDto1> ree = m2mService.findReferenceeByReferencer(d2i1.getId());
+    List<UserRow> ree = m2mService.findReferenceeByReferencer(d2i1.getId());
     assertEquals(1, ree.size());
 
     m2mService.removeReferencee(d2i1.getId(), d3i1.getId());

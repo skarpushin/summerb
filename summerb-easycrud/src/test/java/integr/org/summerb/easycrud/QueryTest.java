@@ -18,13 +18,13 @@ package integr.org.summerb.easycrud;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import integr.org.summerb.easycrud.config.EasyCrudIntegrTestConfig;
+import integr.org.summerb.easycrud.config.EasyCrudConfig;
+import integr.org.summerb.easycrud.config.EasyCrudServiceBeansConfig;
 import integr.org.summerb.easycrud.config.EmbeddedDbConfig;
-import integr.org.summerb.easycrud.dtos.TestDto1;
-import integr.org.summerb.easycrud.dtos.TestDto2;
-import integr.org.summerb.easycrud.dtos.TestEnumFieldType;
-import integr.org.summerb.easycrud.testbeans.CustomMapperToTestDto2;
-import integr.org.summerb.easycrud.testbeans.TestDto1Service;
+import integr.org.summerb.easycrud.dtos.UserRow;
+import integr.org.summerb.easycrud.dtos.UserStatus;
+import integr.org.summerb.easycrud.testbeans.UserRowCustomMapper;
+import integr.org.summerb.easycrud.testbeans.UserRowService;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase.DatabaseType;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase.RefreshMode;
@@ -38,21 +38,22 @@ import org.springframework.test.annotation.ProfileValueSourceConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
-import org.summerb.easycrud.api.exceptions.EasyCrudUnexpectedException;
+import org.summerb.easycrud.exceptions.EasyCrudUnexpectedException;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {EmbeddedDbConfig.class, EasyCrudIntegrTestConfig.class})
+@ContextConfiguration(
+    classes = {EmbeddedDbConfig.class, EasyCrudConfig.class, EasyCrudServiceBeansConfig.class})
 @AutoConfigureEmbeddedDatabase(type = DatabaseType.MARIADB, refresh = RefreshMode.AFTER_CLASS)
 @ProfileValueSourceConfiguration()
 @Transactional
 public class QueryTest {
-  @Autowired private TestDto1Service service;
+  @Autowired private UserRowService service;
 
   @Test
   void expect_getEnvMaxWithScalarParam_works() {
     createTestData();
 
-    String result = service.getEnvMaxWithScalarParam(20);
+    String result = service.getNameMaxWithScalarParam(20);
     assertEquals("env2", result);
   }
 
@@ -60,15 +61,15 @@ public class QueryTest {
   void expect_defaultMethodWorks() {
     createTestData();
 
-    TestDto1 result = service.getUsingDefault(20);
-    assertEquals("env1", result.getEnv());
+    UserRow result = service.getUsingDefault(20);
+    assertEquals("env1", result.getName());
   }
 
   @Test
   void expect_getEnvCountNoParams_works() {
     createTestData();
 
-    int result = service.getEnvCountNoParams();
+    int result = service.getNameCountNoParams();
     assertEquals(3, result);
   }
 
@@ -76,7 +77,7 @@ public class QueryTest {
   void expect_getEnvsWithArray_works() {
     createTestData();
 
-    List<String> result = service.getEnvsWithArray(new int[] {10, 30});
+    List<String> result = service.getNamesWithArray(new int[] {10, 30});
     assertEquals(2, result.size());
     assertEquals("env1", result.get(0));
     assertEquals("env3", result.get(1));
@@ -86,7 +87,7 @@ public class QueryTest {
   void expect_getEnvsWithArray_worksWithSetAsReturnType() {
     createTestData();
 
-    Set<String> result = service.getEnvsWithArrayAsSet(new int[] {10, 30});
+    Set<String> result = service.getNamesWithArrayAsSet(new int[] {10, 30});
     assertEquals(2, result.size());
     assertEquals(Set.of("env1", "env3"), result);
   }
@@ -95,7 +96,7 @@ public class QueryTest {
   void expect_getEnvsWithSet_works() {
     createTestData();
 
-    List<String> result = service.getEnvsWithSet(Set.of(10, 30));
+    List<String> result = service.getNamesWithSet(Set.of(10, 30));
     assertEquals(2, result.size());
     assertEquals("env1", result.get(0));
     assertEquals("env3", result.get(1));
@@ -105,60 +106,60 @@ public class QueryTest {
   void expect_getDtosWithSet_works() {
     createTestData();
 
-    List<TestDto1> result = service.getDtosWithSet(Set.of(10, 30));
+    List<UserRow> result = service.getDtosWithSet(Set.of(10, 30));
     assertEquals(2, result.size());
-    assertEquals("env1", result.get(0).getEnv());
-    assertEquals("env3", result.get(1).getEnv());
+    assertEquals("env1", result.get(0).getName());
+    assertEquals("env3", result.get(1).getName());
   }
 
   @Test
   void expect_getDtosWithSetAndCustomMapper_works() {
     createTestData();
 
-    List<TestDto2> result = service.getDtosWithSetAndCustomMapper(Set.of(10, 30));
+    List<UserRow> result = service.getDtosWithSetAndCustomMapper(Set.of(10, 30));
     assertEquals(2, result.size());
-    assertEquals("env1", result.get(0).getEnv());
-    assertEquals(CustomMapperToTestDto2.CUSTOM_MAPPER, result.get(0).getLinkToFullDownload());
+    assertEquals("env1", result.get(0).getName());
+    assertEquals(UserRowCustomMapper.CUSTOM_MAPPER, result.get(0).getAbout());
 
-    assertEquals("env3", result.get(1).getEnv());
-    assertEquals(CustomMapperToTestDto2.CUSTOM_MAPPER, result.get(1).getLinkToFullDownload());
+    assertEquals("env3", result.get(1).getName());
+    assertEquals(UserRowCustomMapper.CUSTOM_MAPPER, result.get(1).getAbout());
   }
 
   @Test
   void expect_defaultSqlOverrideForEnumWorks_works() {
     createTestData();
 
-    List<TestDto1> result = service.getDtosWithSet(Set.of(10, 30));
-    assertEquals(TestEnumFieldType.ACTIVE, result.get(0).getLinkToPatchToNextVersion());
+    List<UserRow> result = service.getDtosWithSet(Set.of(10, 30));
+    assertEquals(UserStatus.ACTIVE, result.get(0).getStatus());
   }
 
   @Test
   void test_updateReturnVoid() {
-    TestDto1 row = service.create(buildRow("env1", 30));
+    UserRow row = service.create(buildRow("env1", 30));
     String someUuid = UUID.randomUUID().toString();
     service.updateReturnVoid(row.getId(), someUuid);
-    TestDto1 retrieved = service.getById(row.getId());
-    assertEquals(someUuid, retrieved.getLinkToFullDownload());
+    UserRow retrieved = service.getById(row.getId());
+    assertEquals(someUuid, retrieved.getAbout());
   }
 
   @Test
   void test_updateReturnInt() {
-    TestDto1 row = service.create(buildRow("env1", 30));
+    UserRow row = service.create(buildRow("env1", 30));
     String someUuid = UUID.randomUUID().toString();
     int affectedRows = service.updateReturnInt(row.getId(), someUuid);
     assertEquals(1, affectedRows);
-    TestDto1 retrieved = service.getById(row.getId());
-    assertEquals(someUuid, retrieved.getLinkToFullDownload());
+    UserRow retrieved = service.getById(row.getId());
+    assertEquals(someUuid, retrieved.getAbout());
   }
 
   @Test
   void test_updateReturnIntBoxed() {
-    TestDto1 row = service.create(buildRow("env1", 30));
+    UserRow row = service.create(buildRow("env1", 30));
     String someUuid = UUID.randomUUID().toString();
     Integer affectedRows = service.updateReturnIntBoxed(row.getId(), someUuid);
     assertEquals(1, affectedRows);
-    TestDto1 retrieved = service.getById(row.getId());
-    assertEquals(someUuid, retrieved.getLinkToFullDownload());
+    UserRow retrieved = service.getById(row.getId());
+    assertEquals(someUuid, retrieved.getAbout());
   }
 
   @Test
@@ -179,15 +180,13 @@ public class QueryTest {
     service.create(buildRow("env3", 10));
   }
 
-  public static TestDto1 buildRow(String env, int majorVersion) {
-    TestDto1 ret = new TestDto1();
-    ret.setEnv(env);
+  public static UserRow buildRow(String name, int karma) {
+    UserRow ret = new UserRow();
+    ret.setName(name);
     ret.setActive(true);
-    ret.setMajorVersion(majorVersion);
-    ret.setMinorVersion(1);
-    ret.setLinkToFullDownload("link 1");
-    ret.setLinkToPatchToNextVersion(
-        majorVersion % 2 == 0 ? TestEnumFieldType.ACTIVE : TestEnumFieldType.INACTIVE);
+    ret.setKarma(karma);
+    ret.setAbout("link 1");
+    ret.setStatus(karma % 2 == 0 ? UserStatus.ACTIVE : UserStatus.INACTIVE);
     return ret;
   }
 }

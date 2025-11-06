@@ -18,10 +18,11 @@ package integr.org.summerb.easycrud;
 import static integr.org.summerb.easycrud.QueryTest.buildRow;
 import static org.junit.jupiter.api.Assertions.*;
 
-import integr.org.summerb.easycrud.config.EasyCrudIntegrTestConfig;
+import integr.org.summerb.easycrud.config.EasyCrudConfig;
+import integr.org.summerb.easycrud.config.EasyCrudServiceBeansConfig;
 import integr.org.summerb.easycrud.config.EmbeddedDbConfig;
-import integr.org.summerb.easycrud.dtos.TestDto1;
-import integr.org.summerb.easycrud.testbeans.TestDto1Service;
+import integr.org.summerb.easycrud.dtos.UserRow;
+import integr.org.summerb.easycrud.testbeans.UserRowService;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase.DatabaseType;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase.RefreshMode;
@@ -35,11 +36,12 @@ import org.springframework.test.annotation.ProfileValueSourceConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
-import org.summerb.easycrud.impl.wireTaps.EasyCrudWireTapAbstract;
-import org.summerb.easycrud.scaffold.api.EasyCrudScaffold;
+import org.summerb.easycrud.scaffold.EasyCrudScaffold;
+import org.summerb.easycrud.wireTaps.EasyCrudWireTapAbstract;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {EmbeddedDbConfig.class, EasyCrudIntegrTestConfig.class})
+@ContextConfiguration(
+    classes = {EmbeddedDbConfig.class, EasyCrudConfig.class, EasyCrudServiceBeansConfig.class})
 @ProfileValueSourceConfiguration()
 @Transactional
 @AutoConfigureEmbeddedDatabase(type = DatabaseType.MARIADB, refresh = RefreshMode.AFTER_CLASS)
@@ -49,7 +51,7 @@ public class WireTapMultipleRowsTest {
   @Test
   public void testExpectAfterReadWillNotBeCalledTwicePetRow() {
     // GIVEN
-    WireTapTest<TestDto1> wireTap =
+    WireTapTest<UserRow> wireTap =
         new WireTapTest<>(false) {
           @Override
           public boolean requiresOnRead() {
@@ -57,43 +59,40 @@ public class WireTapMultipleRowsTest {
           }
         };
 
-    TestDto1Service service =
+    UserRowService service =
         easyCrudScaffold.fromService(
-            TestDto1Service.class, TestDto1Service.TERM, TestDto1Service.TERM, wireTap);
+            UserRowService.class, UserRowService.TERM, UserRowService.TERM, wireTap);
 
     service.create(buildRow("env1", 30));
     service.create(buildRow("env2", 20));
     service.create(buildRow("env3", 10));
 
     // WHEN - query multiple
-    List<TestDto1> resultList =
-        service
-            .query()
-            .ge(TestDto1::getMajorVersion, 20)
-            .findAll(service.orderBy(TestDto1::getEnv).asc());
+    List<UserRow> resultList =
+        service.query().ge(UserRow::getKarma, 20).findAll(service.orderBy(UserRow::getName).asc());
 
     // THEN - query multiple
     assertEquals(2, resultList.size());
     assertEquals(2, wireTap.afterReadIndividual.size());
-    assertEquals("env1", wireTap.afterReadIndividual.get(0).getEnv());
-    assertEquals("env2", wireTap.afterReadIndividual.get(1).getEnv());
+    assertEquals("env1", wireTap.afterReadIndividual.get(0).getName());
+    assertEquals("env2", wireTap.afterReadIndividual.get(1).getName());
     assertTrue(wireTap.afterReadMultiple.isEmpty());
 
     // WHEN - query single
     wireTap.afterReadIndividual.clear();
-    TestDto1 resultOne = service.query().eq(TestDto1::getMajorVersion, 10).findOne();
+    UserRow resultOne = service.query().eq(UserRow::getKarma, 10).findOne();
 
     // THEN - query single
     assertNotNull(resultOne);
     assertTrue(wireTap.afterReadMultiple.isEmpty());
     assertEquals(1, wireTap.afterReadIndividual.size());
-    assertEquals("env3", wireTap.afterReadIndividual.get(0).getEnv());
+    assertEquals("env3", wireTap.afterReadIndividual.get(0).getName());
   }
 
   @Test
   public void testExpectAfterReadWillBeCalledSeparatelyForIndividualAndMultipleRows() {
     // GIVEN
-    WireTapTest<TestDto1> wireTap =
+    WireTapTest<UserRow> wireTap =
         new WireTapTest<>(true) {
           @Override
           public boolean requiresOnReadMultiple() {
@@ -106,43 +105,40 @@ public class WireTapMultipleRowsTest {
           }
         };
 
-    TestDto1Service service =
+    UserRowService service =
         easyCrudScaffold.fromService(
-            TestDto1Service.class, TestDto1Service.TERM, TestDto1Service.TERM, wireTap);
+            UserRowService.class, UserRowService.TERM, UserRowService.TERM, wireTap);
 
     service.create(buildRow("env1", 30));
     service.create(buildRow("env2", 20));
     service.create(buildRow("env3", 10));
 
     // WHEN - query multiple
-    List<TestDto1> resultList =
-        service
-            .query()
-            .ge(TestDto1::getMajorVersion, 20)
-            .findAll(service.orderBy(TestDto1::getEnv).asc());
+    List<UserRow> resultList =
+        service.query().ge(UserRow::getKarma, 20).findAll(service.orderBy(UserRow::getName).asc());
 
     // THEN - query multiple
     assertEquals(2, resultList.size());
     assertEquals(2, wireTap.afterReadMultiple.size());
-    assertEquals("env1", wireTap.afterReadMultiple.get(0).getEnv());
-    assertEquals("env2", wireTap.afterReadMultiple.get(1).getEnv());
+    assertEquals("env1", wireTap.afterReadMultiple.get(0).getName());
+    assertEquals("env2", wireTap.afterReadMultiple.get(1).getName());
     assertTrue(wireTap.afterReadIndividual.isEmpty());
 
     // WHEN - query single
     wireTap.afterReadMultiple.clear();
-    TestDto1 resultOne = service.query().eq(TestDto1::getMajorVersion, 10).findOne();
+    UserRow resultOne = service.query().eq(UserRow::getKarma, 10).findOne();
 
     // THEN - query single
     assertNotNull(resultOne);
     assertTrue(wireTap.afterReadMultiple.isEmpty());
     assertEquals(1, wireTap.afterReadIndividual.size());
-    assertEquals("env3", wireTap.afterReadIndividual.get(0).getEnv());
+    assertEquals("env3", wireTap.afterReadIndividual.get(0).getName());
   }
 
   @Test
   public void testExpectScaffoldedMethodWillAlsoResultInMultipleReadWireTapCall() {
     // GIVEN
-    WireTapTest<TestDto1> wireTap =
+    WireTapTest<UserRow> wireTap =
         new WireTapTest<>(true) {
           @Override
           public boolean requiresOnReadMultiple() {
@@ -150,22 +146,22 @@ public class WireTapMultipleRowsTest {
           }
         };
 
-    TestDto1Service service =
+    UserRowService service =
         easyCrudScaffold.fromService(
-            TestDto1Service.class, TestDto1Service.TERM, TestDto1Service.TERM, wireTap);
+            UserRowService.class, UserRowService.TERM, UserRowService.TERM, wireTap);
 
     service.create(buildRow("env1", 30));
     service.create(buildRow("env2", 20));
     service.create(buildRow("env3", 10));
 
     // WHEN - query multiple
-    List<TestDto1> resultList = service.getDtosWithSet(Set.of(10, 30));
+    List<UserRow> resultList = service.getDtosWithSet(Set.of(10, 30));
 
     // THEN - query multiple
     assertEquals(2, resultList.size());
     assertEquals(2, wireTap.afterReadMultiple.size());
-    assertEquals("env1", wireTap.afterReadMultiple.get(0).getEnv());
-    assertEquals("env3", wireTap.afterReadMultiple.get(1).getEnv());
+    assertEquals("env1", wireTap.afterReadMultiple.get(0).getName());
+    assertEquals("env3", wireTap.afterReadMultiple.get(1).getName());
     assertTrue(wireTap.afterReadIndividual.isEmpty());
   }
 

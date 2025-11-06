@@ -32,6 +32,6 @@ import unit.org.summerb.dbupgrade.config.TestMySqlConfig;
 @AutoConfigureEmbeddedDatabase(type = DatabaseType.MARIADB, refresh = RefreshMode.AFTER_CLASS)
 public class DbUpgradeMariaDbTest extends DbUpgradeTestAbstract {
   // NOTE: All impl is in parent. The only difference is config whether we use
-  // MySql or Postgress specifics
+  // MySql or Postgres specifics
 
 }

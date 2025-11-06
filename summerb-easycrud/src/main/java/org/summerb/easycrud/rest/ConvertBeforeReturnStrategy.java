@@ -16,9 +16,9 @@
 package org.summerb.easycrud.rest;
 
 import java.util.List;
-import org.summerb.easycrud.api.row.HasId;
-import org.summerb.easycrud.rest.dto.MultipleItemsResult;
-import org.summerb.easycrud.rest.dto.SingleItemResult;
+import org.summerb.easycrud.rest.model.MultipleItemsResult;
+import org.summerb.easycrud.rest.model.SingleItemResult;
+import org.summerb.easycrud.row.HasId;
 
 /** Use this to alter response right before it gets returned to consumer */
 public class ConvertBeforeReturnStrategy<TId, TDto extends HasId<TId>> {

@@ -37,13 +37,13 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.util.CollectionUtils;
-import org.summerb.easycrud.api.EasyCrudService;
-import org.summerb.easycrud.api.EasyCrudWireTap;
-import org.summerb.easycrud.api.row.HasId;
-import org.summerb.easycrud.impl.dao.SqlTypeOverride;
-import org.summerb.easycrud.impl.dao.mysql.EasyCrudDaoInjections;
-import org.summerb.easycrud.scaffold.api.CallableMethod;
-import org.summerb.easycrud.scaffold.api.Query;
+import org.summerb.easycrud.EasyCrudService;
+import org.summerb.easycrud.dao.EasyCrudDaoInjections;
+import org.summerb.easycrud.dao.SqlTypeOverride;
+import org.summerb.easycrud.row.HasId;
+import org.summerb.easycrud.scaffold.CallableMethod;
+import org.summerb.easycrud.scaffold.Query;
+import org.summerb.easycrud.wireTaps.EasyCrudWireTap;
 
 /**
  * This clas provides default implementation for interface methods marked with {@link Query}

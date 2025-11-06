@@ -19,11 +19,11 @@ import java.lang.reflect.Method;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.summerb.easycrud.api.EasyCrudService;
-import org.summerb.easycrud.api.row.HasId;
-import org.summerb.easycrud.impl.dao.mysql.EasyCrudDaoInjections;
-import org.summerb.easycrud.scaffold.api.CallableMethod;
-import org.summerb.easycrud.scaffold.api.ScaffoldedMethodFactory;
+import org.summerb.easycrud.EasyCrudService;
+import org.summerb.easycrud.dao.EasyCrudDaoInjections;
+import org.summerb.easycrud.row.HasId;
+import org.summerb.easycrud.scaffold.CallableMethod;
+import org.summerb.easycrud.scaffold.ScaffoldedMethodFactory;
 
 /**
  * Impl of {@link ScaffoldedMethodFactory} assuming underlying DB is MySQL (but could as well work

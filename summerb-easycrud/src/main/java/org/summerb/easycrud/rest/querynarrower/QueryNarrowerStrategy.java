@@ -15,9 +15,9 @@
  ******************************************************************************/
 package org.summerb.easycrud.rest.querynarrower;
 
-import org.summerb.easycrud.api.query.Query;
-import org.summerb.easycrud.api.row.HasId;
+import org.summerb.easycrud.query.Query;
 import org.summerb.easycrud.rest.commonpathvars.PathVariablesMap;
+import org.summerb.easycrud.row.HasId;
 
 /**
  * Provide a subclass that will alter queries before query will be issued to service. I.e. useful to

@@ -24,9 +24,9 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
-import org.summerb.easycrud.api.DaoExceptionTranslator;
-import org.summerb.easycrud.impl.dao.TableDaoBase;
-import org.summerb.easycrud.impl.dao.mysql.DaoExceptionTranslatorMySqlImpl;
+import org.summerb.easycrud.dao.TableDaoBase;
+import org.summerb.easycrud.exceptions.DaoExceptionTranslator;
+import org.summerb.easycrud.exceptions.DaoExceptionTranslatorMySqlImpl;
 import org.summerb.properties.impl.dao.PropertyDao;
 import org.summerb.properties.impl.dto.NamedIdProperty;
 

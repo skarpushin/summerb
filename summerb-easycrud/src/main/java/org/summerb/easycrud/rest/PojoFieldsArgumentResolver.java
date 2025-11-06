@@ -29,7 +29,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import org.summerb.easycrud.api.dto.OrderBy;
+import org.summerb.easycrud.query.OrderBy;
 import org.summerb.utils.easycrud.api.dto.PagerParams;
 
 /**

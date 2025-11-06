@@ -24,7 +24,7 @@ import javax.sql.DataSource;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.util.CollectionUtils;
-import org.summerb.easycrud.impl.dao.TableDaoBase;
+import org.summerb.easycrud.dao.TableDaoBase;
 import org.summerb.properties.impl.dao.AliasEntry;
 import org.summerb.properties.impl.dao.StringIdAliasDao;
 import org.summerb.utils.easycrud.api.dto.PagerParams;

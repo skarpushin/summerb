@@ -15,10 +15,11 @@
  ******************************************************************************/
 package integr.org.summerb.easycrud;
 
-import integr.org.summerb.easycrud.config.EasyCrudIntegrTestConfig;
+import integr.org.summerb.easycrud.config.EasyCrudConfig;
+import integr.org.summerb.easycrud.config.EasyCrudServiceBeansConfig;
 import integr.org.summerb.easycrud.config.EmbeddedDbConfig;
-import integr.org.summerb.easycrud.dtos.TestDto1;
-import integr.org.summerb.easycrud.dtos.TestDto2;
+import integr.org.summerb.easycrud.dtos.PostRow;
+import integr.org.summerb.easycrud.dtos.UserRow;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase.DatabaseType;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase.RefreshMode;
@@ -26,43 +27,43 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.annotation.ProfileValueSourceConfiguration;
-import org.springframework.test.annotation.SystemProfileValueSource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
-import org.summerb.easycrud.api.EasyCrudService;
+import org.summerb.easycrud.EasyCrudService;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {EmbeddedDbConfig.class, EasyCrudIntegrTestConfig.class})
-@ProfileValueSourceConfiguration(SystemProfileValueSource.class)
+@ContextConfiguration(
+    classes = {EmbeddedDbConfig.class, EasyCrudConfig.class, EasyCrudServiceBeansConfig.class})
+@ProfileValueSourceConfiguration()
 @Transactional
 @AutoConfigureEmbeddedDatabase(type = DatabaseType.MARIADB, refresh = RefreshMode.AFTER_CLASS)
 public class EasyCrudServiceTableAuthTest extends GenericCrudServiceTestTemplate {
 
   @Autowired
-  @Qualifier("testDto1Service")
-  private EasyCrudService<String, TestDto1> testDto1Service;
+  @Qualifier("userRowService")
+  private EasyCrudService<String, UserRow> userRowService;
 
   @Autowired
-  @Qualifier("testDto2Service")
-  private EasyCrudService<Long, TestDto2> testDto2Service;
+  @Qualifier("postRowService")
+  private EasyCrudService<Long, PostRow> postRowService;
 
   @Autowired
-  @Qualifier("testDto1ServiceEb")
-  private EasyCrudService<String, TestDto1> testDto1ServiceEb;
+  @Qualifier("userRowServiceEb")
+  private EasyCrudService<String, UserRow> userRowServiceEb;
 
   @Override
-  public EasyCrudService<String, TestDto1> getTestDto1Service() {
-    return testDto1Service;
+  public EasyCrudService<String, UserRow> getUserRowService() {
+    return userRowService;
   }
 
   @Override
-  public EasyCrudService<Long, TestDto2> getTestDto2Service() {
-    return testDto2Service;
+  public EasyCrudService<Long, PostRow> getPostRowServiceBasicAuth() {
+    return postRowService;
   }
 
   @Override
-  public EasyCrudService<String, TestDto1> getTestDto1ServiceEb() {
-    return testDto1ServiceEb;
+  public EasyCrudService<String, UserRow> getUserRowServiceEb() {
+    return userRowServiceEb;
   }
 }

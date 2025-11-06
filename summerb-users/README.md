@@ -15,7 +15,7 @@ Users library has following building blocks implemented:
 
 ## Tested with databases
  * MariaDB (MySQL)
- * Postgress
+ * Postgres
 
 ## Usage
 Elaborative description on how to use it is yet to come. For now please rely on javadocs and sources to understand usage approach. Key parts:

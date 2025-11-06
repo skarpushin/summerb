@@ -4,11 +4,11 @@ import com.google.common.base.Preconditions;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.summerb.easycrud.api.row.HasId;
-import org.summerb.easycrud.impl.auth.EasyCrudAuthorizationPerRowStrategy;
+import org.summerb.easycrud.auth.legacy.EasyCrudAuthorizationPerRowStrategy;
 import org.summerb.easycrud.rest.commonpathvars.PathVariablesMap;
-import org.summerb.easycrud.rest.dto.MultipleItemsResult;
-import org.summerb.easycrud.rest.dto.SingleItemResult;
+import org.summerb.easycrud.rest.model.MultipleItemsResult;
+import org.summerb.easycrud.rest.model.SingleItemResult;
+import org.summerb.easycrud.row.HasId;
 
 /**
  * Impl of {@link PermissionsResolverStrategy} that gets data from {@link

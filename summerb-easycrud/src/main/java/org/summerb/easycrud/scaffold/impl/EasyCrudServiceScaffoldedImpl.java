@@ -22,13 +22,13 @@ import com.google.common.cache.LoadingCache;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import org.summerb.easycrud.api.EasyCrudService;
-import org.summerb.easycrud.api.EasyCrudServiceQueryApi;
-import org.summerb.easycrud.api.row.HasId;
-import org.summerb.easycrud.impl.dao.mysql.EasyCrudDaoInjections;
-import org.summerb.easycrud.scaffold.api.CallableMethod;
-import org.summerb.easycrud.scaffold.api.Query;
-import org.summerb.easycrud.scaffold.api.ScaffoldedMethodFactory;
+import org.summerb.easycrud.EasyCrudService;
+import org.summerb.easycrud.dao.EasyCrudDaoInjections;
+import org.summerb.easycrud.query.EasyCrudServiceQueryApi;
+import org.summerb.easycrud.row.HasId;
+import org.summerb.easycrud.scaffold.CallableMethod;
+import org.summerb.easycrud.scaffold.Query;
+import org.summerb.easycrud.scaffold.ScaffoldedMethodFactory;
 
 public class EasyCrudServiceScaffoldedImpl implements java.lang.reflect.InvocationHandler {
 
