@@ -30,6 +30,8 @@ import org.summerb.easycrud.sql_builder.QueryToSql;
 import org.summerb.easycrud.sql_builder.SqlBuilder;
 import org.summerb.easycrud.sql_builder.impl.FieldsEnlisterCachingImpl;
 import org.summerb.easycrud.sql_builder.impl.FieldsEnlisterImpl;
+import org.summerb.easycrud.tools.RowCloner;
+import org.summerb.easycrud.tools.RowClonerReflectionImpl;
 import org.summerb.easycrud.tools.StringIdGenerator;
 import org.summerb.easycrud.tools.StringIdGeneratorUuidImpl;
 
@@ -96,7 +98,7 @@ public abstract class EasyCrudConfigAbstract {
   }
 
   @Bean
-  protected FieldsEnlister columnNamesLister() {
+  protected FieldsEnlister fieldsEnlister() {
     return new FieldsEnlisterCachingImpl(new FieldsEnlisterImpl());
   }
 
@@ -121,5 +123,11 @@ public abstract class EasyCrudConfigAbstract {
   @Bean
   protected EasyCrudServiceResolver easyCrudServiceResolver() {
     return new EasyCrudServiceResolverSpringImpl();
+  }
+
+
+  @Bean
+  protected RowCloner rowCloner() {
+    return new RowClonerReflectionImpl();
   }
 }
