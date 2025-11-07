@@ -6,6 +6,8 @@ import org.summerb.easycrud.join_query.JoinQuery;
 import org.summerb.easycrud.join_query.QuerySpecificsResolver;
 import org.summerb.easycrud.query.OrderBy;
 import org.summerb.easycrud.query.OrderByQueryResolver;
+import org.summerb.easycrud.query.Query;
+import org.summerb.easycrud.sql_builder.FieldsEnlister;
 import org.summerb.easycrud.sql_builder.SqlBuilder;
 import org.summerb.utils.easycrud.api.dto.PagerParams;
 import org.summerb.utils.easycrud.api.dto.Top;
@@ -18,33 +20,111 @@ public class SelectTemplate {
   protected SqlBuilder sqlBuilder;
   protected QuerySpecificsResolver querySpecificsResolver;
   protected NamedParameterJdbcTemplateEx jdbc;
+  protected FieldsEnlister fieldsEnlister;
 
   public SelectTemplate(
       NamedParameterJdbcTemplateEx jdbc,
       JoinQuery<?, ?> joinQuery,
       QuerySpecificsResolver querySpecificsResolver,
-      SqlBuilder sqlBuilder) {
-    Preconditions.checkNotNull(joinQuery, "joinQuery is required");
-    Preconditions.checkNotNull(jdbc, "jdbc is required");
-    Preconditions.checkNotNull(sqlBuilder, "sqlBuilder is required");
-    Preconditions.checkNotNull(querySpecificsResolver, "querySpecificsResolver is required");
+      SqlBuilder sqlBuilder,
+      FieldsEnlister fieldsEnlister) {
+    Preconditions.checkArgument(joinQuery != null, "joinQuery is required");
+    Preconditions.checkArgument(jdbc != null, "jdbc is required");
+    Preconditions.checkArgument(sqlBuilder != null, "sqlBuilder is required");
+    Preconditions.checkArgument(
+        querySpecificsResolver != null, "querySpecificsResolver is required");
+    Preconditions.checkArgument(fieldsEnlister != null, "fieldsEnlister is required");
 
     this.jdbc = jdbc;
     this.joinQuery = joinQuery;
     this.querySpecificsResolver = querySpecificsResolver;
     this.sqlBuilder = sqlBuilder;
+    this.fieldsEnlister = fieldsEnlister;
   }
 
-  protected void assertOrderByHasReferencesToRegisteredQueries(OrderBy[] orderBy) {
+  /**
+   * Make sure all given orderBy are referencing queries from our JoinQuery. And if that is not the
+   * case, then we copy-paste them and attempt to mix and match based on aliases and field names. If
+   * no alias is given by orderBy ({@link OrderBy#getFieldName()} does not contain a dot), then we
+   * attempt to match with field in the {@link JoinQuery#getPrimaryQuery()}
+   */
+  protected OrderBy[] ensureOrderByReferenceRegisteredQueries(OrderBy[] orderBy) {
     if (orderBy == null) {
-      return;
+      return null;
     }
 
-    for (OrderBy order : orderBy) {
-      Preconditions.checkState(
-          joinQuery.getQueries().contains(OrderByQueryResolver.get(order)),
-          "OrderBy for field %s does not contain reference to a query that is mentioned in current JoinQuery. "
-              + "When ordering rows retrieved using JoinQuery, make sure you instantiate them via JoinQuery or via participating Query");
+    // As soon as we bump into first inconsistency we populate new array.
+    // Reason for new array is that it is possible that we're receiving some constant array -- so we
+    // want to avoid any issues with modifying existing aray
+    OrderBy[] newArr = null;
+
+    for (int i = 0; i < orderBy.length; i++) {
+      OrderBy order = orderBy[i];
+      if (newArr != null) {
+        orderBy[i] = order;
+      }
+
+      Query<?, ?> query = OrderByQueryResolver.get(order);
+
+      // Order by contains link to our query -- great
+      if (query != null && joinQuery.getQueries().contains(query)) {
+        continue;
+      }
+
+      if (newArr == null) {
+        newArr = new OrderBy[orderBy.length];
+        if (i > 0) {
+          System.arraycopy(orderBy, 0, newArr, 0, i);
+        }
+      }
+
+      // Order by does not contain link to query or query is not ours.
+      // Attempt to match field name with query
+      query = attemptMatch(order);
+
+      if (query == null) {
+        throw new IllegalArgumentException(
+            "Could not distinctively match orderBy on field "
+                + order.getFieldName()
+                + " to this join query");
+      }
+
+      OrderBy newOrder = new OrderBy(order.getFieldName(), order.getDirection(), query);
+      newOrder.setNullsLast(order.getNullsLast());
+      newOrder.setCollate(order.getCollate());
+      newArr[i] = newOrder;
     }
+
+    return newArr != null ? newArr : orderBy;
+  }
+
+  protected Query<?, ?> attemptMatch(OrderBy order) {
+    int indexOfDot = order.getFieldName().indexOf(".");
+    String alias = indexOfDot > 0 ? order.getFieldName().substring(0, indexOfDot) : null;
+    String fieldName =
+        indexOfDot > 0 ? order.getFieldName().substring(indexOfDot + 1) : order.getFieldName();
+
+    if (alias == null) {
+      if (isRowHasFieldWithGivenName(joinQuery.getPrimaryQuery(), fieldName)) {
+        return joinQuery.getPrimaryQuery();
+      }
+    } else {
+      Query<?, ?> query =
+          joinQuery.getQueries().stream()
+              .filter(x -> alias.equals(x.getAlias()))
+              .findFirst()
+              .orElseThrow(
+                  () -> new IllegalArgumentException("Can't find query with alias: " + alias));
+      if (isRowHasFieldWithGivenName(query, fieldName)) {
+        return query;
+      }
+    }
+
+    return null;
+  }
+
+  protected boolean isRowHasFieldWithGivenName(Query<?, ?> query, String fieldName) {
+    Class<?> rowClass = querySpecificsResolver.getRowClass(query);
+    return fieldsEnlister.findInClass(rowClass).stream().anyMatch(x -> x.equals(fieldName));
   }
 }

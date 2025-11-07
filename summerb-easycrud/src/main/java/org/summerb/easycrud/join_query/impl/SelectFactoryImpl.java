@@ -10,35 +10,42 @@ import org.summerb.easycrud.join_query.Select;
 import org.summerb.easycrud.join_query.SelectFactory;
 import org.summerb.easycrud.query.Query;
 import org.summerb.easycrud.row.HasId;
+import org.summerb.easycrud.sql_builder.FieldsEnlister;
 import org.summerb.easycrud.sql_builder.SqlBuilder;
 
 public class SelectFactoryImpl implements SelectFactory {
   protected QuerySpecificsResolver querySpecificsResolver;
   protected NamedParameterJdbcTemplateEx jdbc;
   protected SqlBuilder sqlBuilder;
+  protected FieldsEnlister fieldsEnlister;
 
   public SelectFactoryImpl(
       QuerySpecificsResolver querySpecificsResolver,
       SqlBuilder sqlBuilder,
-      NamedParameterJdbcTemplateEx jdbc) {
-    Preconditions.checkNotNull(jdbc, "jdbc is required");
-    Preconditions.checkNotNull(querySpecificsResolver, "querySpecificsResolver is required");
-    Preconditions.checkNotNull(sqlBuilder, "sqlBuilder is required");
+      NamedParameterJdbcTemplateEx jdbc,
+      FieldsEnlister fieldsEnlister) {
+    Preconditions.checkArgument(jdbc != null, "jdbc is required");
+    Preconditions.checkArgument(
+        querySpecificsResolver != null, "querySpecificsResolver is required");
+    Preconditions.checkArgument(sqlBuilder != null, "sqlBuilder is required");
+    Preconditions.checkArgument(fieldsEnlister != null, "fieldsEnlister is required");
 
     this.jdbc = jdbc;
     this.querySpecificsResolver = querySpecificsResolver;
     this.sqlBuilder = sqlBuilder;
+    this.fieldsEnlister = fieldsEnlister;
   }
 
   @Override
   public <TRow extends HasId<TId>, TId> Select<TId, TRow> build(
       JoinQuery<?, ?> joinQuery, Query<TId, TRow> entityToSelect) {
-    return new SelectImpl<>(joinQuery, entityToSelect, jdbc, querySpecificsResolver, sqlBuilder);
+    return new SelectImpl<>(
+        joinQuery, entityToSelect, jdbc, querySpecificsResolver, sqlBuilder, fieldsEnlister);
   }
 
   @Override
   public JoinedSelect build(JoinQuery<?, ?> joinQuery, List<Query<?, ?>> entitiesToSelect) {
     return new JoinedSelectImpl(
-        joinQuery, entitiesToSelect, jdbc, querySpecificsResolver, sqlBuilder);
+        joinQuery, entitiesToSelect, jdbc, querySpecificsResolver, sqlBuilder, fieldsEnlister);
   }
 }

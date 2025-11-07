@@ -29,7 +29,6 @@ import org.summerb.easycrud.sql_builder.SqlBuilder;
 import org.summerb.easycrud.sql_builder.impl.FieldsEnlisterCachingImpl;
 import org.summerb.easycrud.sql_builder.impl.FieldsEnlisterImpl;
 import org.summerb.methodCapturers.MethodCapturerProxyClassFactoryImpl;
-import org.summerb.methodCapturers.PropertyNameResolver;
 import org.summerb.methodCapturers.PropertyNameResolverFactoryImpl;
 
 @ExtendWith(MockitoExtension.class)
@@ -67,7 +66,10 @@ public class SqlBuilderMySqlImplTest {
 
     selectFactory =
         new SelectFactoryImpl(
-            querySpecificsResolver, sqlBuilder, mock(NamedParameterJdbcTemplateEx.class));
+            querySpecificsResolver,
+            sqlBuilder,
+            mock(NamedParameterJdbcTemplateEx.class),
+            fieldsEnlister);
 
     JoinQueryFactory joinQueryFactory =
         new JoinQueryFactoryImpl(
@@ -81,8 +83,6 @@ public class SqlBuilderMySqlImplTest {
   private <TId, TRow extends HasId<TId>> Query<TId, TRow> createQuery(
       String tableName, Class<TRow> rowClass, EasyCrudServiceTestImpl<TId, TRow> service) {
 
-    PropertyNameResolver<TRow> propertyNameResolver =
-        propertyNameResolverFactory.getResolver(rowClass);
     Query<TId, TRow> ret = new Query<>(service);
     lenient().when(querySpecificsResolver.getTableName(ret)).thenReturn(tableName);
     lenient().when(querySpecificsResolver.getRowClass(ret)).thenReturn(rowClass);

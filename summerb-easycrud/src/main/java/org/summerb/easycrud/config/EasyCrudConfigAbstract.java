@@ -106,8 +106,9 @@ public abstract class EasyCrudConfigAbstract {
   protected SelectFactory selectFactory(
       QuerySpecificsResolver querySpecificsResolver,
       SqlBuilder sqlBuilder,
-      NamedParameterJdbcTemplateEx jdbc) {
-    return new SelectFactoryImpl(querySpecificsResolver, sqlBuilder, jdbc);
+      NamedParameterJdbcTemplateEx jdbc,
+      FieldsEnlister fieldsEnlister) {
+    return new SelectFactoryImpl(querySpecificsResolver, sqlBuilder, jdbc, fieldsEnlister);
   }
 
   @Bean

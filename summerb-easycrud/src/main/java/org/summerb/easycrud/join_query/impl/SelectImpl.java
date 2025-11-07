@@ -14,6 +14,7 @@ import org.summerb.easycrud.join_query.Select;
 import org.summerb.easycrud.query.OrderBy;
 import org.summerb.easycrud.query.Query;
 import org.summerb.easycrud.row.HasId;
+import org.summerb.easycrud.sql_builder.FieldsEnlister;
 import org.summerb.easycrud.sql_builder.SqlBuilder;
 import org.summerb.easycrud.sql_builder.model.FromAndWhere;
 import org.summerb.easycrud.sql_builder.model.QueryData;
@@ -33,10 +34,11 @@ public class SelectImpl<TId, TRow extends HasId<TId>> extends SelectTemplate
       Query<TId, TRow> entityToSelect,
       NamedParameterJdbcTemplateEx jdbc,
       QuerySpecificsResolver querySpecificsResolver,
-      SqlBuilder sqlBuilder) {
-    super(jdbc, joinQuery, querySpecificsResolver, sqlBuilder);
+      SqlBuilder sqlBuilder,
+      FieldsEnlister fieldsEnlister) {
+    super(jdbc, joinQuery, querySpecificsResolver, sqlBuilder, fieldsEnlister);
 
-    Preconditions.checkNotNull(entityToSelect, "entityToSelect is required");
+    Preconditions.checkArgument(entityToSelect != null, "entityToSelect is required");
 
     this.entityToSelect = entityToSelect;
   }
@@ -92,8 +94,8 @@ public class SelectImpl<TId, TRow extends HasId<TId>> extends SelectTemplate
     }
   }
 
-  protected PaginatedList<TRow> doQuery(PagerParams pagerParams, OrderBy[] orderBy) {
-    assertOrderByHasReferencesToRegisteredQueries(orderBy);
+  protected PaginatedList<TRow> doQuery(PagerParams pagerParams, OrderBy[] orderByInput) {
+    OrderBy[] orderBy = ensureOrderByReferenceRegisteredQueries(orderByInput);
 
     FromAndWhere fromAndWhere = sqlBuilder.fromAndWhere(joinQuery);
 

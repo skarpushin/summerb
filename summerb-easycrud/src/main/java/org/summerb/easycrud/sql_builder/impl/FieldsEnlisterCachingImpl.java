@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import java.util.Collections;
 import java.util.List;
 import org.summerb.easycrud.sql_builder.FieldsEnlister;
 
@@ -23,7 +24,7 @@ public class FieldsEnlisterCachingImpl implements FieldsEnlister {
       new CacheLoader<>() {
         @Override
         public List<String> load(Class<?> key) {
-          return delegate.findInClass(key);
+          return Collections.unmodifiableList(delegate.findInClass(key));
         }
       };
 

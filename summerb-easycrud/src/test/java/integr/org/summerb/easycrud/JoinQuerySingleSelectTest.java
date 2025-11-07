@@ -54,7 +54,9 @@ public class JoinQuerySingleSelectTest extends JoinQueryTestAbstract {
     assertEquals(2, select.count());
 
     // WHEN - asc
-    List<CommentRow> list = select.findAll(qComment.orderBy(CommentRow::getComment).asc());
+    // NOTE: Also intentionally making sure that orderBy produced by commentRowService will be
+    // accepted by JoinQuery
+    List<CommentRow> list = select.findAll(commentRowService.orderBy(CommentRow::getComment).asc());
 
     // THEN - asc
     assertEquals(2, list.size());
@@ -185,17 +187,18 @@ public class JoinQuerySingleSelectTest extends JoinQueryTestAbstract {
     // GIVEN
     createTestData();
 
-    Query<String, UserRow> qUser = userRowService.query().between(UserRow::getKarma, 5, 10);
+    Query<String, UserRow> qUser = userRowService.query("users").between(UserRow::getKarma, 5, 10);
     Query<Long, PostRow> qPost = postRowService.query();
     Select<Long, PostRow> selectPosts =
         qUser.toJoin().joinBack(qPost, PostRow::getAuthorId).select(qPost);
     assertEquals(3, selectPosts.count());
 
     // WHEN -- case sensitive
+    // NOTE: Also intentionally making sure that orderBy produced manually will be
+    // accepted by JoinQuery
     List<PostRow> results =
         selectPosts.findAll(
-            qUser.orderBy(UserRow::getName).asc().withCollate("latin1_general_cs"),
-            qPost.orderBy(PostRow::getTitle).asc());
+            OrderBy.Asc("users.name").withCollate("latin1_general_cs"), OrderBy.Asc("posts.title"));
 
     // THEN
     assertEquals(3, results.size());

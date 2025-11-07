@@ -18,7 +18,10 @@ import org.summerb.easycrud.join_query.QuerySpecificsResolver;
 import org.summerb.easycrud.join_query.model.JoinedRow;
 import org.summerb.easycrud.query.Query;
 import org.summerb.easycrud.row.HasId;
+import org.summerb.easycrud.sql_builder.FieldsEnlister;
 import org.summerb.easycrud.sql_builder.SqlBuilder;
+import org.summerb.easycrud.sql_builder.impl.FieldsEnlisterCachingImpl;
+import org.summerb.easycrud.sql_builder.impl.FieldsEnlisterImpl;
 import org.summerb.easycrud.wireTaps.EasyCrudWireTap;
 import org.summerb.utils.easycrud.api.dto.PagerParams;
 
@@ -32,6 +35,7 @@ class JoinedSelectImplTest {
     QuerySpecificsResolver querySpecificsResolver = mock(QuerySpecificsResolver.class);
     SqlBuilder sqlBuilder = mock(SqlBuilder.class);
     JoinQuery<?, ?> joinQuery = mock(JoinQuery.class);
+    FieldsEnlister fieldsEnlister = new FieldsEnlisterCachingImpl(new FieldsEnlisterImpl());
 
     // Two selected queries in the joined select
     Query<Long, TestRow> q1 = mock(Query.class);
@@ -56,7 +60,12 @@ class JoinedSelectImplTest {
     JoinedSelectImpl target =
         spy(
             new JoinedSelectImpl(
-                joinQuery, entitiesToSelect, jdbc, querySpecificsResolver, sqlBuilder));
+                joinQuery,
+                entitiesToSelect,
+                jdbc,
+                querySpecificsResolver,
+                sqlBuilder,
+                fieldsEnlister));
 
     // Build a fake extractor that reports mapped rows per query
     Map<Object, HasId<?>> mappedQ1 = new HashMap<>();
@@ -122,7 +131,7 @@ class JoinedSelectImplTest {
       this.data = data;
       // The select method will wrap this field into PaginatedList; it's fine to be any list
       this.rows = new ArrayList<>();
-      this.rows.add(new JoinedRowImpl());
+      this.rows.add(new JoinedRowImpl(selectedTables.size()));
       this.totalResultsCount = this.rows.size();
     }
 

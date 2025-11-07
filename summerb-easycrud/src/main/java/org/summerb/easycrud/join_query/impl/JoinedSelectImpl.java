@@ -18,6 +18,7 @@ import org.summerb.easycrud.join_query.model.JoinedRow;
 import org.summerb.easycrud.query.OrderBy;
 import org.summerb.easycrud.query.Query;
 import org.summerb.easycrud.row.HasId;
+import org.summerb.easycrud.sql_builder.FieldsEnlister;
 import org.summerb.easycrud.sql_builder.SqlBuilder;
 import org.summerb.easycrud.sql_builder.model.FromAndWhere;
 import org.summerb.easycrud.sql_builder.model.QueryData;
@@ -35,8 +36,9 @@ public class JoinedSelectImpl extends SelectTemplate implements JoinedSelect {
       List<Query<?, ?>> entitiesToSelect,
       NamedParameterJdbcTemplateEx jdbc,
       QuerySpecificsResolver querySpecificsResolver,
-      SqlBuilder sqlBuilder) {
-    super(jdbc, joinQuery, querySpecificsResolver, sqlBuilder);
+      SqlBuilder sqlBuilder,
+      FieldsEnlister fieldsEnlister) {
+    super(jdbc, joinQuery, querySpecificsResolver, sqlBuilder, fieldsEnlister);
 
     Preconditions.checkArgument(
         !CollectionUtils.isEmpty(entitiesToSelect), "entitiesToSelect is required");
@@ -123,8 +125,9 @@ public class JoinedSelectImpl extends SelectTemplate implements JoinedSelect {
     }
   }
 
-  protected ResultSetExtractorJoinedQueryImpl doQuery(PagerParams pagerParams, OrderBy[] orderBy) {
-    assertOrderByHasReferencesToRegisteredQueries(orderBy);
+  protected ResultSetExtractorJoinedQueryImpl doQuery(
+      PagerParams pagerParams, OrderBy[] orderByInput) {
+    OrderBy[] orderBy = ensureOrderByReferenceRegisteredQueries(orderByInput);
 
     FromAndWhere fromAndWhere = sqlBuilder.fromAndWhere(joinQuery);
 

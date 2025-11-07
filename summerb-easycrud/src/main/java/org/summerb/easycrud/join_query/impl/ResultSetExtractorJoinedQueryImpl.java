@@ -99,7 +99,7 @@ public class ResultSetExtractorJoinedQueryImpl implements ResultSetExtractor<Lis
   }
 
   protected JoinedRow mapRow(int rowNum) throws SQLException, DataAccessException {
-    JoinedRowImpl row = new JoinedRowImpl();
+    JoinedRowImpl row = new JoinedRowImpl(selectedTables.size());
     for (RowMappingAdapter part : mappingAdapters) {
       Object subRow = part.mapRow(rowNum);
       if (subRow != null) {
