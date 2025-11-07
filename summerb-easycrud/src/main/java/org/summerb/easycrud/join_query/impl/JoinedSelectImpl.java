@@ -32,6 +32,11 @@ import org.summerb.utils.easycrud.api.dto.Top;
 public class JoinedSelectImpl extends SelectTemplate implements JoinedSelect {
   protected List<Query<?, ?>> entitiesToSelect;
 
+  protected record PageLoadResults(
+      FromAndWhere fromAndWhere,
+      ResultSetExtractorJoinedQueryImpl mappingContext,
+      List<JoinedRow> list) {}
+
   public JoinedSelectImpl(
       JoinQuery<?, ?> joinQuery,
       List<Query<?, ?>> entitiesToSelect,
@@ -103,7 +108,7 @@ public class JoinedSelectImpl extends SelectTemplate implements JoinedSelect {
       wireTaps.values().forEach(EasyCrudWireTap::beforeRead);
 
       // Query itself
-      ResultSetExtractorJoinedQueryImpl result = doQuery(pagerParams, orderBy);
+      ResultSetExtractorJoinedQueryImpl result = queryPageAndTotal(pagerParams, orderBy);
 
       // After query wiretaps
       for (Map.Entry<Query<?, ?>, EasyCrudWireTap> entry : wireTaps.entrySet()) {
@@ -126,8 +131,31 @@ public class JoinedSelectImpl extends SelectTemplate implements JoinedSelect {
     }
   }
 
-  protected ResultSetExtractorJoinedQueryImpl doQuery(
+  protected ResultSetExtractorJoinedQueryImpl queryPageAndTotal(
       PagerParams pagerParams, OrderBy[] orderByInput) {
+
+    PageLoadResults result = loadPage(pagerParams, orderByInput);
+
+    loadCount(pagerParams, result);
+
+    return result.mappingContext();
+  }
+
+  private void loadCount(PagerParams pagerParams, PageLoadResults result) {
+    if (Top.is(pagerParams)
+        || (PagerParams.ALL.equals(pagerParams)
+            || (pagerParams.getOffset() == 0 && result.list().size() < pagerParams.getMax()))) {
+      result.mappingContext().setTotalResultsCount(result.list().size());
+    } else {
+      QueryData countQueryData = sqlBuilder.countForJoinedQuery(result.fromAndWhere(), joinQuery);
+      result
+          .mappingContext()
+          .setTotalResultsCount(
+              jdbc.queryForInt(countQueryData.getSql(), countQueryData.getParams()));
+    }
+  }
+
+  protected PageLoadResults loadPage(PagerParams pagerParams, OrderBy[] orderByInput) {
     OrderBy[] orderBy = ensureOrderByReferenceRegisteredQueries(orderByInput);
 
     FromAndWhere fromAndWhere = sqlBuilder.fromAndWhere(joinQuery);
@@ -136,25 +164,47 @@ public class JoinedSelectImpl extends SelectTemplate implements JoinedSelect {
         sqlBuilder.joinedMultipleTablesMultipleRows(
             joinQuery, entitiesToSelect, pagerParams, orderBy, fromAndWhere);
 
-    ResultSetExtractorJoinedQueryImpl mappingContext = getResultSetExtractor(queryData);
+    ResultSetExtractorJoinedQueryImpl mappingContext = buildResultSetExtractor(queryData);
 
     List<JoinedRow> list = jdbc.query(queryData.getSql(), queryData.getParams(), mappingContext);
     Preconditions.checkState(list != null, "List must not be null");
-
-    if (Top.is(pagerParams)
-        || (PagerParams.ALL.equals(pagerParams)
-            || (pagerParams.getOffset() == 0 && list.size() < pagerParams.getMax()))) {
-      mappingContext.setTotalResultsCount(list.size());
-    } else {
-      QueryData countQueryData = sqlBuilder.countForJoinedQuery(fromAndWhere, joinQuery);
-      mappingContext.setTotalResultsCount(
-          jdbc.queryForInt(countQueryData.getSql(), countQueryData.getParams()));
-    }
-
-    return mappingContext;
+    return new PageLoadResults(fromAndWhere, mappingContext, list);
   }
 
-  protected ResultSetExtractorJoinedQueryImpl getResultSetExtractor(QueryData queryData) {
+  @Override
+  public List<JoinedRow> findPage(PagerParams pagerParams, OrderBy... orderBy) {
+    try {
+      Preconditions.checkArgument(pagerParams != null, "PagerParams is a must");
+
+      // Before query wiretaps
+      Map<Query<?, ?>, EasyCrudWireTap> wireTaps = findWireTapsOnRead();
+      wireTaps.values().forEach(EasyCrudWireTap::beforeRead);
+
+      // Query itself
+      ResultSetExtractorJoinedQueryImpl result = loadPage(pagerParams, orderBy).mappingContext;
+
+      // After query wiretaps
+      for (Map.Entry<Query<?, ?>, EasyCrudWireTap> entry : wireTaps.entrySet()) {
+        Map<?, ? extends HasId> rows = result.getMappedRows(entry.getKey());
+
+        if (entry.getValue().requiresOnReadMultiple() && !rows.isEmpty()) {
+          List es = new ArrayList<>(rows.values());
+          entry.getValue().afterRead(es);
+        }
+      }
+
+      // return
+      return result.rows;
+    } catch (Throwable t) {
+      // At this point we do not really know which entity this exception is relevant to. So we just
+      // pick the first query
+      EasyCrudExceptionStrategy<?, ?> exceptionStrategy =
+          querySpecificsResolver.getExceptionStrategy(joinQuery.getPrimaryQuery());
+      throw exceptionStrategy.handleExceptionAtFind(t);
+    }
+  }
+
+  protected ResultSetExtractorJoinedQueryImpl buildResultSetExtractor(QueryData queryData) {
     return new ResultSetExtractorJoinedQueryImpl(
         entitiesToSelect, queryData.getSelectedColumns(), querySpecificsResolver);
   }

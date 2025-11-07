@@ -77,7 +77,7 @@ class JoinedSelectImplTest {
     FakeExtractor extractor = new FakeExtractor(Map.of(q1, mappedQ1, q2, mappedQ2));
 
     // doQuery(...) should return our extractor
-    doReturn(extractor).when(target).doQuery(any(PagerParams.class), any());
+    doReturn(extractor).when(target).queryPageAndTotal(any(PagerParams.class), any());
 
     // Act: execute find
     List<JoinedRow> items = target.find(PagerParams.ALL).getItems();

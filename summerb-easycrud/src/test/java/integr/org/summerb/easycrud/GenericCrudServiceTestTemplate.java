@@ -36,6 +36,7 @@ import org.summerb.easycrud.EasyCrudService;
 import org.summerb.easycrud.EasyCrudServiceResolver;
 import org.summerb.easycrud.exceptions.EntityNotFoundException;
 import org.summerb.easycrud.query.OrderBy;
+import org.summerb.easycrud.query.Query;
 import org.summerb.utils.easycrud.api.dto.EntityChangedEvent;
 import org.summerb.utils.easycrud.api.dto.EntityChangedEvent.ChangeType;
 import org.summerb.utils.easycrud.api.dto.PagerParams;
@@ -275,12 +276,17 @@ public abstract class GenericCrudServiceTestTemplate {
   public void testFindByQueryStringNe() {
     createTestData();
 
-    PaginatedList<UserRow> result =
-        getUserRowService()
-            .find(
-                new PagerParams(0, 100),
-                getUserRowService().query().ne(UserRow::getName, "env-uat"));
+    Query<String, UserRow> q = getUserRowService().query().ne(UserRow::getName, "env-uat");
+    PagerParams pagerParams = new PagerParams(0, 100);
+    PaginatedList<UserRow> result = getUserRowService().find(pagerParams, q);
     assertEquals(2, result.getTotalResults());
+
+    // Also test findPage
+    List<UserRow> page = q.findPage(pagerParams);
+    assertEquals(2, page.size());
+    for (int i = 0; i < 2; i++) {
+      assertEquals(result.getItems().get(i).getId(), page.get(i).getId());
+    }
   }
 
   @Test
@@ -534,13 +540,18 @@ public abstract class GenericCrudServiceTestTemplate {
   public void testQuery_expectPaginationWorksCorrectly() {
     createTestData();
 
-    PaginatedList<UserRow> result =
-        getUserRowService()
-            .find(
-                new PagerParams(0, 2),
-                getUserRowService().query().contains(UserRow::getName, "env-"));
+    Query<String, UserRow> q = getUserRowService().query().contains(UserRow::getName, "env-");
+    PagerParams pagerParams = new PagerParams(0, 2);
+    PaginatedList<UserRow> result = getUserRowService().find(pagerParams, q);
     assertEquals(3, result.getTotalResults());
     assertEquals(2, result.getItems().size());
+
+    // Also test findPage
+    List<UserRow> page = q.findPage(pagerParams);
+    assertEquals(2, page.size());
+    for (int i = 0; i < 2; i++) {
+      assertEquals(result.getItems().get(i).getId(), page.get(i).getId());
+    }
   }
 
   @Test

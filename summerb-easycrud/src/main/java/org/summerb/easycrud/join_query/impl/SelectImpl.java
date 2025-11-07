@@ -28,6 +28,8 @@ import org.summerb.utils.easycrud.api.dto.Top;
 public class SelectImpl<TId, TRow extends HasId<TId>> extends SelectTemplate
     implements Select<TId, TRow> {
 
+  protected record PageLoadResults<TRow>(FromAndWhere fromAndWhere, List<TRow> list) {}
+
   protected Query<TId, TRow> entityToSelect;
 
   public SelectImpl(
@@ -82,10 +84,12 @@ public class SelectImpl<TId, TRow extends HasId<TId>> extends SelectTemplate
         wireTap.beforeRead();
       }
 
-      PaginatedList<TRow> ret = doQuery(pagerParams, orderBy);
+      PageLoadResults<TRow> result = loadPage(pagerParams, orderBy);
+      int totalResultsCount = loadCount(pagerParams, result);
+      PaginatedList<TRow> ret = new PaginatedList<>(pagerParams, result.list(), totalResultsCount);
 
-      if (wireTap.requiresOnReadMultiple() && ret.getHasItems()) {
-        wireTap.afterRead(ret.getItems());
+      if (wireTap.requiresOnReadMultiple() && !result.list().isEmpty()) {
+        wireTap.afterRead(result.list());
       }
       return ret;
     } catch (Throwable t) {
@@ -95,7 +99,7 @@ public class SelectImpl<TId, TRow extends HasId<TId>> extends SelectTemplate
     }
   }
 
-  protected PaginatedList<TRow> doQuery(PagerParams pagerParams, OrderBy[] orderByInput) {
+  protected PageLoadResults<TRow> loadPage(PagerParams pagerParams, OrderBy[] orderByInput) {
     OrderBy[] orderBy = ensureOrderByReferenceRegisteredQueries(orderByInput);
 
     FromAndWhere fromAndWhere = sqlBuilder.fromAndWhere(joinQuery);
@@ -109,18 +113,44 @@ public class SelectImpl<TId, TRow extends HasId<TId>> extends SelectTemplate
             queryData.getSql(),
             queryData.getParams(),
             querySpecificsResolver.getRowMapper(entityToSelect));
+    return new PageLoadResults<>(fromAndWhere, list);
+  }
 
+  protected int loadCount(PagerParams pagerParams, PageLoadResults<TRow> result) {
     int totalResultsCount;
     if (Top.is(pagerParams)
         || (PagerParams.ALL.equals(pagerParams)
-            || (pagerParams.getOffset() == 0 && list.size() < pagerParams.getMax()))) {
-      totalResultsCount = list.size();
+            || (pagerParams.getOffset() == 0 && result.list().size() < pagerParams.getMax()))) {
+      totalResultsCount = result.list().size();
     } else {
-      QueryData countQueryData = sqlBuilder.countForJoinedQuery(fromAndWhere, joinQuery);
+      QueryData countQueryData = sqlBuilder.countForJoinedQuery(result.fromAndWhere(), joinQuery);
       totalResultsCount = jdbc.queryForInt(countQueryData.getSql(), countQueryData.getParams());
     }
+    return totalResultsCount;
+  }
 
-    return new PaginatedList<>(pagerParams, list, totalResultsCount);
+  @Override
+  public List<TRow> findPage(PagerParams pagerParams, OrderBy... orderBy) {
+    try {
+      Preconditions.checkArgument(pagerParams != null, "PagerParams is a must");
+      EasyCrudWireTap<TRow> wireTap = querySpecificsResolver.getWireTap(entityToSelect);
+
+      boolean requiresOnRead = wireTap.requiresOnRead();
+      if (requiresOnRead) {
+        wireTap.beforeRead();
+      }
+
+      List<TRow> ret = loadPage(pagerParams, orderBy).list();
+
+      if (wireTap.requiresOnReadMultiple() && !ret.isEmpty()) {
+        wireTap.afterRead(ret);
+      }
+      return ret;
+    } catch (Throwable t) {
+      EasyCrudExceptionStrategy<TId, TRow> exceptionStrategy =
+          querySpecificsResolver.getExceptionStrategy(entityToSelect);
+      throw exceptionStrategy.handleExceptionAtFind(t);
+    }
   }
 
   @Override

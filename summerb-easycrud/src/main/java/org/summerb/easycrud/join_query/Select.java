@@ -22,6 +22,8 @@ public interface Select<TId, TRow extends HasId<TId>> {
 
   PaginatedList<TRow> find(PagerParams pagerParams, OrderBy... orderBy);
 
+  List<TRow> findPage(PagerParams pagerParams, OrderBy... orderBy);
+
   List<TRow> findAll(OrderBy... orderBy);
 
   List<TRow> getAll(OrderBy... orderBy);

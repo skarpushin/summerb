@@ -18,6 +18,8 @@ public interface JoinedSelect {
 
   PaginatedList<JoinedRow> find(PagerParams pagerParams, OrderBy... orderBy);
 
+  List<JoinedRow> findPage(PagerParams pagerParams, OrderBy... orderBy);
+
   List<JoinedRow> findAll(OrderBy... orderBy);
 
   List<JoinedRow> getAll(OrderBy... orderBy);

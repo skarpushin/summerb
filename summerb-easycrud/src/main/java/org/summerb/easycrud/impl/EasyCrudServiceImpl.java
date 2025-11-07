@@ -149,7 +149,7 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
     }
   }
 
-  private FieldsEnlister buildDefaultFieldsEnlister() {
+  protected FieldsEnlister buildDefaultFieldsEnlister() {
     return new FieldsEnlisterCachingImpl(new FieldsEnlisterImpl());
   }
 
@@ -172,113 +172,6 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
   protected EasyCrudExceptionStrategyDefaultImpl<TId, TRow> buildDefaultEasyCrudExceptionStrategy(
       String rowMessageCode) {
     return new EasyCrudExceptionStrategyDefaultImpl<>(rowMessageCode);
-  }
-
-  public TDao getDao() {
-    return dao;
-  }
-
-  public CurrentUserUuidResolver getCurrentUserResolver() {
-    return currentUserUuidResolver;
-  }
-
-  /**
-   * Set CurrentUserUuidResolver. This is mandatory and will be used only if Row class implements
-   * {@link HasAuthor}. In other cases you don't need to set anything here
-   *
-   * @param currentUserUuidResolver currentUserUuidResolver
-   */
-  @Autowired(required = false)
-  public void setCurrentUserResolver(CurrentUserUuidResolver currentUserUuidResolver) {
-    Preconditions.checkState(rowClass != null, "please set rowClass before calling this method");
-    Preconditions.checkArgument(
-        !HasAuthor.class.isAssignableFrom(rowClass) || currentUserUuidResolver != null,
-        "CurrentUserUuidResolver required for those DTOs who implement HasAuthor");
-    this.currentUserUuidResolver = currentUserUuidResolver;
-  }
-
-  @Override
-  public Class<TRow> getRowClass() {
-    return rowClass;
-  }
-
-  @Override
-  public EasyCrudExceptionStrategy<TId, TRow> getExceptionStrategy() {
-    return exceptionStrategy;
-  }
-
-  /**
-   * Set {@link EasyCrudExceptionStrategy}. If nothing set, then {@link
-   * EasyCrudExceptionStrategyDefaultImpl} will be used
-   *
-   * @param exceptionStrategy exceptionStrategy
-   */
-  @Autowired(required = false)
-  public void setExceptionStrategy(EasyCrudExceptionStrategy<TId, TRow> exceptionStrategy) {
-    Preconditions.checkArgument(exceptionStrategy != null, "exceptionStrategy required");
-    this.exceptionStrategy = exceptionStrategy;
-  }
-
-  @Override
-  public String getRowMessageCode() {
-    return rowMessageCode;
-  }
-
-  public void setRowMessageCode(String rowMessageCode) {
-    Preconditions.checkArgument(StringUtils.hasText(rowMessageCode), "rowMessageCode required");
-    this.rowMessageCode = rowMessageCode;
-  }
-
-  @Override
-  public EasyCrudWireTap<TRow> getWireTap() {
-    return wireTap;
-  }
-
-  @Override
-  public JoinQuery<TId, TRow> buildJoinQuery(Query<TId, TRow> query) {
-    Preconditions.checkState(
-        joinQueryFactory != null, "joinQueryFactory is required for invoking this method");
-    Preconditions.checkArgument(query != null, "query required");
-    return joinQueryFactory.build(query);
-  }
-
-  /**
-   * Set {@link EasyCrudWireTap}. If nothing set, then NoOp impl will be used {@link
-   * EasyCrudWireTapNoOpImpl}
-   *
-   * @param wireTap wireTap
-   */
-  public void setWireTap(EasyCrudWireTap<TRow> wireTap) {
-    Preconditions.checkArgument(wireTap != null, "wireTap required");
-    this.wireTap = wireTap;
-  }
-
-  public StringIdGenerator getStringIdGenerator() {
-    return stringIdGenerator;
-  }
-
-  /**
-   * Set {@link StringIdGenerator}. This is mandatory only when Row class implements {@link
-   * HasUuid}. If not set, then {@link StringIdGeneratorUuidImpl} will be used by default.
-   *
-   * @param stringIdGenerator stringIdGenerator
-   */
-  public void setStringIdGenerator(StringIdGenerator stringIdGenerator) {
-    Preconditions.checkState(rowClass != null, "please set rowClass before calling this method");
-    Preconditions.checkArgument(
-        !HasUuid.class.isAssignableFrom(rowClass) || stringIdGenerator != null,
-        "stringIdGenerator required");
-    this.stringIdGenerator = stringIdGenerator;
-  }
-
-  public PropertyNameResolverFactory getPropertyNameResolverFactory() {
-    return propertyNameResolverFactory;
-  }
-
-  @Autowired(required = false)
-  public void setPropertyNameResolverFactory(
-      PropertyNameResolverFactory propertyNameResolverFactory) {
-    this.propertyNameResolverFactory = propertyNameResolverFactory;
   }
 
   @Override
@@ -611,6 +504,27 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
   }
 
   @Override
+  public List<TRow> findPage(
+      PagerParams pagerParams, Query<TId, TRow> optionalQuery, OrderBy... orderBy) {
+    try {
+      Preconditions.checkArgument(pagerParams != null, "PagerParams is a must");
+      boolean requiresOnRead = wireTap.requiresOnRead();
+      if (requiresOnRead) {
+        wireTap.beforeRead();
+      }
+
+      List<TRow> ret = dao.queryPage(pagerParams, optionalQuery, orderBy);
+
+      if (wireTap.requiresOnReadMultiple() && !ret.isEmpty()) {
+        wireTap.afterRead(ret);
+      }
+      return ret;
+    } catch (Throwable t) {
+      throw exceptionStrategy.handleExceptionAtFind(t);
+    }
+  }
+
+  @Override
   public List<TRow> findAll(Query<TId, TRow> optionalQuery, OrderBy... orderBy) {
     return find(PagerParams.ALL, optionalQuery, orderBy).getItems();
   }
@@ -658,6 +572,14 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
   @Override
   public Query<TId, TRow> query(String alias) {
     return new Query<>(this, alias);
+  }
+
+  @Override
+  public JoinQuery<TId, TRow> buildJoinQuery(Query<TId, TRow> query) {
+    Preconditions.checkState(
+        joinQueryFactory != null, "joinQueryFactory is required for invoking this method");
+    Preconditions.checkArgument(query != null, "query required");
+    return joinQueryFactory.build(query);
   }
 
   @Override
@@ -751,5 +673,104 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
   @Autowired(required = false)
   public void setFieldsEnlister(FieldsEnlister fieldsEnlister) {
     this.fieldsEnlister = fieldsEnlister;
+  }
+
+  public TDao getDao() {
+    return dao;
+  }
+
+  public CurrentUserUuidResolver getCurrentUserResolver() {
+    return currentUserUuidResolver;
+  }
+
+  /**
+   * Set CurrentUserUuidResolver. This is mandatory and will be used only if Row class implements
+   * {@link HasAuthor}. In other cases you don't need to set anything here
+   *
+   * @param currentUserUuidResolver currentUserUuidResolver
+   */
+  @Autowired(required = false)
+  public void setCurrentUserResolver(CurrentUserUuidResolver currentUserUuidResolver) {
+    Preconditions.checkState(rowClass != null, "please set rowClass before calling this method");
+    Preconditions.checkArgument(
+        !HasAuthor.class.isAssignableFrom(rowClass) || currentUserUuidResolver != null,
+        "CurrentUserUuidResolver required for those DTOs who implement HasAuthor");
+    this.currentUserUuidResolver = currentUserUuidResolver;
+  }
+
+  @Override
+  public Class<TRow> getRowClass() {
+    return rowClass;
+  }
+
+  @Override
+  public EasyCrudExceptionStrategy<TId, TRow> getExceptionStrategy() {
+    return exceptionStrategy;
+  }
+
+  /**
+   * Set {@link EasyCrudExceptionStrategy}. If nothing set, then {@link
+   * EasyCrudExceptionStrategyDefaultImpl} will be used
+   *
+   * @param exceptionStrategy exceptionStrategy
+   */
+  @Autowired(required = false)
+  public void setExceptionStrategy(EasyCrudExceptionStrategy<TId, TRow> exceptionStrategy) {
+    Preconditions.checkArgument(exceptionStrategy != null, "exceptionStrategy required");
+    this.exceptionStrategy = exceptionStrategy;
+  }
+
+  @Override
+  public String getRowMessageCode() {
+    return rowMessageCode;
+  }
+
+  public void setRowMessageCode(String rowMessageCode) {
+    Preconditions.checkArgument(StringUtils.hasText(rowMessageCode), "rowMessageCode required");
+    this.rowMessageCode = rowMessageCode;
+  }
+
+  @Override
+  public EasyCrudWireTap<TRow> getWireTap() {
+    return wireTap;
+  }
+
+  /**
+   * Set {@link EasyCrudWireTap}. If nothing set, then NoOp impl will be used {@link
+   * EasyCrudWireTapNoOpImpl}
+   *
+   * @param wireTap wireTap
+   */
+  public void setWireTap(EasyCrudWireTap<TRow> wireTap) {
+    Preconditions.checkArgument(wireTap != null, "wireTap required");
+    this.wireTap = wireTap;
+  }
+
+  public StringIdGenerator getStringIdGenerator() {
+    return stringIdGenerator;
+  }
+
+  /**
+   * Set {@link StringIdGenerator}. This is mandatory only when Row class implements {@link
+   * HasUuid}. If not set, then {@link StringIdGeneratorUuidImpl} will be used by default.
+   *
+   * @param stringIdGenerator stringIdGenerator
+   */
+  public void setStringIdGenerator(StringIdGenerator stringIdGenerator) {
+    Preconditions.checkState(rowClass != null, "please set rowClass before calling this method");
+    Preconditions.checkArgument(
+        !HasUuid.class.isAssignableFrom(rowClass) || stringIdGenerator != null,
+        "stringIdGenerator required");
+    this.stringIdGenerator = stringIdGenerator;
+  }
+
+  public PropertyNameResolverFactory getPropertyNameResolverFactory() {
+    return propertyNameResolverFactory;
+  }
+
+  @Autowired(required = false)
+  public void setPropertyNameResolverFactory(
+      PropertyNameResolverFactory propertyNameResolverFactory) {
+    this.propertyNameResolverFactory = propertyNameResolverFactory;
   }
 }

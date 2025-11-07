@@ -213,14 +213,23 @@ public class JoinQueryMultiSelectTest extends JoinQueryTestAbstract {
     JoinedSelect select = qComment.toJoin().join(qPost).selectAll();
 
     // WHEN -- asc, page 1
+    PagerParams pagerParams = new PagerParams(0, 2);
     PaginatedList<JoinedRow> results =
-        select.find(new PagerParams(0, 2), qPost.orderBy(PostRow::getLikes).asc());
+        select.find(pagerParams, qPost.orderBy(PostRow::getLikes).asc());
 
     // THEN
     assertEquals(3, results.getTotalResults());
     assertEquals(2, results.getItems().size());
     assertEquals("DDD", results.getItems().get(0).get(qComment).getComment());
     assertEquals("BBB", results.getItems().get(1).get(qComment).getComment());
+
+    // also make sure findPage works the same
+    List<JoinedRow> page = select.findPage(pagerParams, qPost.orderBy(PostRow::getLikes).asc());
+    assertEquals(2, page.size());
+    for (int i = 0; i < 2; i++) {
+      assertEquals(
+          page.get(i).get(qComment).getId(), results.getItems().get(i).get(qComment).getId());
+    }
 
     // WHEN -- asc, page 2
     results = select.find(new PagerParams(2, 2), qPost.orderBy(PostRow::getLikes).asc());
@@ -231,7 +240,7 @@ public class JoinQueryMultiSelectTest extends JoinQueryTestAbstract {
     assertEquals("AAA", results.getItems().get(0).get(qComment).getComment());
 
     // WHEN -- desc, page 1
-    results = select.find(new PagerParams(0, 2), qPost.orderBy(PostRow::getLikes).desc());
+    results = select.find(pagerParams, qPost.orderBy(PostRow::getLikes).desc());
 
     // THEN
     assertEquals(3, results.getTotalResults());

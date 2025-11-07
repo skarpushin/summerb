@@ -70,6 +70,12 @@ public class EasyCrudServiceWrapper<
   }
 
   @Override
+  public List<TRow> findPage(
+      PagerParams pagerParams, Query<TId, TRow> optionalQuery, OrderBy... orderBy) {
+    return actual.findPage(pagerParams, optionalQuery, orderBy);
+  }
+
+  @Override
   public void deleteById(TId id) throws NotAuthorizedException, EntityNotFoundException {
     actual.deleteById(id);
   }

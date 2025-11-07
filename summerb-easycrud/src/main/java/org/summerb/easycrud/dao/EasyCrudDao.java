@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.summerb.easycrud.dao;
 
+import java.util.List;
 import org.summerb.easycrud.EasyCrudService;
 import org.summerb.easycrud.query.OrderBy;
 import org.summerb.easycrud.query.Query;
@@ -47,6 +48,8 @@ public interface EasyCrudDao<TId, TRow extends HasId<TId>> {
 
   PaginatedList<TRow> query(
       PagerParams pagerParams, Query<TId, TRow> optionalQuery, OrderBy... orderBy);
+
+  List<TRow> queryPage(PagerParams pagerParams, Query<TId, TRow> optionalQuery, OrderBy[] orderBy);
 
   int count(Query<TId, TRow> optionalQuery);
 }

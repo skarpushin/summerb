@@ -73,6 +73,17 @@ public interface EasyCrudServiceQueryApi<TId, TRow extends HasId<TId>> {
       PagerParams pagerParams, Query<TId, TRow> optionalQuery, OrderBy... orderBy);
 
   /**
+   * Load page of data without getting total count
+   *
+   * @param pagerParams pagination parameters
+   * @param optionalQuery optional Query, might be null
+   * @param orderBy optional orderBy, might be missing/null
+   * @return results, might be empty, but never null
+   * @throws NotAuthorizedException if user is not authorized to perform this operation
+   */
+  List<TRow> findPage(PagerParams pagerParams, Query<TId, TRow> optionalQuery, OrderBy... orderBy);
+
+  /**
    * @param optionalQuery - optional {@link Query}. If null, then similar to findAll()
    * @param orderBy optional orderBy, might be missing/null
    * @return results, might be empty, but never null

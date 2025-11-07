@@ -96,6 +96,10 @@ public class Query<TId, TRow extends HasId<TId>> {
     return service.find(pagerParams, this, orderBy);
   }
 
+  public List<TRow> findPage(PagerParams pagerParams, OrderBy... orderBy) {
+    return service.findPage(pagerParams, this, orderBy);
+  }
+
   public List<TRow> findAll(OrderBy... orderBy) {
     return service.findAll(this, orderBy);
   }

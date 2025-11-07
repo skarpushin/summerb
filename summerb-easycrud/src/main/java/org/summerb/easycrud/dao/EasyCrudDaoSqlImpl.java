@@ -341,6 +341,17 @@ public class EasyCrudDaoSqlImpl<TId, TRow extends HasId<TId>> extends TableDaoBa
   }
 
   @Override
+  public List<TRow> queryPage(
+      PagerParams pagerParams, Query<TId, TRow> optionalQuery, OrderBy[] orderBy) {
+    FromAndWhere fromAndWhere = sqlBuilder.fromAndWhere(tableName, optionalQuery);
+    QueryData dataQuery =
+        sqlBuilder.selectMultipleRows(
+            rowClass, fromAndWhere, optionalQuery, pagerParams, orderBy, false);
+
+    return jdbc.query(dataQuery.getSql(), dataQuery.getParams(), rowMapper);
+  }
+
+  @Override
   public int count(Query<TId, TRow> optionalQuery) {
     FromAndWhere fromAndWhere = sqlBuilder.fromAndWhere(tableName, optionalQuery);
     QueryData countQuery = sqlBuilder.countForSimpleSelect(fromAndWhere);
