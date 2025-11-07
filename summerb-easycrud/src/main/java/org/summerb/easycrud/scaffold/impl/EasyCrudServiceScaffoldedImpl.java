@@ -27,8 +27,8 @@ import org.summerb.easycrud.dao.EasyCrudDaoInjections;
 import org.summerb.easycrud.query.EasyCrudServiceQueryApi;
 import org.summerb.easycrud.row.HasId;
 import org.summerb.easycrud.scaffold.CallableMethod;
-import org.summerb.easycrud.scaffold.Query;
 import org.summerb.easycrud.scaffold.ScaffoldedMethodFactory;
+import org.summerb.easycrud.scaffold.SqlQuery;
 
 public class EasyCrudServiceScaffoldedImpl implements java.lang.reflect.InvocationHandler {
 
@@ -90,7 +90,7 @@ public class EasyCrudServiceScaffoldedImpl implements java.lang.reflect.Invocati
             return new CallableMethodEasyCrudServiceImpl(method);
           }
 
-          if (method.isAnnotationPresent(Query.class)) {
+          if (method.isAnnotationPresent(SqlQuery.class)) {
             Preconditions.checkState(
                 optionalDao != null, "Scaffolded methods require DAO to be provided");
             Preconditions.checkState(

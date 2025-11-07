@@ -47,8 +47,8 @@ import org.summerb.easycrud.join_query.JoinQueryFactory;
 import org.summerb.easycrud.row.HasId;
 import org.summerb.easycrud.scaffold.EasyCrudScaffold;
 import org.summerb.easycrud.scaffold.EasyCrudServiceProxyFactory;
-import org.summerb.easycrud.scaffold.Query;
 import org.summerb.easycrud.scaffold.ScaffoldedMethodFactory;
+import org.summerb.easycrud.scaffold.SqlQuery;
 import org.summerb.easycrud.sql_builder.FieldsEnlister;
 import org.summerb.easycrud.sql_builder.OrderByToSql;
 import org.summerb.easycrud.sql_builder.QueryToSql;
@@ -131,7 +131,7 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
 
   /**
    * Set {@link ScaffoldedMethodFactory}. Optional. Required only if your interface has methods
-   * annotated with {@link Query}
+   * annotated with {@link SqlQuery}
    *
    * @param scaffoldedMethodFactory scaffoldedMethodFactory
    */

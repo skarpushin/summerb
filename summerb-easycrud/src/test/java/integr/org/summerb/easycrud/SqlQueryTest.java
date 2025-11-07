@@ -46,7 +46,7 @@ import org.summerb.easycrud.exceptions.EasyCrudUnexpectedException;
 @AutoConfigureEmbeddedDatabase(type = DatabaseType.MARIADB, refresh = RefreshMode.AFTER_CLASS)
 @ProfileValueSourceConfiguration()
 @Transactional
-public class QueryTest {
+public class SqlQueryTest {
   @Autowired private UserRowService service;
 
   @Test

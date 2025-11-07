@@ -245,15 +245,15 @@ with Maven you can augment `maven-compiler-plugin` like this:
 </plugin>
 ```
 
-### 2. Define @Query
+### 2. Define @SqlQuery
 This is supported only when Service implementation was scaffolded by `EasyCrudScaffold`. Just add a method to the
-interface and mark it with `@Query` annotation.
+interface and mark it with `@SqlQuery` annotation.
 
 ```java
-@Query("SELECT DISTINCT name FROM projects WHERE account_id = :accountId")
+@SqlQuery("SELECT DISTINCT name FROM projects WHERE account_id = :accountId")
 List<String> getAccountProjectNames(String accountId);
 
-@Query("SELECT pc1.* FROM project_complexity pc1 "
+@SqlQuery("SELECT pc1.* FROM project_complexity pc1 "
                + "LEFT JOIN project_complexity pc2 ON (pc1.project_id = pc2.project_id AND pc1.latest_for_fy < pc2.latest_for_fy) "
                + "WHERE pc1.latest_for_fy <= :fy AND pc2.project_id IS NULL AND pc1.project_id IN (:projectIds)")
 List<ProjectComplexityRow> findLatestByFyAndProjects(int fy, Set<String> projectIds);
@@ -265,7 +265,7 @@ NOTES:
 1. If the return type is primitive or matches Service row class, then Row mapper is initialized automatically
 1. In case you want some other schema to be returned, provide your own RowMapper class name into
    `Query::rowMapper`
-1. If your query modifies data, make sure to clarify this by adding `modifying=true` parameter to `@Query`
+1. If your query modifies data, make sure to clarify this by adding `modifying=true` parameter to `@SqlQuery`
 
 ## Add Validation Logic (using annotations)
 Validation annotations are used from package `jakarta.validation.constraints.*` which are defined in widely used

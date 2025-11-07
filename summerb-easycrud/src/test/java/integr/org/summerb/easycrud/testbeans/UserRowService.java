@@ -19,44 +19,44 @@ import integr.org.summerb.easycrud.dtos.UserRow;
 import java.util.List;
 import java.util.Set;
 import org.summerb.easycrud.EasyCrudService;
-import org.summerb.easycrud.scaffold.Query;
+import org.summerb.easycrud.scaffold.SqlQuery;
 
 public interface UserRowService extends EasyCrudService<String, UserRow> {
   String TERM = "users_table";
 
-  @Query("SELECT max(name) FROM users_table WHERE karma >= :karma")
+  @SqlQuery("SELECT max(name) FROM users_table WHERE karma >= :karma")
   String getNameMaxWithScalarParam(int karma);
 
-  @Query("SELECT count(name) FROM users_table")
+  @SqlQuery("SELECT count(name) FROM users_table")
   int getNameCountNoParams();
 
-  @Query("SELECT name FROM users_table WHERE karma IN (:karmas) ORDER BY name ASC")
+  @SqlQuery("SELECT name FROM users_table WHERE karma IN (:karmas) ORDER BY name ASC")
   List<String> getNamesWithArray(int[] karmas);
 
-  @Query("SELECT name FROM users_table WHERE karma IN (:karmas) ORDER BY name ASC")
+  @SqlQuery("SELECT name FROM users_table WHERE karma IN (:karmas) ORDER BY name ASC")
   Set<String> getNamesWithArrayAsSet(int[] karmas);
 
-  @Query("SELECT name FROM users_table WHERE karma IN (:karmas) ORDER BY name ASC")
+  @SqlQuery("SELECT name FROM users_table WHERE karma IN (:karmas) ORDER BY name ASC")
   List<String> getNamesWithSet(Set<Integer> karmas);
 
-  @Query("SELECT * FROM users_table WHERE karma IN (:karmas) ORDER BY name ASC")
+  @SqlQuery("SELECT * FROM users_table WHERE karma IN (:karmas) ORDER BY name ASC")
   List<UserRow> getDtosWithSet(Set<Integer> karmas);
 
-  @Query(
+  @SqlQuery(
       value = "SELECT * FROM users_table WHERE karma IN (:karmas) ORDER BY name ASC",
       rowMapper = UserRowCustomMapper.class)
   List<UserRow> getDtosWithSetAndCustomMapper(Set<Integer> karmas);
 
-  @Query(modifying = true, value = "UPDATE users_table SET about = :about WHERE id = :id")
+  @SqlQuery(modifying = true, value = "UPDATE users_table SET about = :about WHERE id = :id")
   void updateReturnVoid(String id, String about);
 
-  @Query(modifying = true, value = "UPDATE users_table SET about = :about WHERE id = :id")
+  @SqlQuery(modifying = true, value = "UPDATE users_table SET about = :about WHERE id = :id")
   int updateReturnInt(String id, String about);
 
-  @Query(modifying = true, value = "UPDATE users_table SET about = :about WHERE id = :id")
+  @SqlQuery(modifying = true, value = "UPDATE users_table SET about = :about WHERE id = :id")
   Integer updateReturnIntBoxed(String id, String about);
 
-  @Query(modifying = true, value = "UPDATE users_table SET about = :about WHERE id = :id")
+  @SqlQuery(modifying = true, value = "UPDATE users_table SET about = :about WHERE id = :id")
   String updateReturnWrongReturnType(String id, String about);
 
   default UserRow getUsingDefault(int karma) {

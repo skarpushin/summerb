@@ -5,6 +5,7 @@ import org.summerb.easycrud.EasyCrudService;
 import org.summerb.easycrud.query.OrderBy;
 import org.summerb.easycrud.query.Query;
 import org.summerb.easycrud.row.HasId;
+import org.summerb.easycrud.scaffold.SqlQuery;
 import org.summerb.utils.easycrud.api.dto.PagerParams;
 
 /**
@@ -34,8 +35,8 @@ public interface EasyCrudAuthorizationPerRow<T> {
    *     you called {@link EasyCrudService#getById(Object)}, {@link
    *     EasyCrudService#findOneByQuery(Query)}, etc) but could also be called for multiple entries
    *     which were retrieved via {@link EasyCrudService#find(PagerParams, Query, OrderBy...)} or
-   *     via scaffolded service method marked with annotation {@link
-   *     org.summerb.easycrud.scaffold.Query} which returns List of service's rows
+   *     via scaffolded service method marked with annotation {@link SqlQuery} which returns List of
+   *     service's rows
    * @return true if the current user is allowed to read a given row(s), false otherwise
    */
   boolean isAllowedToRead(List<T> rows);

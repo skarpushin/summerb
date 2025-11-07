@@ -42,11 +42,11 @@ import org.summerb.easycrud.dao.EasyCrudDaoInjections;
 import org.summerb.easycrud.dao.SqlTypeOverride;
 import org.summerb.easycrud.row.HasId;
 import org.summerb.easycrud.scaffold.CallableMethod;
-import org.summerb.easycrud.scaffold.Query;
+import org.summerb.easycrud.scaffold.SqlQuery;
 import org.summerb.easycrud.wireTaps.EasyCrudWireTap;
 
 /**
- * This clas provides default implementation for interface methods marked with {@link Query}
+ * This clas provides default implementation for interface methods marked with {@link SqlQuery}
  * annotations
  *
  * @param <TMethodParameter> type of the MethodParameter meta information. This is needed only for
@@ -60,7 +60,7 @@ public class ScaffoldedQueryMethodImpl<TMethodParameter extends ScaffoldedMethod
   protected final Method method;
   protected final EasyCrudService<?, HasId<?>> service;
   protected final EasyCrudDaoInjections<?, ?> dao;
-  protected final Query annotation;
+  protected final SqlQuery annotation;
 
   @SuppressWarnings("rawtypes")
   protected final RowMapper rowMapper;
@@ -75,7 +75,7 @@ public class ScaffoldedQueryMethodImpl<TMethodParameter extends ScaffoldedMethod
     Preconditions.checkNotNull(dao, "dao required");
     Preconditions.checkNotNull(method, "method required");
 
-    this.annotation = method.getAnnotation(Query.class);
+    this.annotation = method.getAnnotation(SqlQuery.class);
     this.query = annotation.value();
     this.method = method;
     this.service = service;

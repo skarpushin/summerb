@@ -125,7 +125,6 @@ public abstract class EasyCrudConfigAbstract {
     return new EasyCrudServiceResolverSpringImpl();
   }
 
-
   @Bean
   protected RowCloner rowCloner() {
     return new RowClonerReflectionImpl();

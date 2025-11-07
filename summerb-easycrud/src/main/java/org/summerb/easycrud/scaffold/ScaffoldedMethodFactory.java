@@ -22,7 +22,7 @@ import org.summerb.easycrud.row.HasId;
 
 /**
  * Impl of this interface will be responsible for creating impls for methods of sub-interfaces of
- * {@link EasyCrudService} marked with {@link Query} annotation and instantiated using {@link
+ * {@link EasyCrudService} marked with {@link SqlQuery} annotation and instantiated using {@link
  * EasyCrudScaffold#fromService(Class, String, String, Object...)}
  *
  * @author sergeyk

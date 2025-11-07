@@ -65,11 +65,14 @@ import org.summerb.easycrud.scaffold.impl.ScaffoldedMethodFactoryMySqlImpl;
  * <p>NOTE: Now, although service-layer supposed to know nothing about particulars of the storage
  * layer, I still believe that this "convenience shortcut" worth a shot.
  *
+ * <p>NOTE 2: The is intentionally different from {@link org.summerb.easycrud.query.Query} to avoid
+ * name clashing in case these 2 are used in the same class
+ *
  * @author sergeyk
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface Query {
+public @interface SqlQuery {
   /**
    * @return SQL query to be used to perform the query
    */

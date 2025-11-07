@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.summerb.easycrud.EasyCrudService;
 
-public class QueryTest {
+public class SqlQueryTest {
 
   @Test
   public void testSameQueriesAreEqual() {

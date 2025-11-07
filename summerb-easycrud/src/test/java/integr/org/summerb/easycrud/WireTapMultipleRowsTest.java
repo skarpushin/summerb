@@ -15,7 +15,7 @@
  ******************************************************************************/
 package integr.org.summerb.easycrud;
 
-import static integr.org.summerb.easycrud.QueryTest.buildRow;
+import static integr.org.summerb.easycrud.SqlQueryTest.buildRow;
 import static org.junit.jupiter.api.Assertions.*;
 
 import integr.org.summerb.easycrud.config.EasyCrudConfig;
