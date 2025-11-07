@@ -536,7 +536,7 @@ public class JoinQueryMultiSelectTest extends JoinQueryTestAbstract {
     // GIVEN
     createTestData();
 
-    Query<Long, PostRow> qPost = postRowService.query();
+    Query<Long, PostRow> qPost = postRowService.query().ge(PostRow::getLikes, 4);
     Query<String, UserRow> qUser = userRowService.query();
 
     // WHEN
@@ -651,7 +651,7 @@ public class JoinQueryMultiSelectTest extends JoinQueryTestAbstract {
 
     // WHEN
     Query<Long, PostRow> qPost = postRowService.query();
-    Query<String, UserRow> qUser = userRowService.query();
+    Query<String, UserRow> qUser = userRowService.query().ge(UserRow::getKarma, 10);
     List<JoinedRow> results =
         qPost
             .toJoin()

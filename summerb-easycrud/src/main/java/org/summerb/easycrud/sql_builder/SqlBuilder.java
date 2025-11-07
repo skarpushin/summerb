@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.summerb.easycrud.join_query.JoinQuery;
 import org.summerb.easycrud.query.OrderBy;
 import org.summerb.easycrud.query.Query;
+import org.summerb.easycrud.sql_builder.impl.ParamIdxIncrementer;
 import org.summerb.easycrud.sql_builder.model.FromAndWhere;
 import org.summerb.easycrud.sql_builder.model.QueryData;
 import org.summerb.utils.easycrud.api.dto.PagerParams;
@@ -37,10 +38,17 @@ public interface SqlBuilder {
 
   QueryData queryForCountAfterPagedSelect(FromAndWhere fromAndWhere);
 
-  void appendFromClause(JoinQuery<?, ?> joinQuery, StringBuilder sql);
+  void appendFromClause(
+      JoinQuery<?, ?> joinQuery,
+      StringBuilder sql,
+      MapSqlParameterSource params,
+      ParamIdxIncrementer paramIdxIncrementer);
 
   void appendWhereClause(
-      JoinQuery<?, ?> joinQuery, StringBuilder sql, MapSqlParameterSource params);
+      List<Query<?, ?>> queries,
+      StringBuilder sql,
+      MapSqlParameterSource params,
+      ParamIdxIncrementer paramIdxIncrementer);
 
   void appendOrderBy(OrderBy[] orderBy, JoinQuery<?, ?> joinQuery, StringBuilder sql);
 

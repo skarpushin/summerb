@@ -20,6 +20,7 @@ import org.summerb.easycrud.query.Query;
 import org.summerb.easycrud.row.HasId;
 import org.summerb.easycrud.sql_builder.FieldsEnlister;
 import org.summerb.easycrud.sql_builder.SqlBuilder;
+import org.summerb.easycrud.sql_builder.impl.ParamIdxIncrementer;
 import org.summerb.easycrud.sql_builder.model.FromAndWhere;
 import org.summerb.easycrud.sql_builder.model.QueryData;
 import org.summerb.easycrud.wireTaps.EasyCrudWireTap;
@@ -193,7 +194,8 @@ public class JoinedSelectImpl extends SelectTemplate implements JoinedSelect {
 
   protected EntityNotFoundException buildEntityNotFound() {
     StringBuilder sql = new StringBuilder();
-    sqlBuilder.appendWhereClause(joinQuery, sql, new MapSqlParameterSource());
+    sqlBuilder.appendWhereClause(
+        joinQuery.getQueries(), sql, new MapSqlParameterSource(), new ParamIdxIncrementer());
     return new EntityNotFoundException(
         querySpecificsResolver.getRowMessageCode(joinQuery.getPrimaryQuery()), "joinquery:" + sql);
   }

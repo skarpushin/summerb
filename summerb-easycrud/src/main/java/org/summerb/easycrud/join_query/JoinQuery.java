@@ -32,145 +32,144 @@ public interface JoinQuery<TId, TRow extends HasId<TId>> {
   List<JoinQueryElement> getJoins();
 
   /**
-   * @return All participating queries (primary + joined tables) in this JOIN query
+   * @return All participating queries (primary and joined tables) in this JOIN query
    */
   List<Query<?, ?>> getQueries();
 
   /**
-   * Adds an INNER JOIN with automatic foreign key detection.
+   * Adds an INNER JOIN using an explicit foreign key specification to match primary table FK to
+   * joined table PK.
    *
-   * <p>Automatically identifies the foreign key relationship by scanning for {@link ReferringTo}
-   * annotations first on the primary table's fields, then on the target table's fields.
+   * <p>Think of calling this method as if adding the following JOIN clause (pseudocode):
    *
-   * @param otherQuery Query representing the table to join
+   * <pre>JOIN queryToJoin.TableName ON primaryQuery.TableName.fk = queryToJoin.TableName.id</pre>
+   *
+   * @param <JoinedTableIdType> PK type of the joined table
+   * @param <JoinedTableRowType> Row class of the joined table
+   * @param queryToJoin Query representing the table to join and optional conditions to filter on
+   *     that table
+   * @param fkGetter Lambda that will be used to extract the field name from the primary table that
+   *     references to the joined table primary key
    * @return self
-   * @param <TOtherId> Target table's ID type
-   * @param <TOtherRow> Target table's row type
    */
-  <TOtherId, TOtherRow extends HasId<TOtherId>> JoinQuery<TId, TRow> join(
-      Query<TOtherId, TOtherRow> otherQuery);
+  <JoinedTableIdType, JoinedTableRowType extends HasId<JoinedTableIdType>>
+      JoinQuery<TId, TRow> join(
+          Query<JoinedTableIdType, JoinedTableRowType> queryToJoin,
+          Function<TRow, JoinedTableIdType> fkGetter);
 
   /**
-   * Adds a LEFT JOIN with automatic foreign key detection.
+   * Adds an INNER JOIN between two non-primary tables using an explicit foreign key specification.
+   * One of the specified tables is expected to already be in a join and transitively joined with
+   * the primary table.
    *
-   * <p>Automatically identifies the foreign key relationship by scanning for {@link ReferringTo}
-   * annotations first on the primary table's fields, then on the target table's fields.
-   *
-   * @param otherQuery Query representing the table to join
-   * @return self
-   * @param <TOtherId> Target table's ID type
-   * @param <TOtherRow> Target table's row type
-   */
-  <TOtherId, TOtherRow extends HasId<TOtherId>> JoinQuery<TId, TRow> leftJoin(
-      Query<TOtherId, TOtherRow> otherQuery);
-
-  /**
-   * Adds an INNER JOIN using explicit foreign key specification.
-   *
-   * @param otherQuery Query representing the table to join
-   * @param otherIdGetter Function extracting the foreign key from primary table rows
-   * @return self
-   * @param <TOtherId> Target table's ID type
-   * @param <TOtherRow> Target table's row type
-   */
-  <TOtherId, TOtherRow extends HasId<TOtherId>> JoinQuery<TId, TRow> join(
-      Query<TOtherId, TOtherRow> otherQuery, Function<TRow, TOtherId> otherIdGetter);
-
-  /**
-   * Adds a LEFT JOIN using explicit foreign key specification.
-   *
-   * @param otherQuery Query representing the table to join
-   * @param otherIdGetter Function extracting the foreign key from primary table rows
-   * @return self
-   * @param <TOtherId> Target table's ID type
-   * @param <TOtherRow> Target table's row type
-   */
-  <TOtherId, TOtherRow extends HasId<TOtherId>> JoinQuery<TId, TRow> leftJoin(
-      Query<TOtherId, TOtherRow> otherQuery, Function<TRow, TOtherId> otherIdGetter);
-
-  /**
-   * Adds an INNER JOIN where the target table references the primary table.
-   *
-   * <p>Used when the joined table contains a foreign key pointing to the primary table.
-   *
-   * @param otherQuery Query representing the table to join
-   * @param primaryIdGetter Function extracting the primary key from target table rows
-   * @return self
-   * @param <TOtherId> Target table's ID type
-   * @param <TOtherRow> Target table's row type
-   */
-  <TOtherId, TOtherRow extends HasId<TOtherId>> JoinQuery<TId, TRow> joinBack(
-      Query<TOtherId, TOtherRow> otherQuery, Function<TOtherRow, TId> primaryIdGetter);
-
-  /**
-   * Adds a LEFT JOIN where the target table references the primary table.
-   *
-   * <p>Used when the joined table contains a foreign key pointing to the primary table.
-   *
-   * @param otherQuery Query representing the table to join
-   * @param primaryIdGetter Function extracting the primary key from target table rows
-   * @return self
-   * @param <TOtherId> Target table's ID type
-   * @param <TOtherRow> Target table's row type
-   */
-  <TOtherId, TOtherRow extends HasId<TOtherId>> JoinQuery<TId, TRow> leftJoinBack(
-      Query<TOtherId, TOtherRow> otherQuery, Function<TOtherRow, TId> primaryIdGetter);
-
-  /**
-   * Adds an INNER JOIN between two non-primary tables with explicit foreign key.
-   *
-   * <p>One of the specified tables must be connected to the primary table through existing joins.
-   *
-   * @param sourceQuery Source table query (most likely already joined to primary)
-   * @param otherQuery Target table query to join
-   * @param otherIdGetter Function extracting foreign key from source to target table
+   * @param queryOne a query that denotes ONE table
+   * @param queryOther a query that denotes OTHER table
+   * @param queryOneFkGetter Lambda that will be used to extract the field name from the ONE table
+   *     that references to the OTHER table primary key
    * @return self
    */
   <TOneId, TOneRow extends HasId<TOneId>, TOtherId, TOtherRow extends HasId<TOtherId>>
       JoinQuery<TId, TRow> join(
-          Query<TOneId, TOneRow> sourceQuery,
-          Query<TOtherId, TOtherRow> otherQuery,
-          Function<TOneRow, TOtherId> otherIdGetter);
+          Query<TOneId, TOneRow> queryOne,
+          Query<TOtherId, TOtherRow> queryOther,
+          Function<TOneRow, TOtherId> queryOneFkGetter);
 
   /**
-   * Adds a LEFT JOIN between two non-primary tables with explicit foreign key.
+   * Adds an INNER JOIN where the target table foreign key references PK on the primary table.
    *
-   * <p>One of the specified tables must be connected to the primary table through existing joins.
+   * <p>Think of calling this method as if adding the following JOIN clause (pseudocode):
    *
-   * @param sourceQuery Source table query (most likely already joined to primary)
-   * @param otherQuery Target table query to join
-   * @param otherIdGetter Function extracting foreign key from source to target table
+   * <pre>JOIN queryToJoin.TableName ON queryToJoin.TableName.fk = primaryQuery.TableName.id</pre>
+   *
+   * @param <JoinedTableIdType> Target table's ID type
+   * @param <JoinedTableRowType> Target table's row type
+   * @param queryToJoin Query representing the table to join
+   * @param fkGetter Function extracting the primary key from target table rows
+   * @return self
+   */
+  <JoinedTableIdType, JoinedTableRowType extends HasId<JoinedTableIdType>>
+      JoinQuery<TId, TRow> joinBack(
+          Query<JoinedTableIdType, JoinedTableRowType> queryToJoin,
+          Function<JoinedTableRowType, TId> fkGetter);
+
+  /**
+   * Adds a LEFT JOIN using explicit foreign key specification to match primary table FK to joined
+   * table PK.
+   *
+   * <p>If queryToJoin contain any filtering conditions, they will be added to the join clause. If
+   * you want conditions to be added to the WHERE clause, use regular join (which is inner join)
+   * instead of the left join
+   *
+   * <p>Think of calling this method as if adding the following JOIN clause (pseudocode):
+   *
+   * <pre>
+   * LEFT JOIN queryToJoin.TableName ON primaryQuery.TableName.fk = queryToJoin.TableName.id [AND queryToJoin.TableName.field1 = :value1 [AND ...]]
+   * </pre>
+   *
+   * @param <JoinedTableIdType> Target table's ID type
+   * @param <JoinedTableRowType> Target table's row type
+   * @param queryToJoin Query representing the table to join
+   * @param fkGetter Function extracting the foreign key from primary table rows
+   * @return self
+   */
+  <JoinedTableIdType, JoinedTableRowType extends HasId<JoinedTableIdType>>
+      JoinQuery<TId, TRow> leftJoin(
+          Query<JoinedTableIdType, JoinedTableRowType> queryToJoin,
+          Function<TRow, JoinedTableIdType> fkGetter);
+
+  /**
+   * Adds a LEFT JOIN between two non-primary tables using an explicit foreign key specification.
+   * One of the specified tables is expected to already be in a join and transitively joined with
+   * the primary table.
+   *
+   * <p>If the new query contains any filtering conditions, they will be added to the JOIN clause.
+   * If you want conditions to be added to the WHERE clause, use regular join (which is inner join)
+   * instead of this left join.
+   *
+   * <p>Think of calling this method as if adding the following JOIN clause (pseudocode):
+   *
+   * <pre>
+   * LEFT JOIN queryOne.TableName ON queryOne.TableName.fk = queryOther.TableName.id [AND new_query.TableName.field1 = :value1 [AND ...]]
+   * </pre>
+   *
+   * NOTE: In the above example new_query represents the query that is being added with this call
+   *
+   * @param queryOne a query that denotes ONE table
+   * @param queryOther a query that denotes OTHER table
+   * @param queryOneFkGetter Lambda that will be used to extract the field name from the ONE table
+   *     that references to the OTHER table primary key
    * @return self
    */
   <TOneId, TOneRow extends HasId<TOneId>, TOtherId, TOtherRow extends HasId<TOtherId>>
       JoinQuery<TId, TRow> leftJoin(
-          Query<TOneId, TOneRow> sourceQuery,
-          Query<TOtherId, TOtherRow> otherQuery,
-          Function<TOneRow, TOtherId> otherIdGetter);
+          Query<TOneId, TOneRow> queryOne,
+          Query<TOtherId, TOtherRow> queryOther,
+          Function<TOneRow, TOtherId> queryOneFkGetter);
 
   /**
-   * Adds an INNER JOIN between two non-primary tables with automatic foreign key detection.
+   * Adds a LEFT JOIN using explicit foreign key specification to match joined table FK to primary
+   * table PK.
    *
-   * <p>Automatically identifies foreign key using {@link ReferringTo} annotations on either table.
-   * Both tables must be connected to the primary table through existing joins.
+   * <p>If queryToJoin contain any filtering conditions, they will be added to the join clause. If
+   * you want conditions to be added to the WHERE clause, use regular join (which is inner join)
+   * instead of the left join
    *
+   * <p>Think of calling this method as if adding the following JOIN clause (pseudocode):
+   *
+   * <pre>
+   * LEFT JOIN queryToJoin.TableName ON primaryQuery.TableName.fk = queryToJoin.TableName.id [AND queryToJoin.TableName.field1 = :value1 [AND ...]]
+   * </pre>
+   *
+   * @param <JoinedTableIdType> Target table's ID type
+   * @param <JoinedTableRowType> Target table's row type
+   * @param queryToJoin Query representing the table to join
+   * @param fkGetter Function extracting the foreign key from primary table rows
    * @return self
    */
-  <TOneId, TOneRow extends HasId<TOneId>, TOtherId, TOtherRow extends HasId<TOtherId>>
-      JoinQuery<TId, TRow> join(
-          Query<TOneId, TOneRow> oneQuery, Query<TOtherId, TOtherRow> otherQuery);
-
-  /**
-   * Adds a LEFT JOIN between two non-primary tables with automatic foreign key detection.
-   *
-   * <p>Automatically identifies foreign key using {@link ReferringTo} annotations on either table.
-   * Both tables must be connected to the primary table through existing joins.
-   *
-   * @return self
-   */
-  <TOneId, TOneRow extends HasId<TOneId>, TOtherId, TOtherRow extends HasId<TOtherId>>
-      JoinQuery<TId, TRow> leftJoin(
-          Query<TOneId, TOneRow> oneQuery, Query<TOtherId, TOtherRow> otherQuery);
+  <JoinedTableIdType, JoinedTableRowType extends HasId<JoinedTableIdType>>
+      JoinQuery<TId, TRow> leftJoinBack(
+          Query<JoinedTableIdType, JoinedTableRowType> queryToJoin,
+          Function<JoinedTableRowType, TId> fkGetter);
 
   /**
    * Once you finished configuring this Join Query, call this method to create Selector for primary
@@ -223,4 +222,74 @@ public interface JoinQuery<TId, TRow extends HasId<TId>> {
    * "posts.title,asc", "comments.comment,asc"]
    */
   OrderBy[] parseOrderBy(String[] orderByStr);
+
+  /**
+   * @return location of the conditions where filtering conditions of the given query will be
+   *     located
+   */
+  ConditionsLocation getConditionsLocationForQuery(Query<?, ?> query);
+
+  /**
+   * Adds an INNER JOIN with automatic foreign key detection.
+   *
+   * <p>Automatically identifies the foreign key relationship by scanning for {@link ReferringTo}
+   * annotations first on the primary table's fields, then on the target table's fields.
+   *
+   * <p>WARNING: Use with caution as this method introduces "magic" that cannot be verified at
+   * compile time.
+   *
+   * @param otherQuery Query representing the table to join
+   * @return self
+   * @param <TOtherId> Target table's ID type
+   * @param <TOtherRow> Target table's row type
+   */
+  <TOtherId, TOtherRow extends HasId<TOtherId>> JoinQuery<TId, TRow> join(
+      Query<TOtherId, TOtherRow> otherQuery);
+
+  /**
+   * Adds an INNER JOIN between two non-primary tables with automatic foreign key detection.
+   *
+   * <p>Automatically identifies foreign key using {@link ReferringTo} annotations on either table.
+   * Both tables must be connected to the primary table through existing joins.
+   *
+   * <p>WARNING: Use with caution as this method introduces "magic" that cannot be verified at
+   * compile time.
+   *
+   * @return self
+   */
+  <TOneId, TOneRow extends HasId<TOneId>, TOtherId, TOtherRow extends HasId<TOtherId>>
+      JoinQuery<TId, TRow> join(
+          Query<TOneId, TOneRow> queryOne, Query<TOtherId, TOtherRow> queryOther);
+
+  /**
+   * Adds a LEFT JOIN between two non-primary tables with automatic foreign key detection.
+   *
+   * <p>Automatically identifies foreign key using {@link ReferringTo} annotations on either table.
+   * Both tables must be connected to the primary table through existing joins.
+   *
+   * <p>WARNING: Use with caution as this method introduces "magic" that cannot be verified at
+   * compile time.
+   *
+   * @return self
+   */
+  <TOneId, TOneRow extends HasId<TOneId>, TOtherId, TOtherRow extends HasId<TOtherId>>
+      JoinQuery<TId, TRow> leftJoin(
+          Query<TOneId, TOneRow> queryOne, Query<TOtherId, TOtherRow> queryOther);
+
+  /**
+   * Adds a LEFT JOIN with automatic foreign key detection.
+   *
+   * <p>Automatically identifies the foreign key relationship by scanning for {@link ReferringTo}
+   * annotations first on the primary table's fields, then on the target table's fields.
+   *
+   * <p>WARNING: Use with caution as this method introduces "magic" that cannot be verified at
+   * compile time.
+   *
+   * @param otherQuery Query representing the table to join
+   * @return self
+   * @param <TOtherId> Target table's ID type
+   * @param <TOtherRow> Target table's row type
+   */
+  <TOtherId, TOtherRow extends HasId<TOtherId>> JoinQuery<TId, TRow> leftJoin(
+      Query<TOtherId, TOtherRow> otherQuery);
 }

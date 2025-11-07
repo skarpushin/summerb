@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import integr.org.summerb.easycrud.config.EasyCrudConfig;
@@ -627,27 +626,29 @@ public class JoinQuerySingleSelectTest extends JoinQueryTestAbstract {
 
     Query<Long, PostRow> qPost = postRowService.query();
     Query<String, UserRow> qAuthor =
-        userRowService.query().between(UserRow::getKarma, 5, 10); // user1 only
+        userRowService.query().between(UserRow::getKarma, 5, 10); // user1 & user2
     Query<String, UserRow> qPinnedBy =
-        userRowService.query().between(UserRow::getKarma, 10, 20); // user2 and user3
+        userRowService.query().between(UserRow::getKarma, 10, 20); // user2 & user3
 
     // INNER JOIN with author (filters to posts by user1) + LEFT JOIN with pinnedBy (can be null or
     // match)
     Select<Long, PostRow> select =
         qPost
             .toJoin()
-            .join(qAuthor, PostRow::getAuthorId) // INNER JOIN - only posts by user1 (karma 5-10)
-            .leftJoin(
-                qPinnedBy, PostRow::getPinnedBy) // LEFT JOIN - pinnedBy users with karma 10-20
+            .join(qAuthor, PostRow::getAuthorId)
+            .leftJoin(qPinnedBy, PostRow::getPinnedBy)
             .select();
 
     // WHEN
     List<PostRow> results = select.findAll(qPost.orderBy(PostRow::getTitle).asc());
 
-    // THEN - Only posts by user1 (post1 and post2) should be returned due to INNER JOIN
-    assertEquals(2, results.size());
-    assertTrue(
-        results.stream().allMatch(p -> p.getAuthorId().equals(getUserByName("bba").getId())));
+    // THEN - All 3 posts must be returned because they all authored by applicable users. The LEFT
+    // joined on pinned must not limit results
+    assertEquals(3, results.size());
+
+    assertEquals("env3", results.get(0).getTitle());
+    assertEquals("env4", results.get(1).getTitle());
+    assertEquals("env5", results.get(2).getTitle());
   }
 
   @SuppressWarnings("SameParameterValue")

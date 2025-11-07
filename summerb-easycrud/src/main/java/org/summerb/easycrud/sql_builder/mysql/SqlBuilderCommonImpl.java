@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+import org.summerb.easycrud.join_query.ConditionsLocation;
 import org.summerb.easycrud.join_query.JoinQuery;
 import org.summerb.easycrud.join_query.QuerySpecificsResolver;
 import org.summerb.easycrud.join_query.impl.JoinQueryElement;
@@ -229,14 +230,21 @@ public class SqlBuilderCommonImpl implements SqlBuilder {
 
   protected void buildFromAndWhere(
       JoinQuery<?, ?> joinQuery, StringBuilder sqlMiddle, MapSqlParameterSource params) {
-    sqlMiddle.append("\nFROM");
-    appendFromClause(joinQuery, sqlMiddle);
+    ParamIdxIncrementer paramIdxIncrementer = new ParamIdxIncrementer();
 
-    boolean hasConditions =
-        joinQuery.getQueries().stream().anyMatch(x -> !x.getConditions().isEmpty());
-    if (hasConditions) {
+    sqlMiddle.append("\nFROM");
+    appendFromClause(joinQuery, sqlMiddle, params, paramIdxIncrementer);
+
+    List<Query<?, ?>> conditions =
+        joinQuery.getQueries().stream()
+            .filter(
+                x ->
+                    !x.getConditions().isEmpty()
+                        && joinQuery.getConditionsLocationForQuery(x) == ConditionsLocation.WHERE)
+            .toList();
+    if (!conditions.isEmpty()) {
       sqlMiddle.append("\nWHERE");
-      appendWhereClause(joinQuery, sqlMiddle, params);
+      appendWhereClause(conditions, sqlMiddle, params, paramIdxIncrementer);
     }
   }
 
@@ -328,7 +336,11 @@ public class SqlBuilderCommonImpl implements SqlBuilder {
   }
 
   @Override
-  public void appendFromClause(JoinQuery<?, ?> joinQuery, StringBuilder sql) {
+  public void appendFromClause(
+      JoinQuery<?, ?> joinQuery,
+      StringBuilder sql,
+      MapSqlParameterSource params,
+      ParamIdxIncrementer paramIdxIncrementer) {
     Set<Query<?, ?>> seen = new HashSet<>();
     Query<?, ?> primaryQuery = joinQuery.getPrimaryQuery();
     String primaryTableName = querySpecificsResolver.getTableName(primaryQuery);
@@ -363,6 +375,13 @@ public class SqlBuilderCommonImpl implements SqlBuilder {
             .append(" = ")
             .append(referredAlias)
             .append(".id");
+
+        if (!join.getReferer().getConditions().isEmpty()
+            && joinQuery.getConditionsLocationForQuery(join.getReferer())
+                == ConditionsLocation.JOIN) {
+          sql.append(" AND ");
+          queryToSql.buildFilter(join.getReferer(), params, refererAlias, sql, paramIdxIncrementer);
+        }
       } else if (!seen.contains(join.getReferred())) {
         seen.add(join.getReferred());
 
@@ -382,18 +401,26 @@ public class SqlBuilderCommonImpl implements SqlBuilder {
             .append(" = ")
             .append(referredAlias)
             .append(".id");
+
+        if (!join.getReferred().getConditions().isEmpty()
+            && joinQuery.getConditionsLocationForQuery(join.getReferred())
+                == ConditionsLocation.JOIN) {
+          sql.append(" AND ");
+          queryToSql.buildFilter(
+              join.getReferred(), params, referredAlias, sql, paramIdxIncrementer);
+        }
       } else {
-        throw new IllegalStateException(
-            "join elements contains queries that were already included");
+        throw new IllegalStateException("Failed to build JOINs -- Query was already seen");
       }
     }
   }
 
   @Override
   public void appendWhereClause(
-      JoinQuery<?, ?> joinQuery, StringBuilder sql, MapSqlParameterSource params) {
-    List<Query<?, ?>> queries = joinQuery.getQueries();
-    ParamIdxIncrementer paramIdxIncrementer = new ParamIdxIncrementer();
+      List<Query<?, ?>> queries,
+      StringBuilder sql,
+      MapSqlParameterSource params,
+      ParamIdxIncrementer paramIdxIncrementer) {
     boolean added = false;
     for (Query<?, ?> query : queries) {
       if (query.getConditions().isEmpty()) {

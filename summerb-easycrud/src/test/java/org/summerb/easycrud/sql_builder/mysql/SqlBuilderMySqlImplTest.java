@@ -28,6 +28,7 @@ import org.summerb.easycrud.row.HasId;
 import org.summerb.easycrud.sql_builder.SqlBuilder;
 import org.summerb.easycrud.sql_builder.impl.FieldsEnlisterCachingImpl;
 import org.summerb.easycrud.sql_builder.impl.FieldsEnlisterImpl;
+import org.summerb.easycrud.sql_builder.impl.ParamIdxIncrementer;
 import org.summerb.methodCapturers.MethodCapturerProxyClassFactoryImpl;
 import org.summerb.methodCapturers.PropertyNameResolverFactoryImpl;
 
@@ -96,7 +97,8 @@ public class SqlBuilderMySqlImplTest {
 
     // When
     StringBuilder sql = new StringBuilder();
-    sqlBuilder.appendFromClause(joinQuery, sql);
+    sqlBuilder.appendFromClause(
+        joinQuery, sql, new MapSqlParameterSource(), new ParamIdxIncrementer());
 
     // Then
     assertEquals("\n\tusers", sql.toString());
@@ -110,7 +112,8 @@ public class SqlBuilderMySqlImplTest {
 
     // When
     StringBuilder sql = new StringBuilder();
-    sqlBuilder.appendFromClause(joinQuery, sql);
+    sqlBuilder.appendFromClause(
+        joinQuery, sql, new MapSqlParameterSource(), new ParamIdxIncrementer());
 
     // Then
     assertEquals("\n\tusers AS uuu\n\tJOIN posts AS ppp ON ppp.author_id = uuu.id", sql.toString());
@@ -125,7 +128,8 @@ public class SqlBuilderMySqlImplTest {
 
     // WHEN
     StringBuilder sql = new StringBuilder();
-    sqlBuilder.appendFromClause(joinQuery, sql);
+    sqlBuilder.appendFromClause(
+        joinQuery, sql, new MapSqlParameterSource(), new ParamIdxIncrementer());
 
     // Then
     assertEquals(
@@ -141,7 +145,8 @@ public class SqlBuilderMySqlImplTest {
 
     // When
     StringBuilder sql = new StringBuilder();
-    sqlBuilder.appendFromClause(joinQuery, sql);
+    sqlBuilder.appendFromClause(
+        joinQuery, sql, new MapSqlParameterSource(), new ParamIdxIncrementer());
 
     // Then
     assertEquals("\n\tusers\n\tJOIN posts ON posts.author_id = users.id", sql.toString());
@@ -155,7 +160,8 @@ public class SqlBuilderMySqlImplTest {
 
     // When
     StringBuilder sql = new StringBuilder();
-    sqlBuilder.appendFromClause(joinQuery, sql);
+    sqlBuilder.appendFromClause(
+        joinQuery, sql, new MapSqlParameterSource(), new ParamIdxIncrementer());
 
     // Then
     assertEquals("\n\tusers\n\tJOIN posts ON posts.author_id = users.id", sql.toString());
@@ -176,7 +182,8 @@ public class SqlBuilderMySqlImplTest {
 
     // When
     StringBuilder sql = new StringBuilder();
-    sqlBuilder.appendFromClause(joinQuery, sql);
+    sqlBuilder.appendFromClause(
+        joinQuery, sql, new MapSqlParameterSource(), new ParamIdxIncrementer());
 
     // Then
     assertEquals("\n\tusers" + "\n\tJOIN posts ON posts.author_id = users.id", sql.toString());
@@ -192,7 +199,8 @@ public class SqlBuilderMySqlImplTest {
 
     // When
     StringBuilder sql = new StringBuilder();
-    sqlBuilder.appendFromClause(joinQuery, sql);
+    sqlBuilder.appendFromClause(
+        joinQuery, sql, new MapSqlParameterSource(), new ParamIdxIncrementer());
 
     // Then
     String expected =
@@ -216,7 +224,8 @@ public class SqlBuilderMySqlImplTest {
     assertThrows(
         IllegalStateException.class,
         () -> {
-          sqlBuilder.appendFromClause(joinQuery, sql);
+          sqlBuilder.appendFromClause(
+              joinQuery, sql, new MapSqlParameterSource(), new ParamIdxIncrementer());
         });
   }
 
@@ -243,7 +252,7 @@ public class SqlBuilderMySqlImplTest {
     // When
     StringBuilder sql = new StringBuilder();
     MapSqlParameterSource params = new MapSqlParameterSource();
-    sqlBuilder.appendWhereClause(joinQuery, sql, params);
+    sqlBuilder.appendWhereClause(joinQuery.getQueries(), sql, params, new ParamIdxIncrementer());
 
     // Then
     String expected =
