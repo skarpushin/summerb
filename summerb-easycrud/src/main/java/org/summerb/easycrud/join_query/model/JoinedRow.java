@@ -12,8 +12,18 @@ public interface JoinedRow {
    * @return row if present, or null if not present (i.e. if left join was used and DB returned
    *     nulls)
    * @param <TRow> row type
-   * @throws IllegalArgumentException if rowType is null, such type was not registered within join
-   *     select, or there is more than 1 such row type within joined select
+   * @throws IllegalArgumentException if query is null
    */
   <TId, TRow extends HasId<TId>> TRow get(Query<TId, TRow> query);
+
+  /**
+   * Retrieves row from the joined row by specifying Row class
+   *
+   * @param rowClass class of the row to retrieve
+   * @return row if present, or null if not present (i.e. if left join was used and DB returned
+   *     nulls)
+   * @param <TRow> row type
+   * @throws IllegalArgumentException if rowClass is null
+   */
+  <TId, TRow extends HasId<TId>> TRow get(Class<TRow> rowClass);
 }
