@@ -32,6 +32,11 @@ public interface JoinQuery<TId, TRow extends HasId<TId>> {
   List<JoinQueryElement> getJoins();
 
   /**
+   * @return All configured NOT EXISTS elements in this query
+   */
+  List<JoinQueryElement> getNotExists();
+
+  /**
    * @return All participating queries (primary and joined tables) in this JOIN query
    */
   List<Query<?, ?>> getQueries();
@@ -170,6 +175,58 @@ public interface JoinQuery<TId, TRow extends HasId<TId>> {
       JoinQuery<TId, TRow> leftJoinBack(
           Query<JoinedTableIdType, JoinedTableRowType> queryToJoin,
           Function<JoinedTableRowType, TId> fkGetter);
+
+  /**
+   * Adds NOT EXISTS to the WHERE clause to make sure there are no records exist in the added table
+   * that refers to the primary table.
+   *
+   * <p>NOTE: Although this is not a JOIN "per se", this is often called "anti-join" -- operation
+   * opposite to performing inner join, therefore, it is added to this API.
+   *
+   * <p>Think of calling this method as if adding the following statement to the WHERE clause
+   * (pseudocode):
+   *
+   * <pre>
+   * WHERE ... AND NOT EXISTS (SELECT 1 FROM queryToAdd.TableName ON queryToAdd.TableName.fk = primaryQuery.TableName.id [AND queryToAdd.TableName.field1 = :value1 [AND ...]]
+   * </pre>
+   *
+   * @param <AddedTableIdType> Target table's ID type
+   * @param <AddedTableRowType> Target table's row type
+   * @param queryToAdd Query representing the table to join
+   * @param fkGetter Function extracting the foreign key from the added table which points to
+   *     primary table PK
+   * @return self
+   */
+  <AddedTableIdType, AddedTableRowType extends HasId<AddedTableIdType>>
+      JoinQuery<TId, TRow> notExists(
+          Query<AddedTableIdType, AddedTableRowType> queryToAdd,
+          Function<AddedTableRowType, TId> fkGetter);
+
+  /**
+   * Adds NOT EXISTS to the WHERE clause to make sure there are no records exist in the added table
+   * that refers to some other table that was already referenced in the previously added JOIN query.
+   *
+   * <p>NOTE: Although this is not a JOIN "per se", this is often called "anti-join" -- operation
+   * opposite to performing inner join, therefore, it is added to this API.
+   *
+   * <p>Think of calling this method as if adding the following statement to the WHERE clause
+   * (pseudocode):
+   *
+   * <pre>
+   * WHERE ... AND NOT EXISTS (SELECT 1 FROM queryToAdd.TableName ON queryToAdd.TableName.fk = existingJoinQuery.TableName.id [AND queryToAdd.TableName.field1 = :value1 [AND ...]]
+   * </pre>
+   *
+   * @param queryToAdd a query that denotes ONE table
+   * @param existingJoinQuery a query that denotes OTHER table
+   * @param queryToAddFkGetter Lambda that will be used to extract the field name from the ONE table
+   *     that references to the OTHER table primary key
+   * @return self
+   */
+  <AddedId, AddedRow extends HasId<AddedId>, ExistingId, ExistingRow extends HasId<ExistingId>>
+      JoinQuery<TId, TRow> notExists(
+          Query<AddedId, AddedRow> queryToAdd,
+          Query<ExistingId, ExistingRow> existingJoinQuery,
+          Function<AddedRow, ExistingId> queryToAddFkGetter);
 
   /**
    * Once you finished configuring this Join Query, call this method to create Selector for primary

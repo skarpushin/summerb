@@ -230,7 +230,7 @@ public class SqlBuilderMySqlImplTest {
   }
 
   @Test
-  void appendWhereClause_expectConditionsAddedCorrectly() {
+  void appendFieldConditionsToWhereClause_expectConditionsAddedCorrectly() {
     // Given
     Query<String, UserRow> userQuery =
         userService
@@ -252,7 +252,8 @@ public class SqlBuilderMySqlImplTest {
     // When
     StringBuilder sql = new StringBuilder();
     MapSqlParameterSource params = new MapSqlParameterSource();
-    sqlBuilder.appendWhereClause(joinQuery.getQueries(), sql, params, new ParamIdxIncrementer());
+    sqlBuilder.appendFieldConditionsToWhereClause(
+        joinQuery.getQueries(), sql, params, new ParamIdxIncrementer());
 
     // Then
     String expected =

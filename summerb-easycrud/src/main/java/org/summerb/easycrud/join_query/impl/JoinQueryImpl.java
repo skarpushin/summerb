@@ -52,15 +52,18 @@ public class JoinQueryImpl<TId, TRow extends HasId<TId>> implements JoinQuery<TI
   /** All queries which participate in this query */
   protected List<Query<?, ?>> queries = new ArrayList<>();
 
+  protected List<Query<?, ?>> queriesUnmodifiable;
+
   /** Conditions locations */
   protected Map<Query<?, ?>, ConditionsLocation> mapQueryToConditionLocation = new HashMap<>();
 
   /** Joins and their conditions */
   protected List<JoinQueryElement> joins = new LinkedList<>();
 
-  protected List<Query<?, ?>> queriesUnmodifiable;
-
   protected List<JoinQueryElement> joinsUnmodifiable;
+
+  protected List<JoinQueryElement> notExists = new LinkedList<>();
+  protected List<JoinQueryElement> notExistsUnmodifiable;
 
   public JoinQueryImpl(
       Query<TId, TRow> primarySelection,
@@ -90,7 +93,15 @@ public class JoinQueryImpl<TId, TRow extends HasId<TId>> implements JoinQuery<TI
     if (joinsUnmodifiable == null) {
       joinsUnmodifiable = Collections.unmodifiableList(joins);
     }
-    return joins;
+    return joinsUnmodifiable;
+  }
+
+  @Override
+  public List<JoinQueryElement> getNotExists() {
+    if (notExistsUnmodifiable == null) {
+      notExistsUnmodifiable = Collections.unmodifiableList(notExists);
+    }
+    return notExistsUnmodifiable;
   }
 
   @Override
@@ -199,6 +210,44 @@ public class JoinQueryImpl<TId, TRow extends HasId<TId>> implements JoinQuery<TI
     joins.add(
         new JoinQueryElement(
             JoinType.LEFT, queryToJoin, queryToJoin.name(fkGetter), primarySelection));
+
+    return this;
+  }
+
+  @Override
+  public <AddedTableIdType, AddedTableRowType extends HasId<AddedTableIdType>>
+      JoinQuery<TId, TRow> notExists(
+          Query<AddedTableIdType, AddedTableRowType> queryToAdd,
+          Function<AddedTableRowType, TId> fkGetter) {
+
+    notExists.add(
+        new JoinQueryElement(
+            JoinType.NOT_EXISTS, queryToAdd, queryToAdd.name(fkGetter), primarySelection));
+
+    return this;
+  }
+
+  @Override
+  public <
+          AddedId,
+          AddedRow extends HasId<AddedId>,
+          ExistingId,
+          ExistingRow extends HasId<ExistingId>>
+      JoinQuery<TId, TRow> notExists(
+          Query<AddedId, AddedRow> queryToAdd,
+          Query<ExistingId, ExistingRow> existingJoinQuery,
+          Function<AddedRow, ExistingId> fkGetter) {
+
+    Preconditions.checkArgument(
+        queries.contains(existingJoinQuery),
+        "existingJoinQuery must be already registered within this join");
+    Preconditions.checkArgument(
+        mapQueryToConditionLocation.get(existingJoinQuery) != ConditionsLocation.NOT_EXISTS,
+        "existingJoinQuery must not be used in other NOT EXIST clause");
+
+    notExists.add(
+        new JoinQueryElement(
+            JoinType.NOT_EXISTS, queryToAdd, queryToAdd.name(fkGetter), existingJoinQuery));
 
     return this;
   }

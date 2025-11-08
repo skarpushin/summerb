@@ -229,11 +229,11 @@ public class SqlBuilderCommonImpl implements SqlBuilder {
   }
 
   protected void buildFromAndWhere(
-      JoinQuery<?, ?> joinQuery, StringBuilder sqlMiddle, MapSqlParameterSource params) {
+      JoinQuery<?, ?> joinQuery, StringBuilder sql, MapSqlParameterSource params) {
     ParamIdxIncrementer paramIdxIncrementer = new ParamIdxIncrementer();
 
-    sqlMiddle.append("\nFROM");
-    appendFromClause(joinQuery, sqlMiddle, params, paramIdxIncrementer);
+    sql.append("\nFROM");
+    appendFromClause(joinQuery, sql, params, paramIdxIncrementer);
 
     List<Query<?, ?>> conditions =
         joinQuery.getQueries().stream()
@@ -242,9 +242,13 @@ public class SqlBuilderCommonImpl implements SqlBuilder {
                     !x.getConditions().isEmpty()
                         && joinQuery.getConditionsLocationForQuery(x) == ConditionsLocation.WHERE)
             .toList();
-    if (!conditions.isEmpty()) {
-      sqlMiddle.append("\nWHERE");
-      appendWhereClause(conditions, sqlMiddle, params, paramIdxIncrementer);
+
+    if (!conditions.isEmpty() || !joinQuery.getNotExists().isEmpty()) {
+      sql.append("\nWHERE");
+      boolean added =
+          appendFieldConditionsToWhereClause(conditions, sql, params, paramIdxIncrementer);
+      appendNotExistsToWhereClause(
+          joinQuery.getNotExists(), added, sql, params, paramIdxIncrementer);
     }
   }
 
@@ -356,67 +360,86 @@ public class SqlBuilderCommonImpl implements SqlBuilder {
       sql.append("\n\t").append(joinTypeToSql(join.getJoinType())).append(" ");
 
       if (!seen.contains(join.getReferer())) {
-        seen.add(join.getReferer());
-
-        String refererTableName = querySpecificsResolver.getTableName(join.getReferer());
-        String refererAlias = join.getReferer().getAlias();
-
-        String referredAlias = join.getReferred().getAlias();
-
-        sql.append(refererTableName);
-        if (!refererTableName.equals(refererAlias)) {
-          sql.append(" AS ").append(refererAlias);
-        }
-
-        sql.append(" ON ")
-            .append(refererAlias)
-            .append(".")
-            .append(QueryToSqlMySqlImpl.snakeCase(join.getOtherIdGetterFieldName()))
-            .append(" = ")
-            .append(referredAlias)
-            .append(".id");
-
-        if (!join.getReferer().getConditions().isEmpty()
-            && joinQuery.getConditionsLocationForQuery(join.getReferer())
-                == ConditionsLocation.JOIN) {
-          sql.append(" AND ");
-          queryToSql.buildFilter(join.getReferer(), params, refererAlias, sql, paramIdxIncrementer);
-        }
+        appendJoinFromReferer(joinQuery, sql, params, paramIdxIncrementer, join, seen);
       } else if (!seen.contains(join.getReferred())) {
-        seen.add(join.getReferred());
-
-        String refererAlias = join.getReferer().getAlias();
-
-        String referredTableName = querySpecificsResolver.getTableName(join.getReferred());
-        String referredAlias = join.getReferred().getAlias();
-
-        sql.append(referredTableName);
-        if (!referredTableName.equals(referredAlias)) {
-          sql.append(" AS ").append(referredAlias);
-        }
-        sql.append(" ON ")
-            .append(refererAlias)
-            .append(".")
-            .append(QueryToSqlMySqlImpl.snakeCase(join.getOtherIdGetterFieldName()))
-            .append(" = ")
-            .append(referredAlias)
-            .append(".id");
-
-        if (!join.getReferred().getConditions().isEmpty()
-            && joinQuery.getConditionsLocationForQuery(join.getReferred())
-                == ConditionsLocation.JOIN) {
-          sql.append(" AND ");
-          queryToSql.buildFilter(
-              join.getReferred(), params, referredAlias, sql, paramIdxIncrementer);
-        }
+        appendJoinFromReferred(joinQuery, sql, params, paramIdxIncrementer, join, seen);
       } else {
         throw new IllegalStateException("Failed to build JOINs -- Query was already seen");
       }
     }
   }
 
+  protected void appendJoinFromReferred(
+      JoinQuery<?, ?> joinQuery,
+      StringBuilder sql,
+      MapSqlParameterSource params,
+      ParamIdxIncrementer paramIdxIncrementer,
+      JoinQueryElement join,
+      Set<Query<?, ?>> seen) {
+
+    seen.add(join.getReferred());
+
+    String refererAlias = join.getReferer().getAlias();
+
+    String referredTableName = querySpecificsResolver.getTableName(join.getReferred());
+    String referredAlias = join.getReferred().getAlias();
+
+    sql.append(referredTableName);
+    if (!referredTableName.equals(referredAlias)) {
+      sql.append(" AS ").append(referredAlias);
+    }
+    sql.append(" ON ")
+        .append(refererAlias)
+        .append(".")
+        .append(QueryToSqlMySqlImpl.snakeCase(join.getOtherIdGetterFieldName()))
+        .append(" = ")
+        .append(referredAlias)
+        .append(".id");
+
+    if (!join.getReferred().getConditions().isEmpty()
+        && joinQuery.getConditionsLocationForQuery(join.getReferred()) == ConditionsLocation.JOIN) {
+      sql.append(" AND ");
+      queryToSql.buildFilter(join.getReferred(), params, referredAlias, sql, paramIdxIncrementer);
+    }
+  }
+
+  protected void appendJoinFromReferer(
+      JoinQuery<?, ?> joinQuery,
+      StringBuilder sql,
+      MapSqlParameterSource params,
+      ParamIdxIncrementer paramIdxIncrementer,
+      JoinQueryElement join,
+      Set<Query<?, ?>> seen) {
+
+    seen.add(join.getReferer());
+
+    String refererTableName = querySpecificsResolver.getTableName(join.getReferer());
+    String refererAlias = join.getReferer().getAlias();
+
+    String referredAlias = join.getReferred().getAlias();
+
+    sql.append(refererTableName);
+    if (!refererTableName.equals(refererAlias)) {
+      sql.append(" AS ").append(refererAlias);
+    }
+
+    sql.append(" ON ")
+        .append(refererAlias)
+        .append(".")
+        .append(QueryToSqlMySqlImpl.snakeCase(join.getOtherIdGetterFieldName()))
+        .append(" = ")
+        .append(referredAlias)
+        .append(".id");
+
+    if (!join.getReferer().getConditions().isEmpty()
+        && joinQuery.getConditionsLocationForQuery(join.getReferer()) == ConditionsLocation.JOIN) {
+      sql.append(" AND ");
+      queryToSql.buildFilter(join.getReferer(), params, refererAlias, sql, paramIdxIncrementer);
+    }
+  }
+
   @Override
-  public void appendWhereClause(
+  public boolean appendFieldConditionsToWhereClause(
       List<Query<?, ?>> queries,
       StringBuilder sql,
       MapSqlParameterSource params,
@@ -434,12 +457,61 @@ public class SqlBuilderCommonImpl implements SqlBuilder {
       queryToSql.buildFilter(query, params, query.getAlias(), sql, paramIdxIncrementer);
       added = true;
     }
+    return added;
+  }
+
+  protected boolean appendNotExistsToWhereClause(
+      List<JoinQueryElement> notExists,
+      boolean added,
+      StringBuilder sql,
+      MapSqlParameterSource params,
+      ParamIdxIncrementer paramIdxIncrementer) {
+
+    for (JoinQueryElement join : notExists) {
+      if (added) {
+        sql.append("\n\tAND ");
+      } else {
+        sql.append("\n\t");
+      }
+
+      sql.append("NOT EXISTS (SELECT 1 FROM ");
+
+      String refererTableName = querySpecificsResolver.getTableName(join.getReferer());
+      String refererAlias = join.getReferer().getAlias();
+
+      String referredAlias = join.getReferred().getAlias();
+
+      sql.append(refererTableName);
+      if (!refererTableName.equals(refererAlias)) {
+        sql.append(" AS ").append(refererAlias);
+      }
+      sql.append(" WHERE ")
+          .append(refererAlias)
+          .append(".")
+          .append(QueryToSqlMySqlImpl.snakeCase(join.getOtherIdGetterFieldName()))
+          .append(" = ")
+          .append(referredAlias)
+          .append(".id");
+
+      if (!join.getReferer().getConditions().isEmpty()) {
+        sql.append(" AND ");
+        queryToSql.buildFilter(
+            join.getReferer(), params, join.getReferer().getAlias(), sql, paramIdxIncrementer);
+      }
+      sql.append(")");
+
+      added = true;
+    }
+
+    return added;
   }
 
   protected String joinTypeToSql(JoinType joinType) {
     return switch (joinType) {
       case INNER -> "JOIN";
       case LEFT -> "LEFT JOIN";
+      case NOT_EXISTS ->
+          throw new IllegalArgumentException("NOT_EXISTS must not be used in this context");
     };
   }
 

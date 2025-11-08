@@ -44,7 +44,10 @@ public interface SqlBuilder {
       MapSqlParameterSource params,
       ParamIdxIncrementer paramIdxIncrementer);
 
-  void appendWhereClause(
+  /**
+   * @return true if added something
+   */
+  boolean appendFieldConditionsToWhereClause(
       List<Query<?, ?>> queries,
       StringBuilder sql,
       MapSqlParameterSource params,

@@ -181,7 +181,7 @@ public class SelectImpl<TId, TRow extends HasId<TId>> extends SelectTemplate
 
   protected EntityNotFoundException buildEntityNotFound() {
     StringBuilder sql = new StringBuilder();
-    sqlBuilder.appendWhereClause(
+    sqlBuilder.appendFieldConditionsToWhereClause(
         joinQuery.getQueries(), sql, new MapSqlParameterSource(), new ParamIdxIncrementer());
     return new EntityNotFoundException(
         querySpecificsResolver.getRowMessageCode(entityToSelect), "joinquery:" + sql);
