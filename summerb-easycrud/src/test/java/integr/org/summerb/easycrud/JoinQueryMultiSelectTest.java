@@ -204,6 +204,28 @@ public class JoinQueryMultiSelectTest extends JoinQueryTestAbstract {
   }
 
   @Test
+  void expectAliasedQueryWillBeAssimilatedOk() {
+    // GIVEN
+    createTestData();
+
+    Query<Long, PostRow> qPost = postRowService.query("ppp");
+
+    // WHEN
+    List<JoinedRow> results =
+        qPost
+            .toJoin()
+            .join(userRowService.query(), PostRow::getAuthorId)
+            .selectAll()
+            .findAll(OrderBy.Asc("ppp.title"));
+
+    // THEN
+    assertEquals(3, results.size());
+    assertEquals("env3", results.get(0).get(qPost).getTitle());
+    assertEquals("env4", results.get(1).get(qPost).getTitle());
+    assertEquals("env5", results.get(2).get(qPost).getTitle());
+  }
+
+  @Test
   void expectPaginationWorkCorrectly() {
     // GIVEN
     createTestData();

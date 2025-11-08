@@ -39,6 +39,12 @@ import org.summerb.methodCapturers.PropertyNameResolver;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
 import org.summerb.validation.ValidationException;
 
+// TODO: Teach Query to be smarter. I.e. if we know upfront that query would result in empty dataset
+//  (i.e. because we have AND condition with IN criteria with empty array) ==> do not throw any
+//  errors and exceptions, just return empty rows. This will make consumer code more concise
+
+// TODO: Add feature to JoinedRow to map to POJO using reflection (with caching of course)
+
 /**
  * This service is intended to be used with relatively simple Rows (DTO's). It implements simple
  * create-read-update-delete operations. Subclasses are welcome to extend this functionality if

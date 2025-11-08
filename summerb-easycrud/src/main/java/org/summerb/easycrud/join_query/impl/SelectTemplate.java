@@ -80,30 +80,33 @@ public class SelectTemplate {
 
       // Order by does not contain link to query or query is not ours.
       // Attempt to match field name with query
-      query = attemptMatch(order);
-
-      if (query == null) {
-        throw new IllegalArgumentException(
-            "Could not distinctively match orderBy on field "
-                + order.getFieldName()
-                + " to this join query");
-      }
-
-      OrderBy newOrder = new OrderBy(order.getFieldName(), order.getDirection(), query);
-      newOrder.setNullsLast(order.getNullsLast());
-      newOrder.setCollate(order.getCollate());
-      newArr[i] = newOrder;
+      newArr[i] = matchAndConvert(order);
     }
 
     return newArr != null ? newArr : orderBy;
   }
 
-  protected Query<?, ?> attemptMatch(OrderBy order) {
+  protected OrderBy matchAndConvert(OrderBy order) {
     int indexOfDot = order.getFieldName().indexOf(".");
     String alias = indexOfDot > 0 ? order.getFieldName().substring(0, indexOfDot) : null;
     String fieldName =
         indexOfDot > 0 ? order.getFieldName().substring(indexOfDot + 1) : order.getFieldName();
 
+    Query<?, ?> query = findQueryByAlias(alias, fieldName);
+    if (query == null) {
+      throw new IllegalArgumentException(
+          "Could not distinctively match orderBy on field "
+              + order.getFieldName()
+              + " to this join query");
+    }
+
+    OrderBy newOrder = new OrderBy(fieldName, order.getDirection(), query);
+    newOrder.setNullsLast(order.getNullsLast());
+    newOrder.setCollate(order.getCollate());
+    return newOrder;
+  }
+
+  protected Query<?, ?> findQueryByAlias(String alias, String fieldName) {
     if (alias == null) {
       if (isRowHasFieldWithGivenName(joinQuery.getPrimaryQuery(), fieldName)) {
         return joinQuery.getPrimaryQuery();
@@ -119,7 +122,6 @@ public class SelectTemplate {
         return query;
       }
     }
-
     return null;
   }
 

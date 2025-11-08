@@ -48,7 +48,6 @@ public class SqlBuilderPostgresImpl extends SqlBuilderCommonImpl {
       List<ColumnsSelection> outColumns) {
 
     boolean hasOrderBy = orderBy != null && orderBy.length > 0;
-    boolean assumingMultipleQueries = optionalJoinQuery != null;
     boolean orderByExpectedToHaveLinkToQuery = optionalJoinQuery != null;
 
     if (!wildcardAllowed) {
@@ -82,14 +81,6 @@ public class SqlBuilderPostgresImpl extends SqlBuilderCommonImpl {
           selectAsPrefixedAliasedNames,
           outSql,
           outColumns);
-    }
-
-    if (!hasOrderBy) {
-      return;
-    }
-
-    if (!assumingMultipleQueries) {
-      return;
     }
   }
 
@@ -131,11 +122,16 @@ public class SqlBuilderPostgresImpl extends SqlBuilderCommonImpl {
     }
 
     // Append such columns to sql
+    outSql.append(",\n\t");
     Multimap<Query<?, ?>, SelectedColumn> additionalColumns = ArrayListMultimap.create();
-    for (OrderBy orderByFromOtherTable : orderByFromOtherTables) {
+    for (int i = 0; i < orderByFromOtherTables.size(); i++) {
+      OrderBy orderByFromOtherTable = orderByFromOtherTables.get(i);
       Query<?, ?> otherQuery = OrderByQueryResolver.get(orderByFromOtherTable);
 
-      outSql.append(", ");
+      if (i > 0) {
+        outSql.append(", ");
+      }
+
       SelectedColumn selectedColumn =
           appendColumnSelection(
               optionalJoinQuery,
