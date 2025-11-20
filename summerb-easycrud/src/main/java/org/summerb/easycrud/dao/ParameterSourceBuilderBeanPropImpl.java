@@ -28,7 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
-import org.springframework.jdbc.core.StatementCreatorUtils;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.util.StringUtils;
@@ -59,8 +58,6 @@ public class ParameterSourceBuilderBeanPropImpl<TRow> implements ParameterSource
   protected Map<String, String> mapLowerCaseToPropertyName;
   protected LoadingCache<String, String> columnNameToFieldNameCache;
   protected LoadingCache<String, SqlTypeOverride> fieldNameToOverrideCache;
-  protected LoadingCache<String, Boolean> columnNameToHasValueCache;
-  protected LoadingCache<String, Integer> fieldNameToSqlType;
   protected String[] propertyNames;
 
   public ParameterSourceBuilderBeanPropImpl(SqlTypeOverrides overrides, Class<TRow> rowClazz) {
@@ -71,9 +68,7 @@ public class ParameterSourceBuilderBeanPropImpl<TRow> implements ParameterSource
 
     beanWrapper = buildBeanWrapper(rowClazz);
     fieldNameToOverrideCache = buildFieldNameToOverrideCache();
-    columnNameToHasValueCache = buildColumnNameToHasValueCache();
     columnNameToFieldNameCache = buildColumnNameToFieldNameCache();
-    fieldNameToSqlType = buildFieldNameToSqlTypeCache();
 
     readableProperties = buildReadableProperties();
     mapLowerCaseToPropertyName =
@@ -102,16 +97,8 @@ public class ParameterSourceBuilderBeanPropImpl<TRow> implements ParameterSource
     return ret;
   }
 
-  protected LoadingCache<String, Integer> buildFieldNameToSqlTypeCache() {
-    return CacheBuilder.newBuilder().build(buildFieldNameToSqlTypeCacheLoader());
-  }
-
   protected LoadingCache<String, String> buildColumnNameToFieldNameCache() {
     return CacheBuilder.newBuilder().build(buildColumnNameToFieldNameCacheLoader());
-  }
-
-  protected LoadingCache<String, Boolean> buildColumnNameToHasValueCache() {
-    return CacheBuilder.newBuilder().build(buildColumnNameToHasValueCacheLoader());
   }
 
   protected LoadingCache<String, SqlTypeOverride> buildFieldNameToOverrideCache() {
@@ -121,85 +108,60 @@ public class ParameterSourceBuilderBeanPropImpl<TRow> implements ParameterSource
   @Override
   public SqlParameterSource buildParameterSource(TRow row) {
     return new BeanPropertySqlParameterSourceEx<>(
-        row,
-        columnNameToFieldNameCache,
-        columnNameToHasValueCache,
-        fieldNameToOverrideCache,
-        fieldNameToSqlType,
-        propertyNames);
+        row, columnNameToFieldNameCache, fieldNameToOverrideCache, propertyNames);
   }
 
   protected CacheLoader<? super String, String> buildColumnNameToFieldNameCacheLoader() {
     return new CacheLoader<>() {
       @Override
       public String load(String column) {
-        if (readableProperties.contains(column)) {
-          return column;
-        }
-
-        String lowerCaseName = column.toLowerCase();
-        if (readableProperties.contains(lowerCaseName)) {
-          return lowerCaseName;
-        }
-
-        String propertyName = JdbcUtils.convertUnderscoreNameToPropertyName(column);
-        if (readableProperties.contains(propertyName)) {
-          return propertyName;
-        }
-
-        String fieldName = mapLowerCaseToPropertyName.get(lowerCaseName);
-        if (fieldName != null) {
-          return fieldName;
-        }
-
-        log.error("Column {} could not be mapped to field name of {}", column, rowClazz);
-        return COLUMN_NOT_MAPPED;
+        return columnNameToFieldName(column);
       }
     };
+  }
+
+  protected String columnNameToFieldName(String column) {
+    if (readableProperties.contains(column)) {
+      return column;
+    }
+
+    String lowerCaseName = column.toLowerCase();
+    if (readableProperties.contains(lowerCaseName)) {
+      return lowerCaseName;
+    }
+
+    String propertyName = JdbcUtils.convertUnderscoreNameToPropertyName(column);
+    if (readableProperties.contains(propertyName)) {
+      return propertyName;
+    }
+
+    String fieldName = mapLowerCaseToPropertyName.get(lowerCaseName);
+    if (fieldName != null) {
+      return fieldName;
+    }
+
+    log.error("Column {} could not be mapped to field name of {}", column, rowClazz);
+    return COLUMN_NOT_MAPPED;
   }
 
   protected CacheLoader<String, SqlTypeOverride> buildFieldNameToOverrideCacheLoader() {
     return new CacheLoader<>() {
       @Override
       public SqlTypeOverride load(String fieldName) {
-        Class<?> fieldType = beanWrapper.getPropertyType(fieldName);
-
-        SqlTypeOverride override = overrides.findOverrideForClass(fieldType);
-        if (override != null) {
-          return override;
-        }
-
-        return NO_OVERRIDE;
+        return fieldNameToOverride(fieldName);
       }
     };
   }
 
-  protected CacheLoader<String, Boolean> buildColumnNameToHasValueCacheLoader() {
-    return new CacheLoader<>() {
-      @Override
-      public Boolean load(String columnName) {
-        return !COLUMN_NOT_MAPPED.equals(columnNameToFieldNameCache.getUnchecked(columnName));
-      }
-    };
-  }
+  protected SqlTypeOverride fieldNameToOverride(String fieldName) {
+    Class<?> fieldType = beanWrapper.getPropertyType(fieldName);
 
-  // TODO: Why another method?? Why don't just use fieldNameToOverrideCache ??
-  // TODO: Also, do not suggest to override whole cache loader, just override loading method itself
-  //  to make overriding capable of reusing base implementation
-  protected CacheLoader<? super String, Integer> buildFieldNameToSqlTypeCacheLoader() {
-    return new CacheLoader<>() {
-      @Override
-      public Integer load(String fieldName) {
-        Class<?> fieldType = beanWrapper.getPropertyType(fieldName);
+    SqlTypeOverride override = overrides.findOverrideForClass(fieldType);
+    if (override != null) {
+      return override;
+    }
 
-        SqlTypeOverride override = overrides.findOverrideForClass(fieldType);
-        if (override != null) {
-          return override.getSqlType();
-        }
-
-        return StatementCreatorUtils.javaTypeToSqlParameterType(fieldType);
-      }
-    };
+    return NO_OVERRIDE;
   }
 
   public SqlTypeOverrides getOverrides() {

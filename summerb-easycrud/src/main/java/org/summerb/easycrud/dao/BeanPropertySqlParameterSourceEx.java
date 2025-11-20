@@ -1,6 +1,7 @@
 package org.summerb.easycrud.dao;
 
 import static org.summerb.easycrud.dao.ParameterSourceBuilderBeanPropImpl.COLUMN_NOT_MAPPED;
+import static org.summerb.easycrud.dao.ParameterSourceBuilderBeanPropImpl.NO_OVERRIDE;
 
 import com.google.common.cache.LoadingCache;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -16,22 +17,16 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 public class BeanPropertySqlParameterSourceEx<TRow> extends BeanPropertySqlParameterSource {
   protected LoadingCache<String, String> columnNameToFieldNameCache;
   protected LoadingCache<String, SqlTypeOverride> fieldNameToOverrideCache;
-  protected LoadingCache<String, Boolean> columnNameToHasValueCache;
-  protected LoadingCache<String, Integer> fieldNameToSqlType;
   protected final String[] propertyNames;
 
   public BeanPropertySqlParameterSourceEx(
       TRow row,
       LoadingCache<String, String> columnNameToFieldNameCache,
-      LoadingCache<String, Boolean> columnNameToHasValueCache,
       LoadingCache<String, SqlTypeOverride> fieldNameToOverrideCache,
-      LoadingCache<String, Integer> fieldNameToSqlType,
       String[] propertyNames) {
     super(row);
     this.columnNameToFieldNameCache = columnNameToFieldNameCache;
     this.fieldNameToOverrideCache = fieldNameToOverrideCache;
-    this.columnNameToHasValueCache = columnNameToHasValueCache;
-    this.fieldNameToSqlType = fieldNameToSqlType;
     this.propertyNames = propertyNames;
   }
 
@@ -47,7 +42,7 @@ public class BeanPropertySqlParameterSourceEx<TRow> extends BeanPropertySqlParam
 
   @Override
   public boolean hasValue(String columnName) {
-    return columnNameToHasValueCache.getUnchecked(columnName);
+    return !COLUMN_NOT_MAPPED.equals(columnNameToFieldNameCache.getUnchecked(columnName));
   }
 
   @Override
@@ -78,6 +73,11 @@ public class BeanPropertySqlParameterSourceEx<TRow> extends BeanPropertySqlParam
       return TYPE_UNKNOWN;
     }
 
-    return fieldNameToSqlType.getUnchecked(fieldName);
+    SqlTypeOverride override = fieldNameToOverrideCache.getUnchecked(fieldName);
+    if (NO_OVERRIDE.equals(override)) {
+      return TYPE_UNKNOWN;
+    }
+
+    return override.getSqlType();
   }
 }
