@@ -161,8 +161,7 @@ public class ScaffoldedQueryMethodImpl<TMethodParameter extends ScaffoldedMethod
   }
 
   protected RowMapper<?> guessRowMapper(Class<?> returnType, Class<?> enclosingType) {
-    if (isPrimitive(
-        returnType)) { // TODO: Check if conversion can be handled by ConversionService ??
+    if (isPrimitive(returnType)) {
       return new SingleColumnRowMapper<>(returnType);
     }
 
