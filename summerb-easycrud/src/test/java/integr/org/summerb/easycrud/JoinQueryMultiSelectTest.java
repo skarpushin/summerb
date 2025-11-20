@@ -16,6 +16,7 @@ import integr.org.summerb.easycrud.dtos.PostRow;
 import integr.org.summerb.easycrud.dtos.UserRow;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.annotation.ProfileValueSourceConfiguration;
@@ -43,11 +44,19 @@ import org.summerb.utils.easycrud.api.dto.PaginatedList;
 @Transactional
 public class JoinQueryMultiSelectTest extends JoinQueryTestAbstract {
 
+  private boolean testDataCreated;
+
+  @BeforeEach
+  public void setUp() {
+    if (!testDataCreated) {
+      testDataCreated = true;
+      createTestData();
+    }
+  }
+
   @Test
   public void expectOrderingWorks() {
     // GIVEN
-    createTestData();
-
     Query<Long, CommentRow> qComment = commentRowService.query();
     Query<Long, PostRow> qPost = postRowService.query().eq(PostRow::getTitle, "env4");
 
@@ -81,8 +90,6 @@ public class JoinQueryMultiSelectTest extends JoinQueryTestAbstract {
   @Test
   public void expectEmptyResultsWhenInnerJoinedTableHasNoMatches() {
     // GIVEN
-    createTestData();
-
     Query<String, UserRow> qUser = userRowService.query().eq(UserRow::getName, "bba");
     assertEquals(1, qUser.count());
 
@@ -95,9 +102,7 @@ public class JoinQueryMultiSelectTest extends JoinQueryTestAbstract {
 
   @Test
   public void expectEmptyResultsWhenPrimaryTableFromInnerJoinHasNoMatches() {
-    // GIVEN
-    createTestData();
-
+    // GIVEN - test data (created before tests)
     // WHEN
     List<JoinedRow> results =
         userRowService
@@ -119,8 +124,6 @@ public class JoinQueryMultiSelectTest extends JoinQueryTestAbstract {
     }
 
     // GIVEN
-    createTestData();
-
     Query<String, UserRow> qUser = userRowService.query().between(UserRow::getKarma, 5, 10);
     Query<Long, PostRow> qPost = postRowService.query();
     JoinedSelect select = qPost.toJoin().join(qUser, PostRow::getAuthorId).selectAll();
@@ -171,8 +174,6 @@ public class JoinQueryMultiSelectTest extends JoinQueryTestAbstract {
     }
 
     // GIVEN
-    createTestData();
-
     Query<String, UserRow> qUser = userRowService.query().between(UserRow::getKarma, 5, 10);
     Query<Long, PostRow> qPost = postRowService.query();
     JoinedSelect selectPosts = qUser.toJoin().joinBack(qPost, PostRow::getAuthorId).selectAll();
@@ -206,8 +207,6 @@ public class JoinQueryMultiSelectTest extends JoinQueryTestAbstract {
   @Test
   void expectAliasedQueryWillBeAssimilatedOk() {
     // GIVEN
-    createTestData();
-
     Query<Long, PostRow> qPost = postRowService.query("ppp");
 
     // WHEN
@@ -228,8 +227,6 @@ public class JoinQueryMultiSelectTest extends JoinQueryTestAbstract {
   @Test
   void expectPaginationWorkCorrectly() {
     // GIVEN
-    createTestData();
-
     Query<Long, PostRow> qPost = postRowService.query();
     Query<Long, CommentRow> qComment = commentRowService.query().ne(CommentRow::getComment, "CCC");
     JoinedSelect select = qComment.toJoin().join(qPost).selectAll();
@@ -281,8 +278,6 @@ public class JoinQueryMultiSelectTest extends JoinQueryTestAbstract {
 
   @Test
   void expectInnerJoinToReturnOnlyRecordsWhichHaveReferencesNotNull() {
-    createTestData();
-
     // GIVEN
     Query<Long, PostRow> qPost = postRowService.query();
 
@@ -302,8 +297,6 @@ public class JoinQueryMultiSelectTest extends JoinQueryTestAbstract {
 
   @Test
   void expectFindAndGetOneWorkCorrectly() {
-    createTestData();
-
     // GIVEN
     Query<Long, PostRow> qPost = postRowService.query();
 
@@ -343,9 +336,7 @@ public class JoinQueryMultiSelectTest extends JoinQueryTestAbstract {
 
   @Test
   void expectFindFirstFindsResults() {
-    // GIVEN
-    createTestData();
-
+    // GIVEN - test data (created before tests)
     // WHEN
     Query<Long, PostRow> qPost = postRowService.query();
     Query<String, UserRow> qUser = userRowService.query().between(UserRow::getKarma, 10, 15);
@@ -360,9 +351,7 @@ public class JoinQueryMultiSelectTest extends JoinQueryTestAbstract {
 
   @Test
   void expectFindFirstFindsNothing() {
-    // GIVEN
-    createTestData();
-
+    // GIVEN - test data (created before tests)
     // WHEN
     Query<Long, PostRow> qPost = postRowService.query();
     Query<String, UserRow> qUser = userRowService.query().between(UserRow::getKarma, 30, 45);
@@ -375,9 +364,7 @@ public class JoinQueryMultiSelectTest extends JoinQueryTestAbstract {
 
   @Test
   void expectGetFirstGetsResults() {
-    // GIVEN
-    createTestData();
-
+    // GIVEN - test data (created before tests)
     // WHEN
     Query<Long, PostRow> qPost = postRowService.query();
     Query<String, UserRow> qUser = userRowService.query().between(UserRow::getKarma, 10, 15);
@@ -391,9 +378,7 @@ public class JoinQueryMultiSelectTest extends JoinQueryTestAbstract {
 
   @Test
   void expectGetFirstGetsNothing() {
-    // GIVEN
-    createTestData();
-
+    // GIVEN - test data (created before tests)
     // WHEN
     Query<Long, PostRow> qPost = postRowService.query();
     Query<String, UserRow> qUser = userRowService.query().between(UserRow::getKarma, 30, 45);
@@ -407,9 +392,7 @@ public class JoinQueryMultiSelectTest extends JoinQueryTestAbstract {
 
   @Test
   void expectGetAllWorks() {
-    // GIVEN
-    createTestData();
-
+    // GIVEN - test data (created before tests)
     // WHEN
     Query<String, UserRow> qUser = userRowService.query();
     Query<Long, PostRow> qPost = postRowService.query();
@@ -434,9 +417,7 @@ public class JoinQueryMultiSelectTest extends JoinQueryTestAbstract {
 
   @Test
   void expectJoin3TablesWorksOk() {
-    // GIVEN
-    createTestData();
-
+    // GIVEN - test data (created before tests)
     // WHEN
     Query<Long, CommentRow> qComment = commentRowService.query();
     Query<Long, PostRow> qPost = postRowService.query();
@@ -475,9 +456,7 @@ public class JoinQueryMultiSelectTest extends JoinQueryTestAbstract {
 
   @Test
   void expectParsedOrderByWorksAsExpected() {
-    // GIVEN
-    createTestData();
-
+    // GIVEN - test data (created before tests)
     // WHEN
     Query<Long, CommentRow> qComment = commentRowService.query();
     Query<Long, PostRow> qPost = postRowService.query();
@@ -508,8 +487,6 @@ public class JoinQueryMultiSelectTest extends JoinQueryTestAbstract {
   @Test
   void expectExceptionIfAttemptingToSelectQueryThatIsNotInTheJoin() {
     // GIVEN
-    createTestData();
-
     // WHEN / THEN
     assertThrows(
         IllegalArgumentException.class,
@@ -524,8 +501,6 @@ public class JoinQueryMultiSelectTest extends JoinQueryTestAbstract {
   @Test
   void expectExceptionStrategyUsed() {
     // GIVEN
-    createTestData();
-
     // WHEN / THEN
     try {
       commentRowService.query().toJoin().join(userRowService.query()).selectAll().findOne();
@@ -539,8 +514,6 @@ public class JoinQueryMultiSelectTest extends JoinQueryTestAbstract {
   @Test
   void expectLeftJoinReturnsAllLeftTableRecordsEvenWhenNoMatchesOnRight() {
     // GIVEN
-    createTestData();
-
     Query<String, UserRow> qUser = userRowService.query();
     Query<Long, PostRow> qPost = postRowService.query();
 
@@ -565,8 +538,6 @@ public class JoinQueryMultiSelectTest extends JoinQueryTestAbstract {
   @Test
   void expectLeftJoinBackReturnsAllRightTableRecords() {
     // GIVEN
-    createTestData();
-
     Query<Long, PostRow> qPost = postRowService.query().ge(PostRow::getLikes, 4);
     Query<String, UserRow> qUser = userRowService.query();
 
@@ -586,8 +557,6 @@ public class JoinQueryMultiSelectTest extends JoinQueryTestAbstract {
   @Test
   void expectComplexJoinCombinationWithMultipleLeftJoins() {
     // GIVEN
-    createTestData();
-
     Query<Long, PostRow> qPost = postRowService.query();
     Query<String, UserRow> qPinnedBy = userRowService.query();
     Query<Long, CommentRow> qComment = commentRowService.query();
@@ -622,8 +591,6 @@ public class JoinQueryMultiSelectTest extends JoinQueryTestAbstract {
   @Test
   void expectLeftJoinBetweenNonPrimaryTablesWorks() {
     // GIVEN
-    createTestData();
-
     Query<Long, CommentRow> qComment = commentRowService.query();
     Query<Long, PostRow> qPost = postRowService.query();
     Query<String, UserRow> qUser = userRowService.query();
@@ -648,9 +615,7 @@ public class JoinQueryMultiSelectTest extends JoinQueryTestAbstract {
 
   @Test
   void expectJoinedSelectSmokeTestWorks() {
-    // GIVEN
-    createTestData();
-
+    // GIVEN - test data (created before tests)
     // WHEN
     Query<Long, PostRow> qPost = postRowService.query();
     Query<String, UserRow> qUser = userRowService.query();
@@ -677,9 +642,7 @@ public class JoinQueryMultiSelectTest extends JoinQueryTestAbstract {
 
   @Test
   void expectNullsReturnedGracefullyOnLeftJoins() {
-    // GIVEN
-    createTestData();
-
+    // GIVEN - test data (created before tests)
     // WHEN
     Query<Long, PostRow> qPost = postRowService.query();
     Query<String, UserRow> qUser = userRowService.query().ge(UserRow::getKarma, 10);

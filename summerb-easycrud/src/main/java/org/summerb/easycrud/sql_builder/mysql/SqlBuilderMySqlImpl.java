@@ -7,6 +7,7 @@ import org.summerb.easycrud.query.Query;
 import org.summerb.easycrud.sql_builder.FieldsEnlister;
 import org.summerb.easycrud.sql_builder.OrderByToSql;
 import org.summerb.easycrud.sql_builder.QueryToSql;
+import org.summerb.easycrud.sql_builder.impl.SqlBuilderCommonImpl;
 import org.summerb.easycrud.sql_builder.model.FromAndWhere;
 import org.summerb.easycrud.sql_builder.model.QueryData;
 import org.summerb.utils.easycrud.api.dto.PagerParams;

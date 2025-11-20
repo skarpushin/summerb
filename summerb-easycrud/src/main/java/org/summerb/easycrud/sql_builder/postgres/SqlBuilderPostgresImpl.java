@@ -16,10 +16,10 @@ import org.summerb.easycrud.row.HasId;
 import org.summerb.easycrud.sql_builder.FieldsEnlister;
 import org.summerb.easycrud.sql_builder.OrderByToSql;
 import org.summerb.easycrud.sql_builder.QueryToSql;
+import org.summerb.easycrud.sql_builder.impl.SqlBuilderCommonImpl;
 import org.summerb.easycrud.sql_builder.model.ColumnsSelection;
 import org.summerb.easycrud.sql_builder.model.SelectedColumn;
 import org.summerb.easycrud.sql_builder.mysql.QueryToSqlMySqlImpl;
-import org.summerb.easycrud.sql_builder.mysql.SqlBuilderCommonImpl;
 
 public class SqlBuilderPostgresImpl extends SqlBuilderCommonImpl {
 
@@ -163,7 +163,7 @@ public class SqlBuilderPostgresImpl extends SqlBuilderCommonImpl {
       }
 
       if (outColumn.isWildcardAdded()) {
-        return true; // TODO: Add test for this fix
+        return true;
       }
 
       if (CollectionUtils.isEmpty(outColumn.getColumns())) {

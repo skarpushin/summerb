@@ -1,4 +1,4 @@
-package org.summerb.easycrud.sql_builder.mysql;
+package org.summerb.easycrud.sql_builder.impl;
 
 import com.google.common.base.Preconditions;
 import java.util.ArrayList;
@@ -24,11 +24,11 @@ import org.summerb.easycrud.sql_builder.FieldsEnlister;
 import org.summerb.easycrud.sql_builder.OrderByToSql;
 import org.summerb.easycrud.sql_builder.QueryToSql;
 import org.summerb.easycrud.sql_builder.SqlBuilder;
-import org.summerb.easycrud.sql_builder.impl.ParamIdxIncrementer;
 import org.summerb.easycrud.sql_builder.model.ColumnsSelection;
 import org.summerb.easycrud.sql_builder.model.FromAndWhere;
 import org.summerb.easycrud.sql_builder.model.QueryData;
 import org.summerb.easycrud.sql_builder.model.SelectedColumn;
+import org.summerb.easycrud.sql_builder.mysql.QueryToSqlMySqlImpl;
 import org.summerb.utils.easycrud.api.dto.PagerParams;
 
 public class SqlBuilderCommonImpl implements SqlBuilder {
