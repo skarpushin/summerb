@@ -56,7 +56,7 @@ public class JoinQueryImpl<TId, TRow extends HasId<TId>> implements JoinQuery<TI
 
   /** Conditions locations */
   protected Map<Query<?, ?>, ConditionsLocation> mapQueryToConditionLocation =
-      new IdentityHashMap<>(); // TODO: Add test for that fix
+      new IdentityHashMap<>();
 
   /** Joins and their conditions */
   protected List<JoinQueryElement> joins = new LinkedList<>();
