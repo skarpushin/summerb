@@ -175,8 +175,8 @@ public class EasyCrudServiceWrapper<
   }
 
   @Override
-  public int count(Query<TId, TRow> query) {
-    return actual.count(query);
+  public int count(Query<TId, TRow> optionalQuery) {
+    return actual.count(optionalQuery);
   }
 
   @Override

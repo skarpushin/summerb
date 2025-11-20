@@ -468,6 +468,10 @@ public class SqlBuilderCommonImpl implements SqlBuilder {
       ParamIdxIncrementer paramIdxIncrementer) {
 
     for (JoinQueryElement join : notExists) {
+      if (join.getReferer().isGuaranteedToYieldEmptyResultset()) {
+        continue;
+      }
+
       if (added) {
         sql.append("\n\tAND ");
       } else {

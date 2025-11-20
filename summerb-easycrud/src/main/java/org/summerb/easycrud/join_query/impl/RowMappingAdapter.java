@@ -59,7 +59,8 @@ public class RowMappingAdapter implements ResultSet, ResultSetMetaData {
     Preconditions.checkArgument(
         columnsSelection.getQuery() != null, "columnsSelection.query is required");
     Preconditions.checkArgument(
-        !CollectionUtils.isEmpty(columnsSelection.getColumns()),
+        !CollectionUtils.isEmpty(columnsSelection.getColumns())
+            || columnsSelection.isWildcardAdded(),
         "columnsSelection.columns is required");
     Preconditions.checkArgument(rowMapper != null, "rowMapper is required");
 
@@ -77,6 +78,27 @@ public class RowMappingAdapter implements ResultSet, ResultSetMetaData {
   }
 
   protected void buildMappingData() {
+    if (columnsSelection.isWildcardAdded()) {
+      buildMappingDataForWildcardSelection();
+    } else {
+      buildMappingDataForExplicitlySelectedColumns();
+    }
+  }
+
+  protected void buildMappingDataForWildcardSelection() {
+    for (int i = 0; i < physicalColumnLabels.size(); i++) {
+      String physicalColumnLabel = physicalColumnLabels.get(i);
+
+      if (physicalColumnLabel != null) {
+        logicalColumnIdToPhysical.put(i + 1, i + 1);
+        logicalColumnIdToLogicalName.put(i + 1, physicalColumnLabel);
+        logicalColumnNameToPhysicalLabel.put(physicalColumnLabel, physicalColumnLabel);
+        logicalNameToLogicalId.put(physicalColumnLabel, i + 1);
+      }
+    }
+  }
+
+  protected void buildMappingDataForExplicitlySelectedColumns() {
     List<SelectedColumn> selectedColumns = columnsSelection.getColumns();
     for (int i = 0; i < selectedColumns.size(); i++) {
       SelectedColumn selectedColumn = selectedColumns.get(i);

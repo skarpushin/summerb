@@ -415,6 +415,46 @@ public abstract class GenericCrudServiceTestTemplate {
   }
 
   @Test
+  public void testQueryWithEmptyInWillReturnEmptyResultset() {
+    createTestData();
+
+    // `in` is empty
+    EasyCrudService<String, UserRow> service = getUserRowService();
+    List<UserRow> result = service.findAll(service.query().in(UserRow::getKarma, List.of()));
+    assertEquals(0, result.size());
+
+    // we have or with one empty `in`
+    result =
+        service
+            .query()
+            .or(
+                service.query().in(UserRow::getKarma, List.of()),
+                service.query().ne(UserRow::getKarma, 1))
+            .findAll(service.orderBy(UserRow::getKarma).asc());
+    assertEquals(2, result.size());
+    assertEquals(5, result.get(0).getKarma());
+    assertEquals(10, result.get(1).getKarma());
+
+    // we have `or` with all `in` queries empty
+    result =
+        service
+            .query()
+            .or(
+                service.query().in(UserRow::getKarma, List.of()),
+                service.query().in(UserRow::getAbout, null))
+            .findAll(service.orderBy(UserRow::getKarma).asc());
+    assertEquals(0, result.size());
+
+    // also test notIn with empty argument
+    result =
+        service
+            .query()
+            .notIn(UserRow::getKarma, List.of())
+            .findAll(service.orderBy(UserRow::getKarma).asc());
+    assertEquals(3, result.size());
+  }
+
+  @Test
   public void testFindByQueryNumberNotIn() {
     createTestData();
 

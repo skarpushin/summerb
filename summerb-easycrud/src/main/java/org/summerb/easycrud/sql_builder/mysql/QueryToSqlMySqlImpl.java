@@ -117,14 +117,24 @@ public class QueryToSqlMySqlImpl implements QueryToSql {
         sb.append(buildCondition((FieldCondition) r, params, paramIdx, alias));
       } else if (r instanceof DisjunctionCondition dc) {
         sb.append("(");
+        boolean added = false;
         for (int j = 0; j < dc.getQueries().size(); j++) {
-          if (j > 0) {
+          Query orQuery = (Query) dc.getQueries().get(j);
+          if (orQuery.isGuaranteedToYieldEmptyResultset()) {
+            continue;
+          }
+          if (added) {
             sb.append(" OR (");
           } else {
             sb.append("(");
           }
-          buildFilter((Query) dc.getQueries().get(j), alias, params, paramIdx, sb);
+          buildFilter(orQuery, alias, params, paramIdx, sb);
+          added = true;
           sb.append(")");
+        }
+        if (!added) {
+          throw new IllegalStateException(
+              "It shouldn't have come to a moment when OR clause with all Queries with isGuaranteedToYieldEmptyResultset() == true is being translated to SQL");
         }
         sb.append(")");
       } else {

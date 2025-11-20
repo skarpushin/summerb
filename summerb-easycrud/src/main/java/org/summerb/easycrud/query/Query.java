@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -59,6 +60,8 @@ public class Query<TId, TRow extends HasId<TId>> {
   protected String alias;
 
   protected final List<Condition> conditions = new LinkedList<>();
+
+  protected boolean guaranteedToYieldEmptyResultset = false;
 
   public Query(EasyCrudService<TId, TRow> service) {
     Preconditions.checkArgument(service != null, "service required");
@@ -166,6 +169,32 @@ public class Query<TId, TRow extends HasId<TId>> {
   public void add(Function<TRow, ?> getter, Restriction restriction) {
     String fieldName = name(getter);
     add(fieldName, restriction);
+  }
+
+  /**
+   * In some cases it possible for Query to know upfront that execution of such a query will yield
+   * no results. I.e. in the case when `in` clause was added with empty collection. In such a case
+   * we want to avoid executing the request because it will just throw exception, demanding IN
+   * clause to be used together with non-empty collection. And while JDBC will throw such exception,
+   * for SQL it is totally normal to have `IN SELECT ...`, where SELECT returns empty resultset. So
+   * we want to also allow client code to be a bit cleaner so that it doesn't have to check if the
+   * collection is empty before using `in` clause.
+   */
+  public boolean isGuaranteedToYieldEmptyResultset() {
+    if (guaranteedToYieldEmptyResultset) {
+      return true;
+    }
+
+    for (Condition condition : conditions) {
+      if (!(condition instanceof DisjunctionCondition<?, ?> disj)) {
+        continue;
+      }
+      if (disj.queries.stream().allMatch(Query::isGuaranteedToYieldEmptyResultset)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   /**
@@ -445,15 +474,17 @@ public class Query<TId, TRow extends HasId<TId>> {
     return in(fieldName, values);
   }
 
-  public Query<TId, TRow> in(String fieldName, Collection<?> values) {
-    Preconditions.checkArgument(
-        !CollectionUtils.isEmpty(values), "'in' constraint requires non-empty collection");
-
+  public Query<TId, TRow> in(String fieldName, Collection<?> valuesPassed) {
+    Collection<?> values = valuesPassed == null ? Set.of() : valuesPassed;
     if (values.size() == 1) {
       add(fieldName, new Equals(values.iterator().next()));
     } else {
       add(fieldName, new In(values));
+      if (values.isEmpty()) {
+        guaranteedToYieldEmptyResultset = true;
+      }
     }
+
     return this;
   }
 
@@ -467,13 +498,19 @@ public class Query<TId, TRow extends HasId<TId>> {
 
   public <TSource> Query<TId, TRow> notIn(
       String fieldName, Collection<TSource> sourceCollection, Function<TSource, ?> valueExtractor) {
-    List<?> values = sourceCollection.stream().map(valueExtractor).toList();
+    List<?> values =
+        sourceCollection == null
+            ? List.of()
+            : sourceCollection.stream().map(valueExtractor).toList();
     return notIn(fieldName, values);
   }
 
   public Query<TId, TRow> notIn(String fieldName, Collection<?> values) {
-    Preconditions.checkArgument(
-        !CollectionUtils.isEmpty(values), "'notIn' constraint requires non-empty collection");
+    if (CollectionUtils.isEmpty(values)) {
+      // NOTE: When we have notIn clause with the empty collection, it effectively means that
+      // filtering is NOT applied to that field
+      return this;
+    }
 
     if (values.size() == 1) {
       add(fieldName, new Equals(values.iterator().next()).not());

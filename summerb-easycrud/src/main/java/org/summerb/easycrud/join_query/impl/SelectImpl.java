@@ -77,6 +77,10 @@ public class SelectImpl<TId, TRow extends HasId<TId>> extends SelectTemplate
   public PaginatedList<TRow> find(PagerParams pagerParams, OrderBy... orderBy) {
     try {
       Preconditions.checkArgument(pagerParams != null, "PagerParams is a must");
+      if (isGuaranteedToYieldEmptyResultset()) {
+        return new PaginatedList<>(pagerParams, List.of(), 0);
+      }
+
       EasyCrudWireTap<TRow> wireTap = querySpecificsResolver.getWireTap(entityToSelect);
 
       boolean requiresOnRead = wireTap.requiresOnRead();
@@ -132,6 +136,10 @@ public class SelectImpl<TId, TRow extends HasId<TId>> extends SelectTemplate
   @Override
   public List<TRow> findPage(PagerParams pagerParams, OrderBy... orderBy) {
     try {
+      if (isGuaranteedToYieldEmptyResultset()) {
+        return List.of();
+      }
+
       Preconditions.checkArgument(pagerParams != null, "PagerParams is a must");
       EasyCrudWireTap<TRow> wireTap = querySpecificsResolver.getWireTap(entityToSelect);
 
@@ -155,6 +163,10 @@ public class SelectImpl<TId, TRow extends HasId<TId>> extends SelectTemplate
 
   @Override
   public int count() {
+    if (isGuaranteedToYieldEmptyResultset()) {
+      return 0;
+    }
+
     FromAndWhere fromAndWhere = sqlBuilder.fromAndWhere(joinQuery);
     QueryData countQueryData = sqlBuilder.countForJoinedQuery(fromAndWhere, joinQuery);
     return jdbc.queryForInt(countQueryData.getSql(), countQueryData.getParams());

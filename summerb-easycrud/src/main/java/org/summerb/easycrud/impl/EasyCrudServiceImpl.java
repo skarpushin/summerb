@@ -342,6 +342,9 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
   public int deleteByQuery(Query<TId, TRow> query) throws NotAuthorizedException {
     try {
       Preconditions.checkArgument(query != null);
+      if (query.isGuaranteedToYieldEmptyResultset()) {
+        return 0;
+      }
 
       boolean requiresOnDeleteMultiple = wireTap.requiresOnDeleteMultiple();
       EasyCrudWireTapMode requiresOnDelete = wireTap.requiresOnDelete();
@@ -441,6 +444,10 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
   public TRow findOneByQuery(Query<TId, TRow> query) throws NotAuthorizedException {
     try {
       Preconditions.checkArgument(query != null);
+      if (query.isGuaranteedToYieldEmptyResultset()) {
+        return null;
+      }
+
       boolean requiresOnRead = wireTap.requiresOnRead();
       if (requiresOnRead) {
         wireTap.beforeRead();
@@ -487,6 +494,10 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
       throws NotAuthorizedException {
     try {
       Preconditions.checkArgument(pagerParams != null, "PagerParams is a must");
+      if (optionalQuery != null && optionalQuery.isGuaranteedToYieldEmptyResultset()) {
+        return new PaginatedList<>(pagerParams, List.of(), 0);
+      }
+
       boolean requiresOnRead = wireTap.requiresOnRead();
       if (requiresOnRead) {
         wireTap.beforeRead();
@@ -508,6 +519,10 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
       PagerParams pagerParams, Query<TId, TRow> optionalQuery, OrderBy... orderBy) {
     try {
       Preconditions.checkArgument(pagerParams != null, "PagerParams is a must");
+      if (optionalQuery != null && optionalQuery.isGuaranteedToYieldEmptyResultset()) {
+        return List.of();
+      }
+
       boolean requiresOnRead = wireTap.requiresOnRead();
       if (requiresOnRead) {
         wireTap.beforeRead();
@@ -588,8 +603,12 @@ public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends Easy
   }
 
   @Override
-  public int count(Query<TId, TRow> query) {
-    return dao.count(query);
+  public int count(Query<TId, TRow> optionalQuery) {
+    if (optionalQuery != null && optionalQuery.isGuaranteedToYieldEmptyResultset()) {
+      return 0;
+    }
+
+    return dao.count(optionalQuery);
   }
 
   @Override

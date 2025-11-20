@@ -102,6 +102,9 @@ public class JoinedSelectImpl extends SelectTemplate implements JoinedSelect {
   public PaginatedList<JoinedRow> find(PagerParams pagerParams, OrderBy... orderBy) {
     try {
       Preconditions.checkArgument(pagerParams != null, "PagerParams is a must");
+      if (isGuaranteedToYieldEmptyResultset()) {
+        return new PaginatedList<>(pagerParams, List.of(), 0);
+      }
 
       // Before query wiretaps
       Map<Query<?, ?>, EasyCrudWireTap> wireTaps = findWireTapsOnRead();
@@ -174,6 +177,10 @@ public class JoinedSelectImpl extends SelectTemplate implements JoinedSelect {
   @Override
   public List<JoinedRow> findPage(PagerParams pagerParams, OrderBy... orderBy) {
     try {
+      if (isGuaranteedToYieldEmptyResultset()) {
+        return List.of();
+      }
+
       Preconditions.checkArgument(pagerParams != null, "PagerParams is a must");
 
       // Before query wiretaps
@@ -237,6 +244,9 @@ public class JoinedSelectImpl extends SelectTemplate implements JoinedSelect {
 
   @Override
   public int count() {
+    if (isGuaranteedToYieldEmptyResultset()) {
+      return 0;
+    }
     FromAndWhere fromAndWhere = sqlBuilder.fromAndWhere(joinQuery);
     QueryData countQueryData = sqlBuilder.countForJoinedQuery(fromAndWhere, joinQuery);
     return jdbc.queryForInt(countQueryData.getSql(), countQueryData.getParams());

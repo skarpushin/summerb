@@ -53,6 +53,110 @@ public class JoinQuerySingleSelectTest extends JoinQueryTestAbstract {
   }
 
   @Test
+  public void expectGracefulBehaviorInCaseOneOfTheQueriesCannotYieldResults() {
+    // GIVEN
+    Query<Long, CommentRow> qComment = commentRowService.query();
+    Query<Long, PostRow> qPost =
+        postRowService.query().eq(PostRow::getTitle, "env4").in(PostRow::getLikes, null);
+    Select<Long, CommentRow> select = qComment.toJoin().join(qPost).select();
+
+    // WHEN / THEN - count
+    assertEquals(0, select.count());
+
+    // WHEN / THEN - find
+    assertEquals(0, select.findAll().size());
+  }
+
+  @Test
+  public void expectGracefulBehaviorInCaseAllOfTheQueriesInOrWithNoResultsQuery() {
+    // GIVEN
+    Query<Long, CommentRow> qComment = commentRowService.query();
+    Query<Long, PostRow> qPost =
+        postRowService
+            .query()
+            .eq(PostRow::getTitle, "env4")
+            .or(
+                postRowService.query().in(PostRow::getBody, null),
+                postRowService.query().in(PostRow::getTitle, null));
+    Select<Long, CommentRow> select = qComment.toJoin().join(qPost).select();
+
+    // WHEN / THEN - count
+    assertEquals(0, select.count());
+
+    // WHEN / THEN - find
+    assertEquals(0, select.findAll().size());
+  }
+
+  @Test
+  public void expectGracefulBehaviorInCaseOneOfTheQueriesHasOrWithNoResultsQuery() {
+    // GIVEN
+    Query<Long, CommentRow> qComment = commentRowService.query();
+    Query<Long, PostRow> qPost =
+        postRowService
+            .query()
+            .eq(PostRow::getTitle, "env4")
+            .or(
+                postRowService.query().in(PostRow::getBody, null),
+                postRowService.query().eq(PostRow::getBody, "link11"));
+    Select<Long, CommentRow> select = qComment.toJoin().join(qPost).select();
+
+    // WHEN / THEN - count
+    assertEquals(2, select.count());
+
+    // WHEN / THEN - find
+    List<CommentRow> results = select.findAll(qComment.orderBy(CommentRow::getComment).asc());
+    assertEquals(2, results.size());
+    assertEquals("BBB", results.get(0).getComment());
+    assertEquals("CCC", results.get(1).getComment());
+  }
+
+  @Test
+  public void expectGracefulBehaviorInCaseNotExistsUsesQueryWithNoResults() {
+    // GIVEN
+    Query<Long, CommentRow> qComment = commentRowService.query();
+    Query<Long, PostRow> qPost = postRowService.query().eq(PostRow::getTitle, "env5");
+    Select<Long, PostRow> select =
+        qPost
+            .toJoin()
+            .notExists(
+                commentRowService.query().in(CommentRow::getComment, null), CommentRow::getPostId)
+            .select();
+
+    // WHEN / THEN - count
+    assertEquals(1, select.count());
+
+    // WHEN / THEN - find
+    List<PostRow> results = select.findAll();
+    assertEquals(1, results.size());
+    assertEquals("link1", results.get(0).getBody());
+  }
+
+  @Test
+  public void expectGracefulBehaviorInCaseNotExistsUsesOrQueryWithNoResults() {
+    // GIVEN
+    Query<Long, PostRow> qPost = postRowService.query().eq(PostRow::getTitle, "env5");
+    Select<Long, PostRow> select =
+        qPost
+            .toJoin()
+            .notExists(
+                commentRowService
+                    .query()
+                    .or(
+                        commentRowService.query().in(CommentRow::getComment, null),
+                        commentRowService.query().in(CommentRow::getAuthorId, null)),
+                CommentRow::getPostId)
+            .select();
+
+    // WHEN / THEN - count
+    assertEquals(1, select.count());
+
+    // WHEN / THEN - find
+    List<PostRow> results = select.findAll();
+    assertEquals(1, results.size());
+    assertEquals("link1", results.get(0).getBody());
+  }
+
+  @Test
   public void expectOrderingWorks() {
     // GIVEN
     Query<Long, CommentRow> qComment = commentRowService.query();

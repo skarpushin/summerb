@@ -39,12 +39,6 @@ import org.summerb.methodCapturers.PropertyNameResolver;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
 import org.summerb.validation.ValidationException;
 
-// TODO: Teach Query to be smarter. I.e. if we know upfront that query would result in empty dataset
-//  (i.e. because we have AND condition with IN criteria with empty array) ==> do not throw any
-//  errors and exceptions, just return empty rows. This will make consumer code more concise
-
-// TODO: Add feature to JoinedRow to map to POJO using reflection (with caching of course)
-
 // TODO: Add ability to impl functionality similar to HasTimestamps with different types, i.e.
 //  LocalDateTime
 
@@ -97,7 +91,7 @@ public interface EasyCrudService<TId, TRow extends HasId<TId>>
   /**
    * @return count of all rows matching a given query
    */
-  int count(Query<TId, TRow> query);
+  int count(Query<TId, TRow> optionalQuery);
 
   /**
    * This is a short convenient method for obtaining field name from getter

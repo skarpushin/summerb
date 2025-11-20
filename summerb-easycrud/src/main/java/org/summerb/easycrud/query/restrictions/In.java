@@ -1,6 +1,5 @@
 package org.summerb.easycrud.query.restrictions;
 
-import com.google.common.base.Preconditions;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -12,9 +11,8 @@ public class In extends NegateableRestriction<In> implements HasEmptyResultSetPr
   protected Set<?> values;
 
   public In(Collection<?> values) {
-    Preconditions.checkArgument(!CollectionUtils.isEmpty(values), "Non empty collection expected");
     // NOTE: We're copying collection state as a precaution - so we don't depend on outer state
-    this.values = new HashSet<>(values);
+    this.values = CollectionUtils.isEmpty(values) ? Set.of() : new HashSet<>(values);
   }
 
   @Override

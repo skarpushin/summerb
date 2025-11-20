@@ -129,4 +129,8 @@ public class SelectTemplate {
     Class<?> rowClass = querySpecificsResolver.getRowClass(query);
     return fieldsEnlister.findInClass(rowClass).stream().anyMatch(x -> x.equals(fieldName));
   }
+
+  protected boolean isGuaranteedToYieldEmptyResultset() {
+    return joinQuery.getQueries().stream().anyMatch(Query::isGuaranteedToYieldEmptyResultset);
+  }
 }
