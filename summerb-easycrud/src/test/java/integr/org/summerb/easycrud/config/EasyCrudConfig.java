@@ -17,9 +17,9 @@ import org.summerb.easycrud.sql_builder.SqlBuilder;
 import org.summerb.easycrud.sql_builder.mysql.OrderByToSqlMySqlImpl;
 import org.summerb.easycrud.sql_builder.mysql.QueryToSqlMySqlImpl;
 import org.summerb.easycrud.sql_builder.mysql.SqlBuilderMySqlImpl;
-import org.summerb.easycrud.sql_builder.mysql.SqlBuilderPostgresImpl;
 import org.summerb.easycrud.sql_builder.postgres.OrderByToSqlPostgresImpl;
 import org.summerb.easycrud.sql_builder.postgres.QueryToSqlPostgresImpl;
+import org.summerb.easycrud.sql_builder.postgres.SqlBuilderPostgresImpl;
 import org.summerb.validation.ValidationContextConfig;
 
 @Configuration

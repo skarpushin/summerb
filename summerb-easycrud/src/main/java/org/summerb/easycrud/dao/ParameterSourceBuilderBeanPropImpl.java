@@ -183,7 +183,10 @@ public class ParameterSourceBuilderBeanPropImpl<TRow> implements ParameterSource
     };
   }
 
-  private CacheLoader<? super String, Integer> buildFieldNameToSqlTypeCacheLoader() {
+  // TODO: Why another method?? Why don't just use fieldNameToOverrideCache ??
+  // TODO: Also, do not suggest to override whole cache loader, just override loading method itself
+  //  to make overriding capable of reusing base implementation
+  protected CacheLoader<? super String, Integer> buildFieldNameToSqlTypeCacheLoader() {
     return new CacheLoader<>() {
       @Override
       public Integer load(String fieldName) {

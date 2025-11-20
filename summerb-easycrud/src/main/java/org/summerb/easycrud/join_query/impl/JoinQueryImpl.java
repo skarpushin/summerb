@@ -3,7 +3,7 @@ package org.summerb.easycrud.join_query.impl;
 import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +55,8 @@ public class JoinQueryImpl<TId, TRow extends HasId<TId>> implements JoinQuery<TI
   protected List<Query<?, ?>> queriesUnmodifiable;
 
   /** Conditions locations */
-  protected Map<Query<?, ?>, ConditionsLocation> mapQueryToConditionLocation = new HashMap<>();
+  protected Map<Query<?, ?>, ConditionsLocation> mapQueryToConditionLocation =
+      new IdentityHashMap<>(); // TODO: Add test for that fix
 
   /** Joins and their conditions */
   protected List<JoinQueryElement> joins = new LinkedList<>();

@@ -8,6 +8,12 @@ import org.summerb.easycrud.query.OrderBy;
 import org.summerb.easycrud.query.Query;
 import org.summerb.easycrud.row.HasId;
 
+// TODO: Add option to deduplicate results (probably via GROUP BY, although we'll have to use
+//  aggregation on other fields...?)
+
+// TODO: Add support for EXISTS clause so that we do not have to deal with cartesian products of
+//  joined tables
+
 /**
  * Builds SQL JOIN queries by combining multiple {@link Query} instances (each representing a query
  * to one database table) into a single statement. Designed for simple use cases where you need to:

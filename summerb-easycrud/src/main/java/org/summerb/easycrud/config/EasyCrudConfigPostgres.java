@@ -9,9 +9,9 @@ import org.summerb.easycrud.sql_builder.FieldsEnlister;
 import org.summerb.easycrud.sql_builder.OrderByToSql;
 import org.summerb.easycrud.sql_builder.QueryToSql;
 import org.summerb.easycrud.sql_builder.SqlBuilder;
-import org.summerb.easycrud.sql_builder.mysql.SqlBuilderPostgresImpl;
 import org.summerb.easycrud.sql_builder.postgres.OrderByToSqlPostgresImpl;
 import org.summerb.easycrud.sql_builder.postgres.QueryToSqlPostgresImpl;
+import org.summerb.easycrud.sql_builder.postgres.SqlBuilderPostgresImpl;
 import org.summerb.validation.ValidationContextConfig;
 
 /**

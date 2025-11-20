@@ -1,4 +1,4 @@
-package org.summerb.easycrud.sql_builder.mysql;
+package org.summerb.easycrud.sql_builder.postgres;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ArrayListMultimap;
@@ -6,7 +6,7 @@ import com.google.common.collect.Multimap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Stream;
+import org.springframework.util.CollectionUtils;
 import org.summerb.easycrud.join_query.JoinQuery;
 import org.summerb.easycrud.join_query.QuerySpecificsResolver;
 import org.summerb.easycrud.query.OrderBy;
@@ -18,6 +18,8 @@ import org.summerb.easycrud.sql_builder.OrderByToSql;
 import org.summerb.easycrud.sql_builder.QueryToSql;
 import org.summerb.easycrud.sql_builder.model.ColumnsSelection;
 import org.summerb.easycrud.sql_builder.model.SelectedColumn;
+import org.summerb.easycrud.sql_builder.mysql.QueryToSqlMySqlImpl;
+import org.summerb.easycrud.sql_builder.mysql.SqlBuilderCommonImpl;
 
 public class SqlBuilderPostgresImpl extends SqlBuilderCommonImpl {
 
@@ -155,10 +157,24 @@ public class SqlBuilderPostgresImpl extends SqlBuilderCommonImpl {
 
   protected boolean isFieldAlreadySelected(OrderBy orderBy, List<ColumnsSelection> outColumns) {
     Query<?, ?> query = OrderByQueryResolver.get(orderBy);
-    return outColumns.stream()
-        .filter(x -> x.getQuery().equals(query))
-        .flatMap(x -> x.getColumns() != null ? x.getColumns().stream() : Stream.empty())
-        .anyMatch(x -> x.getFieldName().equals(orderBy.getFieldName()));
+    for (ColumnsSelection outColumn : outColumns) {
+      if (!outColumn.getQuery().equals(query)) {
+        continue;
+      }
+
+      if (outColumn.isWildcardAdded()) {
+        return true; // TODO: Add test for this fix
+      }
+
+      if (CollectionUtils.isEmpty(outColumn.getColumns())) {
+        return false;
+      }
+
+      return outColumn.getColumns().stream()
+          .anyMatch(x -> x.getFieldName().equals(orderBy.getFieldName()));
+    }
+
+    return false;
   }
 
   protected SelectedColumn appendColumnSelection(
