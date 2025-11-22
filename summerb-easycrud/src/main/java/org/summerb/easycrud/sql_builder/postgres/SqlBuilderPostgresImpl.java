@@ -113,6 +113,22 @@ public class SqlBuilderPostgresImpl extends SqlBuilderCommonImpl {
         outSql,
         outColumns);
 
+    appendColumnsToSelectionIfOrderByPresentFromNonSelectedTables(
+        optionalJoinQuery,
+        orderBy,
+        prefixColumnsWhenReferencing,
+        selectAsPrefixedAliasedNames,
+        outSql,
+        outColumns);
+  }
+
+  protected void appendColumnsToSelectionIfOrderByPresentFromNonSelectedTables(
+      JoinQuery<?, ?> optionalJoinQuery,
+      OrderBy[] orderBy,
+      boolean prefixColumnsWhenReferencing,
+      boolean selectAsPrefixedAliasedNames,
+      StringBuilder outSql,
+      List<ColumnsSelection> outColumns) {
     if (optionalJoinQuery == null || orderBy == null || orderBy.length == 0) {
       return;
     }

@@ -4,10 +4,16 @@ public class SelectedColumn {
   /** Original field name from the Row POJO */
   protected String fieldName;
 
-  /** Column name, as it is called in table schema, without aliases */
+  /**
+   * Column name, as it is called in table schema, without aliases. Usually just snake_case
+   * representation of the field name
+   */
   protected String columnName;
 
-  /** Column label, as it is going to appear in {@link java.sql.ResultSet} */
+  /**
+   * Column label, as it is going to appear in {@link java.sql.ResultSet}, potentially prefixed with
+   * alias
+   */
   protected String columnLabel;
 
   public SelectedColumn(String fieldName, String columnName, String columnLabel) {

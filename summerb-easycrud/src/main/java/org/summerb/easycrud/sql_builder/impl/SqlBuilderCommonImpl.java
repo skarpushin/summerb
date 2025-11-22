@@ -179,6 +179,11 @@ public class SqlBuilderCommonImpl implements SqlBuilder {
       boolean selectAsPrefixedAliasedNames,
       StringBuilder outSql,
       List<ColumnsSelection> outColumns) {
+
+    // If deduplication is used and order by includes fields from tables which are not selected,
+    // those fields must be included in the query
+
+    a("LIST ORDERING COLUMNS in case deduplication is happening and order by includes ");
     // no impl, just an extension point
   }
 
@@ -274,10 +279,10 @@ public class SqlBuilderCommonImpl implements SqlBuilder {
 
     StringBuilder sql = new StringBuilder();
 
-    sql.append("WITH filtered_rows AS (SELECT\n");
+    sql.append("WITH filtered_rows AS (SELECT");
     List<ColumnsSelection> columnSelections =
-        appendColumnsSelectionForJoinQuery(joinQuery, queries, orderBy, sql);
-    sql.append(",\n ROW_NUMBER() OVER (PARTITION BY ")
+        appendColumnsSelectionForJoinQuery(joinQuery, queries, orderBy, sql, true);
+    sql.append(",\n\tROW_NUMBER() OVER (PARTITION BY ")
         .append(joinQuery.getPrimaryQuery().getAlias())
         .append(".id");
 
@@ -289,7 +294,7 @@ public class SqlBuilderCommonImpl implements SqlBuilder {
 
     List<OrderBy> backwardOrderBy = identifyOrderByFromQueries(orderBy, backwardQueries);
     if (!backwardOrderBy.isEmpty()) {
-      appendOrderBy(backwardOrderBy.toArray(ORDER_EMPTY_ARRAY), joinQuery, sql);
+      appendOrderBy(backwardOrderBy.toArray(ORDER_EMPTY_ARRAY), joinQuery, columnSelections, sql);
       sql.append(", ");
     }
     for (int i = 0; i < backwardQueries.size(); i++) {
@@ -307,7 +312,7 @@ public class SqlBuilderCommonImpl implements SqlBuilder {
 
     if (orderBy != null && orderBy.length > 0) {
       sql.append("\nORDER BY ");
-      appendOrderBy(orderBy, joinQuery, sql);
+      appendOrderBy(orderBy, joinQuery, columnSelections, sql);
     }
 
     if (!PagerParams.ALL.equals(pagerParams)) {
@@ -369,13 +374,13 @@ public class SqlBuilderCommonImpl implements SqlBuilder {
     sql.append("SELECT");
 
     List<ColumnsSelection> columnSelections =
-        appendColumnsSelectionForJoinQuery(joinQuery, queries, orderBy, sql);
+        appendColumnsSelectionForJoinQuery(joinQuery, queries, orderBy, sql, queries.size() > 1);
 
     sql.append(fromAndWhere.getSql());
 
     if (orderBy != null && orderBy.length > 0) {
       sql.append("\nORDER BY ");
-      appendOrderBy(orderBy, joinQuery, sql);
+      appendOrderBy(orderBy, joinQuery, columnSelections, sql);
     }
 
     if (!PagerParams.ALL.equals(pagerParams)) {
@@ -390,9 +395,14 @@ public class SqlBuilderCommonImpl implements SqlBuilder {
   }
 
   protected List<ColumnsSelection> appendColumnsSelectionForJoinQuery(
-      JoinQuery<?, ?> joinQuery, List<Query<?, ?>> queries, OrderBy[] orderBy, StringBuilder sql) {
+      JoinQuery<?, ?> joinQuery,
+      List<Query<?, ?>> queries,
+      OrderBy[] orderBy,
+      StringBuilder sql,
+      boolean selectAsPrefixedAliasedNames) {
     List<ColumnsSelection> columnSelections = new LinkedList<>();
     int queriesCount = queries.size();
+    boolean wildcardAllowed = queriesCount == 1 && !selectAsPrefixedAliasedNames;
     for (int i = 0; i < queriesCount; i++) {
       Query<?, ?> query = queries.get(i);
       if (i > 0) {
@@ -403,9 +413,9 @@ public class SqlBuilderCommonImpl implements SqlBuilder {
           joinQuery,
           query,
           orderBy,
-          queriesCount == 1,
+          wildcardAllowed,
           true,
-          queriesCount > 1,
+          selectAsPrefixedAliasedNames,
           sql,
           columnSelections);
     }
@@ -415,9 +425,9 @@ public class SqlBuilderCommonImpl implements SqlBuilder {
         joinQuery,
         null,
         orderBy,
-        queriesCount == 1,
+        wildcardAllowed,
         true,
-        queriesCount > 1,
+        selectAsPrefixedAliasedNames,
         sql,
         columnSelections);
 
@@ -691,7 +701,11 @@ public class SqlBuilderCommonImpl implements SqlBuilder {
   }
 
   @Override
-  public void appendOrderBy(OrderBy[] orderBy, JoinQuery<?, ?> joinQuery, StringBuilder sql) {
-    orderByToSql.appendOrderByElements(orderBy, joinQuery, sql);
+  public void appendOrderBy(
+      OrderBy[] orderBy,
+      JoinQuery<?, ?> joinQuery,
+      List<ColumnsSelection> columnSelections,
+      StringBuilder sql) {
+    orderByToSql.appendOrderByElements(orderBy, joinQuery, columnSelections, sql);
   }
 }

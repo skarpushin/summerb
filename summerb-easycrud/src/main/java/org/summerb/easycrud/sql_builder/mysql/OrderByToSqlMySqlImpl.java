@@ -1,12 +1,15 @@
 package org.summerb.easycrud.sql_builder.mysql;
 
 import com.google.common.base.Preconditions;
+import java.util.List;
 import org.springframework.util.StringUtils;
 import org.summerb.easycrud.join_query.JoinQuery;
 import org.summerb.easycrud.query.OrderBy;
 import org.summerb.easycrud.query.OrderByQueryResolver;
 import org.summerb.easycrud.query.Query;
 import org.summerb.easycrud.sql_builder.OrderByToSql;
+import org.summerb.easycrud.sql_builder.model.ColumnsSelection;
+import org.summerb.easycrud.sql_builder.model.SelectedColumn;
 
 public class OrderByToSqlMySqlImpl implements OrderByToSql {
 
@@ -38,7 +41,10 @@ public class OrderByToSqlMySqlImpl implements OrderByToSql {
 
   @Override
   public void appendOrderByElements(
-      OrderBy[] orderByArr, JoinQuery<?, ?> joinQuery, StringBuilder ret) {
+      OrderBy[] orderByArr,
+      JoinQuery<?, ?> joinQuery,
+      List<ColumnsSelection> columnSelections,
+      StringBuilder ret) {
     if (orderByArr == null) {
       return;
     }
@@ -61,9 +67,12 @@ public class OrderByToSqlMySqlImpl implements OrderByToSql {
       if (orderBy.getFieldName().contains(".")) {
         // This might be the case when fields were already pre-processed and prefixed with
         // necessary aliases, i.e., as a part of the parsing / translation effort
+        // TODO: Add better explanation as to when this might happen
+        // TODO: Do we really need this? I though all orderBy must be converted to ones, which has
+        //  query reference?
         appendFieldName(ret, orderBy);
       } else {
-        appendFieldName(ret, orderBy, joinQuery, query);
+        appendFieldName(ret, orderBy, query, joinQuery, columnSelections);
       }
       appendCollation(ret, orderBy);
       appendDirection(orderBy, ret);
@@ -73,9 +82,35 @@ public class OrderByToSqlMySqlImpl implements OrderByToSql {
     }
   }
 
+  /**
+   * @param sql sql to append to
+   * @param orderBy orderBy item that needs to be formatted into sql
+   * @param query query that was resolved from orderBy
+   * @param joinQuery the JoinQuery in context of which this operation is performed
+   * @param columnSelections all columns selections for this query
+   */
   protected void appendFieldName(
-      StringBuilder ret, OrderBy orderBy, JoinQuery<?, ?> joinQuery, Query<?, ?> query) {
-    ret.append(query.getAlias())
+      StringBuilder sql,
+      OrderBy orderBy,
+      Query<?, ?> query,
+      JoinQuery<?, ?> joinQuery,
+      List<ColumnsSelection> columnSelections) {
+
+    ColumnsSelection columnsSelection =
+        columnSelections.stream().filter(x -> x.getQuery() == query).findFirst().orElse(null);
+    if (columnsSelection != null && !columnsSelection.isWildcardAdded()) {
+      SelectedColumn selectedColumn =
+          columnsSelection.getColumns().stream()
+              .filter(x -> x.getFieldName().equals(orderBy.getFieldName()))
+              .findFirst()
+              .orElse(null);
+      if (selectedColumn != null) {
+        sql.append(selectedColumn.getColumnLabel());
+        return;
+      }
+    }
+
+    sql.append(query.getAlias())
         .append(".")
         .append(QueryToSqlMySqlImpl.snakeCase(orderBy.getFieldName()));
   }
