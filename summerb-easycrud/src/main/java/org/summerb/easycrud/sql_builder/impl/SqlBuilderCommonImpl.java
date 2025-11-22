@@ -1,7 +1,10 @@
 package org.summerb.easycrud.sql_builder.impl;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -182,9 +185,86 @@ public class SqlBuilderCommonImpl implements SqlBuilder {
 
     // If deduplication is used and order by includes fields from tables which are not selected,
     // those fields must be included in the query
+    if (optionalJoinQuery != null && optionalJoinQuery.isDeduplicate()) {
+      appendColumnsToSelectionIfOrderByPresentFromNonSelectedTables(
+          optionalJoinQuery,
+          orderBy,
+          prefixColumnsWhenReferencing,
+          selectAsPrefixedAliasedNames,
+          outSql,
+          outColumns);
+    }
+  }
 
-    a("LIST ORDERING COLUMNS in case deduplication is happening and order by includes ");
-    // no impl, just an extension point
+  protected void appendColumnsToSelectionIfOrderByPresentFromNonSelectedTables(
+      JoinQuery<?, ?> optionalJoinQuery,
+      OrderBy[] orderBy,
+      boolean prefixColumnsWhenReferencing,
+      boolean selectAsPrefixedAliasedNames,
+      StringBuilder outSql,
+      List<ColumnsSelection> outColumns) {
+    if (optionalJoinQuery == null || orderBy == null || orderBy.length == 0) {
+      return;
+    }
+
+    List<OrderBy> orderByFromOtherTables =
+        Arrays.stream(orderBy).filter(x -> !isFieldAlreadySelected(x, outColumns)).toList();
+    if (orderByFromOtherTables.isEmpty()) {
+      return;
+    }
+
+    // Append such columns to sql
+    outSql.append(",\n\t");
+    Multimap<Query<?, ?>, SelectedColumn> additionalColumns = ArrayListMultimap.create();
+    for (int i = 0; i < orderByFromOtherTables.size(); i++) {
+      OrderBy orderByFromOtherTable = orderByFromOtherTables.get(i);
+      Query<?, ?> otherQuery = OrderByQueryResolver.get(orderByFromOtherTable);
+
+      if (i > 0) {
+        outSql.append(", ");
+      }
+
+      SelectedColumn selectedColumn =
+          appendColumnSelection(
+              optionalJoinQuery,
+              otherQuery,
+              orderBy,
+              orderByFromOtherTable.getFieldName(),
+              prefixColumnsWhenReferencing,
+              selectAsPrefixedAliasedNames,
+              outSql);
+      additionalColumns.put(otherQuery, selectedColumn);
+    }
+
+    // Now also add them to result
+    for (Query<?, ?> otherQuery : additionalColumns.keySet()) {
+      ColumnsSelection retColumns = new ColumnsSelection();
+      retColumns.setColumns(new ArrayList<>(additionalColumns.get(otherQuery)));
+      retColumns.setQuery(otherQuery);
+      outColumns.add(retColumns);
+    }
+  }
+
+  protected boolean isFieldAlreadySelected(OrderBy orderBy, List<ColumnsSelection> outColumns) {
+    Query<?, ?> query = OrderByQueryResolver.get(orderBy);
+    for (ColumnsSelection outColumn : outColumns) {
+      if (!outColumn.getQuery().equals(query)) {
+        continue;
+      }
+
+      if (outColumn.isWildcardAdded()) {
+        return true;
+      }
+
+      if (CollectionUtils.isEmpty(outColumn.getColumns())) {
+        return false;
+      }
+
+      return outColumn.getColumns().stream()
+          .anyMatch(x -> x.getFieldName().equals(orderBy.getFieldName()));
+    }
+
+    return false;
   }
 
   @Override
@@ -260,7 +340,7 @@ public class SqlBuilderCommonImpl implements SqlBuilder {
       OrderBy[] orderBy,
       FromAndWhere fromAndWhere) {
     QueryData ret;
-    if (isDeduplicationNeeded(joinQuery)) {
+    if (joinQuery.isDeduplicate()) {
       ret = joinedSelectDeduplicated(joinQuery, queries, pagerParams, orderBy, fromAndWhere);
     } else {
       ret = joinedSelectAsIs(joinQuery, queries, pagerParams, orderBy, fromAndWhere);
@@ -345,22 +425,6 @@ public class SqlBuilderCommonImpl implements SqlBuilder {
     return joinQuery.getQueries().stream()
         .filter(x -> joinQuery.getJoinDirection(x) == JoinDirection.BACKWARD)
         .toList();
-  }
-
-  protected boolean isDeduplicationNeeded(JoinQuery<?, ?> joinQuery) {
-    if (!joinQuery.isDeduplicate()) {
-      return false;
-    }
-
-    boolean hasAtLeastOneBackwardJoin =
-        joinQuery.getQueries().stream()
-            .anyMatch(x -> joinQuery.getJoinDirection(x) == JoinDirection.BACKWARD);
-    if (!hasAtLeastOneBackwardJoin) {
-      log.warn(
-          "JoinQuery deduplication requested, but no backward joins (one-to-many relationships which might produce cartesian products) found. Ignoring it.");
-    }
-
-    return hasAtLeastOneBackwardJoin;
   }
 
   protected QueryData joinedSelectAsIs(

@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 import org.summerb.easycrud.join_query.ConditionsLocation;
 import org.summerb.easycrud.join_query.JoinDirection;
@@ -42,6 +44,7 @@ import org.summerb.easycrud.sql_builder.FieldsEnlister;
  * @param <TRow> type of the primary row class that is being selected
  */
 public class JoinQueryImpl<TId, TRow extends HasId<TId>> implements JoinQuery<TId, TRow> {
+  private static final Logger log = LoggerFactory.getLogger(JoinQueryImpl.class);
   protected ReferringToFieldsFinder referringToFieldsFinder;
   protected SelectFactory selectFactory;
   protected QuerySpecificsResolver querySpecificsResolver;
@@ -128,7 +131,18 @@ public class JoinQueryImpl<TId, TRow extends HasId<TId>> implements JoinQuery<TI
 
   @Override
   public boolean isDeduplicate() {
-    return deduplicate;
+    if (!deduplicate) {
+      return false;
+    }
+
+    boolean hasAtLeastOneBackwardJoin =
+        getQueries().stream().anyMatch(x -> getJoinDirection(x) == JoinDirection.BACKWARD);
+    if (!hasAtLeastOneBackwardJoin) {
+      log.warn(
+          "JoinQuery deduplication requested, but no backward joins (one-to-many relationships which might produce cartesian products) found. Ignoring it.");
+    }
+
+    return hasAtLeastOneBackwardJoin;
   }
 
   @Override

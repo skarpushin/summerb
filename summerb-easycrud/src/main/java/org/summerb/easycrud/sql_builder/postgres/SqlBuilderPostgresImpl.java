@@ -122,77 +122,7 @@ public class SqlBuilderPostgresImpl extends SqlBuilderCommonImpl {
         outColumns);
   }
 
-  protected void appendColumnsToSelectionIfOrderByPresentFromNonSelectedTables(
-      JoinQuery<?, ?> optionalJoinQuery,
-      OrderBy[] orderBy,
-      boolean prefixColumnsWhenReferencing,
-      boolean selectAsPrefixedAliasedNames,
-      StringBuilder outSql,
-      List<ColumnsSelection> outColumns) {
-    if (optionalJoinQuery == null || orderBy == null || orderBy.length == 0) {
-      return;
-    }
-
-    List<OrderBy> orderByFromOtherTables =
-        Arrays.stream(orderBy).filter(x -> !isFieldAlreadySelected(x, outColumns)).toList();
-    if (orderByFromOtherTables.isEmpty()) {
-      return;
-    }
-
-    // Append such columns to sql
-    outSql.append(",\n\t");
-    Multimap<Query<?, ?>, SelectedColumn> additionalColumns = ArrayListMultimap.create();
-    for (int i = 0; i < orderByFromOtherTables.size(); i++) {
-      OrderBy orderByFromOtherTable = orderByFromOtherTables.get(i);
-      Query<?, ?> otherQuery = OrderByQueryResolver.get(orderByFromOtherTable);
-
-      if (i > 0) {
-        outSql.append(", ");
-      }
-
-      SelectedColumn selectedColumn =
-          appendColumnSelection(
-              optionalJoinQuery,
-              otherQuery,
-              orderBy,
-              orderByFromOtherTable.getFieldName(),
-              prefixColumnsWhenReferencing,
-              selectAsPrefixedAliasedNames,
-              outSql);
-      additionalColumns.put(otherQuery, selectedColumn);
-    }
-
-    // Now also add them to result
-    for (Query<?, ?> otherQuery : additionalColumns.keySet()) {
-      ColumnsSelection retColumns = new ColumnsSelection();
-      retColumns.setColumns(new ArrayList<>(additionalColumns.get(otherQuery)));
-      retColumns.setQuery(otherQuery);
-      outColumns.add(retColumns);
-    }
-  }
-
-  protected boolean isFieldAlreadySelected(OrderBy orderBy, List<ColumnsSelection> outColumns) {
-    Query<?, ?> query = OrderByQueryResolver.get(orderBy);
-    for (ColumnsSelection outColumn : outColumns) {
-      if (!outColumn.getQuery().equals(query)) {
-        continue;
-      }
-
-      if (outColumn.isWildcardAdded()) {
-        return true;
-      }
-
-      if (CollectionUtils.isEmpty(outColumn.getColumns())) {
-        return false;
-      }
-
-      return outColumn.getColumns().stream()
-          .anyMatch(x -> x.getFieldName().equals(orderBy.getFieldName()));
-    }
-
-    return false;
-  }
-
+  @Override
   protected SelectedColumn appendColumnSelection(
       JoinQuery<?, ?> optionalJoinQuery,
       Query<?, ?> optionalQuery,
