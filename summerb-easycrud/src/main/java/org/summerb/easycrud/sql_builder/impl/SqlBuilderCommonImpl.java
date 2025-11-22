@@ -297,12 +297,13 @@ public class SqlBuilderCommonImpl implements SqlBuilder {
                         && joinQuery.getConditionsLocationForQuery(x) == ConditionsLocation.WHERE)
             .toList();
 
-    if (!conditions.isEmpty() || !joinQuery.getNotExists().isEmpty()) {
+    if (!conditions.isEmpty() || !joinQuery.getExistenceConditions().isEmpty()) {
       sql.append("\nWHERE");
       boolean added =
           appendFieldConditionsToWhereClause(conditions, sql, params, paramIdxIncrementer);
-      appendNotExistsToWhereClause(
-          joinQuery.getNotExists(), added, sql, params, paramIdxIncrementer);
+
+      appendExistenceChecksToWhereClause(
+          joinQuery.getExistenceConditions(), added, sql, params, paramIdxIncrementer);
     }
   }
 
@@ -619,7 +620,7 @@ public class SqlBuilderCommonImpl implements SqlBuilder {
     return added;
   }
 
-  protected boolean appendNotExistsToWhereClause(
+  protected boolean appendExistenceChecksToWhereClause(
       List<JoinQueryElement> notExists,
       boolean added,
       StringBuilder sql,
@@ -627,8 +628,16 @@ public class SqlBuilderCommonImpl implements SqlBuilder {
       ParamIdxIncrementer paramIdxIncrementer) {
 
     for (JoinQueryElement join : notExists) {
-      if (join.getReferer().isGuaranteedToYieldEmptyResultset()) {
-        continue;
+      if (join.getJoinType() == JoinType.EXISTS) {
+        Preconditions.checkState(
+            !join.getReferer().isGuaranteedToYieldEmptyResultset(),
+            "The case when query must be added as EXISTS clause but has guaranteedToYieldEmptyResultset == true must not happen this place, should've been terminated earlier");
+      } else {
+        if (join.getReferer().isGuaranteedToYieldEmptyResultset()) {
+          // NOTE: If the condition inside the NOT_EXISTS clause yields no results, then no
+          // reason to even include it as it will not add any filtering
+          continue;
+        }
       }
 
       if (added) {
@@ -637,7 +646,10 @@ public class SqlBuilderCommonImpl implements SqlBuilder {
         sql.append("\n\t");
       }
 
-      sql.append("NOT EXISTS (SELECT 1 FROM ");
+      if (join.getJoinType() == JoinType.NOT_EXISTS) {
+        sql.append("NOT ");
+      }
+      sql.append("EXISTS (SELECT 1 FROM ");
 
       String refererTableName = querySpecificsResolver.getTableName(join.getReferer());
       String refererAlias = join.getReferer().getAlias();
@@ -673,8 +685,9 @@ public class SqlBuilderCommonImpl implements SqlBuilder {
     return switch (joinType) {
       case INNER -> "JOIN";
       case LEFT -> "LEFT JOIN";
-      case NOT_EXISTS ->
-          throw new IllegalArgumentException("NOT_EXISTS must not be used in this context");
+      case NOT_EXISTS, EXISTS ->
+          throw new IllegalArgumentException(
+              "NOT_EXISTS and EXISTS must not be used in this context");
     };
   }
 

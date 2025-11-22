@@ -17,11 +17,8 @@ import org.summerb.easycrud.impl.EasyCrudServiceImpl;
 import org.summerb.easycrud.join_query.JoinQuery;
 import org.summerb.easycrud.join_query.JoinQueryFactory;
 import org.summerb.easycrud.join_query.QuerySpecificsResolver;
-import org.summerb.easycrud.join_query.ReferringToFieldsFinder;
 import org.summerb.easycrud.join_query.SelectFactory;
 import org.summerb.easycrud.join_query.impl.JoinQueryFactoryImpl;
-import org.summerb.easycrud.join_query.impl.ReferringToFieldsFinderCachingImpl;
-import org.summerb.easycrud.join_query.impl.ReferringToFieldsFinderImpl;
 import org.summerb.easycrud.join_query.impl.SelectFactoryImpl;
 import org.summerb.easycrud.query.OrderBy;
 import org.summerb.easycrud.query.Query;
@@ -44,7 +41,6 @@ public class SqlBuilderPostgresImplTest {
 
   private QuerySpecificsResolver querySpecificsResolver;
 
-  private ReferringToFieldsFinder referringToFieldsFinder;
   private SelectFactory selectFactory;
 
   private SqlBuilderPostgresImpl sqlBuilder;
@@ -55,9 +51,6 @@ public class SqlBuilderPostgresImplTest {
 
   @BeforeEach
   void setUp() {
-    referringToFieldsFinder =
-        new ReferringToFieldsFinderCachingImpl(new ReferringToFieldsFinderImpl());
-
     querySpecificsResolver = mock(QuerySpecificsResolver.class);
 
     FieldsEnlisterCachingImpl fieldsEnlister =
@@ -77,8 +70,7 @@ public class SqlBuilderPostgresImplTest {
             fieldsEnlister);
 
     JoinQueryFactory joinQueryFactory =
-        new JoinQueryFactoryImpl(
-            referringToFieldsFinder, selectFactory, querySpecificsResolver, fieldsEnlister);
+        new JoinQueryFactoryImpl(selectFactory, querySpecificsResolver, fieldsEnlister);
 
     userService.setJoinQueryFactory(joinQueryFactory);
     postService.setJoinQueryFactory(joinQueryFactory);

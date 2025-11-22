@@ -11,7 +11,10 @@ public class JoinQueryElement {
   /** Query that is based on the Row (table) that is referring to some other table */
   protected final Query<?, ?> referer;
 
-  /** Name of the field from the referer query which contains ID of the referred */
+  /**
+   * Name of the field from the referer query's table which contains the foreign key that points to
+   * the referred primary key (ID)
+   */
   protected final String otherIdGetterFieldName;
 
   /** Query that is based on the Row (table) that is being referred to */

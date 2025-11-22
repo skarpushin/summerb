@@ -5,6 +5,7 @@ import java.util.List;
 import org.summerb.easycrud.dao.NamedParameterJdbcTemplateEx;
 import org.summerb.easycrud.join_query.JoinQuery;
 import org.summerb.easycrud.join_query.QuerySpecificsResolver;
+import org.summerb.easycrud.join_query.model.JoinType;
 import org.summerb.easycrud.query.OrderBy;
 import org.summerb.easycrud.query.OrderByQueryResolver;
 import org.summerb.easycrud.query.Query;
@@ -133,7 +134,12 @@ public class SelectTemplate {
   }
 
   protected boolean isGuaranteedToYieldEmptyResultset() {
-    return joinQuery.getQueries().stream().anyMatch(Query::isGuaranteedToYieldEmptyResultset);
+    return joinQuery.getQueries().stream().anyMatch(Query::isGuaranteedToYieldEmptyResultset)
+        || joinQuery.getExistenceConditions().stream()
+            .anyMatch(
+                x -> // TODO: Test this too
+                x.getJoinType() == JoinType.EXISTS
+                        && x.getReferer().isGuaranteedToYieldEmptyResultset());
   }
 
   protected ResultSetExtractorJoinedQueryImpl buildResultSetExtractor(

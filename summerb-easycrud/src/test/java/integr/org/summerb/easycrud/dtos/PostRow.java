@@ -17,7 +17,6 @@ package integr.org.summerb.easycrud.dtos;
 
 import java.io.Serial;
 import java.io.Serializable;
-import org.summerb.easycrud.join_query.model.ReferringTo;
 import org.summerb.easycrud.row.HasAuthor;
 import org.summerb.easycrud.row.HasAutoincrementId;
 import org.summerb.easycrud.row.HasTimestamps;
@@ -31,20 +30,11 @@ public class PostRow implements HasAutoincrementId, HasAuthor, HasTimestamps, Se
   private String body;
   private int likes;
   private int dislikes;
-
-  @ReferringTo(UserRow.class)
   private String authorId;
-
-  @ReferringTo(UserRow.class)
   private String pinnedBy;
-
   private long createdAt;
   private long modifiedAt;
-
-  @ReferringTo(UserRow.class)
   private String createdBy;
-
-  @ReferringTo(UserRow.class)
   private String modifiedBy;
 
   public PostRow() {}

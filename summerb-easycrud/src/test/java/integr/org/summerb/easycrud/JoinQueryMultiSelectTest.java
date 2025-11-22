@@ -94,7 +94,7 @@ public class JoinQueryMultiSelectTest extends JoinQueryTestAbstract {
     Query<Long, CommentRow> qComment = commentRowService.query();
     Query<Long, PostRow> qPost =
         postRowService.query().eq(PostRow::getTitle, "env4").in(PostRow::getLikes, null);
-    JoinedSelect select = qComment.toJoin().join(qPost).selectAll();
+    JoinedSelect select = qComment.toJoin().join(qPost, CommentRow::getPostId).selectAll();
 
     // WHEN / THEN - count
     assertEquals(0, select.count());
@@ -114,7 +114,7 @@ public class JoinQueryMultiSelectTest extends JoinQueryTestAbstract {
             .or(
                 postRowService.query().in(PostRow::getBody, null),
                 postRowService.query().in(PostRow::getTitle, null));
-    JoinedSelect select = qComment.toJoin().join(qPost).selectAll();
+    JoinedSelect select = qComment.toJoin().join(qPost, CommentRow::getPostId).selectAll();
 
     // WHEN / THEN - count
     assertEquals(0, select.count());
@@ -134,7 +134,7 @@ public class JoinQueryMultiSelectTest extends JoinQueryTestAbstract {
             .or(
                 postRowService.query().in(PostRow::getBody, null),
                 postRowService.query().eq(PostRow::getBody, "link11"));
-    JoinedSelect select = qComment.toJoin().join(qPost).selectAll();
+    JoinedSelect select = qComment.toJoin().join(qPost, CommentRow::getPostId).selectAll();
 
     // WHEN / THEN - count
     assertEquals(2, select.count());
@@ -145,6 +145,8 @@ public class JoinQueryMultiSelectTest extends JoinQueryTestAbstract {
     assertEquals("BBB", results.get(0).get(qComment).getComment());
     assertEquals("CCC", results.get(1).get(qComment).getComment());
   }
+
+  // TODO: Add test for exists()
 
   @Test
   public void expectGracefulBehaviorInCaseNotExistsUsesQueryWithNoResults() {
@@ -197,7 +199,8 @@ public class JoinQueryMultiSelectTest extends JoinQueryTestAbstract {
     Query<Long, CommentRow> qComment = commentRowService.query();
     Query<Long, PostRow> qPost = postRowService.query().eq(PostRow::getTitle, "env4");
 
-    JoinedSelect select = qComment.toJoin().join(qPost).select(qComment, qPost);
+    JoinedSelect select =
+        qComment.toJoin().join(qPost, CommentRow::getPostId).select(qComment, qPost);
 
     assertEquals(2, select.count());
 
@@ -231,7 +234,12 @@ public class JoinQueryMultiSelectTest extends JoinQueryTestAbstract {
     assertEquals(1, qUser.count());
 
     // WHEN
-    List<JoinedRow> results = qUser.toJoin().join(commentRowService.query()).selectAll().findAll();
+    List<JoinedRow> results =
+        qUser
+            .toJoin()
+            .joinBack(commentRowService.query(), CommentRow::getAuthorId)
+            .selectAll()
+            .findAll();
 
     // THEN
     assertEquals(0, results.size());
@@ -246,7 +254,7 @@ public class JoinQueryMultiSelectTest extends JoinQueryTestAbstract {
             .query()
             .eq(UserRow::getName, "doesnt-exist")
             .toJoin()
-            .join(commentRowService.query())
+            .joinBack(commentRowService.query(), CommentRow::getAuthorId)
             .selectAll()
             .findAll();
 
@@ -366,7 +374,7 @@ public class JoinQueryMultiSelectTest extends JoinQueryTestAbstract {
     // GIVEN
     Query<Long, PostRow> qPost = postRowService.query();
     Query<Long, CommentRow> qComment = commentRowService.query().ne(CommentRow::getComment, "CCC");
-    JoinedSelect select = qComment.toJoin().join(qPost).selectAll();
+    JoinedSelect select = qComment.toJoin().join(qPost, CommentRow::getPostId).selectAll();
 
     // WHEN -- asc, page 1
     PagerParams pagerParams = new PagerParams(0, 2);
@@ -631,7 +639,7 @@ public class JoinQueryMultiSelectTest extends JoinQueryTestAbstract {
             commentRowService
                 .query()
                 .toJoin()
-                .join(userRowService.query())
+                .join(userRowService.query(), CommentRow::getAuthorId)
                 .select(postRowService.query()));
   }
 
@@ -640,7 +648,12 @@ public class JoinQueryMultiSelectTest extends JoinQueryTestAbstract {
     // GIVEN
     // WHEN / THEN
     try {
-      commentRowService.query().toJoin().join(userRowService.query()).selectAll().findOne();
+      commentRowService
+          .query()
+          .toJoin()
+          .join(userRowService.query(), CommentRow::getAuthorId)
+          .selectAll()
+          .findOne();
       fail("Exception expected");
     } catch (EasyCrudUnexpectedException e) {
       assertEquals(EasyCrudMessageCodes.UNEXPECTED_FAILED_TO_FIND, e.getMessageCode());
@@ -700,7 +713,11 @@ public class JoinQueryMultiSelectTest extends JoinQueryTestAbstract {
 
     // WHEN
     JoinedSelect select =
-        qComment.toJoin().join(qPost).leftJoin(qPost, qPinnedBy, PostRow::getPinnedBy).selectAll();
+        qComment
+            .toJoin()
+            .join(qPost, CommentRow::getPostId)
+            .leftJoin(qPost, qPinnedBy, PostRow::getPinnedBy)
+            .selectAll();
     assertEquals(4, select.count());
 
     List<JoinedRow> results = select.findAll(qComment.orderBy(CommentRow::getComment).asc());

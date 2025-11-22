@@ -11,12 +11,9 @@ import org.summerb.easycrud.exceptions.DaoExceptionTranslator;
 import org.summerb.easycrud.impl.EasyCrudServiceResolverSpringImpl;
 import org.summerb.easycrud.join_query.JoinQueryFactory;
 import org.summerb.easycrud.join_query.QuerySpecificsResolver;
-import org.summerb.easycrud.join_query.ReferringToFieldsFinder;
 import org.summerb.easycrud.join_query.SelectFactory;
 import org.summerb.easycrud.join_query.impl.JoinQueryFactoryImpl;
 import org.summerb.easycrud.join_query.impl.QuerySpecificsResolverImpl;
-import org.summerb.easycrud.join_query.impl.ReferringToFieldsFinderCachingImpl;
-import org.summerb.easycrud.join_query.impl.ReferringToFieldsFinderImpl;
 import org.summerb.easycrud.join_query.impl.SelectFactoryImpl;
 import org.summerb.easycrud.scaffold.EasyCrudScaffold;
 import org.summerb.easycrud.scaffold.EasyCrudServiceProxyFactory;
@@ -83,11 +80,6 @@ public abstract class EasyCrudConfigAbstract {
   }
 
   @Bean
-  protected ReferringToFieldsFinder referringToFieldsFinder() {
-    return new ReferringToFieldsFinderCachingImpl(new ReferringToFieldsFinderImpl());
-  }
-
-  @Bean
   protected NamedParameterJdbcTemplateEx namedParameterJdbcTemplateEx(DataSource dataSource) {
     return new NamedParameterJdbcTemplateEx(dataSource);
   }
@@ -113,12 +105,10 @@ public abstract class EasyCrudConfigAbstract {
 
   @Bean
   protected JoinQueryFactory joinQueryFactory(
-      ReferringToFieldsFinder referringToFieldsFinder,
       SelectFactory selectFactory,
       QuerySpecificsResolver querySpecificsResolver,
       FieldsEnlister fieldsEnlister) {
-    return new JoinQueryFactoryImpl(
-        referringToFieldsFinder, selectFactory, querySpecificsResolver, fieldsEnlister);
+    return new JoinQueryFactoryImpl(selectFactory, querySpecificsResolver, fieldsEnlister);
   }
 
   @Bean

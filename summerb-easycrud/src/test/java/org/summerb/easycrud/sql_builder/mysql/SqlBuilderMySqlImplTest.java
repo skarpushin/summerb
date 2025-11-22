@@ -17,11 +17,8 @@ import org.summerb.easycrud.impl.EasyCrudServiceImpl;
 import org.summerb.easycrud.join_query.JoinQuery;
 import org.summerb.easycrud.join_query.JoinQueryFactory;
 import org.summerb.easycrud.join_query.QuerySpecificsResolver;
-import org.summerb.easycrud.join_query.ReferringToFieldsFinder;
 import org.summerb.easycrud.join_query.SelectFactory;
 import org.summerb.easycrud.join_query.impl.JoinQueryFactoryImpl;
-import org.summerb.easycrud.join_query.impl.ReferringToFieldsFinderCachingImpl;
-import org.summerb.easycrud.join_query.impl.ReferringToFieldsFinderImpl;
 import org.summerb.easycrud.join_query.impl.SelectFactoryImpl;
 import org.summerb.easycrud.query.Query;
 import org.summerb.easycrud.row.HasId;
@@ -40,7 +37,6 @@ public class SqlBuilderMySqlImplTest {
 
   private QuerySpecificsResolver querySpecificsResolver;
 
-  private ReferringToFieldsFinder referringToFieldsFinder;
   private SelectFactory selectFactory;
 
   private SqlBuilder sqlBuilder;
@@ -51,9 +47,6 @@ public class SqlBuilderMySqlImplTest {
 
   @BeforeEach
   void setUp() {
-    referringToFieldsFinder =
-        new ReferringToFieldsFinderCachingImpl(new ReferringToFieldsFinderImpl());
-
     querySpecificsResolver = mock(QuerySpecificsResolver.class);
 
     FieldsEnlisterCachingImpl fieldsEnlister =
@@ -73,8 +66,7 @@ public class SqlBuilderMySqlImplTest {
             fieldsEnlister);
 
     JoinQueryFactory joinQueryFactory =
-        new JoinQueryFactoryImpl(
-            referringToFieldsFinder, selectFactory, querySpecificsResolver, fieldsEnlister);
+        new JoinQueryFactoryImpl(selectFactory, querySpecificsResolver, fieldsEnlister);
 
     userService.setJoinQueryFactory(joinQueryFactory);
     postService.setJoinQueryFactory(joinQueryFactory);
@@ -168,12 +160,6 @@ public class SqlBuilderMySqlImplTest {
   }
 
   @Test
-  void appendFromClause_expectExceptionOnIndistinctiveReference() {
-    assertThrows(
-        RuntimeException.class, () -> userService.query().toJoin().join(postService.query()));
-  }
-
-  @Test
   void appendFromClause_shouldGenerateCorrectFromClauseForJoinWithReferredFirst() {
     // Given
     JoinQuery<String, UserRow> joinQuery = userService.query().toJoin();
@@ -195,7 +181,7 @@ public class SqlBuilderMySqlImplTest {
     JoinQuery<String, UserRow> joinQuery = userService.query().toJoin();
     Query<Long, PostRow> postQuery = postService.query();
     joinQuery.joinBack(postQuery, PostRow::getAuthorId);
-    joinQuery.join(commentService.query(), postQuery, CommentRow::getPostId);
+    joinQuery.joinBack(postQuery, commentService.query(), CommentRow::getPostId);
 
     // When
     StringBuilder sql = new StringBuilder();
@@ -247,7 +233,7 @@ public class SqlBuilderMySqlImplTest {
         userQuery
             .toJoin()
             .joinBack(postQuery, PostRow::getAuthorId)
-            .join(commentQuery, postQuery, CommentRow::getPostId);
+            .joinBack(postQuery, commentQuery, CommentRow::getPostId);
 
     // When
     StringBuilder sql = new StringBuilder();

@@ -3,13 +3,9 @@ package org.summerb.easycrud.join_query;
 import java.util.List;
 import java.util.function.Function;
 import org.summerb.easycrud.join_query.impl.JoinQueryElement;
-import org.summerb.easycrud.join_query.model.ReferringTo;
 import org.summerb.easycrud.query.OrderBy;
 import org.summerb.easycrud.query.Query;
 import org.summerb.easycrud.row.HasId;
-
-// TODO: Add support for EXISTS clause so that we do not have to deal with cartesian products of
-//  joined tables
 
 /**
  * Builds SQL JOIN queries by combining multiple {@link Query} instances (each representing a query
@@ -17,32 +13,304 @@ import org.summerb.easycrud.row.HasId;
  * - Fetch related data across multiple tables - Apply filtering and sorting using fields from
  * multiple tables.
  *
- * <p>Primarily intended for many-to-one relationships where resulting data set would not contain
- * duplicate rows from the primary table (as outlined by {@link #getPrimaryQuery()}).
- *
  * @param <TId> Primary table's ID type
  * @param <TRow> Primary table's row type, must implement {@link HasId}
  */
 public interface JoinQuery<TId, TRow extends HasId<TId>> {
-  /**
-   * @return The primary query whose table appears in the FROM clause
-   */
-  Query<TId, TRow> getPrimaryQuery();
 
   /**
-   * @return All configured JOIN elements in this query
+   * Adds an INNER JOIN that matches primary table (as denoted by the {@link #getPrimaryQuery()}) FK
+   * to the joined table PK.
+   *
+   * <p>Think of calling this method as if adding the following JOIN clause (pseudocode):
+   *
+   * <pre>JOIN addedQuery.TableName ON primaryQuery.TableName.fk = addedQuery.TableName.id</pre>
+   *
+   * @param <TAddedId> PK type of the joined table
+   * @param <TAddedRow> Row class of the joined table
+   * @param addedQuery Query representing the table to join and optional conditions to filter on
+   *     that table
+   * @param idOfAddedTableGetter Lambda that will be used to extract the field name from the primary
+   *     table that references to the joined table primary key
+   * @return self
    */
-  List<JoinQueryElement> getJoins();
+  <TAddedId, TAddedRow extends HasId<TAddedId>> JoinQuery<TId, TRow> join(
+      Query<TAddedId, TAddedRow> addedQuery, Function<TRow, TAddedId> idOfAddedTableGetter);
 
   /**
-   * @return All configured NOT EXISTS elements in this query
+   * Adds an INNER JOIN between a table that is already part of this JoinQuery (an existing one) and
+   * another table (added).
+   *
+   * <p>Think of calling this method as if adding the following JOIN clause (pseudocode):
+   *
+   * <pre>JOIN addedQuery.TableName ON existingQuery.TableName.fk = addedQuery.TableName.id</pre>
+   *
+   * @param existingQuery a query that denotes ONE table
+   * @param addedQuery a query that denotes ADDED table
+   * @param idOfAddedTableGetter Lambda that will be used to extract the field name from the ONE
+   *     table that references to the ADDED table primary key
+   * @return self
    */
-  List<JoinQueryElement> getNotExists();
+  <
+          TExistingId,
+          TExistingRow extends HasId<TExistingId>,
+          TAddedId,
+          TAddedRow extends HasId<TAddedId>>
+      JoinQuery<TId, TRow> join(
+          Query<TExistingId, TExistingRow> existingQuery,
+          Query<TAddedId, TAddedRow> addedQuery,
+          Function<TExistingRow, TAddedId> idOfAddedTableGetter);
 
   /**
-   * @return All participating queries (primary and joined tables) in this JOIN query
+   * Adds an INNER JOIN where the target table foreign key references PK on the primary table.
+   *
+   * <p>WARNING: this might lead to a cartesian product if you're adding a table for one-to-many
+   * reference, meaning rows will be duplicated. In such case consider turning on deduplication mode
+   * via invoking {@link #deduplicate()} method. Also consider using {@link #exists(Query,
+   * Function)} instead.
+   *
+   * <p>Think of calling this method as if adding the following JOIN clause (pseudocode):
+   *
+   * <pre>JOIN addedQuery.TableName ON addedQuery.TableName.fk = primaryQuery.TableName.id</pre>
+   *
+   * @param <TAddedId> Target table's ID type
+   * @param <TAddedRow> Target table's row type
+   * @param addedQuery Query representing the table to join
+   * @param idOfPrimaryTableGetter Function extracting the primary key from target table rows
+   * @return self
    */
-  List<Query<?, ?>> getQueries();
+  <TAddedId, TAddedRow extends HasId<TAddedId>> JoinQuery<TId, TRow> joinBack(
+      Query<TAddedId, TAddedRow> addedQuery, Function<TAddedRow, TId> idOfPrimaryTableGetter);
+
+  /**
+   * Adds an INNER JOIN between a table that is already part of this JoinQuery (existing) and
+   * another table (added).
+   *
+   * <p>WARNING: this might lead to a cartesian product if you're adding a table for one-to-many
+   * reference, meaning rows will be duplicated. In such a case consider turning on deduplication
+   * mode via invoking {@link #deduplicate()} method. Also consider using {@link #exists(Query,
+   * Function)} instead.
+   *
+   * <p>Think of calling this method as if adding the following JOIN clause (pseudocode):
+   *
+   * <pre>JOIN addedQuery.TableName ON addedQuery.TableName.fk = existingQuery.TableName.id</pre>
+   *
+   * @param existingQuery a query that denotes EXISTING table
+   * @param addedQuery a query that denotes ADDED table
+   * @param idOfExistingTableGetter Lambda that will be used to extract the field name from the
+   *     ADDED table that references the EXISTING table primary key
+   * @return self
+   */
+  <
+          TExistingId,
+          TExistingRow extends HasId<TExistingId>,
+          TAddedId,
+          TAddedRow extends HasId<TAddedId>>
+      JoinQuery<TId, TRow> joinBack(
+          Query<TExistingId, TExistingRow> existingQuery,
+          Query<TAddedId, TAddedRow> addedQuery,
+          Function<TAddedRow, TExistingId> idOfExistingTableGetter);
+
+  /**
+   * Adds a LEFT JOIN to match primary table FK to joined table PK.
+   *
+   * <p>If addedQuery contain any filtering conditions, they will be added to the join clause. If
+   * you want conditions to be added to the WHERE clause, use regular join (which is inner join)
+   * instead of the left join
+   *
+   * <p>Think of calling this method as if adding the following JOIN clause (pseudocode):
+   *
+   * <pre>
+   * LEFT JOIN addedQuery.TableName ON primaryQuery.TableName.fk = addedQuery.TableName.id [AND addedQuery.TableName.field1 = :value1 [AND ...]]
+   * </pre>
+   *
+   * @param <TAddedId> Target table's ID type
+   * @param <TAddedRow> Target table's row type
+   * @param addedQuery Query representing the table to join
+   * @param idOfAddedTableGetter Function extracting the foreign key from primary table rows
+   * @return self
+   */
+  <TAddedId, TAddedRow extends HasId<TAddedId>> JoinQuery<TId, TRow> leftJoin(
+      Query<TAddedId, TAddedRow> addedQuery, Function<TRow, TAddedId> idOfAddedTableGetter);
+
+  /**
+   * Adds a LEFT JOIN between a table that is already mentioned (existing) in this JoinQuery and
+   * another (added) table.
+   *
+   * <p>If the new query contains any filtering conditions, they will be added to the JOIN clause.
+   * If you want conditions to be added to the WHERE clause, use regular join (which is inner join)
+   * instead of this left join.
+   *
+   * <p>Think of calling this method as if adding the following JOIN clause (pseudocode):
+   *
+   * <pre>
+   * LEFT JOIN addedQuery.TableName ON existingQuery.TableName.fk = addedQuery.TableName.id [AND addedQuery.TableName.field1 = :value1 [AND ...]]
+   * </pre>
+   *
+   * @param existingQuery a query that denotes ONE table
+   * @param addedQuery a query that denotes OTHER table
+   * @param idOfAddedTableGetter Lambda that will be used to extract the field name from the ONE
+   *     table that references to the OTHER table primary key
+   * @return self
+   */
+  <
+          TExistingId,
+          TExistingRow extends HasId<TExistingId>,
+          TAddedId,
+          TAddedRow extends HasId<TAddedId>>
+      JoinQuery<TId, TRow> leftJoin(
+          Query<TExistingId, TExistingRow> existingQuery,
+          Query<TAddedId, TAddedRow> addedQuery,
+          Function<TExistingRow, TAddedId> idOfAddedTableGetter);
+
+  /**
+   * Adds a LEFT JOIN to match joined table FK to primary table PK.
+   *
+   * <p>If addedQuery contain any filtering conditions, they will be added to the join clause. If
+   * you want conditions to be added to the WHERE clause, use regular join (which is inner join)
+   * instead of the left join
+   *
+   * <p>WARNING: this might lead to a cartesian product if you're adding a table for one-to-many
+   * reference, meaning rows will be duplicated. In such case consider turning on deduplication mode
+   * via invoking {@link #deduplicate()} method. Also consider using {@link #exists(Query,
+   * Function)} instead.
+   *
+   * <p>Think of calling this method as if adding the following JOIN clause (pseudocode):
+   *
+   * <pre>
+   * LEFT JOIN addedQuery.TableName ON primaryQuery.TableName.fk = addedQuery.TableName.id [AND addedQuery.TableName.field1 = :value1 [AND ...]]
+   * </pre>
+   *
+   * @param <TAddedId> Target table's ID type
+   * @param <TAddedRow> Target table's row type
+   * @param addedQuery Query representing the table to join
+   * @param idOfPrimaryTableGetter Function extracting the foreign key from the added table that
+   *     points to primary table
+   * @return self
+   */
+  <TAddedId, TAddedRow extends HasId<TAddedId>> JoinQuery<TId, TRow> leftJoinBack(
+      Query<TAddedId, TAddedRow> addedQuery, Function<TAddedRow, TId> idOfPrimaryTableGetter);
+
+  /**
+   * Adds NOT EXISTS to the WHERE clause to make sure there are no records exist in the added table
+   * that refers to the primary table.
+   *
+   * <p>NOTE: At this time it is possible to add only 1 table to this check (meaning no joins can be
+   * added into the EXISTS clause itself)
+   *
+   * <p>NOTE 2: Although this is not a JOIN "per se", this is often called "anti-join" -- operation
+   * opposite to performing inner join, therefore, it is added to this API.
+   *
+   * <p>Think of calling this method as if adding the following statement to the WHERE clause
+   * (pseudocode):
+   *
+   * <pre>
+   * WHERE ... AND NOT EXISTS (SELECT 1 FROM addedQuery.TableName ON addedQuery.TableName.fk = primaryQuery.TableName.id [AND addedQuery.TableName.field1 = :value1 [AND ...]]
+   * </pre>
+   *
+   * @param <TAddedId> Added table ID type
+   * @param <TAddedRow> Added table row type
+   * @param addedQuery Query representing the table to join
+   * @param idOfPrimaryTableGetter Function extracting the foreign key from the added table which
+   *     points to primary table PK
+   * @return self
+   */
+  <TAddedId, TAddedRow extends HasId<TAddedId>> JoinQuery<TId, TRow> notExists(
+      Query<TAddedId, TAddedRow> addedQuery, Function<TAddedRow, TId> idOfPrimaryTableGetter);
+
+  /**
+   * Adds NOT EXISTS to the WHERE clause to make sure there are no records exist in the ADDED table
+   * that refers to a table that was already referenced in the previously added JOIN query.
+   *
+   * <p>NOTE: Although this is not a JOIN "per se", this is often called "anti-join" -- operation
+   * opposite to performing inner join, therefore, it is added to this API.
+   *
+   * <p>NOTE 2: At this time it is possible to add only 1 table to this check (meaning no joins can
+   * be added into the EXISTS clause itself)
+   *
+   * <p>Think of calling this method as if adding the following statement to the WHERE clause
+   * (pseudocode):
+   *
+   * <pre>
+   * WHERE ... AND NOT EXISTS (SELECT 1 FROM addedQuery.TableName ON addedQuery.TableName.fk = existingJoinQuery.TableName.id [AND addedQuery.TableName.field1 = :value1 [AND ...]]
+   * </pre>
+   *
+   * @param existingJoinQuery a query that denotes OTHER table
+   * @param addedQuery a query that denotes ADDED table
+   * @param idOfSecondaryTableGetter Lambda that will be used to extract the field name from the
+   *     ADDED table that references to the OTHER table primary key
+   * @return self
+   */
+  <TAddedId, TAddedRow extends HasId<TAddedId>, ExistingId, ExistingRow extends HasId<ExistingId>>
+      JoinQuery<TId, TRow> notExists(
+          Query<ExistingId, ExistingRow> existingJoinQuery,
+          Query<TAddedId, TAddedRow> addedQuery,
+          Function<TAddedRow, ExistingId> idOfSecondaryTableGetter);
+
+  /**
+   * Adds EXISTS to the WHERE clause to filter by data in the added table that refers to the primary
+   * table. In a sense, this is an alternative to {@link #leftJoinBack(Query, Function)} which
+   * allows to perform filtering but avoid cartesian products.
+   *
+   * <p>NOTE: At this time it is possible to add only 1 table to this check (meaning no joins can be
+   * added into the EXISTS clause itself)
+   *
+   * <p>NOTE 2: Although this is not a JOIN "per se", this seems to be a viable alternative to
+   * joining that other table, which in the case of one-to-many relationship, will result in
+   * cartesian product. Therefore, it is added to this API.
+   *
+   * <p>Think of calling this method as if adding the following statement to the WHERE clause
+   * (pseudocode):
+   *
+   * <pre>
+   * WHERE ... AND EXISTS (SELECT 1 FROM addedQuery.TableName ON addedQuery.TableName.fk = primaryQuery.TableName.id [AND addedQuery.TableName.field1 = :value1 [AND ...]]
+   * </pre>
+   *
+   * @param <TAddedId> Added table ID type
+   * @param <TAddedRow> Added table row type
+   * @param addedQuery Query representing the table to join
+   * @param idOfPrimaryTableGetter Function extracting the foreign key from the added table which
+   *     points to primary table PK
+   * @return self
+   */
+  <TAddedId, TAddedRow extends HasId<TAddedId>> JoinQuery<TId, TRow> exists(
+      Query<TAddedId, TAddedRow> addedQuery, Function<TAddedRow, TId> idOfPrimaryTableGetter);
+
+  /**
+   * Adds EXISTS to the WHERE clause to filter by data in the added table that refers to some table
+   * that was already referenced in the previously added JOIN query. In a sense, this is an
+   * alternative to {@link #leftJoinBack(Query, Function)} which allows to perform filtering but
+   * avoid cartesian products.
+   *
+   * <p>NOTE: At this time it is possible to add only 1 table to this check (meaning no joins can be
+   * added into the EXISTS clause itself)
+   *
+   * <p>NOTE 2: Although this is not a JOIN "per se", this seems to be a viable alternative to
+   * joining that other table, which in the case of one-to-many relationship, will result in
+   * cartesian product. Therefore, it is added to this API.
+   *
+   * <p>Think of calling this method as if adding the following statement to the WHERE clause
+   * (pseudocode):
+   *
+   * <pre>
+   * WHERE ... AND EXISTS (SELECT 1 FROM addedQuery.TableName ON addedQuery.TableName.fk = existingJoinQuery.TableName.id [AND addedQuery.TableName.field1 = :value1 [AND ...]]
+   * </pre>
+   *
+   * @param existingJoinQuery a query that denotes OTHER table
+   * @param addedQuery a query that denotes ADDED table
+   * @param idOfSecondaryTableGetter Lambda that will be used to extract the field name from the
+   *     ADDED table that references to the OTHER table primary key
+   * @return self
+   */
+  <
+          TAddedId,
+          TAddedRow extends HasId<TAddedId>,
+          TExistingId,
+          TExistingRow extends HasId<TExistingId>>
+      JoinQuery<TId, TRow> exists(
+          Query<TExistingId, TExistingRow> existingJoinQuery,
+          Query<TAddedId, TAddedRow> addedQuery,
+          Function<TAddedRow, TExistingId> idOfSecondaryTableGetter);
 
   /**
    * When invoked, results will be deduplicated using a window function using ROW_NUMBER() over
@@ -52,206 +320,6 @@ public interface JoinQuery<TId, TRow extends HasId<TId>> {
    * @return self
    */
   JoinQuery<TId, TRow> deduplicate();
-
-  /**
-   * @return true if deduplication of data from table denoted by primary query is requested
-   */
-  boolean isDeduplicate();
-
-  /**
-   * Adds an INNER JOIN using an explicit foreign key specification to match primary table FK to
-   * joined table PK.
-   *
-   * <p>Think of calling this method as if adding the following JOIN clause (pseudocode):
-   *
-   * <pre>JOIN queryToJoin.TableName ON primaryQuery.TableName.fk = queryToJoin.TableName.id</pre>
-   *
-   * @param <JoinedTableIdType> PK type of the joined table
-   * @param <JoinedTableRowType> Row class of the joined table
-   * @param queryToJoin Query representing the table to join and optional conditions to filter on
-   *     that table
-   * @param fkGetter Lambda that will be used to extract the field name from the primary table that
-   *     references to the joined table primary key
-   * @return self
-   */
-  <JoinedTableIdType, JoinedTableRowType extends HasId<JoinedTableIdType>>
-      JoinQuery<TId, TRow> join(
-          Query<JoinedTableIdType, JoinedTableRowType> queryToJoin,
-          Function<TRow, JoinedTableIdType> fkGetter);
-
-  /**
-   * Adds an INNER JOIN between two non-primary tables using an explicit foreign key specification.
-   * One of the specified tables is expected to already be in a join and transitively joined with
-   * the primary table.
-   *
-   * @param queryOne a query that denotes ONE table
-   * @param queryOther a query that denotes OTHER table
-   * @param queryOneFkGetter Lambda that will be used to extract the field name from the ONE table
-   *     that references to the OTHER table primary key
-   * @return self
-   */
-  <TOneId, TOneRow extends HasId<TOneId>, TOtherId, TOtherRow extends HasId<TOtherId>>
-      JoinQuery<TId, TRow> join(
-          Query<TOneId, TOneRow> queryOne,
-          Query<TOtherId, TOtherRow> queryOther,
-          Function<TOneRow, TOtherId> queryOneFkGetter);
-
-  /**
-   * Adds an INNER JOIN where the target table foreign key references PK on the primary table.
-   *
-   * <p>WARNING: this might lead to a cartesian product if you're adding a table for one-to-many
-   * reference, meaning rows will be duplicated. In such case consider turning on deduplication mode
-   * via invoking {@link #deduplicate()} method.
-   *
-   * <p>Think of calling this method as if adding the following JOIN clause (pseudocode):
-   *
-   * <pre>JOIN queryToJoin.TableName ON queryToJoin.TableName.fk = primaryQuery.TableName.id</pre>
-   *
-   * @param <JoinedTableIdType> Target table's ID type
-   * @param <JoinedTableRowType> Target table's row type
-   * @param queryToJoin Query representing the table to join
-   * @param fkGetter Function extracting the primary key from target table rows
-   * @return self
-   */
-  <JoinedTableIdType, JoinedTableRowType extends HasId<JoinedTableIdType>>
-      JoinQuery<TId, TRow> joinBack(
-          Query<JoinedTableIdType, JoinedTableRowType> queryToJoin,
-          Function<JoinedTableRowType, TId> fkGetter);
-
-  /**
-   * Adds a LEFT JOIN using explicit foreign key specification to match primary table FK to joined
-   * table PK.
-   *
-   * <p>If queryToJoin contain any filtering conditions, they will be added to the join clause. If
-   * you want conditions to be added to the WHERE clause, use regular join (which is inner join)
-   * instead of the left join
-   *
-   * <p>Think of calling this method as if adding the following JOIN clause (pseudocode):
-   *
-   * <pre>
-   * LEFT JOIN queryToJoin.TableName ON primaryQuery.TableName.fk = queryToJoin.TableName.id [AND queryToJoin.TableName.field1 = :value1 [AND ...]]
-   * </pre>
-   *
-   * @param <JoinedTableIdType> Target table's ID type
-   * @param <JoinedTableRowType> Target table's row type
-   * @param queryToJoin Query representing the table to join
-   * @param fkGetter Function extracting the foreign key from primary table rows
-   * @return self
-   */
-  <JoinedTableIdType, JoinedTableRowType extends HasId<JoinedTableIdType>>
-      JoinQuery<TId, TRow> leftJoin(
-          Query<JoinedTableIdType, JoinedTableRowType> queryToJoin,
-          Function<TRow, JoinedTableIdType> fkGetter);
-
-  /**
-   * Adds a LEFT JOIN between two non-primary tables using an explicit foreign key specification.
-   * One of the specified tables is expected to already be in a join and transitively joined with
-   * the primary table.
-   *
-   * <p>If the new query contains any filtering conditions, they will be added to the JOIN clause.
-   * If you want conditions to be added to the WHERE clause, use regular join (which is inner join)
-   * instead of this left join.
-   *
-   * <p>Think of calling this method as if adding the following JOIN clause (pseudocode):
-   *
-   * <pre>
-   * LEFT JOIN queryOne.TableName ON queryOne.TableName.fk = queryOther.TableName.id [AND new_query.TableName.field1 = :value1 [AND ...]]
-   * </pre>
-   *
-   * NOTE: In the above example new_query represents the query that is being added with this call
-   *
-   * @param queryOne a query that denotes ONE table
-   * @param queryOther a query that denotes OTHER table
-   * @param queryOneFkGetter Lambda that will be used to extract the field name from the ONE table
-   *     that references to the OTHER table primary key
-   * @return self
-   */
-  <TOneId, TOneRow extends HasId<TOneId>, TOtherId, TOtherRow extends HasId<TOtherId>>
-      JoinQuery<TId, TRow> leftJoin(
-          Query<TOneId, TOneRow> queryOne,
-          Query<TOtherId, TOtherRow> queryOther,
-          Function<TOneRow, TOtherId> queryOneFkGetter);
-
-  /**
-   * Adds a LEFT JOIN using explicit foreign key specification to match joined table FK to primary
-   * table PK.
-   *
-   * <p>If queryToJoin contain any filtering conditions, they will be added to the join clause. If
-   * you want conditions to be added to the WHERE clause, use regular join (which is inner join)
-   * instead of the left join
-   *
-   * <p>WARNING: this might lead to a cartesian product if you're adding a table for one-to-many
-   * reference, meaning rows will be duplicated. In such case consider turning on deduplication mode
-   * via invoking {@link #deduplicate()} method.
-   *
-   * <p>Think of calling this method as if adding the following JOIN clause (pseudocode):
-   *
-   * <pre>
-   * LEFT JOIN queryToJoin.TableName ON primaryQuery.TableName.fk = queryToJoin.TableName.id [AND queryToJoin.TableName.field1 = :value1 [AND ...]]
-   * </pre>
-   *
-   * @param <JoinedTableIdType> Target table's ID type
-   * @param <JoinedTableRowType> Target table's row type
-   * @param queryToJoin Query representing the table to join
-   * @param fkGetter Function extracting the foreign key from primary table rows
-   * @return self
-   */
-  <JoinedTableIdType, JoinedTableRowType extends HasId<JoinedTableIdType>>
-      JoinQuery<TId, TRow> leftJoinBack(
-          Query<JoinedTableIdType, JoinedTableRowType> queryToJoin,
-          Function<JoinedTableRowType, TId> fkGetter);
-
-  /**
-   * Adds NOT EXISTS to the WHERE clause to make sure there are no records exist in the added table
-   * that refers to the primary table.
-   *
-   * <p>NOTE: Although this is not a JOIN "per se", this is often called "anti-join" -- operation
-   * opposite to performing inner join, therefore, it is added to this API.
-   *
-   * <p>Think of calling this method as if adding the following statement to the WHERE clause
-   * (pseudocode):
-   *
-   * <pre>
-   * WHERE ... AND NOT EXISTS (SELECT 1 FROM queryToAdd.TableName ON queryToAdd.TableName.fk = primaryQuery.TableName.id [AND queryToAdd.TableName.field1 = :value1 [AND ...]]
-   * </pre>
-   *
-   * @param <AddedTableIdType> Target table's ID type
-   * @param <AddedTableRowType> Target table's row type
-   * @param queryToAdd Query representing the table to join
-   * @param fkGetter Function extracting the foreign key from the added table which points to
-   *     primary table PK
-   * @return self
-   */
-  <AddedTableIdType, AddedTableRowType extends HasId<AddedTableIdType>>
-      JoinQuery<TId, TRow> notExists(
-          Query<AddedTableIdType, AddedTableRowType> queryToAdd,
-          Function<AddedTableRowType, TId> fkGetter);
-
-  /**
-   * Adds NOT EXISTS to the WHERE clause to make sure there are no records exist in the added table
-   * that refers to some other table that was already referenced in the previously added JOIN query.
-   *
-   * <p>NOTE: Although this is not a JOIN "per se", this is often called "anti-join" -- operation
-   * opposite to performing inner join, therefore, it is added to this API.
-   *
-   * <p>Think of calling this method as if adding the following statement to the WHERE clause
-   * (pseudocode):
-   *
-   * <pre>
-   * WHERE ... AND NOT EXISTS (SELECT 1 FROM queryToAdd.TableName ON queryToAdd.TableName.fk = existingJoinQuery.TableName.id [AND queryToAdd.TableName.field1 = :value1 [AND ...]]
-   * </pre>
-   *
-   * @param queryToAdd a query that denotes ONE table
-   * @param existingJoinQuery a query that denotes OTHER table
-   * @param queryToAddFkGetter Lambda that will be used to extract the field name from the ONE table
-   *     that references to the OTHER table primary key
-   * @return self
-   */
-  <AddedId, AddedRow extends HasId<AddedId>, ExistingId, ExistingRow extends HasId<ExistingId>>
-      JoinQuery<TId, TRow> notExists(
-          Query<AddedId, AddedRow> queryToAdd,
-          Query<ExistingId, ExistingRow> existingJoinQuery,
-          Function<AddedRow, ExistingId> queryToAddFkGetter);
 
   /**
    * Once you finished configuring this Join Query, call this method to create Selector for primary
@@ -319,66 +387,27 @@ public interface JoinQuery<TId, TRow extends HasId<TId>> {
   JoinDirection getJoinDirection(Query<?, ?> query);
 
   /**
-   * Adds an INNER JOIN with automatic foreign key detection.
-   *
-   * <p>Automatically identifies the foreign key relationship by scanning for {@link ReferringTo}
-   * annotations first on the primary table's fields, then on the target table's fields.
-   *
-   * <p>WARNING: Use with caution as this method introduces "magic" that cannot be verified at
-   * compile time.
-   *
-   * @param otherQuery Query representing the table to join
-   * @return self
-   * @param <TOtherId> Target table's ID type
-   * @param <TOtherRow> Target table's row type
+   * @return The primary query whose table appears in the FROM clause
    */
-  <TOtherId, TOtherRow extends HasId<TOtherId>> JoinQuery<TId, TRow> join(
-      Query<TOtherId, TOtherRow> otherQuery);
+  Query<TId, TRow> getPrimaryQuery();
 
   /**
-   * Adds an INNER JOIN between two non-primary tables with automatic foreign key detection.
-   *
-   * <p>Automatically identifies foreign key using {@link ReferringTo} annotations on either table.
-   * Both tables must be connected to the primary table through existing joins.
-   *
-   * <p>WARNING: Use with caution as this method introduces "magic" that cannot be verified at
-   * compile time.
-   *
-   * @return self
+   * @return All configured JOIN elements in this query
    */
-  <TOneId, TOneRow extends HasId<TOneId>, TOtherId, TOtherRow extends HasId<TOtherId>>
-      JoinQuery<TId, TRow> join(
-          Query<TOneId, TOneRow> queryOne, Query<TOtherId, TOtherRow> queryOther);
+  List<JoinQueryElement> getJoins();
 
   /**
-   * Adds a LEFT JOIN between two non-primary tables with automatic foreign key detection.
-   *
-   * <p>Automatically identifies foreign key using {@link ReferringTo} annotations on either table.
-   * Both tables must be connected to the primary table through existing joins.
-   *
-   * <p>WARNING: Use with caution as this method introduces "magic" that cannot be verified at
-   * compile time.
-   *
-   * @return self
+   * @return All configured EXISTS and NOT EXISTS elements in this query
    */
-  <TOneId, TOneRow extends HasId<TOneId>, TOtherId, TOtherRow extends HasId<TOtherId>>
-      JoinQuery<TId, TRow> leftJoin(
-          Query<TOneId, TOneRow> queryOne, Query<TOtherId, TOtherRow> queryOther);
+  List<JoinQueryElement> getExistenceConditions();
 
   /**
-   * Adds a LEFT JOIN with automatic foreign key detection.
-   *
-   * <p>Automatically identifies the foreign key relationship by scanning for {@link ReferringTo}
-   * annotations first on the primary table's fields, then on the target table's fields.
-   *
-   * <p>WARNING: Use with caution as this method introduces "magic" that cannot be verified at
-   * compile time.
-   *
-   * @param otherQuery Query representing the table to join
-   * @return self
-   * @param <TOtherId> Target table's ID type
-   * @param <TOtherRow> Target table's row type
+   * @return All participating queries (primary and joined tables) in this JOIN query
    */
-  <TOtherId, TOtherRow extends HasId<TOtherId>> JoinQuery<TId, TRow> leftJoin(
-      Query<TOtherId, TOtherRow> otherQuery);
+  List<Query<?, ?>> getQueries();
+
+  /**
+   * @return true if deduplication of data from table denoted by primary query is requested
+   */
+  boolean isDeduplicate();
 }
