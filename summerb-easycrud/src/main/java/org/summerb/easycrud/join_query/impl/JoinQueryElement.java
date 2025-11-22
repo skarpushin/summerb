@@ -11,23 +11,26 @@ public class JoinQueryElement {
   /** Query that is based on the Row (table) that is referring to some other table */
   protected final Query<?, ?> referer;
 
-  /** Name of the field from the referer query which contains ID of the referred */
-  protected final String otherIdGetterFieldName;
+  /**
+   * Name of the field from the referer query's table which contains the foreign key that points to
+   * the referred primary key (ID)
+   */
+  protected final String foreignKeyFieldName;
 
   /** Query that is based on the Row (table) that is being referred to */
   protected final Query<?, ?> referred;
 
   public JoinQueryElement(
-      JoinType joinType, Query<?, ?> referer, String otherIdGetterFieldName, Query<?, ?> referred) {
+      JoinType joinType, Query<?, ?> referer, String foreignKeyFieldName, Query<?, ?> referred) {
     Preconditions.checkNotNull(joinType, "joinType is required");
     Preconditions.checkNotNull(referer, "referer is required");
     Preconditions.checkArgument(
-        StringUtils.hasText(otherIdGetterFieldName), "otherIdGetterFieldName is required");
+        StringUtils.hasText(foreignKeyFieldName), "foreignKeyFieldName is required");
     Preconditions.checkNotNull(referred, "referred is required");
 
     this.joinType = joinType;
     this.referer = referer;
-    this.otherIdGetterFieldName = otherIdGetterFieldName;
+    this.foreignKeyFieldName = foreignKeyFieldName;
     this.referred = referred;
   }
 
@@ -35,8 +38,8 @@ public class JoinQueryElement {
     return joinType;
   }
 
-  public String getOtherIdGetterFieldName() {
-    return otherIdGetterFieldName;
+  public String getForeignKeyFieldName() {
+    return foreignKeyFieldName;
   }
 
   public Query<?, ?> getReferer() {

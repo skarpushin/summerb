@@ -250,7 +250,7 @@ public class JoinedSelectImpl extends SelectTemplate implements JoinedSelect {
   protected EntityNotFoundException buildEntityNotFound() {
     StringBuilder sql = new StringBuilder();
     sqlBuilder.appendFieldConditionsToWhereClause(
-        joinQuery.getQueries(), sql, new MapSqlParameterSource(), new ParamIdxIncrementer());
+        joinQuery.getJoinedQueries(), sql, new MapSqlParameterSource(), new ParamIdxIncrementer());
     return new EntityNotFoundException(
         querySpecificsResolver.getRowMessageCode(joinQuery.getPrimaryQuery()), "joinquery:" + sql);
   }

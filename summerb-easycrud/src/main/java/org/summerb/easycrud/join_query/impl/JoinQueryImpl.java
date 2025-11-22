@@ -4,10 +4,10 @@ import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.IdentityHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +17,6 @@ import org.summerb.easycrud.join_query.JoinDirection;
 import org.summerb.easycrud.join_query.JoinQuery;
 import org.summerb.easycrud.join_query.JoinedSelect;
 import org.summerb.easycrud.join_query.QuerySpecificsResolver;
-import org.summerb.easycrud.join_query.ReferringToFieldsFinder;
 import org.summerb.easycrud.join_query.Select;
 import org.summerb.easycrud.join_query.SelectFactory;
 import org.summerb.easycrud.join_query.model.JoinType;
@@ -45,7 +44,10 @@ import org.summerb.easycrud.sql_builder.FieldsEnlister;
  */
 public class JoinQueryImpl<TId, TRow extends HasId<TId>> implements JoinQuery<TId, TRow> {
   protected static final Logger log = LoggerFactory.getLogger(JoinQueryImpl.class);
-  protected ReferringToFieldsFinder referringToFieldsFinder;
+
+  protected Set<ConditionsLocation> JOINED_CONDITIONS_LOCATION =
+      Set.of(ConditionsLocation.JOIN, ConditionsLocation.WHERE);
+
   protected SelectFactory selectFactory;
   protected QuerySpecificsResolver querySpecificsResolver;
   protected FieldsEnlister fieldsEnlister;
@@ -58,6 +60,11 @@ public class JoinQueryImpl<TId, TRow extends HasId<TId>> implements JoinQuery<TI
 
   protected List<Query<?, ?>> queriesUnmodifiable;
 
+  /** Only queries which participate in join statements */
+  protected List<Query<?, ?>> joinedQueries = new ArrayList<>();
+
+  protected List<Query<?, ?>> joinedQueriesUnmodifiable;
+
   /** Conditions locations */
   protected Map<Query<?, ?>, ConditionsLocation> mapQueryToConditionLocation =
       new IdentityHashMap<>();
@@ -66,25 +73,24 @@ public class JoinQueryImpl<TId, TRow extends HasId<TId>> implements JoinQuery<TI
   protected Map<Query<?, ?>, JoinDirection> mapQueryToJoinDirection = new IdentityHashMap<>();
 
   /** Joins and their conditions */
-  protected List<JoinQueryElement> joins = new LinkedList<>();
+  protected List<JoinQueryElement> joins = new ArrayList<>();
 
   protected List<JoinQueryElement> joinsUnmodifiable;
 
-  protected List<JoinQueryElement> notExists = new LinkedList<>();
-  protected List<JoinQueryElement> notExistsUnmodifiable;
+  /** Elements for EXISTS and NOT EXISTS clauses. */
+  protected List<JoinQueryElement> existence = new ArrayList<>();
+
+  protected List<JoinQueryElement> existenceUnmodifiable;
 
   /** if true, selection should deduplicate results */
   protected boolean deduplicate;
 
   public JoinQueryImpl(
       Query<TId, TRow> primarySelection,
-      ReferringToFieldsFinder referringToFieldsFinder,
       SelectFactory selectFactory,
       QuerySpecificsResolver querySpecificsResolver,
       FieldsEnlister fieldsEnlister) {
     Preconditions.checkArgument(primarySelection != null, "primarySelection must be provided");
-    Preconditions.checkArgument(
-        referringToFieldsFinder != null, "referringToFieldsFinder must be provided");
     Preconditions.checkArgument(selectFactory != null, "selectFactory must be provided");
     Preconditions.checkArgument(
         querySpecificsResolver != null, "querySpecificsResolver must be provided");
@@ -94,7 +100,6 @@ public class JoinQueryImpl<TId, TRow extends HasId<TId>> implements JoinQuery<TI
     this.querySpecificsResolver = querySpecificsResolver;
     this.selectFactory = selectFactory;
     this.primarySelection = primarySelection;
-    this.referringToFieldsFinder = referringToFieldsFinder;
 
     addQuery(primarySelection, ConditionsLocation.WHERE, JoinDirection.FORWARD);
   }
@@ -108,11 +113,19 @@ public class JoinQueryImpl<TId, TRow extends HasId<TId>> implements JoinQuery<TI
   }
 
   @Override
-  public List<JoinQueryElement> getNotExists() {
-    if (notExistsUnmodifiable == null) {
-      notExistsUnmodifiable = Collections.unmodifiableList(notExists);
+  public List<JoinQueryElement> getExistenceConditions() {
+    if (existenceUnmodifiable == null) {
+      existenceUnmodifiable = Collections.unmodifiableList(existence);
     }
-    return notExistsUnmodifiable;
+    return existenceUnmodifiable;
+  }
+
+  @Override
+  public List<Query<?, ?>> getJoinedQueries() {
+    if (joinedQueriesUnmodifiable == null) {
+      joinedQueriesUnmodifiable = Collections.unmodifiableList(joinedQueries);
+    }
+    return joinedQueriesUnmodifiable;
   }
 
   @Override
@@ -136,7 +149,7 @@ public class JoinQueryImpl<TId, TRow extends HasId<TId>> implements JoinQuery<TI
     }
 
     boolean hasAtLeastOneBackwardJoin =
-        getQueries().stream().anyMatch(x -> getJoinDirection(x) == JoinDirection.BACKWARD);
+        getJoinedQueries().stream().anyMatch(x -> getJoinDirection(x) == JoinDirection.BACKWARD);
     if (!hasAtLeastOneBackwardJoin) {
       log.warn(
           "JoinQuery deduplication requested, but no backward joins (one-to-many relationships which might produce cartesian products) found");
@@ -151,183 +164,232 @@ public class JoinQueryImpl<TId, TRow extends HasId<TId>> implements JoinQuery<TI
   }
 
   @Override
-  public <TOtherId, TOtherRow extends HasId<TOtherId>> JoinQuery<TId, TRow> join(
-      Query<TOtherId, TOtherRow> otherQuery) {
+  public <TAddedId, TAddedRow extends HasId<TAddedId>> JoinQuery<TId, TRow> join(
+      Query<TAddedId, TAddedRow> addedQuery, Function<TRow, TAddedId> idOfAddedTableGetter) {
 
-    addQuery(otherQuery, ConditionsLocation.WHERE, JoinDirection.FORWARD);
-
-    return innerJoinByForeignKeyAutoDetect(primarySelection, otherQuery);
-  }
-
-  @Override
-  public <TOtherId, TOtherRow extends HasId<TOtherId>> JoinQuery<TId, TRow> join(
-      Query<TOtherId, TOtherRow> queryToJoin, Function<TRow, TOtherId> fkGetter) {
-
-    addQuery(queryToJoin, ConditionsLocation.WHERE, JoinDirection.FORWARD);
+    addQuery(addedQuery, ConditionsLocation.WHERE, JoinDirection.FORWARD);
 
     joins.add(
         new JoinQueryElement(
-            JoinType.INNER, primarySelection, primarySelection.name(fkGetter), queryToJoin));
+            JoinType.INNER,
+            primarySelection,
+            primarySelection.name(idOfAddedTableGetter),
+            addedQuery));
 
     return this;
   }
 
   @Override
-  public <TOtherId, TOtherRow extends HasId<TOtherId>> JoinQuery<TId, TRow> joinBack(
-      Query<TOtherId, TOtherRow> queryToJoin, Function<TOtherRow, TId> fkGetter) {
+  public <TAddedId, TAddedRow extends HasId<TAddedId>> JoinQuery<TId, TRow> joinBack(
+      Query<TAddedId, TAddedRow> addedQuery, Function<TAddedRow, TId> idOfPrimaryTableGetter) {
 
-    addQuery(queryToJoin, ConditionsLocation.WHERE, JoinDirection.BACKWARD);
-
-    joins.add(
-        new JoinQueryElement(
-            JoinType.INNER, queryToJoin, queryToJoin.name(fkGetter), primarySelection));
-
-    return this;
-  }
-
-  @Override
-  public <TOneId, TOneRow extends HasId<TOneId>, TOtherId, TOtherRow extends HasId<TOtherId>>
-      JoinQuery<TId, TRow> join(
-          Query<TOneId, TOneRow> queryOne,
-          Query<TOtherId, TOtherRow> queryOther,
-          Function<TOneRow, TOtherId> queryOneFkGetter) {
-
-    addQueries(queryOne, queryOther, ConditionsLocation.WHERE);
+    addQuery(addedQuery, ConditionsLocation.WHERE, JoinDirection.BACKWARD);
 
     joins.add(
         new JoinQueryElement(
-            JoinType.INNER, queryOne, queryOne.name(queryOneFkGetter), queryOther));
-
-    return this;
-  }
-
-  protected void addQueries(
-      Query<?, ?> queryOne, Query<?, ?> queryOther, ConditionsLocation conditionsLocation) {
-    Preconditions.checkArgument(
-        (queries.contains(queryOne) != queries.contains(queryOther)),
-        "Only (and exactly) one of the queries must have been already registered with this join query");
-
-    addQuery(queryOne, conditionsLocation, JoinDirection.FORWARD);
-    addQuery(queryOther, conditionsLocation, JoinDirection.FORWARD);
-  }
-
-  @Override
-  public <TOneId, TOneRow extends HasId<TOneId>, TOtherId, TOtherRow extends HasId<TOtherId>>
-      JoinQuery<TId, TRow> join(
-          Query<TOneId, TOneRow> queryOne, Query<TOtherId, TOtherRow> queryOther) {
-
-    addQueries(queryOne, queryOther, ConditionsLocation.WHERE);
-
-    return innerJoinByForeignKeyAutoDetect(queryOne, queryOther);
-  }
-
-  @Override
-  public <TOtherId, TOtherRow extends HasId<TOtherId>> JoinQuery<TId, TRow> leftJoin(
-      Query<TOtherId, TOtherRow> queryToJoin, Function<TRow, TOtherId> fkGetter) {
-
-    addQuery(queryToJoin, ConditionsLocation.JOIN, JoinDirection.FORWARD);
-
-    joins.add(
-        new JoinQueryElement(
-            JoinType.LEFT, primarySelection, primarySelection.name(fkGetter), queryToJoin));
-
-    return this;
-  }
-
-  @Override
-  public <TOtherId, TOtherRow extends HasId<TOtherId>> JoinQuery<TId, TRow> leftJoinBack(
-      Query<TOtherId, TOtherRow> queryToJoin, Function<TOtherRow, TId> fkGetter) {
-
-    addQuery(queryToJoin, ConditionsLocation.JOIN, JoinDirection.BACKWARD);
-
-    joins.add(
-        new JoinQueryElement(
-            JoinType.LEFT, queryToJoin, queryToJoin.name(fkGetter), primarySelection));
-
-    return this;
-  }
-
-  @Override
-  public <AddedTableIdType, AddedTableRowType extends HasId<AddedTableIdType>>
-      JoinQuery<TId, TRow> notExists(
-          Query<AddedTableIdType, AddedTableRowType> queryToAdd,
-          Function<AddedTableRowType, TId> fkGetter) {
-
-    notExists.add(
-        new JoinQueryElement(
-            JoinType.NOT_EXISTS, queryToAdd, queryToAdd.name(fkGetter), primarySelection));
+            JoinType.INNER, addedQuery, addedQuery.name(idOfPrimaryTableGetter), primarySelection));
 
     return this;
   }
 
   @Override
   public <
-          AddedId,
-          AddedRow extends HasId<AddedId>,
+          TExistingId,
+          TExistingRow extends HasId<TExistingId>,
+          TAddedId,
+          TAddedRow extends HasId<TAddedId>>
+      JoinQuery<TId, TRow> joinBack(
+          Query<TExistingId, TExistingRow> existingQuery,
+          Query<TAddedId, TAddedRow> addedQuery,
+          Function<TAddedRow, TExistingId> idOfExistingTableGetter) {
+
+    Preconditions.checkArgument(
+        isJoined(existingQuery), "existingQuery must already be a part of JOIN sequence");
+
+    addQuery(addedQuery, ConditionsLocation.JOIN, JoinDirection.FORWARD);
+
+    joins.add(
+        new JoinQueryElement(
+            JoinType.INNER, addedQuery, addedQuery.name(idOfExistingTableGetter), existingQuery));
+
+    return this;
+  }
+
+  @Override
+  public <
+          TExistingId,
+          TExistingRow extends HasId<TExistingId>,
+          TAddedId,
+          TAddedRow extends HasId<TAddedId>>
+      JoinQuery<TId, TRow> join(
+          Query<TExistingId, TExistingRow> existingQuery,
+          Query<TAddedId, TAddedRow> addedQuery,
+          Function<TExistingRow, TAddedId> idOfAddedTableGetter) {
+
+    Preconditions.checkArgument(
+        isJoined(existingQuery), "existingQuery must already be a part of JOIN sequence");
+
+    addQuery(addedQuery, ConditionsLocation.JOIN, JoinDirection.FORWARD);
+
+    joins.add(
+        new JoinQueryElement(
+            JoinType.INNER, existingQuery, existingQuery.name(idOfAddedTableGetter), addedQuery));
+
+    return this;
+  }
+
+  @Override
+  public <TAddedId, TAddedRow extends HasId<TAddedId>> JoinQuery<TId, TRow> leftJoin(
+      Query<TAddedId, TAddedRow> addedQuery, Function<TRow, TAddedId> idOfAddedTableGetter) {
+
+    addQuery(addedQuery, ConditionsLocation.JOIN, JoinDirection.FORWARD);
+
+    joins.add(
+        new JoinQueryElement(
+            JoinType.LEFT,
+            primarySelection,
+            primarySelection.name(idOfAddedTableGetter),
+            addedQuery));
+
+    return this;
+  }
+
+  @Override
+  public <TAddedId, TAddedRow extends HasId<TAddedId>> JoinQuery<TId, TRow> leftJoinBack(
+      Query<TAddedId, TAddedRow> addedQuery, Function<TAddedRow, TId> idOfPrimaryTableGetter) {
+
+    addQuery(addedQuery, ConditionsLocation.JOIN, JoinDirection.BACKWARD);
+
+    joins.add(
+        new JoinQueryElement(
+            JoinType.LEFT, addedQuery, addedQuery.name(idOfPrimaryTableGetter), primarySelection));
+
+    return this;
+  }
+
+  @Override
+  public <TAddedId, TAddedRow extends HasId<TAddedId>> JoinQuery<TId, TRow> notExists(
+      Query<TAddedId, TAddedRow> addedQuery, Function<TAddedRow, TId> idOfPrimaryTableGetter) {
+
+    addQuery(addedQuery, ConditionsLocation.WHERE_EXISTS, JoinDirection.BACKWARD);
+
+    existence.add(
+        new JoinQueryElement(
+            JoinType.NOT_EXISTS,
+            addedQuery,
+            addedQuery.name(idOfPrimaryTableGetter),
+            primarySelection));
+
+    return this;
+  }
+
+  @Override
+  public <
+          TAddedId,
+          TAddedRow extends HasId<TAddedId>,
           ExistingId,
           ExistingRow extends HasId<ExistingId>>
       JoinQuery<TId, TRow> notExists(
-          Query<AddedId, AddedRow> queryToAdd,
           Query<ExistingId, ExistingRow> existingJoinQuery,
-          Function<AddedRow, ExistingId> fkGetter) {
+          Query<TAddedId, TAddedRow> addedQuery,
+          Function<TAddedRow, ExistingId> idOfSecondaryTableGetter) {
 
     Preconditions.checkArgument(
-        queries.contains(existingJoinQuery),
-        "existingJoinQuery must be already registered within this join");
-    Preconditions.checkArgument(
-        mapQueryToConditionLocation.get(existingJoinQuery) != ConditionsLocation.NOT_EXISTS,
-        "existingJoinQuery must not be used in other NOT EXIST clause");
+        isJoined(existingJoinQuery), "existingJoinQuery must already be a part of JOIN sequence");
 
-    notExists.add(
+    addQuery(addedQuery, ConditionsLocation.WHERE_EXISTS, JoinDirection.BACKWARD);
+
+    existence.add(
         new JoinQueryElement(
-            JoinType.NOT_EXISTS, queryToAdd, queryToAdd.name(fkGetter), existingJoinQuery));
+            JoinType.NOT_EXISTS,
+            addedQuery,
+            addedQuery.name(idOfSecondaryTableGetter),
+            existingJoinQuery));
 
     return this;
   }
 
   @Override
-  public <TOneId, TOneRow extends HasId<TOneId>, TOtherId, TOtherRow extends HasId<TOtherId>>
-      JoinQuery<TId, TRow> leftJoin(
-          Query<TOneId, TOneRow> queryOne,
-          Query<TOtherId, TOtherRow> queryOther,
-          Function<TOneRow, TOtherId> queryOneFkGetter) {
+  public <TAddedId, TAddedRow extends HasId<TAddedId>> JoinQuery<TId, TRow> exists(
+      Query<TAddedId, TAddedRow> addedQuery, Function<TAddedRow, TId> idOfPrimaryTableGetter) {
 
-    addQueries(queryOne, queryOther, ConditionsLocation.JOIN);
+    addQuery(addedQuery, ConditionsLocation.WHERE_EXISTS, JoinDirection.BACKWARD);
+
+    existence.add(
+        new JoinQueryElement(
+            JoinType.EXISTS,
+            addedQuery,
+            addedQuery.name(idOfPrimaryTableGetter),
+            primarySelection));
+
+    return this;
+  }
+
+  @Override
+  public <
+          TAddedId,
+          TAddedRow extends HasId<TAddedId>,
+          TExistingId,
+          TExistingRow extends HasId<TExistingId>>
+      JoinQuery<TId, TRow> exists(
+          Query<TExistingId, TExistingRow> existingJoinQuery,
+          Query<TAddedId, TAddedRow> addedQuery,
+          Function<TAddedRow, TExistingId> idOfSecondaryTableGetter) {
+
+    Preconditions.checkArgument(
+        isJoined(existingJoinQuery), "existingJoinQuery must already be a part of JOIN sequence");
+
+    addQuery(addedQuery, ConditionsLocation.WHERE_EXISTS, JoinDirection.BACKWARD);
+
+    existence.add(
+        new JoinQueryElement(
+            JoinType.EXISTS,
+            addedQuery,
+            addedQuery.name(idOfSecondaryTableGetter),
+            existingJoinQuery));
+
+    return this;
+  }
+
+  protected boolean isJoined(Query<?, ?> query) {
+    return joins.stream()
+        .anyMatch(x -> x.getReferer().equals(query) || x.getReferred().equals(query));
+  }
+
+  @Override
+  public <
+          TExistingId,
+          TExistingRow extends HasId<TExistingId>,
+          TAddedId,
+          TAddedRow extends HasId<TAddedId>>
+      JoinQuery<TId, TRow> leftJoin(
+          Query<TExistingId, TExistingRow> existingQuery,
+          Query<TAddedId, TAddedRow> addedQuery,
+          Function<TExistingRow, TAddedId> idOfAddedTableGetter) {
+
+    Preconditions.checkArgument(
+        isJoined(existingQuery), "existingQuery must already be a part of JOIN sequence");
+
+    addQuery(addedQuery, ConditionsLocation.JOIN, JoinDirection.FORWARD);
 
     joins.add(
-        new JoinQueryElement(JoinType.LEFT, queryOne, queryOne.name(queryOneFkGetter), queryOther));
+        new JoinQueryElement(
+            JoinType.LEFT, existingQuery, existingQuery.name(idOfAddedTableGetter), addedQuery));
 
     return this;
-  }
-
-  @Override
-  public <TOtherId, TOtherRow extends HasId<TOtherId>> JoinQuery<TId, TRow> leftJoin(
-      Query<TOtherId, TOtherRow> otherQuery) {
-
-    addQuery(otherQuery, ConditionsLocation.JOIN, JoinDirection.FORWARD);
-
-    return leftJoinByForeignKeyAutoDetect(primarySelection, otherQuery);
-  }
-
-  @Override
-  public <TOneId, TOneRow extends HasId<TOneId>, TOtherId, TOtherRow extends HasId<TOtherId>>
-      JoinQuery<TId, TRow> leftJoin(
-          Query<TOneId, TOneRow> queryOne, Query<TOtherId, TOtherRow> queryOther) {
-
-    addQueries(queryOne, queryOther, ConditionsLocation.JOIN);
-
-    return leftJoinByForeignKeyAutoDetect(queryOne, queryOther);
   }
 
   protected void addQuery(
       Query<?, ?> query, ConditionsLocation conditionsLocation, JoinDirection joinDirection) {
-    if (queries.contains(query)) {
-      return;
-    }
+    Preconditions.checkArgument(!queries.contains(query), "Query already present");
 
     ensureAliasesForQueriesToSameTable(query);
 
     queries.add(query);
+    if (JOINED_CONDITIONS_LOCATION.contains(conditionsLocation)) {
+      joinedQueries.add(query);
+    }
+
     mapQueryToConditionLocation.put(query, conditionsLocation);
     mapQueryToJoinDirection.put(query, joinDirection);
   }
@@ -350,55 +412,6 @@ public class JoinQueryImpl<TId, TRow extends HasId<TId>> implements JoinQuery<TI
     if (query.getAlias() == null) {
       query.setAlias(idx == 0 ? tableName : tableName + idx);
     }
-  }
-
-  protected <TOneId, TOneRow extends HasId<TOneId>, TOtherId, TOtherRow extends HasId<TOtherId>>
-      JoinQuery<TId, TRow> innerJoinByForeignKeyAutoDetect(
-          Query<TOneId, TOneRow> queryOne, Query<TOtherId, TOtherRow> otherQuery) {
-    return joinByForeignKeyAutoDetect(queryOne, otherQuery, JoinType.INNER);
-  }
-
-  protected <TOneId, TOneRow extends HasId<TOneId>, TOtherId, TOtherRow extends HasId<TOtherId>>
-      JoinQuery<TId, TRow> leftJoinByForeignKeyAutoDetect(
-          Query<TOneId, TOneRow> queryOne, Query<TOtherId, TOtherRow> otherQuery) {
-    return joinByForeignKeyAutoDetect(queryOne, otherQuery, JoinType.LEFT);
-  }
-
-  protected <TOneId, TOneRow extends HasId<TOneId>, TOtherId, TOtherRow extends HasId<TOtherId>>
-      JoinQuery<TId, TRow> joinByForeignKeyAutoDetect(
-          Query<TOneId, TOneRow> queryOne,
-          Query<TOtherId, TOtherRow> otherQuery,
-          JoinType joinType) {
-    String forwardLinkFieldName =
-        referringToFieldsFinder.findReferringField(
-            queryOne.getService().getRowClass(), otherQuery.getService().getRowClass());
-    String backwardLinkFieldName =
-        referringToFieldsFinder.findReferringField(
-            otherQuery.getService().getRowClass(), queryOne.getService().getRowClass());
-
-    if (forwardLinkFieldName != null && backwardLinkFieldName != null) {
-      throw new RuntimeException(
-          "Can't distinctively identify foreign key for joining "
-              + queryOne.getService().getRowMessageCode()
-              + " and "
-              + otherQuery.getService().getRowMessageCode());
-    }
-
-    if (forwardLinkFieldName != null) {
-      joins.add(new JoinQueryElement(joinType, queryOne, forwardLinkFieldName, otherQuery));
-      return this;
-    }
-
-    if (backwardLinkFieldName != null) {
-      joins.add(new JoinQueryElement(joinType, otherQuery, backwardLinkFieldName, queryOne));
-      return this;
-    }
-
-    throw new RuntimeException(
-        "Can't distinctively identify foreign key for joining "
-            + queryOne.getService().getRowMessageCode()
-            + " and "
-            + otherQuery.getService().getRowMessageCode());
   }
 
   @Override
@@ -434,7 +447,7 @@ public class JoinQueryImpl<TId, TRow extends HasId<TId>> implements JoinQuery<TI
 
   @Override
   public JoinedSelect selectAll() {
-    return selectFactory.build(this, queries);
+    return selectFactory.build(this, joinedQueries);
   }
 
   @Override

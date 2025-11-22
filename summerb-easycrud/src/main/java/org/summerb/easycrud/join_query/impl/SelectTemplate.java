@@ -5,6 +5,7 @@ import java.util.List;
 import org.summerb.easycrud.dao.NamedParameterJdbcTemplateEx;
 import org.summerb.easycrud.join_query.JoinQuery;
 import org.summerb.easycrud.join_query.QuerySpecificsResolver;
+import org.summerb.easycrud.join_query.model.JoinType;
 import org.summerb.easycrud.query.OrderBy;
 import org.summerb.easycrud.query.OrderByQueryResolver;
 import org.summerb.easycrud.query.Query;
@@ -69,7 +70,7 @@ public class SelectTemplate {
       Query<?, ?> query = OrderByQueryResolver.get(order);
 
       // Order by contains link to our query -- great
-      if (query != null && joinQuery.getQueries().contains(query)) {
+      if (query != null && joinQuery.getJoinedQueries().contains(query)) {
         continue;
       }
 
@@ -115,7 +116,7 @@ public class SelectTemplate {
       }
     } else {
       Query<?, ?> query =
-          joinQuery.getQueries().stream()
+          joinQuery.getJoinedQueries().stream()
               .filter(x -> alias.equals(x.getAlias()))
               .findFirst()
               .orElseThrow(
@@ -133,7 +134,12 @@ public class SelectTemplate {
   }
 
   protected boolean isGuaranteedToYieldEmptyResultset() {
-    return joinQuery.getQueries().stream().anyMatch(Query::isGuaranteedToYieldEmptyResultset);
+    return joinQuery.getJoinedQueries().stream().anyMatch(Query::isGuaranteedToYieldEmptyResultset)
+        || joinQuery.getExistenceConditions().stream()
+            .anyMatch(
+                x ->
+                    x.getJoinType() == JoinType.EXISTS
+                        && x.getReferer().isGuaranteedToYieldEmptyResultset());
   }
 
   protected ResultSetExtractorJoinedQueryImpl buildResultSetExtractor(

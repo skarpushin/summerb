@@ -7,6 +7,6 @@ public enum ConditionsLocation {
   /** Conditions for this query, if any, will be placed in WHERE clause */
   WHERE,
 
-  /** Special case - conditions will go to the WHERE clause using NOT EXISTS */
-  NOT_EXISTS
+  /** Special case -- when query conditions are added to WHERE in a form of EXISTS or NOT EXISTS */
+  WHERE_EXISTS
 }

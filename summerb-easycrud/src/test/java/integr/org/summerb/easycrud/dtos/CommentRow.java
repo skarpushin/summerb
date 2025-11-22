@@ -17,7 +17,6 @@ package integr.org.summerb.easycrud.dtos;
 
 import java.io.Serial;
 import java.io.Serializable;
-import org.summerb.easycrud.join_query.model.ReferringTo;
 import org.summerb.easycrud.row.HasAuthor;
 import org.summerb.easycrud.row.HasAutoincrementId;
 import org.summerb.easycrud.row.HasTimestamps;
@@ -26,15 +25,9 @@ public class CommentRow implements HasAutoincrementId, HasAuthor, HasTimestamps,
   @Serial private static final long serialVersionUID = 4373061148623858158L;
 
   private Long id;
-
-  @ReferringTo(PostRow.class)
   private long postId;
-
-  @ReferringTo(UserRow.class)
   private String authorId;
-
   private String comment;
-
   private long createdAt;
   private long modifiedAt;
   private String createdBy;
