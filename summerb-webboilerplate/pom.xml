@@ -22,7 +22,7 @@
 	<parent>
 		<groupId>com.github.skarpushin</groupId>
 		<artifactId>summerb-parent</artifactId>
-		<version>9.0.2</version>
+		<version>9.1.0</version>
 		<relativePath>../summerb-parent</relativePath>
 	</parent>
 	<artifactId>summerb-webboilerplate</artifactId>
