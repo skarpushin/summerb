@@ -144,7 +144,7 @@ public class JoinedSelectImpl extends SelectTemplate implements JoinedSelect {
     return result.mappingContext();
   }
 
-  private void loadCount(PagerParams pagerParams, PageLoadResults result) {
+  protected void loadCount(PagerParams pagerParams, PageLoadResults result) {
     if (Top.is(pagerParams)
         || (PagerParams.ALL.equals(pagerParams)
             || (pagerParams.getOffset() == 0 && result.list().size() < pagerParams.getMax()))) {
@@ -164,10 +164,10 @@ public class JoinedSelectImpl extends SelectTemplate implements JoinedSelect {
     FromAndWhere fromAndWhere = sqlBuilder.fromAndWhere(joinQuery);
 
     QueryData queryData =
-        sqlBuilder.joinedMultipleTablesMultipleRows(
-            joinQuery, entitiesToSelect, pagerParams, orderBy, fromAndWhere);
+        sqlBuilder.joinedSelect(joinQuery, entitiesToSelect, pagerParams, orderBy, fromAndWhere);
 
-    ResultSetExtractorJoinedQueryImpl mappingContext = buildResultSetExtractor(queryData);
+    ResultSetExtractorJoinedQueryImpl mappingContext =
+        buildResultSetExtractor(entitiesToSelect, queryData);
 
     List<JoinedRow> list = jdbc.query(queryData.getSql(), queryData.getParams(), mappingContext);
     Preconditions.checkState(list != null, "List must not be null");
@@ -209,11 +209,6 @@ public class JoinedSelectImpl extends SelectTemplate implements JoinedSelect {
           querySpecificsResolver.getExceptionStrategy(joinQuery.getPrimaryQuery());
       throw exceptionStrategy.handleExceptionAtFind(t);
     }
-  }
-
-  protected ResultSetExtractorJoinedQueryImpl buildResultSetExtractor(QueryData queryData) {
-    return new ResultSetExtractorJoinedQueryImpl(
-        entitiesToSelect, queryData.getSelectedColumns(), querySpecificsResolver);
   }
 
   protected Map<Query<?, ?>, EasyCrudWireTap> findWireTapsOnRead() {

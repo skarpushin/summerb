@@ -1,6 +1,7 @@
 package org.summerb.easycrud.join_query.impl;
 
 import com.google.common.base.Preconditions;
+import java.util.List;
 import org.summerb.easycrud.dao.NamedParameterJdbcTemplateEx;
 import org.summerb.easycrud.join_query.JoinQuery;
 import org.summerb.easycrud.join_query.QuerySpecificsResolver;
@@ -9,6 +10,7 @@ import org.summerb.easycrud.query.OrderByQueryResolver;
 import org.summerb.easycrud.query.Query;
 import org.summerb.easycrud.sql_builder.FieldsEnlister;
 import org.summerb.easycrud.sql_builder.SqlBuilder;
+import org.summerb.easycrud.sql_builder.model.QueryData;
 import org.summerb.utils.easycrud.api.dto.PagerParams;
 import org.summerb.utils.easycrud.api.dto.Top;
 
@@ -132,5 +134,11 @@ public class SelectTemplate {
 
   protected boolean isGuaranteedToYieldEmptyResultset() {
     return joinQuery.getQueries().stream().anyMatch(Query::isGuaranteedToYieldEmptyResultset);
+  }
+
+  protected ResultSetExtractorJoinedQueryImpl buildResultSetExtractor(
+      List<Query<?, ?>> entitiesToSelect, QueryData queryData) {
+    return new ResultSetExtractorJoinedQueryImpl(
+        entitiesToSelect, queryData.getSelectedColumns(), querySpecificsResolver);
   }
 }

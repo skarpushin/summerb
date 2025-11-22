@@ -1,7 +1,10 @@
 package org.summerb.easycrud.sql_builder.impl;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -12,11 +15,13 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.summerb.easycrud.join_query.ConditionsLocation;
+import org.summerb.easycrud.join_query.JoinDirection;
 import org.summerb.easycrud.join_query.JoinQuery;
 import org.summerb.easycrud.join_query.QuerySpecificsResolver;
 import org.summerb.easycrud.join_query.impl.JoinQueryElement;
 import org.summerb.easycrud.join_query.model.JoinType;
 import org.summerb.easycrud.query.OrderBy;
+import org.summerb.easycrud.query.OrderByQueryResolver;
 import org.summerb.easycrud.query.Query;
 import org.summerb.easycrud.row.HasId;
 import org.summerb.easycrud.row.HasTimestamps;
@@ -32,6 +37,8 @@ import org.summerb.easycrud.sql_builder.mysql.QueryToSqlMySqlImpl;
 import org.summerb.utils.easycrud.api.dto.PagerParams;
 
 public class SqlBuilderCommonImpl implements SqlBuilder {
+  public static final OrderBy[] ORDER_EMPTY_ARRAY = new OrderBy[0];
+
   protected final Logger log = LoggerFactory.getLogger(getClass());
   protected QuerySpecificsResolver querySpecificsResolver;
   protected FieldsEnlister fieldsEnlister;
@@ -132,7 +139,7 @@ public class SqlBuilderCommonImpl implements SqlBuilder {
   }
 
   @Override
-  public QueryData selectMultipleRows(
+  public QueryData select(
       Class<?> rowClass,
       FromAndWhere fromAndWhere,
       Query<?, ?> optionalQuery,
@@ -175,7 +182,89 @@ public class SqlBuilderCommonImpl implements SqlBuilder {
       boolean selectAsPrefixedAliasedNames,
       StringBuilder outSql,
       List<ColumnsSelection> outColumns) {
-    // no impl, just an extension point
+
+    // If deduplication is used and order by includes fields from tables which are not selected,
+    // those fields must be included in the query
+    if (optionalJoinQuery != null && optionalJoinQuery.isDeduplicate()) {
+      appendColumnsToSelectionIfOrderByPresentFromNonSelectedTables(
+          optionalJoinQuery,
+          orderBy,
+          prefixColumnsWhenReferencing,
+          selectAsPrefixedAliasedNames,
+          outSql,
+          outColumns);
+    }
+  }
+
+  protected void appendColumnsToSelectionIfOrderByPresentFromNonSelectedTables(
+      JoinQuery<?, ?> optionalJoinQuery,
+      OrderBy[] orderBy,
+      boolean prefixColumnsWhenReferencing,
+      boolean selectAsPrefixedAliasedNames,
+      StringBuilder outSql,
+      List<ColumnsSelection> outColumns) {
+    if (optionalJoinQuery == null || orderBy == null || orderBy.length == 0) {
+      return;
+    }
+
+    List<OrderBy> orderByFromOtherTables =
+        Arrays.stream(orderBy).filter(x -> !isFieldAlreadySelected(x, outColumns)).toList();
+    if (orderByFromOtherTables.isEmpty()) {
+      return;
+    }
+
+    // Append such columns to sql
+    outSql.append(",\n\t");
+    Multimap<Query<?, ?>, SelectedColumn> additionalColumns = ArrayListMultimap.create();
+    for (int i = 0; i < orderByFromOtherTables.size(); i++) {
+      OrderBy orderByFromOtherTable = orderByFromOtherTables.get(i);
+      Query<?, ?> otherQuery = OrderByQueryResolver.get(orderByFromOtherTable);
+
+      if (i > 0) {
+        outSql.append(", ");
+      }
+
+      SelectedColumn selectedColumn =
+          appendColumnSelection(
+              optionalJoinQuery,
+              otherQuery,
+              orderBy,
+              orderByFromOtherTable.getFieldName(),
+              prefixColumnsWhenReferencing,
+              selectAsPrefixedAliasedNames,
+              outSql);
+      additionalColumns.put(otherQuery, selectedColumn);
+    }
+
+    // Now also add them to result
+    for (Query<?, ?> otherQuery : additionalColumns.keySet()) {
+      ColumnsSelection retColumns = new ColumnsSelection();
+      retColumns.setColumns(new ArrayList<>(additionalColumns.get(otherQuery)));
+      retColumns.setQuery(otherQuery);
+      outColumns.add(retColumns);
+    }
+  }
+
+  protected boolean isFieldAlreadySelected(OrderBy orderBy, List<ColumnsSelection> outColumns) {
+    Query<?, ?> query = OrderByQueryResolver.get(orderBy);
+    for (ColumnsSelection outColumn : outColumns) {
+      if (!outColumn.getQuery().equals(query)) {
+        continue;
+      }
+
+      if (outColumn.isWildcardAdded()) {
+        return true;
+      }
+
+      if (CollectionUtils.isEmpty(outColumn.getColumns())) {
+        return false;
+      }
+
+      return outColumn.getColumns().stream()
+          .anyMatch(x -> x.getFieldName().equals(orderBy.getFieldName()));
+    }
+
+    return false;
   }
 
   @Override
@@ -184,41 +273,6 @@ public class SqlBuilderCommonImpl implements SqlBuilder {
 
     String sql = "SELECT count(*) " + fromAndWhere.getSql();
     return new QueryData(sql, fromAndWhere.getParams());
-  }
-
-  @Override
-  public QueryData joinedSingleTableSingleRow(JoinQuery<?, ?> joinQuery, Query<?, ?> query) {
-    StringBuilder sql = new StringBuilder();
-    MapSqlParameterSource params = new MapSqlParameterSource();
-
-    sql.append("SELECT");
-    List<ColumnsSelection> columnSelections = new LinkedList<>();
-    appendColumnsSelection(
-        querySpecificsResolver.getRowClass(query),
-        joinQuery,
-        query,
-        null,
-        true,
-        true,
-        false,
-        sql,
-        columnSelections);
-    appendAdditionalColumnsSelectionIfNeeded(
-        querySpecificsResolver.getRowClass(query),
-        joinQuery,
-        query,
-        null,
-        true,
-        true,
-        false,
-        sql,
-        columnSelections);
-    buildFromAndWhere(joinQuery, sql, params);
-
-    QueryData ret = new QueryData(sql.toString(), params);
-    ret.setSelectedColumns(columnSelections);
-    logQuery(ret);
-    return ret;
   }
 
   protected void logQuery(QueryData ret) {
@@ -254,7 +308,17 @@ public class SqlBuilderCommonImpl implements SqlBuilder {
 
   @Override
   public QueryData countForJoinedQuery(FromAndWhere fromAndWhere, JoinQuery<?, ?> joinQuery) {
-    String sql = "SELECT COUNT(*)" + fromAndWhere.getSql();
+    String sql;
+    if (joinQuery.isDeduplicate()) {
+      sql =
+          "SELECT COUNT(DISTINCT "
+              + joinQuery.getPrimaryQuery().getAlias()
+              + ".id)"
+              + fromAndWhere.getSql();
+    } else {
+      sql = "SELECT COUNT(*)" + fromAndWhere.getSql();
+    }
+
     QueryData ret = new QueryData(sql, fromAndWhere.getParams());
     logQuery(ret);
     return ret;
@@ -269,62 +333,66 @@ public class SqlBuilderCommonImpl implements SqlBuilder {
   }
 
   @Override
-  public QueryData joinedSingleTableMultipleRows(
-      JoinQuery<?, ?> joinQuery,
-      Query<?, ?> query,
-      PagerParams pagerParams,
-      OrderBy[] orderBy,
-      FromAndWhere fromAndWhere) {
-    return joinedMultipleTablesMultipleRows(
-        joinQuery, List.of(query), pagerParams, orderBy, fromAndWhere);
-  }
-
-  @Override
-  public QueryData joinedMultipleTablesMultipleRows(
+  public QueryData joinedSelect(
       JoinQuery<?, ?> joinQuery,
       List<Query<?, ?>> queries,
       PagerParams pagerParams,
       OrderBy[] orderBy,
       FromAndWhere fromAndWhere) {
+    QueryData ret;
+    if (joinQuery.isDeduplicate()) {
+      ret = joinedSelectDeduplicated(joinQuery, queries, pagerParams, orderBy, fromAndWhere);
+    } else {
+      ret = joinedSelectAsIs(joinQuery, queries, pagerParams, orderBy, fromAndWhere);
+    }
+
+    logQuery(ret);
+    return ret;
+  }
+
+  protected QueryData joinedSelectDeduplicated(
+      JoinQuery<?, ?> joinQuery,
+      List<Query<?, ?>> queries,
+      PagerParams pagerParams,
+      OrderBy[] orderBy,
+      FromAndWhere fromAndWhere) {
+
     StringBuilder sql = new StringBuilder();
 
-    sql.append("SELECT");
+    sql.append("WITH filtered_rows AS (SELECT");
+    List<ColumnsSelection> columnSelections =
+        appendColumnsSelectionForJoinQuery(joinQuery, queries, orderBy, sql, true);
+    sql.append(",\n\tROW_NUMBER() OVER (PARTITION BY ")
+        .append(joinQuery.getPrimaryQuery().getAlias())
+        .append(".id");
 
-    List<ColumnsSelection> columnSelections = new LinkedList<>();
-    int queriesCount = queries.size();
-    for (int i = 0; i < queriesCount; i++) {
-      Query<?, ?> query = queries.get(i);
+    sql.append(" ORDER BY ");
+    List<Query<?, ?>> backwardQueries = identifyBackwardQueries(joinQuery);
+    Preconditions.checkState(
+        !backwardQueries.isEmpty(),
+        "joinedSelectDeduplicated(...) must not be called if there is nothing to deduplicate");
+
+    List<OrderBy> backwardOrderBy = identifyOrderByFromQueries(orderBy, backwardQueries);
+    if (!backwardOrderBy.isEmpty()) {
+      appendOrderBy(backwardOrderBy.toArray(ORDER_EMPTY_ARRAY), joinQuery, columnSelections, sql);
+      sql.append(", ");
+    }
+    for (int i = 0; i < backwardQueries.size(); i++) {
+      Query<?, ?> backwardQuery = backwardQueries.get(i);
       if (i > 0) {
         sql.append(",");
       }
-      appendColumnsSelection(
-          querySpecificsResolver.getRowClass(query),
-          joinQuery,
-          query,
-          orderBy,
-          queriesCount == 1,
-          true,
-          queriesCount > 1,
-          sql,
-          columnSelections);
+      sql.append(backwardQuery.getAlias()).append(".id");
     }
 
-    appendAdditionalColumnsSelectionIfNeeded(
-        null,
-        joinQuery,
-        null,
-        orderBy,
-        queriesCount == 1,
-        true,
-        queriesCount > 1,
-        sql,
-        columnSelections);
+    sql.append(") AS __row_number");
 
     sql.append(fromAndWhere.getSql());
+    sql.append(")\nSELECT * FROM filtered_rows WHERE __row_number = 1");
 
     if (orderBy != null && orderBy.length > 0) {
       sql.append("\nORDER BY ");
-      appendOrderBy(orderBy, joinQuery, sql);
+      appendOrderBy(orderBy, joinQuery, columnSelections, sql);
     }
 
     if (!PagerParams.ALL.equals(pagerParams)) {
@@ -335,8 +403,99 @@ public class SqlBuilderCommonImpl implements SqlBuilder {
 
     QueryData ret = new QueryData(sql.toString(), fromAndWhere.getParams());
     ret.setSelectedColumns(columnSelections);
-    logQuery(ret);
     return ret;
+  }
+
+  protected List<OrderBy> identifyOrderByFromQueries(
+      OrderBy[] orderByArr, List<Query<?, ?>> queries) {
+    if (orderByArr == null || orderByArr.length == 0) {
+      return List.of();
+    }
+
+    LinkedList<OrderBy> ret = new LinkedList<>();
+    for (OrderBy orderBy : orderByArr) {
+      if (queries.stream().anyMatch(x -> OrderByQueryResolver.get(orderBy) == x)) {
+        ret.add(orderBy);
+      }
+    }
+    return ret;
+  }
+
+  protected List<Query<?, ?>> identifyBackwardQueries(JoinQuery<?, ?> joinQuery) {
+    return joinQuery.getQueries().stream()
+        .filter(x -> joinQuery.getJoinDirection(x) == JoinDirection.BACKWARD)
+        .toList();
+  }
+
+  protected QueryData joinedSelectAsIs(
+      JoinQuery<?, ?> joinQuery,
+      List<Query<?, ?>> queries,
+      PagerParams pagerParams,
+      OrderBy[] orderBy,
+      FromAndWhere fromAndWhere) {
+    StringBuilder sql = new StringBuilder();
+
+    sql.append("SELECT");
+
+    List<ColumnsSelection> columnSelections =
+        appendColumnsSelectionForJoinQuery(joinQuery, queries, orderBy, sql, queries.size() > 1);
+
+    sql.append(fromAndWhere.getSql());
+
+    if (orderBy != null && orderBy.length > 0) {
+      sql.append("\nORDER BY ");
+      appendOrderBy(orderBy, joinQuery, columnSelections, sql);
+    }
+
+    if (!PagerParams.ALL.equals(pagerParams)) {
+      fromAndWhere.getParams().addValue(PagerParams.FIELD_OFFSET, pagerParams.getOffset());
+      fromAndWhere.getParams().addValue(PagerParams.FIELD_MAX, pagerParams.getMax());
+      sql.append(sqlPartPaginator);
+    }
+
+    QueryData ret = new QueryData(sql.toString(), fromAndWhere.getParams());
+    ret.setSelectedColumns(columnSelections);
+    return ret;
+  }
+
+  protected List<ColumnsSelection> appendColumnsSelectionForJoinQuery(
+      JoinQuery<?, ?> joinQuery,
+      List<Query<?, ?>> queries,
+      OrderBy[] orderBy,
+      StringBuilder sql,
+      boolean selectAsPrefixedAliasedNames) {
+    List<ColumnsSelection> columnSelections = new LinkedList<>();
+    int queriesCount = queries.size();
+    boolean wildcardAllowed = queriesCount == 1 && !selectAsPrefixedAliasedNames;
+    for (int i = 0; i < queriesCount; i++) {
+      Query<?, ?> query = queries.get(i);
+      if (i > 0) {
+        sql.append(",");
+      }
+      appendColumnsSelection(
+          querySpecificsResolver.getRowClass(query),
+          joinQuery,
+          query,
+          orderBy,
+          wildcardAllowed,
+          true,
+          selectAsPrefixedAliasedNames,
+          sql,
+          columnSelections);
+    }
+
+    appendAdditionalColumnsSelectionIfNeeded(
+        null,
+        joinQuery,
+        null,
+        orderBy,
+        wildcardAllowed,
+        true,
+        selectAsPrefixedAliasedNames,
+        sql,
+        columnSelections);
+
+    return columnSelections;
   }
 
   @Override
@@ -606,7 +765,11 @@ public class SqlBuilderCommonImpl implements SqlBuilder {
   }
 
   @Override
-  public void appendOrderBy(OrderBy[] orderBy, JoinQuery<?, ?> joinQuery, StringBuilder sql) {
-    orderByToSql.appendOrderByElements(orderBy, joinQuery, sql);
+  public void appendOrderBy(
+      OrderBy[] orderBy,
+      JoinQuery<?, ?> joinQuery,
+      List<ColumnsSelection> columnSelections,
+      StringBuilder sql) {
+    orderByToSql.appendOrderByElements(orderBy, joinQuery, columnSelections, sql);
   }
 }

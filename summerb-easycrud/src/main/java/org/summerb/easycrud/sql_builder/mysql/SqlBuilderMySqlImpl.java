@@ -23,7 +23,7 @@ public class SqlBuilderMySqlImpl extends SqlBuilderCommonImpl {
   }
 
   @Override
-  public QueryData selectMultipleRows(
+  public QueryData select(
       Class<?> rowClass,
       FromAndWhere fromAndWhere,
       Query<?, ?> optionalQuery,
@@ -31,7 +31,7 @@ public class SqlBuilderMySqlImpl extends SqlBuilderCommonImpl {
       OrderBy[] orderBy,
       boolean countQueryWillFollow) {
     if (!countQueryWillFollow) {
-      return super.selectMultipleRows(
+      return super.select(
           rowClass, fromAndWhere, optionalQuery, pagerParams, orderBy, countQueryWillFollow);
     }
 

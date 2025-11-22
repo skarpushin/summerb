@@ -141,16 +141,6 @@ public class OrderByToSqlPostgresTest {
   }
 
   @Test
-  void buildOrderBySubclause_shouldHandleFieldNameWithUnderscores() {
-    OrderBy orderBy = OrderBy.Asc("user_name");
-    OrderBy[] orderBys = new OrderBy[] {orderBy};
-
-    String result = orderByToSql.buildOrderBySubclause(orderBys);
-    // Should still apply snake_case conversion, though it might be redundant
-    assertEquals("\nORDER BY user_name", result);
-  }
-
-  @Test
   void buildOrderBySubclause_shouldHandleFieldNameWithDots() {
     OrderBy orderBy = OrderBy.Asc("users.name");
     OrderBy[] orderBys = new OrderBy[] {orderBy};

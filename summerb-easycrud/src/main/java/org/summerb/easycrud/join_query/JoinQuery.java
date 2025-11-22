@@ -8,9 +8,6 @@ import org.summerb.easycrud.query.OrderBy;
 import org.summerb.easycrud.query.Query;
 import org.summerb.easycrud.row.HasId;
 
-// TODO: Add option to deduplicate results (probably via GROUP BY, although we'll have to use
-//  aggregation on other fields...?)
-
 // TODO: Add support for EXISTS clause so that we do not have to deal with cartesian products of
 //  joined tables
 
@@ -46,6 +43,20 @@ public interface JoinQuery<TId, TRow extends HasId<TId>> {
    * @return All participating queries (primary and joined tables) in this JOIN query
    */
   List<Query<?, ?>> getQueries();
+
+  /**
+   * When invoked, results will be deduplicated using a window function using ROW_NUMBER() over
+   * partition by ID of the table denoted by the ({@link #getPrimaryQuery()}) and ordering by
+   * backward-joined tables IDs (including the other ordering on those tables, if any)
+   *
+   * @return self
+   */
+  JoinQuery<TId, TRow> deduplicate();
+
+  /**
+   * @return true if deduplication of data from table denoted by primary query is requested
+   */
+  boolean isDeduplicate();
 
   /**
    * Adds an INNER JOIN using an explicit foreign key specification to match primary table FK to
@@ -87,6 +98,10 @@ public interface JoinQuery<TId, TRow extends HasId<TId>> {
 
   /**
    * Adds an INNER JOIN where the target table foreign key references PK on the primary table.
+   *
+   * <p>WARNING: this might lead to a cartesian product if you're adding a table for one-to-many
+   * reference, meaning rows will be duplicated. In such case consider turning on deduplication mode
+   * via invoking {@link #deduplicate()} method.
    *
    * <p>Think of calling this method as if adding the following JOIN clause (pseudocode):
    *
@@ -164,6 +179,10 @@ public interface JoinQuery<TId, TRow extends HasId<TId>> {
    * <p>If queryToJoin contain any filtering conditions, they will be added to the join clause. If
    * you want conditions to be added to the WHERE clause, use regular join (which is inner join)
    * instead of the left join
+   *
+   * <p>WARNING: this might lead to a cartesian product if you're adding a table for one-to-many
+   * reference, meaning rows will be duplicated. In such case consider turning on deduplication mode
+   * via invoking {@link #deduplicate()} method.
    *
    * <p>Think of calling this method as if adding the following JOIN clause (pseudocode):
    *
@@ -291,6 +310,13 @@ public interface JoinQuery<TId, TRow extends HasId<TId>> {
    *     located
    */
   ConditionsLocation getConditionsLocationForQuery(Query<?, ?> query);
+
+  /**
+   * @return direction of the join. {@link JoinDirection#FORWARD} means that this join represents
+   *     many-to-one or one-to-one relation and cartesian product is not possible. {@link
+   *     JoinDirection#BACKWARD} means otherwise
+   */
+  JoinDirection getJoinDirection(Query<?, ?> query);
 
   /**
    * Adds an INNER JOIN with automatic foreign key detection.

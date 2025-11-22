@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 import integr.org.summerb.easycrud.dtos.CommentRow;
 import integr.org.summerb.easycrud.dtos.PostRow;
 import integr.org.summerb.easycrud.dtos.UserRow;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -104,8 +105,7 @@ public class SqlBuilderPostgresImplTest {
     FromAndWhere fromAndWhere = sqlBuilder.fromAndWhere(join);
     OrderBy[] orderBy = {qPost.orderBy(PostRow::getId).asc()};
     QueryData queryData =
-        sqlBuilder.joinedSingleTableMultipleRows(
-            join, qPost, PagerParams.ALL, orderBy, fromAndWhere);
+        sqlBuilder.joinedSelect(join, List.of(qPost), PagerParams.ALL, orderBy, fromAndWhere);
 
     // Then
     String expected =

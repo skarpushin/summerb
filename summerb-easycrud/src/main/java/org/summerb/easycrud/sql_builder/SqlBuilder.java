@@ -6,6 +6,7 @@ import org.summerb.easycrud.join_query.JoinQuery;
 import org.summerb.easycrud.query.OrderBy;
 import org.summerb.easycrud.query.Query;
 import org.summerb.easycrud.sql_builder.impl.ParamIdxIncrementer;
+import org.summerb.easycrud.sql_builder.model.ColumnsSelection;
 import org.summerb.easycrud.sql_builder.model.FromAndWhere;
 import org.summerb.easycrud.sql_builder.model.QueryData;
 import org.summerb.utils.easycrud.api.dto.PagerParams;
@@ -28,7 +29,7 @@ public interface SqlBuilder {
 
   QueryData countForSimpleSelect(FromAndWhere fromAndWhere);
 
-  QueryData selectMultipleRows(
+  QueryData select(
       Class<?> rowClass,
       FromAndWhere fromAndWhere,
       Query<?, ?> optionalQuery,
@@ -53,22 +54,17 @@ public interface SqlBuilder {
       MapSqlParameterSource params,
       ParamIdxIncrementer paramIdxIncrementer);
 
-  void appendOrderBy(OrderBy[] orderBy, JoinQuery<?, ?> joinQuery, StringBuilder sql);
-
-  QueryData joinedSingleTableSingleRow(JoinQuery<?, ?> joinQuery, Query<?, ?> query);
+  void appendOrderBy(
+      OrderBy[] orderBy,
+      JoinQuery<?, ?> joinQuery,
+      List<ColumnsSelection> columnSelections,
+      StringBuilder sql);
 
   QueryData countForJoinedQuery(FromAndWhere fromAndWhere, JoinQuery<?, ?> joinQuery);
 
   FromAndWhere fromAndWhere(JoinQuery<?, ?> joinQuery);
 
-  QueryData joinedSingleTableMultipleRows(
-      JoinQuery<?, ?> joinQuery,
-      Query<?, ?> query,
-      PagerParams pagerParams,
-      OrderBy[] orderBy,
-      FromAndWhere fromAndWhere);
-
-  QueryData joinedMultipleTablesMultipleRows(
+  QueryData joinedSelect(
       JoinQuery<?, ?> joinQuery,
       List<Query<?, ?>> queries,
       PagerParams pagerParams,

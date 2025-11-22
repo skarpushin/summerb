@@ -39,9 +39,6 @@ import org.summerb.methodCapturers.PropertyNameResolver;
 import org.summerb.security.api.exceptions.NotAuthorizedException;
 import org.summerb.validation.ValidationException;
 
-// TODO: Add ability to impl functionality similar to HasTimestamps with different types, i.e.
-//  LocalDateTime
-
 /**
  * This service is intended to be used with relatively simple Rows (DTO's). It implements simple
  * create-read-update-delete operations. Subclasses are welcome to extend this functionality if

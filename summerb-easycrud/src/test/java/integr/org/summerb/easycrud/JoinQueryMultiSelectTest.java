@@ -55,6 +55,40 @@ public class JoinQueryMultiSelectTest extends JoinQueryTestAbstract {
   }
 
   @Test
+  public void expectResultsDeduplicated() {
+    // GIVEN
+    Query<Long, CommentRow> qComment = commentRowService.query().ge(CommentRow::getId, 0);
+    Query<Long, PostRow> qPost = postRowService.query();
+    Query<String, UserRow> qUser = userRowService.query();
+    JoinedSelect select =
+        qPost
+            .toJoin()
+            .joinBack(qComment, CommentRow::getPostId)
+            .join(qUser, PostRow::getAuthorId)
+            .deduplicate()
+            .select(qPost, qUser);
+
+    // WHEN / THEN - count
+    assertEquals(3, select.count());
+
+    // WHEN - selection
+    List<JoinedRow> results =
+        select.findAll(
+            qComment.orderBy(CommentRow::getComment).asc(), qPost.orderBy(PostRow::getId).asc());
+
+    // THEN
+    assertEquals(3, results.size());
+
+    assertEquals("env5", results.get(0).get(qPost).getTitle());
+    assertEquals("env4", results.get(1).get(qPost).getTitle());
+    assertEquals("env3", results.get(2).get(qPost).getTitle());
+
+    assertEquals("bba", results.get(0).get(qUser).getName());
+    assertEquals("bba", results.get(1).get(qUser).getName());
+    assertEquals("BBc", results.get(2).get(qUser).getName());
+  }
+
+  @Test
   public void expectGracefulBehaviorInCaseOneOfTheQueriesCannotYieldResults() {
     // GIVEN
     Query<Long, CommentRow> qComment = commentRowService.query();

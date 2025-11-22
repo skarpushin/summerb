@@ -1,7 +1,9 @@
 package org.summerb.easycrud.sql_builder;
 
+import java.util.List;
 import org.summerb.easycrud.join_query.JoinQuery;
 import org.summerb.easycrud.query.OrderBy;
+import org.summerb.easycrud.sql_builder.model.ColumnsSelection;
 
 public interface OrderByToSql {
   /**
@@ -16,5 +18,9 @@ public interface OrderByToSql {
    * Append to given StringBuilder comma-separated list of order by elements for the given join
    * query
    */
-  void appendOrderByElements(OrderBy[] orderByArr, JoinQuery<?, ?> joinQuery, StringBuilder ret);
+  void appendOrderByElements(
+      OrderBy[] orderByArr,
+      JoinQuery<?, ?> joinQuery,
+      List<ColumnsSelection> columnSelections,
+      StringBuilder ret);
 }

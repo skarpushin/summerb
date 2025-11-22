@@ -2,6 +2,7 @@ package org.summerb.easycrud.join_query.impl;
 
 import com.google.common.base.Preconditions;
 import java.util.List;
+import java.util.Objects;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.util.CollectionUtils;
@@ -11,12 +12,14 @@ import org.summerb.easycrud.exceptions.EntityNotFoundException;
 import org.summerb.easycrud.join_query.JoinQuery;
 import org.summerb.easycrud.join_query.QuerySpecificsResolver;
 import org.summerb.easycrud.join_query.Select;
+import org.summerb.easycrud.join_query.model.JoinedRow;
 import org.summerb.easycrud.query.OrderBy;
 import org.summerb.easycrud.query.Query;
 import org.summerb.easycrud.row.HasId;
 import org.summerb.easycrud.sql_builder.FieldsEnlister;
 import org.summerb.easycrud.sql_builder.SqlBuilder;
 import org.summerb.easycrud.sql_builder.impl.ParamIdxIncrementer;
+import org.summerb.easycrud.sql_builder.model.ColumnsSelection;
 import org.summerb.easycrud.sql_builder.model.FromAndWhere;
 import org.summerb.easycrud.sql_builder.model.QueryData;
 import org.summerb.easycrud.wireTaps.EasyCrudWireTap;
@@ -108,16 +111,44 @@ public class SelectImpl<TId, TRow extends HasId<TId>> extends SelectTemplate
 
     FromAndWhere fromAndWhere = sqlBuilder.fromAndWhere(joinQuery);
 
+    List<Query<?, ?>> entitiesToSelect = List.of(entityToSelect);
     QueryData queryData =
-        sqlBuilder.joinedSingleTableMultipleRows(
-            joinQuery, entityToSelect, pagerParams, orderBy, fromAndWhere);
+        sqlBuilder.joinedSelect(joinQuery, entitiesToSelect, pagerParams, orderBy, fromAndWhere);
 
-    List<TRow> list =
-        jdbc.query(
-            queryData.getSql(),
-            queryData.getParams(),
-            querySpecificsResolver.getRowMapper(entityToSelect));
-    return new PageLoadResults<>(fromAndWhere, list);
+    if (areColumnsAliased(queryData)) {
+      // aliases are used -- need the row mapping adapter
+      ResultSetExtractorJoinedQueryImpl mappingContext =
+          buildResultSetExtractor(entitiesToSelect, queryData);
+
+      List<JoinedRow> list = jdbc.query(queryData.getSql(), queryData.getParams(), mappingContext);
+      Preconditions.checkState(list != null, "List must not be null");
+
+      return new PageLoadResults<>(
+          fromAndWhere, list.stream().map(x -> x.get(entityToSelect)).toList());
+    } else {
+      List<TRow> list =
+          jdbc.query(
+              queryData.getSql(),
+              queryData.getParams(),
+              querySpecificsResolver.getRowMapper(entityToSelect));
+      return new PageLoadResults<>(fromAndWhere, list);
+    }
+  }
+
+  protected boolean areColumnsAliased(QueryData queryData) {
+    for (ColumnsSelection columnsSelection : queryData.getSelectedColumns()) {
+      if (columnsSelection.isWildcardAdded()) {
+        return false;
+      }
+      if (CollectionUtils.isEmpty(columnsSelection.getColumns())) {
+        continue;
+      }
+      if (columnsSelection.getColumns().stream()
+          .anyMatch(c -> !Objects.equals(c.getColumnName(), c.getColumnLabel()))) {
+        return true;
+      }
+    }
+    return false;
   }
 
   protected int loadCount(PagerParams pagerParams, PageLoadResults<TRow> result) {
