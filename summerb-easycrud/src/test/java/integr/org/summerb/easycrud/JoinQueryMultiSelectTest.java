@@ -146,7 +146,10 @@ public class JoinQueryMultiSelectTest extends JoinQueryTestAbstract {
     assertEquals("CCC", results.get(1).get(qComment).getComment());
   }
 
-  // TODO: Add test for exists()
+  // TODO: Add test for JoinQuery.exists() -- case when query added via exists() might yield results
+
+  // TODO: Add test for JoinQuery.exists() -- case when query  added via exists()  will surely not
+  //  yield results
 
   @Test
   public void expectGracefulBehaviorInCaseNotExistsUsesQueryWithNoResults() {

@@ -137,8 +137,8 @@ public class SelectTemplate {
     return joinQuery.getQueries().stream().anyMatch(Query::isGuaranteedToYieldEmptyResultset)
         || joinQuery.getExistenceConditions().stream()
             .anyMatch(
-                x -> // TODO: Test this too
-                x.getJoinType() == JoinType.EXISTS
+                x ->
+                    x.getJoinType() == JoinType.EXISTS
                         && x.getReferer().isGuaranteedToYieldEmptyResultset());
   }
 
