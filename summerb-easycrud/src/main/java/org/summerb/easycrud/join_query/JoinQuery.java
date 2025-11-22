@@ -48,6 +48,20 @@ public interface JoinQuery<TId, TRow extends HasId<TId>> {
   List<Query<?, ?>> getQueries();
 
   /**
+   * When invoked, results will be deduplicated using a window function using ROW_NUMBER() over
+   * partition by ID of the table denoted by the ({@link #getPrimaryQuery()}) and ordering by
+   * backward-joined tables IDs (including the other ordering on those tables, if any)
+   *
+   * @return self
+   */
+  JoinQuery<TId, TRow> deduplicate();
+
+  /**
+   * @return true if deduplication of data from table denoted by primary query is requested
+   */
+  boolean isDeduplicate();
+
+  /**
    * Adds an INNER JOIN using an explicit foreign key specification to match primary table FK to
    * joined table PK.
    *
@@ -355,4 +369,6 @@ public interface JoinQuery<TId, TRow extends HasId<TId>> {
    */
   <TOtherId, TOtherRow extends HasId<TOtherId>> JoinQuery<TId, TRow> leftJoin(
       Query<TOtherId, TOtherRow> otherQuery);
+
+  JoinDirection getJoinDirection(Query<?, ?> query);
 }

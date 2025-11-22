@@ -11,6 +11,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import org.springframework.util.StringUtils;
 import org.summerb.easycrud.join_query.ConditionsLocation;
+import org.summerb.easycrud.join_query.JoinDirection;
 import org.summerb.easycrud.join_query.JoinQuery;
 import org.summerb.easycrud.join_query.JoinedSelect;
 import org.summerb.easycrud.join_query.QuerySpecificsResolver;
@@ -58,6 +59,9 @@ public class JoinQueryImpl<TId, TRow extends HasId<TId>> implements JoinQuery<TI
   protected Map<Query<?, ?>, ConditionsLocation> mapQueryToConditionLocation =
       new IdentityHashMap<>();
 
+  /** Join directions */
+  protected Map<Query<?, ?>, JoinDirection> mapQueryToJoinDirection = new IdentityHashMap<>();
+
   /** Joins and their conditions */
   protected List<JoinQueryElement> joins = new LinkedList<>();
 
@@ -65,6 +69,9 @@ public class JoinQueryImpl<TId, TRow extends HasId<TId>> implements JoinQuery<TI
 
   protected List<JoinQueryElement> notExists = new LinkedList<>();
   protected List<JoinQueryElement> notExistsUnmodifiable;
+
+  /** if true, selection should deduplicate results */
+  protected boolean deduplicate;
 
   public JoinQueryImpl(
       Query<TId, TRow> primarySelection,
@@ -86,7 +93,7 @@ public class JoinQueryImpl<TId, TRow extends HasId<TId>> implements JoinQuery<TI
     this.primarySelection = primarySelection;
     this.referringToFieldsFinder = referringToFieldsFinder;
 
-    addQuery(primarySelection, ConditionsLocation.WHERE);
+    addQuery(primarySelection, ConditionsLocation.WHERE, JoinDirection.FORWARD);
   }
 
   @Override
@@ -114,6 +121,17 @@ public class JoinQueryImpl<TId, TRow extends HasId<TId>> implements JoinQuery<TI
   }
 
   @Override
+  public JoinQuery<TId, TRow> deduplicate() {
+    deduplicate = true;
+    return this;
+  }
+
+  @Override
+  public boolean isDeduplicate() {
+    return deduplicate;
+  }
+
+  @Override
   public Query<TId, TRow> getPrimaryQuery() {
     return primarySelection;
   }
@@ -122,7 +140,7 @@ public class JoinQueryImpl<TId, TRow extends HasId<TId>> implements JoinQuery<TI
   public <TOtherId, TOtherRow extends HasId<TOtherId>> JoinQuery<TId, TRow> join(
       Query<TOtherId, TOtherRow> otherQuery) {
 
-    addQuery(otherQuery, ConditionsLocation.WHERE);
+    addQuery(otherQuery, ConditionsLocation.WHERE, JoinDirection.FORWARD);
 
     return innerJoinByForeignKeyAutoDetect(primarySelection, otherQuery);
   }
@@ -131,7 +149,7 @@ public class JoinQueryImpl<TId, TRow extends HasId<TId>> implements JoinQuery<TI
   public <TOtherId, TOtherRow extends HasId<TOtherId>> JoinQuery<TId, TRow> join(
       Query<TOtherId, TOtherRow> queryToJoin, Function<TRow, TOtherId> fkGetter) {
 
-    addQuery(queryToJoin, ConditionsLocation.WHERE);
+    addQuery(queryToJoin, ConditionsLocation.WHERE, JoinDirection.FORWARD);
 
     joins.add(
         new JoinQueryElement(
@@ -144,7 +162,7 @@ public class JoinQueryImpl<TId, TRow extends HasId<TId>> implements JoinQuery<TI
   public <TOtherId, TOtherRow extends HasId<TOtherId>> JoinQuery<TId, TRow> joinBack(
       Query<TOtherId, TOtherRow> queryToJoin, Function<TOtherRow, TId> fkGetter) {
 
-    addQuery(queryToJoin, ConditionsLocation.WHERE);
+    addQuery(queryToJoin, ConditionsLocation.WHERE, JoinDirection.BACKWARD);
 
     joins.add(
         new JoinQueryElement(
@@ -175,8 +193,8 @@ public class JoinQueryImpl<TId, TRow extends HasId<TId>> implements JoinQuery<TI
         (queries.contains(queryOne) != queries.contains(queryOther)),
         "Only (and exactly) one of the queries must have been already registered with this join query");
 
-    addQuery(queryOne, conditionsLocation);
-    addQuery(queryOther, conditionsLocation);
+    addQuery(queryOne, conditionsLocation, JoinDirection.FORWARD);
+    addQuery(queryOther, conditionsLocation, JoinDirection.FORWARD);
   }
 
   @Override
@@ -193,7 +211,7 @@ public class JoinQueryImpl<TId, TRow extends HasId<TId>> implements JoinQuery<TI
   public <TOtherId, TOtherRow extends HasId<TOtherId>> JoinQuery<TId, TRow> leftJoin(
       Query<TOtherId, TOtherRow> queryToJoin, Function<TRow, TOtherId> fkGetter) {
 
-    addQuery(queryToJoin, ConditionsLocation.JOIN);
+    addQuery(queryToJoin, ConditionsLocation.JOIN, JoinDirection.FORWARD);
 
     joins.add(
         new JoinQueryElement(
@@ -206,7 +224,7 @@ public class JoinQueryImpl<TId, TRow extends HasId<TId>> implements JoinQuery<TI
   public <TOtherId, TOtherRow extends HasId<TOtherId>> JoinQuery<TId, TRow> leftJoinBack(
       Query<TOtherId, TOtherRow> queryToJoin, Function<TOtherRow, TId> fkGetter) {
 
-    addQuery(queryToJoin, ConditionsLocation.JOIN);
+    addQuery(queryToJoin, ConditionsLocation.JOIN, JoinDirection.BACKWARD);
 
     joins.add(
         new JoinQueryElement(
@@ -272,7 +290,7 @@ public class JoinQueryImpl<TId, TRow extends HasId<TId>> implements JoinQuery<TI
   public <TOtherId, TOtherRow extends HasId<TOtherId>> JoinQuery<TId, TRow> leftJoin(
       Query<TOtherId, TOtherRow> otherQuery) {
 
-    addQuery(otherQuery, ConditionsLocation.JOIN);
+    addQuery(otherQuery, ConditionsLocation.JOIN, JoinDirection.FORWARD);
 
     return leftJoinByForeignKeyAutoDetect(primarySelection, otherQuery);
   }
@@ -287,7 +305,7 @@ public class JoinQueryImpl<TId, TRow extends HasId<TId>> implements JoinQuery<TI
     return leftJoinByForeignKeyAutoDetect(queryOne, queryOther);
   }
 
-  protected void addQuery(Query<?, ?> query, ConditionsLocation conditionsLocation) {
+  protected void addQuery(Query<?, ?> query, ConditionsLocation conditionsLocation, JoinDirection joinDirection) {
     if (queries.contains(query)) {
       return;
     }
@@ -296,6 +314,7 @@ public class JoinQueryImpl<TId, TRow extends HasId<TId>> implements JoinQuery<TI
 
     queries.add(query);
     mapQueryToConditionLocation.put(query, conditionsLocation);
+    mapQueryToJoinDirection.put(query, joinDirection);
   }
 
   protected void ensureAliasesForQueriesToSameTable(Query<?, ?> query) {
@@ -431,6 +450,11 @@ public class JoinQueryImpl<TId, TRow extends HasId<TId>> implements JoinQuery<TI
   @Override
   public ConditionsLocation getConditionsLocationForQuery(Query<?, ?> query) {
     return mapQueryToConditionLocation.get(query);
+  }
+
+  @Override
+  public JoinDirection getJoinDirection(Query<?, ?> query) {
+    return mapQueryToJoinDirection.get(query);
   }
 
   protected OrderBy buildOrderByForJoinQuery(OrderBy parsed) {

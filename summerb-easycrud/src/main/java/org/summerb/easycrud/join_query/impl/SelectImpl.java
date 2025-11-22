@@ -109,8 +109,8 @@ public class SelectImpl<TId, TRow extends HasId<TId>> extends SelectTemplate
     FromAndWhere fromAndWhere = sqlBuilder.fromAndWhere(joinQuery);
 
     QueryData queryData =
-        sqlBuilder.joinedSingleTableMultipleRows(
-            joinQuery, entityToSelect, pagerParams, orderBy, fromAndWhere);
+        sqlBuilder.joinedSelect(
+            joinQuery, List.of(entityToSelect), pagerParams, orderBy, fromAndWhere);
 
     List<TRow> list =
         jdbc.query(

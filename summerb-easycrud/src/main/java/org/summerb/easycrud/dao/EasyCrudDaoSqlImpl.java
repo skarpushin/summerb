@@ -324,7 +324,7 @@ public class EasyCrudDaoSqlImpl<TId, TRow extends HasId<TId>> extends TableDaoBa
 
     FromAndWhere fromAndWhere = sqlBuilder.fromAndWhere(tableName, optionalQuery);
     QueryData dataQuery =
-        sqlBuilder.selectMultipleRows(
+        sqlBuilder.select(
             rowClass, fromAndWhere, optionalQuery, pagerParams, orderBy, countQueryNeeded);
 
     List<TRow> list = jdbc.query(dataQuery.getSql(), dataQuery.getParams(), rowMapper);
@@ -345,7 +345,7 @@ public class EasyCrudDaoSqlImpl<TId, TRow extends HasId<TId>> extends TableDaoBa
       PagerParams pagerParams, Query<TId, TRow> optionalQuery, OrderBy[] orderBy) {
     FromAndWhere fromAndWhere = sqlBuilder.fromAndWhere(tableName, optionalQuery);
     QueryData dataQuery =
-        sqlBuilder.selectMultipleRows(
+        sqlBuilder.select(
             rowClass, fromAndWhere, optionalQuery, pagerParams, orderBy, false);
 
     return jdbc.query(dataQuery.getSql(), dataQuery.getParams(), rowMapper);
@@ -358,7 +358,7 @@ public class EasyCrudDaoSqlImpl<TId, TRow extends HasId<TId>> extends TableDaoBa
     return jdbc.queryForInt(countQuery.getSql(), countQuery.getParams());
   }
 
-  private static boolean isCountQueryNeeded(PagerParams pagerParams) {
+  protected static boolean isCountQueryNeeded(PagerParams pagerParams) {
     if (Top.is(pagerParams) || PagerParams.ALL.equals(pagerParams)) {
       return false;
     } else {

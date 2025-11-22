@@ -1,5 +1,6 @@
 package org.summerb.easycrud.sql_builder.postgres;
 
+import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -104,8 +105,8 @@ public class SqlBuilderPostgresImplTest {
     FromAndWhere fromAndWhere = sqlBuilder.fromAndWhere(join);
     OrderBy[] orderBy = {qPost.orderBy(PostRow::getId).asc()};
     QueryData queryData =
-        sqlBuilder.joinedSingleTableMultipleRows(
-            join, qPost, PagerParams.ALL, orderBy, fromAndWhere);
+        sqlBuilder.joinedSelect(
+            join, List.of(qPost), PagerParams.ALL, orderBy, fromAndWhere);
 
     // Then
     String expected =

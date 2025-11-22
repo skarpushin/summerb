@@ -144,7 +144,7 @@ public class JoinedSelectImpl extends SelectTemplate implements JoinedSelect {
     return result.mappingContext();
   }
 
-  private void loadCount(PagerParams pagerParams, PageLoadResults result) {
+  protected void loadCount(PagerParams pagerParams, PageLoadResults result) {
     if (Top.is(pagerParams)
         || (PagerParams.ALL.equals(pagerParams)
             || (pagerParams.getOffset() == 0 && result.list().size() < pagerParams.getMax()))) {
@@ -164,7 +164,7 @@ public class JoinedSelectImpl extends SelectTemplate implements JoinedSelect {
     FromAndWhere fromAndWhere = sqlBuilder.fromAndWhere(joinQuery);
 
     QueryData queryData =
-        sqlBuilder.joinedMultipleTablesMultipleRows(
+        sqlBuilder.joinedSelect(
             joinQuery, entitiesToSelect, pagerParams, orderBy, fromAndWhere);
 
     ResultSetExtractorJoinedQueryImpl mappingContext = buildResultSetExtractor(queryData);

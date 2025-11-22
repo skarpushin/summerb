@@ -53,6 +53,34 @@ public class JoinQuerySingleSelectTest extends JoinQueryTestAbstract {
   }
 
   @Test
+  public void expectResultsDeduplicated() {
+    // GIVEN
+    Query<Long, CommentRow> qComment = commentRowService.query().ge(CommentRow::getId, 0);
+    Query<Long, PostRow> qPost = postRowService.query();
+    Query<String, UserRow> qUser = userRowService.query();
+
+    Select<Long, PostRow> select =
+        qPost
+            .toJoin()
+            .joinBack(qComment, CommentRow::getPostId)
+            .join(qUser, PostRow::getAuthorId)
+            .deduplicate()
+            .select();
+
+    // WHEN / THEN - count
+    assertEquals(3, select.count());
+
+    // WHEN - selection
+    List<PostRow> results = select.findAll(qPost.orderBy(PostRow::getTitle).asc());
+
+    // THEN
+    assertEquals(3, results.size());
+    assertEquals("env3", results.get(0).getTitle());
+    assertEquals("env4", results.get(1).getTitle());
+    assertEquals("env5", results.get(2).getTitle());
+  }
+
+  @Test
   public void expectGracefulBehaviorInCaseOneOfTheQueriesCannotYieldResults() {
     // GIVEN
     Query<Long, CommentRow> qComment = commentRowService.query();

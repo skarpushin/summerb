@@ -28,7 +28,7 @@ public interface SqlBuilder {
 
   QueryData countForSimpleSelect(FromAndWhere fromAndWhere);
 
-  QueryData selectMultipleRows(
+  QueryData select(
       Class<?> rowClass,
       FromAndWhere fromAndWhere,
       Query<?, ?> optionalQuery,
@@ -55,20 +55,11 @@ public interface SqlBuilder {
 
   void appendOrderBy(OrderBy[] orderBy, JoinQuery<?, ?> joinQuery, StringBuilder sql);
 
-  QueryData joinedSingleTableSingleRow(JoinQuery<?, ?> joinQuery, Query<?, ?> query);
-
   QueryData countForJoinedQuery(FromAndWhere fromAndWhere, JoinQuery<?, ?> joinQuery);
 
   FromAndWhere fromAndWhere(JoinQuery<?, ?> joinQuery);
 
-  QueryData joinedSingleTableMultipleRows(
-      JoinQuery<?, ?> joinQuery,
-      Query<?, ?> query,
-      PagerParams pagerParams,
-      OrderBy[] orderBy,
-      FromAndWhere fromAndWhere);
-
-  QueryData joinedMultipleTablesMultipleRows(
+  QueryData joinedSelect(
       JoinQuery<?, ?> joinQuery,
       List<Query<?, ?>> queries,
       PagerParams pagerParams,
