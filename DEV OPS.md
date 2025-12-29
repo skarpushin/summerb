@@ -61,6 +61,8 @@ Before deploying to Maven Central, it's recommended to perform a dry run to veri
 
 Once ready, do: `mvn clean deploy -Prelease`
 
+Deployments can be viewed here: https://central.sonatype.com/publishing/deployments
+
 **!!! IMPORTANT !!!** In case of an error DO NOT resume maven build. Start all over again, otherwise only part of your artifacts will be released. 
 
 ## Other stuff
