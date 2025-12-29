@@ -133,6 +133,8 @@ public class QueryToSqlMySqlImpl implements QueryToSql {
           sb.append(")");
         }
         if (!added) {
+          // NOTE: This situation must not happen because there is a check in
+          // Query::isGuaranteedToYieldEmptyResultset, which verifies same thing upfront.
           throw new IllegalStateException(
               "It shouldn't have come to a moment when OR clause with all Queries with isGuaranteedToYieldEmptyResultset() == true is being translated to SQL");
         }
