@@ -102,7 +102,11 @@ public class OrderByToSqlMySqlImpl implements OrderByToSql {
               .findFirst()
               .orElse(null);
       if (selectedColumn != null) {
-        sql.append(selectedColumn.getColumnLabel());
+        if (!selectedColumn.getColumnName().equals(selectedColumn.getColumnLabel())) {
+          sql.append(selectedColumn.getColumnLabel());
+        } else {
+          sql.append(query.getAlias()).append(".").append(selectedColumn.getColumnName());
+        }
         return;
       }
     }

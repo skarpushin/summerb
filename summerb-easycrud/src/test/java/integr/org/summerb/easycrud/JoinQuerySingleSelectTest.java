@@ -219,21 +219,19 @@ public class JoinQuerySingleSelectTest extends JoinQueryTestAbstract {
   void expectNotExistsWorks() {
     // GIVEN
     Query<String, UserRow> qUser = userRowService.query();
-    Query<Long, PostRow> qPostSort = postRowService.query();
 
     // WHEN
     List<UserRow> results =
         qUser
             .toJoin()
-            .joinBack(qPostSort, PostRow::getAuthorId)
-            .deduplicate()
             .notExists(postRowService.query().eq(PostRow::getLikes, 3), PostRow::getAuthorId)
             .select()
-            .findAll(qPostSort.orderBy(PostRow::getTitle).asc());
+            .findAll(qUser.orderBy(UserRow::getName).asc());
 
-    // THEN - Should return all posts regardless of pinnedBy value
-    assertEquals(1, results.size());
+    // THEN
+    assertEquals(2, results.size());
     assertEquals("bba", results.get(0).getName());
+    assertEquals("name3", results.get(1).getName());
   }
 
   @Test

@@ -375,7 +375,7 @@ public class SqlBuilderCommonImpl implements SqlBuilder {
 
     List<OrderBy> backwardOrderBy = identifyOrderByFromQueries(orderBy, backwardQueries);
     if (!backwardOrderBy.isEmpty()) {
-      appendOrderBy(backwardOrderBy.toArray(ORDER_EMPTY_ARRAY), joinQuery, columnSelections, sql);
+      appendOrderBy(backwardOrderBy.toArray(ORDER_EMPTY_ARRAY), joinQuery, List.of(), sql);
       sql.append(", ");
     }
     for (int i = 0; i < backwardQueries.size(); i++) {
