@@ -28,10 +28,7 @@ import java.math.BigInteger;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.MonthDay;
 import java.time.OffsetDateTime;
-import java.time.OffsetTime;
 import java.time.Year;
 import java.time.YearMonth;
 import java.time.ZonedDateTime;
@@ -135,10 +132,7 @@ public class JakartaFullBean {
   @Future Instant futureInstant;
   @Future LocalDate futureLocalDate;
   @Future LocalDateTime futureLocalDateTime;
-  LocalTime futureLocalTime;
-  @Future MonthDay futureMonthDay;
   @Future OffsetDateTime futureOffsetDateTime;
-  OffsetTime futureOffsetTime;
   @Future Year futureYear;
   @Future YearMonth futureYearMonth;
   @Future ZonedDateTime futureZonedDateTime;
@@ -501,36 +495,12 @@ public class JakartaFullBean {
     this.futureLocalDateTime = futureLocalDateTime;
   }
 
-  public LocalTime getFutureLocalTime() {
-    return futureLocalTime;
-  }
-
-  public void setFutureLocalTime(LocalTime futureLocalTime) {
-    this.futureLocalTime = futureLocalTime;
-  }
-
-  public MonthDay getFutureMonthDay() {
-    return futureMonthDay;
-  }
-
-  public void setFutureMonthDay(MonthDay futureMonthDay) {
-    this.futureMonthDay = futureMonthDay;
-  }
-
   public OffsetDateTime getFutureOffsetDateTime() {
     return futureOffsetDateTime;
   }
 
   public void setFutureOffsetDateTime(OffsetDateTime futureOffsetDateTime) {
     this.futureOffsetDateTime = futureOffsetDateTime;
-  }
-
-  public OffsetTime getFutureOffsetTime() {
-    return futureOffsetTime;
-  }
-
-  public void setFutureOffsetTime(OffsetTime futureOffsetTime) {
-    this.futureOffsetTime = futureOffsetTime;
   }
 
   public Year getFutureYear() {

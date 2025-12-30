@@ -25,7 +25,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.MonthDay;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
 import java.time.Year;
@@ -214,7 +213,7 @@ public class ValidationContext<T> {
 
   /**
    * This is supposedly will be a rarely used constructor. It will not allow to use method
-   * references to denote field names, but it will be properly invoke objects and collections
+   * references to denote field names, but it will properly invoke objects and collections
    * validations where such (using method references) validation option is available;
    *
    * @param jakartaValidator optional -- validator that is capable of processing jakarta validations
@@ -238,10 +237,7 @@ public class ValidationContext<T> {
             Map.entry(Instant.class, nr -> nr.clock().instant()),
             Map.entry(LocalDate.class, nr -> LocalDate.now(nr.clock())),
             Map.entry(LocalDateTime.class, nr -> LocalDateTime.now(nr.clock())),
-            Map.entry(LocalTime.class, nr -> LocalTime.now(nr.clock())),
-            Map.entry(MonthDay.class, nr -> MonthDay.now(nr.clock())),
             Map.entry(OffsetDateTime.class, nr -> OffsetDateTime.now(nr.clock())),
-            Map.entry(OffsetTime.class, nr -> OffsetTime.now(nr.clock())),
             Map.entry(Year.class, nr -> Year.now(nr.clock())),
             Map.entry(YearMonth.class, nr -> YearMonth.now(nr.clock())),
             Map.entry(ZonedDateTime.class, nr -> ZonedDateTime.now(nr.clock())),

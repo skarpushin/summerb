@@ -1367,7 +1367,7 @@ class ValidationContextTest {
     assertTrue(f.past(Dated::getValueLocalDate));
     assertTrue(f.past(Dated::getValueLocalDateTime));
     assertThrows(IllegalArgumentException.class, () -> f.past(Dated::getValueLocalTime));
-    assertTrue(f.past(Dated::getValueMonthDay));
+    assertThrows(IllegalArgumentException.class, () -> f.past(Dated::getValueMonthDay));
     assertTrue(f.past(Dated::getValueOffsetDateTime));
     assertThrows(IllegalArgumentException.class, () -> f.past(Dated::getValueOffsetTime));
     assertTrue(f.past(Dated::getValueYear));
@@ -1383,7 +1383,6 @@ class ValidationContextTest {
     assertTrue(f.pastOrPresent(Dated::getValueInstant));
     assertTrue(f.pastOrPresent(Dated::getValueLocalDate));
     assertTrue(f.pastOrPresent(Dated::getValueLocalDateTime));
-    assertTrue(f.pastOrPresent(Dated::getValueMonthDay));
     assertTrue(f.pastOrPresent(Dated::getValueOffsetDateTime));
     assertTrue(f.pastOrPresent(Dated::getValueYear));
     assertTrue(f.pastOrPresent(Dated::getValueYearMonth));
@@ -1398,7 +1397,6 @@ class ValidationContextTest {
     assertFalse(f.future(Dated::getValueInstant));
     assertFalse(f.future(Dated::getValueLocalDate));
     assertFalse(f.future(Dated::getValueLocalDateTime));
-    assertFalse(f.future(Dated::getValueMonthDay));
     assertFalse(f.future(Dated::getValueOffsetDateTime));
     assertFalse(f.future(Dated::getValueYear));
     assertFalse(f.future(Dated::getValueYearMonth));
@@ -1413,7 +1411,6 @@ class ValidationContextTest {
     assertFalse(f.futureOrPresent(Dated::getValueInstant));
     assertFalse(f.futureOrPresent(Dated::getValueLocalDate));
     assertFalse(f.futureOrPresent(Dated::getValueLocalDateTime));
-    assertFalse(f.futureOrPresent(Dated::getValueMonthDay));
     assertFalse(f.futureOrPresent(Dated::getValueOffsetDateTime));
     assertFalse(f.futureOrPresent(Dated::getValueYear));
     assertFalse(f.futureOrPresent(Dated::getValueYearMonth));
