@@ -15,6 +15,7 @@ import org.springframework.beans.TypeMismatchException;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.JdbcUtils;
+import org.summerb.easycrud.sql_builder.mysql.QueryToSqlMySqlImpl;
 
 /**
  * Implementation of {@link RowMapper} that maps a row to a new instance of the specified mapped
@@ -53,6 +54,7 @@ public class PrefixedFieldsRowMapper<T> implements RowMapper<T> {
       if (pd.getWriteMethod() != null) {
         String lowerCasePdName = pd.getName().toLowerCase();
         this.mappedFields.put(lowerCasePdName, pd);
+        this.mappedFields.put(QueryToSqlMySqlImpl.snakeCase(pd.getName()), pd);
         this.mappedProperties.add(pd.getName());
       }
     }
