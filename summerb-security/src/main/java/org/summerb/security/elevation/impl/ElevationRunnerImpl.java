@@ -91,6 +91,8 @@ public class ElevationRunnerImpl implements ElevationRunner {
 
     try {
       return callable.call();
+    } catch (RuntimeException re) {
+      throw re;
     } catch (Exception e) {
       throw new UncheckedExecutionException("Underlying call threw an exception", e);
     } finally {
