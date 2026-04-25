@@ -27,6 +27,23 @@ public class SqlBuilderPostgresImpl extends SqlBuilderCommonImpl {
     super(querySpecificsResolver, fieldsEnlister, queryToSql, orderByToSql);
   }
 
+  @Override
+  protected void appendColumnsToSelectionIfOrderByPresentFromNonSelectedTables(
+      JoinQuery<?, ?> optionalJoinQuery,
+      OrderBy[] orderBy,
+      boolean prefixColumnsWhenReferencing,
+      boolean selectAsPrefixedAliasedNames,
+      StringBuilder outSql,
+      List<ColumnsSelection> outColumns) {
+
+    // NOTE: Requiring additional columns to be aliased to avoid impacting deserialization in case
+    // main selection has column with same name. For some reason JDBC doesn't objEct in such case
+    // and just let those values collide and result in inappropriate deserialization results
+
+    super.appendColumnsToSelectionIfOrderByPresentFromNonSelectedTables(
+        optionalJoinQuery, orderBy, prefixColumnsWhenReferencing, true, outSql, outColumns);
+  }
+
   /**
    * We override this method to check if we have collation on at least one participating column. If
    * se we prevent wildcard from being used, so that all selected columns are listed explicitly and
