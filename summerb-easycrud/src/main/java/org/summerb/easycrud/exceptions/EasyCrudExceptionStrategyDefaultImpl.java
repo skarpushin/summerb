@@ -47,13 +47,24 @@ public class EasyCrudExceptionStrategyDefaultImpl<
     return new EntityNotFoundException(rowMessageCode, identity);
   }
 
-  @Override
-  public RuntimeException exceptionAtCreate(Throwable t, TRow row) {
+  protected RuntimeException findExceptionToForward(Throwable t) {
     if (t instanceof NotAuthorizedException nae) {
       return nae;
     }
     if (t instanceof ValidationException vexc) {
       return vexc;
+    }
+    if (t instanceof EntityNotFoundException enfe) {
+      return enfe;
+    }
+    return null;
+  }
+
+  @Override
+  public RuntimeException exceptionAtCreate(Throwable t, TRow row) {
+    RuntimeException ret = findExceptionToForward(t);
+    if (ret != null) {
+      return ret;
     }
 
     return new EasyCrudUnexpectedException(
@@ -63,12 +74,9 @@ public class EasyCrudExceptionStrategyDefaultImpl<
   @Override
   public RuntimeException exceptionAtDelete(Throwable t, TId id, TRow rowOptional)
       throws NotAuthorizedException, EntityNotFoundException {
-
-    if (t instanceof NotAuthorizedException nae) {
-      return nae;
-    }
-    if (t instanceof EntityNotFoundException enfe) {
-      return enfe;
+    RuntimeException ret = findExceptionToForward(t);
+    if (ret != null) {
+      return ret;
     }
 
     ValidationException fve = tryExtractConstraintViolation(t);
@@ -105,12 +113,9 @@ public class EasyCrudExceptionStrategyDefaultImpl<
   @Override
   public RuntimeException exceptionAtDeleteByQuery(Throwable t, Query<TId, TRow> query)
       throws NotAuthorizedException {
-
-    if (t instanceof NotAuthorizedException nae) {
-      return nae;
-    }
-    if (t instanceof EntityNotFoundException enfe) {
-      return enfe;
+    RuntimeException ret = findExceptionToForward(t);
+    if (ret != null) {
+      return ret;
     }
 
     return new EasyCrudUnexpectedException(
@@ -136,14 +141,9 @@ public class EasyCrudExceptionStrategyDefaultImpl<
 
   @Override
   public RuntimeException exceptionAtUpdate(Throwable t, TRow row) {
-    if (t instanceof NotAuthorizedException nae) {
-      return nae;
-    }
-    if (t instanceof EntityNotFoundException enfe) {
-      return enfe;
-    }
-    if (t instanceof ValidationException vexc) {
-      return vexc;
+    RuntimeException ret = findExceptionToForward(t);
+    if (ret != null) {
+      return ret;
     }
 
     return new EasyCrudUnexpectedException(
@@ -153,8 +153,9 @@ public class EasyCrudExceptionStrategyDefaultImpl<
   @Override
   public RuntimeException exceptionAtFind(Throwable t, Object criteria)
       throws NotAuthorizedException {
-    if (t instanceof NotAuthorizedException nae) {
-      return nae;
+    RuntimeException ret = findExceptionToForward(t);
+    if (ret != null) {
+      return ret;
     }
 
     return new EasyCrudUnexpectedException(
