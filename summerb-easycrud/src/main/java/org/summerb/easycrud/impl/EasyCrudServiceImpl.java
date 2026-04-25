@@ -76,7 +76,8 @@ import org.summerb.utils.easycrud.api.dto.Top;
  * @param <TRow> type of dto (must have {@link HasId} interface
  * @param <TDao> type of dao, must be a subclass of {@link EasyCrudDao}
  */
-public class EasyCrudServiceImpl<TId, TRow extends HasId<TId>, TDao extends EasyCrudDao<TId, TRow>>
+public class EasyCrudServiceImpl<
+        TId extends Comparable<TId>, TRow extends HasId<TId>, TDao extends EasyCrudDao<TId, TRow>>
     implements EasyCrudService<TId, TRow>, InitializingBean {
 
   protected static final PagerParams TOP_ONE = new Top(1);

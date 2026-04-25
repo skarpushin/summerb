@@ -29,8 +29,12 @@ public interface EasyCrudServiceProxyFactory {
   /**
    * @param optionalDao needs to be provided only if {@link SqlQuery} are used
    */
-  <TId, TDto extends HasId<TId>, TService extends EasyCrudService<TId, TDto>> TService createProxy(
-      Class<TService> serviceInterface,
-      EasyCrudService<TId, TDto> service,
-      EasyCrudDaoInjections<TId, TDto> optionalDao);
+  <
+          TId extends Comparable<TId>,
+          TDto extends HasId<TId>,
+          TService extends EasyCrudService<TId, TDto>>
+      TService createProxy(
+          Class<TService> serviceInterface,
+          EasyCrudService<TId, TDto> service,
+          EasyCrudDaoInjections<TId, TDto> optionalDao);
 }

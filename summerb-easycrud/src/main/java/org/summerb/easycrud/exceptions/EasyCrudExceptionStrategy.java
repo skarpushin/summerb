@@ -28,7 +28,7 @@ import org.summerb.easycrud.row.HasId;
  *
  * @author sergey.karpushin
  */
-public interface EasyCrudExceptionStrategy<TId, TRow extends HasId<TId>> {
+public interface EasyCrudExceptionStrategy<TId extends Comparable<TId>, TRow extends HasId<TId>> {
 
   EntityNotFoundException buildNotFoundException(String subjectTypeMessageCode, TId identity);
 

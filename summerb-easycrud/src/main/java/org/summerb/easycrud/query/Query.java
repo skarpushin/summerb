@@ -48,7 +48,7 @@ import org.summerb.utils.easycrud.api.dto.PaginatedList;
  * @author Sergey Karpushin
  * @param <TRow> type of Row for which this query is being built
  */
-public class Query<TId, TRow extends HasId<TId>> {
+public class Query<TId extends Comparable<TId>, TRow extends HasId<TId>> {
   protected final EasyCrudService<TId, TRow> service;
 
   /**
@@ -227,42 +227,43 @@ public class Query<TId, TRow extends HasId<TId>> {
     return this;
   }
 
-  public <T> Query<TId, TRow> eq(Function<TRow, T> getter, T value) {
+  public <T extends Comparable<T>> Query<TId, TRow> eq(Function<TRow, T> getter, T value) {
     eq(name(getter), value);
     return this;
   }
 
-  public <T> Query<TId, TRow> ne(Function<TRow, T> getter, T value) {
+  public <T extends Comparable<T>> Query<TId, TRow> ne(Function<TRow, T> getter, T value) {
     ne(name(getter), value);
     return this;
   }
 
-  public <T> Query<TId, TRow> less(Function<TRow, T> getter, T value) {
+  public <T extends Comparable<T>> Query<TId, TRow> less(Function<TRow, T> getter, T value) {
     less(name(getter), value);
     return this;
   }
 
-  public <T> Query<TId, TRow> le(Function<TRow, T> getter, T value) {
+  public <T extends Comparable<T>> Query<TId, TRow> le(Function<TRow, T> getter, T value) {
     le(name(getter), value);
     return this;
   }
 
-  public <T> Query<TId, TRow> greater(Function<TRow, T> getter, T value) {
+  public <T extends Comparable<T>> Query<TId, TRow> greater(Function<TRow, T> getter, T value) {
     greater(name(getter), value);
     return this;
   }
 
-  public <T> Query<TId, TRow> ge(Function<TRow, T> getter, T value) {
+  public <T extends Comparable<T>> Query<TId, TRow> ge(Function<TRow, T> getter, T value) {
     ge(name(getter), value);
     return this;
   }
 
-  public <T> Query<TId, TRow> in(Function<TRow, T> getter, Collection<T> values) {
+  public <T extends Comparable<T>> Query<TId, TRow> in(
+      Function<TRow, T> getter, Collection<T> values) {
     in(name(getter), values);
     return this;
   }
 
-  public <T, TSource> Query<TId, TRow> in(
+  public <T extends Comparable<T>, TSource> Query<TId, TRow> in(
       Function<TRow, T> getter,
       Collection<TSource> sourceCollection,
       Function<TSource, T> valueExtractor) {
@@ -270,7 +271,7 @@ public class Query<TId, TRow extends HasId<TId>> {
     return this;
   }
 
-  public <T> Query<TId, TRow> inIds(
+  public <T extends Comparable<T>> Query<TId, TRow> inIds(
       Function<TRow, T> getter, Collection<? extends HasId<T>> values) {
     in(name(getter), EasyCrudDtoUtils.enumerateIds(values));
     return this;
@@ -288,16 +289,17 @@ public class Query<TId, TRow extends HasId<TId>> {
    * @return this
    */
   @SuppressWarnings("unchecked")
-  public <T> Query<TId, TRow> inArr(Function<TRow, T> getter, T... values) {
+  public <T extends Comparable<T>> Query<TId, TRow> inArr(Function<TRow, T> getter, T... values) {
     return in(getter, Arrays.asList(values));
   }
 
-  public <T> Query<TId, TRow> notIn(Function<TRow, T> getter, Collection<? extends T> values) {
+  public <T extends Comparable<T>> Query<TId, TRow> notIn(
+      Function<TRow, T> getter, Collection<T> values) {
     notIn(name(getter), values);
     return this;
   }
 
-  public <T, TSource> Query<TId, TRow> notIn(
+  public <T extends Comparable<T>, TSource> Query<TId, TRow> notIn(
       Function<TRow, T> getter,
       Collection<TSource> sourceCollection,
       Function<TSource, T> valueExtractor) {
@@ -305,14 +307,15 @@ public class Query<TId, TRow extends HasId<TId>> {
     return this;
   }
 
-  public <T> Query<TId, TRow> notInIds(
+  public <T extends Comparable<T>> Query<TId, TRow> notInIds(
       Function<TRow, T> getter, Collection<? extends HasId<T>> values) {
     notIn(name(getter), EasyCrudDtoUtils.enumerateIds(values));
     return this;
   }
 
   @SuppressWarnings("unchecked")
-  public <T> Query<TId, TRow> notInArr(Function<TRow, T> getter, T... values) {
+  public <T extends Comparable<T>> Query<TId, TRow> notInArr(
+      Function<TRow, T> getter, T... values) {
     return notIn(getter, Arrays.asList(values));
   }
 

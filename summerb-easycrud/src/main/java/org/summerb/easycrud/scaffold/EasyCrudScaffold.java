@@ -48,8 +48,15 @@ public interface EasyCrudScaffold {
    * @param <TService> service type
    * @return impl of the service
    */
-  <TId, TRow extends HasId<TId>, TService extends EasyCrudService<TId, TRow>> TService fromService(
-      Class<TService> serviceInterface, String messageCode, String tableName, Object... injections);
+  <
+          TId extends Comparable<TId>,
+          TRow extends HasId<TId>,
+          TService extends EasyCrudService<TId, TRow>>
+      TService fromService(
+          Class<TService> serviceInterface,
+          String messageCode,
+          String tableName,
+          Object... injections);
 
   /**
    * Initialize given impl of a service with scaffolded DAO. This is useful in case when you want to
@@ -69,7 +76,7 @@ public interface EasyCrudScaffold {
    * @param <TServiceImpl> type of the service impl
    */
   <
-          TId,
+          TId extends Comparable<TId>,
           TRow extends HasId<TId>,
           TService extends EasyCrudService<TId, TRow>,
           TServiceImpl extends EasyCrudServiceImpl<TId, TRow, EasyCrudDao<TId, TRow>>>
@@ -94,7 +101,8 @@ public interface EasyCrudScaffold {
    * @param rowClass row class
    * @return impl of the service
    */
-  <TId, TRow extends HasId<TId>> EasyCrudService<TId, TRow> fromRowClass(Class<TRow> rowClass);
+  <TId extends Comparable<TId>, TRow extends HasId<TId>> EasyCrudService<TId, TRow> fromRowClass(
+      Class<TRow> rowClass);
 
   /**
    * @param rowClass dto that reflects row in a database
@@ -107,6 +115,6 @@ public interface EasyCrudScaffold {
    * @param <TRow> type of row
    * @return EasyCrudService ready for use
    */
-  <TId, TRow extends HasId<TId>> EasyCrudService<TId, TRow> fromRowClass(
+  <TId extends Comparable<TId>, TRow extends HasId<TId>> EasyCrudService<TId, TRow> fromRowClass(
       Class<TRow> rowClass, String messageCode, String tableName, Object... injections);
 }

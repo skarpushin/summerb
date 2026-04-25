@@ -21,7 +21,7 @@ import org.summerb.easycrud.rest.model.SingleItemResult;
 import org.summerb.easycrud.row.HasId;
 
 /** Use this to alter response right before it gets returned to consumer */
-public class ConvertBeforeReturnStrategy<TId, TDto extends HasId<TId>> {
+public class ConvertBeforeReturnStrategy<TId extends Comparable<TId>, TDto extends HasId<TId>> {
   protected boolean isConvertionRequired() {
     return false;
   }

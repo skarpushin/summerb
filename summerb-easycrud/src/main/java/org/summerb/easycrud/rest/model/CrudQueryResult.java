@@ -17,7 +17,7 @@ package org.summerb.easycrud.rest.model;
 
 import org.summerb.easycrud.row.HasId;
 
-public class CrudQueryResult<TId, TRow extends HasId<TId>> {
+public class CrudQueryResult<TId extends Comparable<TId>, TRow extends HasId<TId>> {
   protected String entityMessageCode;
 
   public String getEntityMessageCode() {

@@ -14,7 +14,7 @@ http://www.apache.org/licenses/LICENSE-2.0
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.github.skarpushin</groupId>
-	<version>9.1.1</version>
+	<version>9.2.0</version>
 	<artifactId>summerb-parent</artifactId>
 	<packaging>pom</packaging>
 	<name>summerb-parent</name>
@@ -42,6 +42,7 @@ http://www.apache.org/licenses/LICENSE-2.0
 		<skip.unit.tests>false</skip.unit.tests>
 		<java.version>17</java.version>
 
+		<spring.boot.version>3.5.13</spring.boot.version>
 		<commons-io.version>2.18.0</commons-io.version>
 		<commons-compress.version>1.27.1</commons-compress.version>
 		<guava.version>33.4.0-jre</guava.version>
@@ -70,7 +71,7 @@ http://www.apache.org/licenses/LICENSE-2.0
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-dependencies</artifactId>
-				<version>3.4.3</version>
+				<version>${spring.boot.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -254,14 +255,18 @@ http://www.apache.org/licenses/LICENSE-2.0
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.1.0</version>
-<!--				<version>3.5.2</version>-->
+				<version>3.5.5</version>
 				<configuration>
 					<skipTests>${skip.unit.tests}</skipTests>
 					<includes>
 						<include>**/*Test.class</include>
 					</includes>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>3.5.5</version>
 			</plugin>
 		</plugins>
 	</build>

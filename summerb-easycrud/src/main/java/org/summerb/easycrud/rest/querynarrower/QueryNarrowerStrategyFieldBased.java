@@ -25,7 +25,8 @@ import org.summerb.easycrud.query.Query;
 import org.summerb.easycrud.rest.commonpathvars.PathVariablesMap;
 import org.summerb.easycrud.row.HasId;
 
-public abstract class QueryNarrowerStrategyFieldBased<TId, TRow extends HasId<TId>>
+public abstract class QueryNarrowerStrategyFieldBased<
+        TId extends Comparable<TId>, TRow extends HasId<TId>>
     extends QueryNarrowerStrategy<TId, TRow> {
   protected String fieldName;
   protected EasyCrudService<TId, TRow> service;

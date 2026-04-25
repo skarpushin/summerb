@@ -19,13 +19,15 @@ public class QuerySpecificsResolverImpl implements QuerySpecificsResolver {
   }
 
   @Override
-  public <TRow extends HasId<TId>, TId> Class<TRow> getRowClass(Query<TId, TRow> query) {
+  public <TRow extends HasId<TId>, TId extends Comparable<TId>> Class<TRow> getRowClass(
+      Query<TId, TRow> query) {
     return query.getService().getRowClass();
   }
 
   @SuppressWarnings("unchecked")
   @Override
-  public <TRow extends HasId<TId>, TId> RowMapper<TRow> getRowMapper(Query<TId, TRow> query) {
+  public <TRow extends HasId<TId>, TId extends Comparable<TId>> RowMapper<TRow> getRowMapper(
+      Query<TId, TRow> query) {
     return (RowMapper<TRow>)
         ((EasyCrudServiceImpl<?, ?, EasyCrudDaoSqlImpl<?, ?>>) query.getService())
             .getDao()
@@ -33,21 +35,23 @@ public class QuerySpecificsResolverImpl implements QuerySpecificsResolver {
   }
 
   @Override
-  public <TRow extends HasId<TId>, TId> EasyCrudWireTap<TRow> getWireTap(Query<TId, TRow> query) {
+  public <TRow extends HasId<TId>, TId extends Comparable<TId>> EasyCrudWireTap<TRow> getWireTap(
+      Query<TId, TRow> query) {
     return (EasyCrudWireTap<TRow>)
         ((EasyCrudServiceImpl<?, ?, EasyCrudDaoSqlImpl<?, ?>>) query.getService()).getWireTap();
   }
 
   @Override
-  public <TId, TRow extends HasId<TId>> EasyCrudExceptionStrategy<TId, TRow> getExceptionStrategy(
-      Query<TId, TRow> query) {
+  public <TId extends Comparable<TId>, TRow extends HasId<TId>>
+      EasyCrudExceptionStrategy<TId, TRow> getExceptionStrategy(Query<TId, TRow> query) {
     return (EasyCrudExceptionStrategy<TId, TRow>)
         ((EasyCrudServiceImpl<?, ?, EasyCrudDaoSqlImpl<?, ?>>) query.getService())
             .getExceptionStrategy();
   }
 
   @Override
-  public <TId, TRow extends HasId<TId>> String getRowMessageCode(Query<TId, TRow> query) {
+  public <TId extends Comparable<TId>, TRow extends HasId<TId>> String getRowMessageCode(
+      Query<TId, TRow> query) {
     return query.getService().getRowMessageCode();
   }
 }

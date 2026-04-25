@@ -353,8 +353,8 @@ public abstract class GenericCrudServiceTestTemplate {
                     .query()
                     .eq(UserRow::getAbout, "link-to-full-download456")
                     .or(
-                        getUserRowService().query().eq(UserRow::getKarma, 10L),
-                        getUserRowService().query().eq(UserRow::getKarma, 5L)));
+                        getUserRowService().query().eq(UserRow::getKarma, 10),
+                        getUserRowService().query().eq(UserRow::getKarma, 5)));
     assertEquals(2, result.getTotalResults());
   }
 
@@ -410,7 +410,7 @@ public abstract class GenericCrudServiceTestTemplate {
         getUserRowService()
             .find(
                 new PagerParams(0, 100),
-                getUserRowService().query().in(UserRow::getKarma, Arrays.asList(1L, 5L)));
+                getUserRowService().query().in(UserRow::getKarma, Arrays.asList(1, 5)));
     assertEquals(2, result.getTotalResults());
   }
 
@@ -462,7 +462,7 @@ public abstract class GenericCrudServiceTestTemplate {
         getUserRowService()
             .find(
                 new PagerParams(0, 100),
-                getUserRowService().query().notIn(UserRow::getKarma, Arrays.asList(1L, 5L)));
+                getUserRowService().query().notIn(UserRow::getKarma, Arrays.asList(1, 5)));
     assertEquals(1, result.getTotalResults());
   }
 

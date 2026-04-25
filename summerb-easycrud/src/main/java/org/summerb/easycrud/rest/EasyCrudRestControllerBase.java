@@ -71,7 +71,9 @@ import org.summerb.utils.easycrud.api.dto.PaginatedList;
  * @author sergeyk
  */
 public class EasyCrudRestControllerBase<
-        TId, TRow extends HasId<TId>, TEasyCrudService extends EasyCrudService<TId, TRow>>
+        TId extends Comparable<TId>,
+        TRow extends HasId<TId>,
+        TEasyCrudService extends EasyCrudService<TId, TRow>>
     implements ApplicationContextAware, InitializingBean {
   protected static final String PERM_RESOLVER_REQ =
       "Cannot provide permissions since permissionsResolverStrategy is not set";

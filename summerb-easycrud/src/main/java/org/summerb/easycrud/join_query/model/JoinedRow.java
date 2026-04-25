@@ -14,7 +14,7 @@ public interface JoinedRow {
    * @param <TRow> row type
    * @throws IllegalArgumentException if query is null
    */
-  <TId, TRow extends HasId<TId>> TRow get(Query<TId, TRow> query);
+  <TId extends Comparable<TId>, TRow extends HasId<TId>> TRow get(Query<TId, TRow> query);
 
   /**
    * Retrieves row from the joined row by specifying Row class
@@ -25,5 +25,5 @@ public interface JoinedRow {
    * @param <TRow> row type
    * @throws IllegalArgumentException if rowClass is null
    */
-  <TId, TRow extends HasId<TId>> TRow get(Class<TRow> rowClass);
+  <TId extends Comparable<TId>, TRow extends HasId<TId>> TRow get(Class<TRow> rowClass);
 }

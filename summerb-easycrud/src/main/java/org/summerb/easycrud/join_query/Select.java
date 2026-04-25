@@ -11,7 +11,7 @@ import org.summerb.utils.easycrud.api.dto.PaginatedList;
  *
  * @param <TRow>
  */
-public interface Select<TId, TRow extends HasId<TId>> {
+public interface Select<TId extends Comparable<TId>, TRow extends HasId<TId>> {
   TRow findOne();
 
   TRow getOne();

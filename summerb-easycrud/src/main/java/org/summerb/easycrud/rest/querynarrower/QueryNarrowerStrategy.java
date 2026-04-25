@@ -27,7 +27,7 @@ import org.summerb.easycrud.row.HasId;
  *
  * @author sergeyk
  */
-public class QueryNarrowerStrategy<TId, TRow extends HasId<TId>> {
+public class QueryNarrowerStrategy<TId extends Comparable<TId>, TRow extends HasId<TId>> {
   public Query<TId, TRow> narrow(Query<TId, TRow> optionalQuery, PathVariablesMap pathVariables) {
     return optionalQuery;
   }

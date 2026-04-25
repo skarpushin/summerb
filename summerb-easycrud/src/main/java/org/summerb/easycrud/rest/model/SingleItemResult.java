@@ -18,7 +18,8 @@ package org.summerb.easycrud.rest.model;
 import java.util.Map;
 import org.summerb.easycrud.row.HasId;
 
-public class SingleItemResult<TId, TRow extends HasId<TId>> extends CrudQueryResult<TId, TRow> {
+public class SingleItemResult<TId extends Comparable<TId>, TRow extends HasId<TId>>
+    extends CrudQueryResult<TId, TRow> {
   protected TRow row;
   protected Map<String, Boolean> permissions;
 

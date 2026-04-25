@@ -28,7 +28,7 @@ import org.summerb.utils.easycrud.api.dto.PaginatedList;
 import org.summerb.utils.easycrud.api.dto.Top;
 
 @SuppressWarnings("SqlSourceToSinkFlow")
-public class SelectImpl<TId, TRow extends HasId<TId>> extends SelectTemplate
+public class SelectImpl<TId extends Comparable<TId>, TRow extends HasId<TId>> extends SelectTemplate
     implements Select<TId, TRow> {
 
   protected record PageLoadResults<TRow>(FromAndWhere fromAndWhere, List<TRow> list) {}

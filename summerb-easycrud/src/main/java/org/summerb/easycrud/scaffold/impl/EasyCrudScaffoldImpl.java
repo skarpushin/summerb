@@ -147,16 +147,17 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
   }
 
   @Override
-  public <TId, TDto extends HasId<TId>> EasyCrudService<TId, TDto> fromRowClass(
-      Class<TDto> rowClass) {
+  public <TId extends Comparable<TId>, TDto extends HasId<TId>>
+      EasyCrudService<TId, TDto> fromRowClass(Class<TDto> rowClass) {
     String messageCode = rowClass.getSimpleName();
     String tableName = QueryToSqlMySqlImpl.snakeCase(messageCode);
     return fromRowClass(rowClass, messageCode, tableName);
   }
 
   @Override
-  public <TId, TDto extends HasId<TId>> EasyCrudService<TId, TDto> fromRowClass(
-      Class<TDto> rowClass, String messageCode, String tableName, Object... injections) {
+  public <TId extends Comparable<TId>, TDto extends HasId<TId>>
+      EasyCrudService<TId, TDto> fromRowClass(
+          Class<TDto> rowClass, String messageCode, String tableName, Object... injections) {
     try {
       EasyCrudDao<TId, TDto> dao = buildDao(rowClass, tableName);
       EasyCrudServiceImpl<TId, TDto, EasyCrudDao<TId, TDto>> ret =
@@ -197,7 +198,7 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
   }
 
   @SuppressWarnings("unchecked")
-  protected <TId, TRow extends HasId<TId>> void setServiceInjectionsIfAny(
+  protected <TId extends Comparable<TId>, TRow extends HasId<TId>> void setServiceInjectionsIfAny(
       EasyCrudServiceImpl<TId, TRow, EasyCrudDao<TId, TRow>> ret,
       String messageCode,
       Object... injections) {
@@ -226,13 +227,13 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
       ret.setFieldsEnlister(fieldsEnlister);
     }
 
-    EasyCrudWireTap<HasId<Object>> easyCrudWireTap = buildWireTap(messageCode, injections);
+    EasyCrudWireTap<HasId<TId>> easyCrudWireTap = buildWireTap(messageCode, injections);
     if (easyCrudWireTap != null) {
       ret.setWireTap((EasyCrudWireTap<TRow>) easyCrudWireTap);
     }
   }
 
-  protected <TDto extends HasId<TId>, TId>
+  protected <TDto extends HasId<TId>, TId extends Comparable<TId>>
       EasyCrudServiceImpl<TId, TDto, EasyCrudDao<TId, TDto>> instantiateAndAutowireService(
           EasyCrudDao<TId, TDto> dao, Class<TDto> rowClass) {
 
@@ -243,8 +244,8 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
-  protected <TId, TRow extends HasId<TId>> EasyCrudWireTap<TRow> buildWireTap(
-      String messageCode, Object... injections) {
+  protected <TId extends Comparable<TId>, TRow extends HasId<TId>>
+      EasyCrudWireTap<TRow> buildWireTap(String messageCode, Object... injections) {
     List<EasyCrudWireTap> wireTaps =
         Arrays.stream(injections)
             .map(x -> tryMapServiceInjectionToWireTap(x, messageCode))
@@ -258,7 +259,10 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
   }
 
   @Override
-  public <TId, TDto extends HasId<TId>, TService extends EasyCrudService<TId, TDto>>
+  public <
+          TId extends Comparable<TId>,
+          TDto extends HasId<TId>,
+          TService extends EasyCrudService<TId, TDto>>
       TService fromService(
           Class<TService> serviceInterface,
           String messageCode,
@@ -288,7 +292,7 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
   @SuppressWarnings("unchecked")
   @Override
   public <
-          TId,
+          TId extends Comparable<TId>,
           TRow extends HasId<TId>,
           TService extends EasyCrudService<TId, TRow>,
           TServiceImpl extends EasyCrudServiceImpl<TId, TRow, EasyCrudDao<TId, TRow>>>
@@ -344,7 +348,7 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
     return null;
   }
 
-  protected <TId, TDto extends HasId<TId>> EasyCrudDao<TId, TDto> buildDao(
+  protected <TId extends Comparable<TId>, TDto extends HasId<TId>> EasyCrudDao<TId, TDto> buildDao(
       Class<TDto> rowClass, String tableName, Object... injections) throws Exception {
 
     EasyCrudDao<?, ?> daoFromInjections = find(injections, EasyCrudDao.class);
@@ -361,7 +365,7 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
   }
 
   @SuppressWarnings("unchecked")
-  protected <TId, TDto extends HasId<TId>> void setDaoInjectionsIfAny(
+  protected <TId extends Comparable<TId>, TDto extends HasId<TId>> void setDaoInjectionsIfAny(
       EasyCrudDaoSqlImpl<TId, TDto> ret, Object... injections) {
 
     SqlBuilder sqlBuilder = find(injections, SqlBuilder.class);
@@ -425,15 +429,19 @@ public class EasyCrudScaffoldImpl implements EasyCrudScaffold, InitializingBean 
     return null;
   }
 
-  protected <TDto extends HasId<TId>, TId> EasyCrudDaoSqlImpl<TId, TDto> instantiateAndAutowireDao(
-      DataSource dataSource, String tableName, Class<TDto> rowClass) {
+  protected <TDto extends HasId<TId>, TId extends Comparable<TId>>
+      EasyCrudDaoSqlImpl<TId, TDto> instantiateAndAutowireDao(
+          DataSource dataSource, String tableName, Class<TDto> rowClass) {
     EasyCrudDaoSqlImpl<TId, TDto> ret = new EasyCrudDaoSqlImpl<>(dataSource, tableName, rowClass);
     beanFactory.autowireBean(ret);
     return ret;
   }
 
   @SuppressWarnings("unchecked")
-  protected <TId, TDto extends HasId<TId>, TService extends EasyCrudService<TId, TDto>>
+  protected <
+          TId extends Comparable<TId>,
+          TDto extends HasId<TId>,
+          TService extends EasyCrudService<TId, TDto>>
       Class<TDto> discoverRowClassFromServiceInterface(Class<TService> serviceInterface) {
     Preconditions.checkArgument(
         EasyCrudService.class.isAssignableFrom(serviceInterface),

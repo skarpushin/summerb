@@ -34,7 +34,7 @@ public class SqlBuilderPostgresImpl extends SqlBuilderCommonImpl {
    * boolean, boolean, StringBuilder)} to add collation and proper alias to such a column
    */
   @Override
-  protected <TId, TRow extends HasId<TId>> void appendColumnsSelection(
+  protected <TId extends Comparable<TId>, TRow extends HasId<TId>> void appendColumnsSelection(
       Class<?> rowClass,
       JoinQuery<?, ?> optionalJoinQuery,
       Query<TId, TRow> optionalQuery,
@@ -88,16 +88,17 @@ public class SqlBuilderPostgresImpl extends SqlBuilderCommonImpl {
    * include them too
    */
   @Override
-  protected <TId, TRow extends HasId<TId>> void appendAdditionalColumnsSelectionIfNeeded(
-      Class<?> rowClass,
-      JoinQuery<?, ?> optionalJoinQuery,
-      Query<TId, TRow> optionalQuery,
-      OrderBy[] orderBy,
-      boolean wildcardAllowed,
-      boolean prefixColumnsWhenReferencing,
-      boolean selectAsPrefixedAliasedNames,
-      StringBuilder outSql,
-      List<ColumnsSelection> outColumns) {
+  protected <TId extends Comparable<TId>, TRow extends HasId<TId>>
+      void appendAdditionalColumnsSelectionIfNeeded(
+          Class<?> rowClass,
+          JoinQuery<?, ?> optionalJoinQuery,
+          Query<TId, TRow> optionalQuery,
+          OrderBy[] orderBy,
+          boolean wildcardAllowed,
+          boolean prefixColumnsWhenReferencing,
+          boolean selectAsPrefixedAliasedNames,
+          StringBuilder outSql,
+          List<ColumnsSelection> outColumns) {
     super.appendAdditionalColumnsSelectionIfNeeded(
         rowClass,
         optionalJoinQuery,

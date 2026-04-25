@@ -20,6 +20,7 @@ import org.summerb.easycrud.query.Query;
 import org.summerb.easycrud.rest.model.FilteringParam;
 import org.summerb.easycrud.row.HasId;
 
-public interface FilteringParamsToQueryConverter<TId, TRow extends HasId<TId>> {
+public interface FilteringParamsToQueryConverter<
+    TId extends Comparable<TId>, TRow extends HasId<TId>> {
   Query<TId, TRow> convert(Map<String, FilteringParam> filterParams);
 }

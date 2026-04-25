@@ -26,7 +26,7 @@ import org.summerb.easycrud.row.HasId;
  *
  * @author sergeyk
  */
-public interface PermissionsResolverStrategy<TId, TRow extends HasId<TId>> {
+public interface PermissionsResolverStrategy<TId extends Comparable<TId>, TRow extends HasId<TId>> {
   /**
    * @param ret object to populate with permissions
    * @param contextVariables variables that defines current context that can be used for permissions

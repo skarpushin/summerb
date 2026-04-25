@@ -63,8 +63,8 @@ import org.summerb.utils.easycrud.api.dto.Top;
  * @author sergey.karpushin
  */
 @SuppressWarnings("SqlSourceToSinkFlow")
-public class EasyCrudDaoSqlImpl<TId, TRow extends HasId<TId>> extends TableDaoBase
-    implements EasyCrudDao<TId, TRow>, EasyCrudDaoInjections<TId, TRow> {
+public class EasyCrudDaoSqlImpl<TId extends Comparable<TId>, TRow extends HasId<TId>>
+    extends TableDaoBase implements EasyCrudDao<TId, TRow>, EasyCrudDaoInjections<TId, TRow> {
 
   protected Class<TRow> rowClass;
   protected SqlBuilder sqlBuilder;

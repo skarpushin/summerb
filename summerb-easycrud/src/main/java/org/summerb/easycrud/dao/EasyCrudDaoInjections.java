@@ -10,7 +10,7 @@ import org.summerb.easycrud.sql_builder.SqlBuilder;
 import org.summerb.easycrud.tools.StringIdGenerator;
 import org.summerb.utils.clock.ClockResolver;
 
-public interface EasyCrudDaoInjections<TId, TRow extends HasId<TId>> {
+public interface EasyCrudDaoInjections<TId extends Comparable<TId>, TRow extends HasId<TId>> {
   String getTableName();
 
   Class<TRow> getRowClass();

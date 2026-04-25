@@ -73,7 +73,7 @@ public class SqlBuilderMySqlImplTest {
     commentService.setJoinQueryFactory(joinQueryFactory);
   }
 
-  private <TId, TRow extends HasId<TId>> Query<TId, TRow> createQuery(
+  private <TId extends Comparable<TId>, TRow extends HasId<TId>> Query<TId, TRow> createQuery(
       String tableName, Class<TRow> rowClass, EasyCrudServiceTestImpl<TId, TRow> service) {
 
     Query<TId, TRow> ret = new Query<>(service);
@@ -260,7 +260,7 @@ public class SqlBuilderMySqlImplTest {
     }
   }
 
-  abstract class EasyCrudServiceTestImpl<TId, TRow extends HasId<TId>>
+  abstract class EasyCrudServiceTestImpl<TId extends Comparable<TId>, TRow extends HasId<TId>>
       extends EasyCrudServiceImpl<TId, TRow, EasyCrudDao<TId, TRow>> {
 
     private final String tableName;

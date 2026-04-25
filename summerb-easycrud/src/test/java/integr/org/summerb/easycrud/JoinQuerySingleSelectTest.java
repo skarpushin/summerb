@@ -55,7 +55,7 @@ public class JoinQuerySingleSelectTest extends JoinQueryTestAbstract {
   @Test
   public void expectResultsDeduplicated() {
     // GIVEN
-    Query<Long, CommentRow> qComment = commentRowService.query().ge(CommentRow::getId, 0);
+    Query<Long, CommentRow> qComment = commentRowService.query().ge(CommentRow::getId, 0L);
     Query<Long, PostRow> qPost = postRowService.query();
     Query<String, UserRow> qUser = userRowService.query();
 

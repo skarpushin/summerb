@@ -16,7 +16,7 @@ import org.summerb.easycrud.row.HasId;
  * @param <TId> Primary table's ID type
  * @param <TRow> Primary table's row type, must implement {@link HasId}
  */
-public interface JoinQuery<TId, TRow extends HasId<TId>> {
+public interface JoinQuery<TId extends Comparable<TId>, TRow extends HasId<TId>> {
 
   /**
    * Adds an INNER JOIN that matches primary table (as denoted by the {@link #getPrimaryQuery()}) FK
@@ -34,8 +34,9 @@ public interface JoinQuery<TId, TRow extends HasId<TId>> {
    *     table that references to the joined table primary key
    * @return self
    */
-  <TAddedId, TAddedRow extends HasId<TAddedId>> JoinQuery<TId, TRow> join(
-      Query<TAddedId, TAddedRow> addedQuery, Function<TRow, TAddedId> idOfAddedTableGetter);
+  <TAddedId extends Comparable<TAddedId>, TAddedRow extends HasId<TAddedId>>
+      JoinQuery<TId, TRow> join(
+          Query<TAddedId, TAddedRow> addedQuery, Function<TRow, TAddedId> idOfAddedTableGetter);
 
   /**
    * Adds an INNER JOIN between a table that is already part of this JoinQuery (an existing one) and
@@ -52,9 +53,9 @@ public interface JoinQuery<TId, TRow extends HasId<TId>> {
    * @return self
    */
   <
-          TExistingId,
+          TExistingId extends Comparable<TExistingId>,
           TExistingRow extends HasId<TExistingId>,
-          TAddedId,
+          TAddedId extends Comparable<TAddedId>,
           TAddedRow extends HasId<TAddedId>>
       JoinQuery<TId, TRow> join(
           Query<TExistingId, TExistingRow> existingQuery,
@@ -79,8 +80,9 @@ public interface JoinQuery<TId, TRow extends HasId<TId>> {
    * @param idOfPrimaryTableGetter Function extracting the primary key from target table rows
    * @return self
    */
-  <TAddedId, TAddedRow extends HasId<TAddedId>> JoinQuery<TId, TRow> joinBack(
-      Query<TAddedId, TAddedRow> addedQuery, Function<TAddedRow, TId> idOfPrimaryTableGetter);
+  <TAddedId extends Comparable<TAddedId>, TAddedRow extends HasId<TAddedId>>
+      JoinQuery<TId, TRow> joinBack(
+          Query<TAddedId, TAddedRow> addedQuery, Function<TAddedRow, TId> idOfPrimaryTableGetter);
 
   /**
    * Adds an INNER JOIN between a table that is already part of this JoinQuery (existing) and
@@ -102,9 +104,9 @@ public interface JoinQuery<TId, TRow extends HasId<TId>> {
    * @return self
    */
   <
-          TExistingId,
+          TExistingId extends Comparable<TExistingId>,
           TExistingRow extends HasId<TExistingId>,
-          TAddedId,
+          TAddedId extends Comparable<TAddedId>,
           TAddedRow extends HasId<TAddedId>>
       JoinQuery<TId, TRow> joinBack(
           Query<TExistingId, TExistingRow> existingQuery,
@@ -130,8 +132,9 @@ public interface JoinQuery<TId, TRow extends HasId<TId>> {
    * @param idOfAddedTableGetter Function extracting the foreign key from primary table rows
    * @return self
    */
-  <TAddedId, TAddedRow extends HasId<TAddedId>> JoinQuery<TId, TRow> leftJoin(
-      Query<TAddedId, TAddedRow> addedQuery, Function<TRow, TAddedId> idOfAddedTableGetter);
+  <TAddedId extends Comparable<TAddedId>, TAddedRow extends HasId<TAddedId>>
+      JoinQuery<TId, TRow> leftJoin(
+          Query<TAddedId, TAddedRow> addedQuery, Function<TRow, TAddedId> idOfAddedTableGetter);
 
   /**
    * Adds a LEFT JOIN between a table that is already mentioned (existing) in this JoinQuery and
@@ -154,9 +157,9 @@ public interface JoinQuery<TId, TRow extends HasId<TId>> {
    * @return self
    */
   <
-          TExistingId,
+          TExistingId extends Comparable<TExistingId>,
           TExistingRow extends HasId<TExistingId>,
-          TAddedId,
+          TAddedId extends Comparable<TAddedId>,
           TAddedRow extends HasId<TAddedId>>
       JoinQuery<TId, TRow> leftJoin(
           Query<TExistingId, TExistingRow> existingQuery,
@@ -188,8 +191,9 @@ public interface JoinQuery<TId, TRow extends HasId<TId>> {
    *     points to primary table
    * @return self
    */
-  <TAddedId, TAddedRow extends HasId<TAddedId>> JoinQuery<TId, TRow> leftJoinBack(
-      Query<TAddedId, TAddedRow> addedQuery, Function<TAddedRow, TId> idOfPrimaryTableGetter);
+  <TAddedId extends Comparable<TAddedId>, TAddedRow extends HasId<TAddedId>>
+      JoinQuery<TId, TRow> leftJoinBack(
+          Query<TAddedId, TAddedRow> addedQuery, Function<TAddedRow, TId> idOfPrimaryTableGetter);
 
   /**
    * Adds NOT EXISTS to the WHERE clause to make sure there are no records exist in the added table
@@ -215,8 +219,9 @@ public interface JoinQuery<TId, TRow extends HasId<TId>> {
    *     points to primary table PK
    * @return self
    */
-  <TAddedId, TAddedRow extends HasId<TAddedId>> JoinQuery<TId, TRow> notExists(
-      Query<TAddedId, TAddedRow> addedQuery, Function<TAddedRow, TId> idOfPrimaryTableGetter);
+  <TAddedId extends Comparable<TAddedId>, TAddedRow extends HasId<TAddedId>>
+      JoinQuery<TId, TRow> notExists(
+          Query<TAddedId, TAddedRow> addedQuery, Function<TAddedRow, TId> idOfPrimaryTableGetter);
 
   /**
    * Adds NOT EXISTS to the WHERE clause to make sure there are no records exist in the ADDED table
@@ -241,7 +246,11 @@ public interface JoinQuery<TId, TRow extends HasId<TId>> {
    *     ADDED table that references to the OTHER table primary key
    * @return self
    */
-  <TAddedId, TAddedRow extends HasId<TAddedId>, ExistingId, ExistingRow extends HasId<ExistingId>>
+  <
+          TAddedId extends Comparable<TAddedId>,
+          TAddedRow extends HasId<TAddedId>,
+          ExistingId extends Comparable<ExistingId>,
+          ExistingRow extends HasId<ExistingId>>
       JoinQuery<TId, TRow> notExists(
           Query<ExistingId, ExistingRow> existingJoinQuery,
           Query<TAddedId, TAddedRow> addedQuery,
@@ -273,8 +282,9 @@ public interface JoinQuery<TId, TRow extends HasId<TId>> {
    *     points to primary table PK
    * @return self
    */
-  <TAddedId, TAddedRow extends HasId<TAddedId>> JoinQuery<TId, TRow> exists(
-      Query<TAddedId, TAddedRow> addedQuery, Function<TAddedRow, TId> idOfPrimaryTableGetter);
+  <TAddedId extends Comparable<TAddedId>, TAddedRow extends HasId<TAddedId>>
+      JoinQuery<TId, TRow> exists(
+          Query<TAddedId, TAddedRow> addedQuery, Function<TAddedRow, TId> idOfPrimaryTableGetter);
 
   /**
    * Adds EXISTS to the WHERE clause to filter by data in the added table that refers to some table
@@ -303,9 +313,9 @@ public interface JoinQuery<TId, TRow extends HasId<TId>> {
    * @return self
    */
   <
-          TAddedId,
+          TAddedId extends Comparable<TAddedId>,
           TAddedRow extends HasId<TAddedId>,
-          TExistingId,
+          TExistingId extends Comparable<TExistingId>,
           TExistingRow extends HasId<TExistingId>>
       JoinQuery<TId, TRow> exists(
           Query<TExistingId, TExistingRow> existingJoinQuery,
@@ -336,7 +346,7 @@ public interface JoinQuery<TId, TRow extends HasId<TId>> {
    * @param query Target table query to select from
    * @return Selector API for the specified table's rows
    */
-  <TOneId, TOneRow extends HasId<TOneId>> Select<TOneId, TOneRow> select(
+  <TOneId extends Comparable<TOneId>, TOneRow extends HasId<TOneId>> Select<TOneId, TOneRow> select(
       Query<TOneId, TOneRow> query);
 
   /**

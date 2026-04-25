@@ -29,7 +29,8 @@ import org.summerb.security.api.CurrentUserUuidResolver;
  *
  * <p>WARNING: It's assumed dto implemented interface {@link HasAuthor}
  */
-public class QueryNarrowerStrategyCreatedByImpl<TId, TRow extends HasId<TId> & HasAuthor>
+public class QueryNarrowerStrategyCreatedByImpl<
+        TId extends Comparable<TId>, TRow extends HasId<TId> & HasAuthor>
     extends QueryNarrowerStrategyFieldBased<TId, TRow> {
   protected CurrentUserUuidResolver currentUserUuidResolver;
 

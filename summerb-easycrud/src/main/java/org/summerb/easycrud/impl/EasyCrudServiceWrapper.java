@@ -33,7 +33,9 @@ import org.summerb.utils.easycrud.api.dto.PagerParams;
 import org.summerb.utils.easycrud.api.dto.PaginatedList;
 
 public class EasyCrudServiceWrapper<
-        TId, TRow extends HasId<TId>, TActual extends EasyCrudService<TId, TRow>>
+        TId extends Comparable<TId>,
+        TRow extends HasId<TId>,
+        TActual extends EasyCrudService<TId, TRow>>
     implements EasyCrudService<TId, TRow> {
   protected TActual actual;
 

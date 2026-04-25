@@ -20,7 +20,7 @@ import org.summerb.easycrud.query.Query;
 import org.summerb.easycrud.rest.commonpathvars.PathVariablesMap;
 import org.summerb.easycrud.row.HasId;
 
-public class QueryNarrowerByCommonPathVariable<TId, TRow extends HasId<TId>>
+public class QueryNarrowerByCommonPathVariable<TId extends Comparable<TId>, TRow extends HasId<TId>>
     extends QueryNarrowerStrategyFieldBased<TId, TRow> {
 
   public QueryNarrowerByCommonPathVariable(

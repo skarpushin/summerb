@@ -9,14 +9,18 @@ import org.summerb.easycrud.wireTaps.EasyCrudWireTap;
 public interface QuerySpecificsResolver {
   String getTableName(Query<?, ?> query);
 
-  <TRow extends HasId<TId>, TId> Class<TRow> getRowClass(Query<TId, TRow> query);
-
-  <TRow extends HasId<TId>, TId> RowMapper<TRow> getRowMapper(Query<TId, TRow> query);
-
-  <TRow extends HasId<TId>, TId> EasyCrudWireTap<TRow> getWireTap(Query<TId, TRow> query);
-
-  <TId, TRow extends HasId<TId>> EasyCrudExceptionStrategy<TId, TRow> getExceptionStrategy(
+  <TRow extends HasId<TId>, TId extends Comparable<TId>> Class<TRow> getRowClass(
       Query<TId, TRow> query);
 
-  <TId, TRow extends HasId<TId>> String getRowMessageCode(Query<TId, TRow> query);
+  <TRow extends HasId<TId>, TId extends Comparable<TId>> RowMapper<TRow> getRowMapper(
+      Query<TId, TRow> query);
+
+  <TRow extends HasId<TId>, TId extends Comparable<TId>> EasyCrudWireTap<TRow> getWireTap(
+      Query<TId, TRow> query);
+
+  <TId extends Comparable<TId>, TRow extends HasId<TId>>
+      EasyCrudExceptionStrategy<TId, TRow> getExceptionStrategy(Query<TId, TRow> query);
+
+  <TId extends Comparable<TId>, TRow extends HasId<TId>> String getRowMessageCode(
+      Query<TId, TRow> query);
 }

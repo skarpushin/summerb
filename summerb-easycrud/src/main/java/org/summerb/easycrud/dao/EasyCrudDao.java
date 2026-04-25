@@ -31,7 +31,7 @@ import org.summerb.utils.easycrud.api.dto.PaginatedList;
  *
  * @author sergey.karpushin
  */
-public interface EasyCrudDao<TId, TRow extends HasId<TId>> {
+public interface EasyCrudDao<TId extends Comparable<TId>, TRow extends HasId<TId>> {
   void create(TRow row);
 
   TRow findById(TId id);

@@ -32,7 +32,8 @@ import org.summerb.validation.ValidationException;
 /**
  * @author sergey.karpushin
  */
-public class EasyCrudExceptionStrategyDefaultImpl<TId, TRow extends HasId<TId>>
+public class EasyCrudExceptionStrategyDefaultImpl<
+        TId extends Comparable<TId>, TRow extends HasId<TId>>
     implements EasyCrudExceptionStrategy<TId, TRow> {
   protected String entityCode;
 

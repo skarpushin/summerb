@@ -19,7 +19,11 @@ import javax.sql.DataSource;
 import org.summerb.easycrud.dao.EasyCrudDaoSqlImpl;
 import org.summerb.easycrud.row.HasId;
 
-public class EasyCrudM2MDaoSqlImpl<T1Id, T1Dto extends HasId<T1Id>, T2Id, T2Dto extends HasId<T2Id>>
+public class EasyCrudM2MDaoSqlImpl<
+        T1Id extends Comparable<T1Id>,
+        T1Dto extends HasId<T1Id>,
+        T2Id extends Comparable<T2Id>,
+        T2Dto extends HasId<T2Id>>
     extends EasyCrudDaoSqlImpl<Long, ManyToManyRow<T1Id, T2Id>> {
 
   @SuppressWarnings("deprecation")

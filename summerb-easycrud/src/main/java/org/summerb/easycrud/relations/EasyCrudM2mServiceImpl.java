@@ -55,7 +55,10 @@ import org.summerb.security.api.exceptions.NotAuthorizedException;
  * @param <T2Dto> T2Dto (A.K.A. Referencee, ServiceB, Dst)
  */
 public class EasyCrudM2mServiceImpl<
-        T1Id, T1Dto extends HasId<T1Id>, T2Id, T2Dto extends HasId<T2Id>>
+        T1Id extends Comparable<T1Id>,
+        T1Dto extends HasId<T1Id>,
+        T2Id extends Comparable<T2Id>,
+        T2Dto extends HasId<T2Id>>
     extends EasyCrudServiceImpl<
         Long, ManyToManyRow<T1Id, T2Id>, EasyCrudM2MDaoSqlImpl<T1Id, T1Dto, T2Id, T2Dto>>
     implements EasyCrudM2mService<T1Id, T1Dto, T2Id, T2Dto> {

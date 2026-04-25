@@ -58,7 +58,7 @@ import org.summerb.validation.ValidationException;
  * @param <TId> type of primary key
  * @param <TRow> type of row
  */
-public interface EasyCrudService<TId, TRow extends HasId<TId>>
+public interface EasyCrudService<TId extends Comparable<TId>, TRow extends HasId<TId>>
     extends EasyCrudServiceQueryApi<TId, TRow> {
 
   /**
@@ -190,7 +190,7 @@ public interface EasyCrudService<TId, TRow extends HasId<TId>>
 
   /**
    * Deletes row by example. If TRow implements {@link HasTimestamps} then this call is equivalent
-   * to {@link #deleteByIdOptimistic(Object, long)}
+   * to {@link #deleteByIdOptimistic(Comparable, long)}
    *
    * <p>Deletes row by example
    *

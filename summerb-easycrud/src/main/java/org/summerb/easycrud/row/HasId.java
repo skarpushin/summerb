@@ -25,7 +25,7 @@ import org.summerb.utils.DtoBase;
  * @author sergey.karpushin
  * @param <TId> type of primary key
  */
-public interface HasId<TId> extends DtoBase {
+public interface HasId<TId extends Comparable<TId>> extends DtoBase {
   String FN_ID = "id";
 
   TId getId();

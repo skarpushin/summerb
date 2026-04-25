@@ -11,6 +11,6 @@ public interface QueryFactory {
    * @return instance that can be used for both - referring to fields using method references and
    *     string literals
    */
-  <TId, TRow extends HasId<TId>, F extends Query<TId, TRow>> F buildFor(
+  <TId extends Comparable<TId>, TRow extends HasId<TId>, F extends Query<TId, TRow>> F buildFor(
       EasyCrudService<TId, TRow> service);
 }

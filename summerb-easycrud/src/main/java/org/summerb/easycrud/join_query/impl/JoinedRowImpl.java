@@ -33,13 +33,13 @@ public class JoinedRowImpl implements JoinedRow {
   }
 
   @Override
-  public <TId, TRow extends HasId<TId>> TRow get(Query<TId, TRow> query) {
+  public <TId extends Comparable<TId>, TRow extends HasId<TId>> TRow get(Query<TId, TRow> query) {
     Preconditions.checkArgument(query != null, "query is required");
     return (TRow) partsByQuery.get(query);
   }
 
   @Override
-  public <TId, TRow extends HasId<TId>> TRow get(Class<TRow> rowClass) {
+  public <TId extends Comparable<TId>, TRow extends HasId<TId>> TRow get(Class<TRow> rowClass) {
     Preconditions.checkArgument(rowClass != null, "rowClass is required");
     return (TRow) partsByRowClass.get(rowClass);
   }

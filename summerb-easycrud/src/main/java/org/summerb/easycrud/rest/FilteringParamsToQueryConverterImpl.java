@@ -31,7 +31,8 @@ import org.summerb.easycrud.row.HasId;
  *     but don't want to over-engineer. In behavior needs to be changed one can override this class
  *     or provide other impl
  */
-public class FilteringParamsToQueryConverterImpl<TId, TRow extends HasId<TId>>
+public class FilteringParamsToQueryConverterImpl<
+        TId extends Comparable<TId>, TRow extends HasId<TId>>
     implements FilteringParamsToQueryConverter<TId, TRow> {
 
   private final EasyCrudService<TId, TRow> service;

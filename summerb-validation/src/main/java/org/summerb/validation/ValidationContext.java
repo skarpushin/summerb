@@ -539,15 +539,16 @@ public class ValidationContext<T> {
     return false;
   }
 
-  public <V> boolean eq(Function<T, V> getter, V value) {
+  public <V extends Comparable<V>> boolean eq(Function<T, V> getter, V value) {
     return eq(getValue(getter), value, () -> getPropertyName(getter));
   }
 
-  public <V> boolean eq(V value, V expectedValue, String propertyName) {
+  public <V extends Comparable<V>> boolean eq(V value, V expectedValue, String propertyName) {
     return eq(value, expectedValue, () -> propertyName);
   }
 
-  public <V> boolean eq(V value, V expectedValue, Supplier<String> propertyName) {
+  public <V extends Comparable<V>> boolean eq(
+      V value, V expectedValue, Supplier<String> propertyName) {
     if (ObjectUtils.nullSafeEquals(expectedValue, value)) {
       return true;
     }
@@ -556,15 +557,16 @@ public class ValidationContext<T> {
     return false;
   }
 
-  public <V> boolean ne(Function<T, V> getter, V value) {
+  public <V extends Comparable<V>> boolean ne(Function<T, V> getter, V value) {
     return ne(getValue(getter), value, () -> getPropertyName(getter));
   }
 
-  public <V> boolean ne(V value, V expectedValue, String propertyName) {
+  public <V extends Comparable<V>> boolean ne(V value, V expectedValue, String propertyName) {
     return ne(value, expectedValue, () -> propertyName);
   }
 
-  public <V> boolean ne(V value, V expectedValue, Supplier<String> propertyName) {
+  public <V extends Comparable<V>> boolean ne(
+      V value, V expectedValue, Supplier<String> propertyName) {
     if (!ObjectUtils.nullSafeEquals(expectedValue, value)) {
       return true;
     }
@@ -663,15 +665,16 @@ public class ValidationContext<T> {
     return false;
   }
 
-  public <V> boolean in(Function<T, V> getter, Collection<V> values) {
+  public <V extends Comparable<V>> boolean in(Function<T, V> getter, Collection<V> values) {
     return in(getValue(getter), values, () -> getPropertyName(getter));
   }
 
-  public <V> boolean in(V value, Collection<V> values, String propertyName) {
+  public <V extends Comparable<V>> boolean in(V value, Collection<V> values, String propertyName) {
     return in(value, values, () -> propertyName);
   }
 
-  public <V> boolean in(V value, Collection<V> values, Supplier<String> propertyName) {
+  public <V extends Comparable<V>> boolean in(
+      V value, Collection<V> values, Supplier<String> propertyName) {
     Preconditions.checkArgument(
         !CollectionUtils.isEmpty(values), "values collection must not be empty");
 
@@ -683,15 +686,17 @@ public class ValidationContext<T> {
     return false;
   }
 
-  public <V> boolean notIn(Function<T, V> getter, Collection<V> values) {
+  public <V extends Comparable<V>> boolean notIn(Function<T, V> getter, Collection<V> values) {
     return notIn(getValue(getter), values, () -> getPropertyName(getter));
   }
 
-  public <V> boolean notIn(V value, Collection<V> values, String propertyName) {
+  public <V extends Comparable<V>> boolean notIn(
+      V value, Collection<V> values, String propertyName) {
     return notIn(value, values, () -> propertyName);
   }
 
-  public <V> boolean notIn(V value, Collection<V> values, Supplier<String> propertyName) {
+  public <V extends Comparable<V>> boolean notIn(
+      V value, Collection<V> values, Supplier<String> propertyName) {
     Preconditions.checkArgument(
         !CollectionUtils.isEmpty(values), "values collection must not be empty");
 

@@ -18,7 +18,8 @@ import org.summerb.easycrud.row.HasId;
  * @param <TId> type of row id
  * @param <TRow> type of row
  */
-public class PermissionsResolverStrategyPerTable<TId, TRow extends HasId<TId>>
+public class PermissionsResolverStrategyPerTable<
+        TId extends Comparable<TId>, TRow extends HasId<TId>>
     implements PermissionsResolverStrategy<TId, HasId<TId>> {
 
   protected EasyCrudAuthorizationPerTableStrategy authStrategy;

@@ -17,8 +17,8 @@ public class QueryFactoryImpl implements QueryFactory {
 
   @SuppressWarnings({"unchecked"})
   @Override
-  public <TId, TRow extends HasId<TId>, F extends Query<TId, TRow>> F buildFor(
-      EasyCrudService<TId, TRow> service) {
+  public <TId extends Comparable<TId>, TRow extends HasId<TId>, F extends Query<TId, TRow>>
+      F buildFor(EasyCrudService<TId, TRow> service) {
     try {
       return (F) new Query<>(service);
     } catch (Exception e) {

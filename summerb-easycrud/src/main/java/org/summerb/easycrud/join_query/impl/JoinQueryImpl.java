@@ -42,7 +42,8 @@ import org.summerb.easycrud.sql_builder.FieldsEnlister;
  *
  * @param <TRow> type of the primary row class that is being selected
  */
-public class JoinQueryImpl<TId, TRow extends HasId<TId>> implements JoinQuery<TId, TRow> {
+public class JoinQueryImpl<TId extends Comparable<TId>, TRow extends HasId<TId>>
+    implements JoinQuery<TId, TRow> {
   protected static final Logger log = LoggerFactory.getLogger(JoinQueryImpl.class);
 
   protected Set<ConditionsLocation> JOINED_CONDITIONS_LOCATION =
@@ -164,8 +165,9 @@ public class JoinQueryImpl<TId, TRow extends HasId<TId>> implements JoinQuery<TI
   }
 
   @Override
-  public <TAddedId, TAddedRow extends HasId<TAddedId>> JoinQuery<TId, TRow> join(
-      Query<TAddedId, TAddedRow> addedQuery, Function<TRow, TAddedId> idOfAddedTableGetter) {
+  public <TAddedId extends Comparable<TAddedId>, TAddedRow extends HasId<TAddedId>>
+      JoinQuery<TId, TRow> join(
+          Query<TAddedId, TAddedRow> addedQuery, Function<TRow, TAddedId> idOfAddedTableGetter) {
 
     addQuery(addedQuery, ConditionsLocation.WHERE, JoinDirection.FORWARD);
 
@@ -180,8 +182,9 @@ public class JoinQueryImpl<TId, TRow extends HasId<TId>> implements JoinQuery<TI
   }
 
   @Override
-  public <TAddedId, TAddedRow extends HasId<TAddedId>> JoinQuery<TId, TRow> joinBack(
-      Query<TAddedId, TAddedRow> addedQuery, Function<TAddedRow, TId> idOfPrimaryTableGetter) {
+  public <TAddedId extends Comparable<TAddedId>, TAddedRow extends HasId<TAddedId>>
+      JoinQuery<TId, TRow> joinBack(
+          Query<TAddedId, TAddedRow> addedQuery, Function<TAddedRow, TId> idOfPrimaryTableGetter) {
 
     addQuery(addedQuery, ConditionsLocation.WHERE, JoinDirection.BACKWARD);
 
@@ -194,9 +197,9 @@ public class JoinQueryImpl<TId, TRow extends HasId<TId>> implements JoinQuery<TI
 
   @Override
   public <
-          TExistingId,
+          TExistingId extends Comparable<TExistingId>,
           TExistingRow extends HasId<TExistingId>,
-          TAddedId,
+          TAddedId extends Comparable<TAddedId>,
           TAddedRow extends HasId<TAddedId>>
       JoinQuery<TId, TRow> joinBack(
           Query<TExistingId, TExistingRow> existingQuery,
@@ -217,9 +220,9 @@ public class JoinQueryImpl<TId, TRow extends HasId<TId>> implements JoinQuery<TI
 
   @Override
   public <
-          TExistingId,
+          TExistingId extends Comparable<TExistingId>,
           TExistingRow extends HasId<TExistingId>,
-          TAddedId,
+          TAddedId extends Comparable<TAddedId>,
           TAddedRow extends HasId<TAddedId>>
       JoinQuery<TId, TRow> join(
           Query<TExistingId, TExistingRow> existingQuery,
@@ -239,8 +242,9 @@ public class JoinQueryImpl<TId, TRow extends HasId<TId>> implements JoinQuery<TI
   }
 
   @Override
-  public <TAddedId, TAddedRow extends HasId<TAddedId>> JoinQuery<TId, TRow> leftJoin(
-      Query<TAddedId, TAddedRow> addedQuery, Function<TRow, TAddedId> idOfAddedTableGetter) {
+  public <TAddedId extends Comparable<TAddedId>, TAddedRow extends HasId<TAddedId>>
+      JoinQuery<TId, TRow> leftJoin(
+          Query<TAddedId, TAddedRow> addedQuery, Function<TRow, TAddedId> idOfAddedTableGetter) {
 
     addQuery(addedQuery, ConditionsLocation.JOIN, JoinDirection.FORWARD);
 
@@ -255,8 +259,9 @@ public class JoinQueryImpl<TId, TRow extends HasId<TId>> implements JoinQuery<TI
   }
 
   @Override
-  public <TAddedId, TAddedRow extends HasId<TAddedId>> JoinQuery<TId, TRow> leftJoinBack(
-      Query<TAddedId, TAddedRow> addedQuery, Function<TAddedRow, TId> idOfPrimaryTableGetter) {
+  public <TAddedId extends Comparable<TAddedId>, TAddedRow extends HasId<TAddedId>>
+      JoinQuery<TId, TRow> leftJoinBack(
+          Query<TAddedId, TAddedRow> addedQuery, Function<TAddedRow, TId> idOfPrimaryTableGetter) {
 
     addQuery(addedQuery, ConditionsLocation.JOIN, JoinDirection.BACKWARD);
 
@@ -268,8 +273,9 @@ public class JoinQueryImpl<TId, TRow extends HasId<TId>> implements JoinQuery<TI
   }
 
   @Override
-  public <TAddedId, TAddedRow extends HasId<TAddedId>> JoinQuery<TId, TRow> notExists(
-      Query<TAddedId, TAddedRow> addedQuery, Function<TAddedRow, TId> idOfPrimaryTableGetter) {
+  public <TAddedId extends Comparable<TAddedId>, TAddedRow extends HasId<TAddedId>>
+      JoinQuery<TId, TRow> notExists(
+          Query<TAddedId, TAddedRow> addedQuery, Function<TAddedRow, TId> idOfPrimaryTableGetter) {
 
     addQuery(addedQuery, ConditionsLocation.WHERE_EXISTS, JoinDirection.BACKWARD);
 
@@ -285,9 +291,9 @@ public class JoinQueryImpl<TId, TRow extends HasId<TId>> implements JoinQuery<TI
 
   @Override
   public <
-          TAddedId,
+          TAddedId extends Comparable<TAddedId>,
           TAddedRow extends HasId<TAddedId>,
-          ExistingId,
+          ExistingId extends Comparable<ExistingId>,
           ExistingRow extends HasId<ExistingId>>
       JoinQuery<TId, TRow> notExists(
           Query<ExistingId, ExistingRow> existingJoinQuery,
@@ -310,8 +316,9 @@ public class JoinQueryImpl<TId, TRow extends HasId<TId>> implements JoinQuery<TI
   }
 
   @Override
-  public <TAddedId, TAddedRow extends HasId<TAddedId>> JoinQuery<TId, TRow> exists(
-      Query<TAddedId, TAddedRow> addedQuery, Function<TAddedRow, TId> idOfPrimaryTableGetter) {
+  public <TAddedId extends Comparable<TAddedId>, TAddedRow extends HasId<TAddedId>>
+      JoinQuery<TId, TRow> exists(
+          Query<TAddedId, TAddedRow> addedQuery, Function<TAddedRow, TId> idOfPrimaryTableGetter) {
 
     addQuery(addedQuery, ConditionsLocation.WHERE_EXISTS, JoinDirection.BACKWARD);
 
@@ -327,9 +334,9 @@ public class JoinQueryImpl<TId, TRow extends HasId<TId>> implements JoinQuery<TI
 
   @Override
   public <
-          TAddedId,
+          TAddedId extends Comparable<TAddedId>,
           TAddedRow extends HasId<TAddedId>,
-          TExistingId,
+          TExistingId extends Comparable<TExistingId>,
           TExistingRow extends HasId<TExistingId>>
       JoinQuery<TId, TRow> exists(
           Query<TExistingId, TExistingRow> existingJoinQuery,
@@ -358,9 +365,9 @@ public class JoinQueryImpl<TId, TRow extends HasId<TId>> implements JoinQuery<TI
 
   @Override
   public <
-          TExistingId,
+          TExistingId extends Comparable<TExistingId>,
           TExistingRow extends HasId<TExistingId>,
-          TAddedId,
+          TAddedId extends Comparable<TAddedId>,
           TAddedRow extends HasId<TAddedId>>
       JoinQuery<TId, TRow> leftJoin(
           Query<TExistingId, TExistingRow> existingQuery,
@@ -420,8 +427,8 @@ public class JoinQueryImpl<TId, TRow extends HasId<TId>> implements JoinQuery<TI
   }
 
   @Override
-  public <TOneId, TOneRow extends HasId<TOneId>> Select<TOneId, TOneRow> select(
-      Query<TOneId, TOneRow> query) {
+  public <TOneId extends Comparable<TOneId>, TOneRow extends HasId<TOneId>>
+      Select<TOneId, TOneRow> select(Query<TOneId, TOneRow> query) {
 
     if (query.equals(primarySelection)) {
       return selectFactory.build(this, query);

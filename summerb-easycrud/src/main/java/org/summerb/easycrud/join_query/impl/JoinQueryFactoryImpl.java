@@ -29,7 +29,8 @@ public class JoinQueryFactoryImpl implements JoinQueryFactory {
   }
 
   @Override
-  public <TId, TRow extends HasId<TId>> JoinQuery<TId, TRow> build(Query<TId, TRow> primaryQuery) {
+  public <TId extends Comparable<TId>, TRow extends HasId<TId>> JoinQuery<TId, TRow> build(
+      Query<TId, TRow> primaryQuery) {
     return new JoinQueryImpl<>(primaryQuery, selectFactory, querySpecificsResolver, fieldsEnlister);
   }
 }

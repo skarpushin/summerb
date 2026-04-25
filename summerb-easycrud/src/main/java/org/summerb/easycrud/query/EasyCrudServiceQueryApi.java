@@ -30,7 +30,7 @@ import org.summerb.utils.easycrud.api.dto.PaginatedList;
  * @param <TId> type of primary key
  * @param <TRow> type of Row
  */
-public interface EasyCrudServiceQueryApi<TId, TRow extends HasId<TId>> {
+public interface EasyCrudServiceQueryApi<TId extends Comparable<TId>, TRow extends HasId<TId>> {
   /**
    * @param query query for locating row
    * @return Row or null if not found. If more than 1 row matched query exception will be thrown

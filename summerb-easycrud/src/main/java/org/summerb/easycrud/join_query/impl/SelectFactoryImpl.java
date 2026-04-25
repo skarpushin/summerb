@@ -37,7 +37,7 @@ public class SelectFactoryImpl implements SelectFactory {
   }
 
   @Override
-  public <TRow extends HasId<TId>, TId> Select<TId, TRow> build(
+  public <TRow extends HasId<TId>, TId extends Comparable<TId>> Select<TId, TRow> build(
       JoinQuery<?, ?> joinQuery, Query<TId, TRow> entityToSelect) {
     return new SelectImpl<>(
         joinQuery, entityToSelect, jdbc, querySpecificsResolver, sqlBuilder, fieldsEnlister);

@@ -24,16 +24,18 @@ import org.summerb.easycrud.row.HasId;
 public abstract class EasyCrudDtoUtils {
   private EasyCrudDtoUtils() {}
 
-  public static <T, TDto extends HasId<T>> Set<T> enumerateIds(Iterable<TDto> iterable) {
+  public static <TId extends Comparable<TId>, TDto extends HasId<TId>> Set<TId> enumerateIds(
+      Iterable<TDto> iterable) {
     // TBD: Use streams
-    Set<T> ret = new HashSet<>();
-    for (HasId<T> row : iterable) {
+    Set<TId> ret = new HashSet<>();
+    for (HasId<TId> row : iterable) {
       ret.add(row.getId());
     }
     return ret;
   }
 
-  public static <TId, TDto extends HasId<TId>> Map<TId, TDto> toMapById(Iterable<TDto> iterable) {
+  public static <TId extends Comparable<TId>, TDto extends HasId<TId>> Map<TId, TDto> toMapById(
+      Iterable<TDto> iterable) {
     // TBD: Use streams
     Map<TId, TDto> ret = new HashMap<>();
     for (TDto row : iterable) {

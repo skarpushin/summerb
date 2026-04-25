@@ -22,7 +22,8 @@ import org.summerb.easycrud.row.HasId;
 import org.summerb.utils.easycrud.api.dto.PagerParams;
 import org.summerb.utils.easycrud.api.dto.PaginatedList;
 
-public class MultipleItemsResult<TId, TDto extends HasId<TId>> extends CrudQueryResult<TId, TDto> {
+public class MultipleItemsResult<TId extends Comparable<TId>, TDto extends HasId<TId>>
+    extends CrudQueryResult<TId, TDto> {
   protected List<TDto> rows;
   protected PagerParams pagerParams;
   protected long totalResults;

@@ -6,7 +6,8 @@ import java.util.Objects;
 import org.springframework.util.CollectionUtils;
 import org.summerb.easycrud.row.HasId;
 
-public class DisjunctionCondition<TId, TRow extends HasId<TId>> extends Condition {
+public class DisjunctionCondition<TId extends Comparable<TId>, TRow extends HasId<TId>>
+    extends Condition {
 
   protected List<Query<TId, TRow>> queries;
 

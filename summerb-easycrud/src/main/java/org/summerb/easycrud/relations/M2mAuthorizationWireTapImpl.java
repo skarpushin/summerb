@@ -34,7 +34,8 @@ import org.summerb.easycrud.wireTaps.EasyCrudWireTapMode;
  * @param <TId1> TId1
  * @param <TId2> TId2
  */
-public class M2mAuthorizationWireTapImpl<TId1, TId2>
+public class M2mAuthorizationWireTapImpl<
+        TId1 extends Comparable<TId1>, TId2 extends Comparable<TId2>>
     extends EasyCrudWireTapAbstract<ManyToManyRow<TId1, TId2>> implements InitializingBean {
   protected EasyCrudWireTap<HasId<TId1>> referencerAuthorizationWireTap;
   protected EasyCrudService<TId1, HasId<TId1>> referencerService;

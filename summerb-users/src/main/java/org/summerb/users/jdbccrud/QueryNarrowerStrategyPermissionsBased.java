@@ -31,7 +31,8 @@ import org.summerb.users.api.PermissionService;
  * <p>WARNING: DO NOT USE it if you anticipate MANY objects of this type per user. As no pagination
  * is implemented here -- all ids retrieved at once
  */
-public class QueryNarrowerStrategyPermissionsBased<TId, TRow extends HasId<TId>>
+public class QueryNarrowerStrategyPermissionsBased<
+        TId extends Comparable<TId>, TRow extends HasId<TId>>
     extends QueryNarrowerStrategyFieldBased<TId, TRow> {
   protected PermissionService permissionService;
   protected String optionalDomain;

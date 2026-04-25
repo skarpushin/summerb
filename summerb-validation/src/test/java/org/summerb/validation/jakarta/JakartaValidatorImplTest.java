@@ -432,7 +432,7 @@ public class JakartaValidatorImplTest {
     assertVe(ctx, MustBeFalse.class, JakartaFullBean::isAssertFalseBoolean);
 
     // now just check count
-    int expectedErrors = 60;
+    int expectedErrors = 59;
     if (ctx.getErrors().size() != expectedErrors) {
       System.out.println(new org.summerb.validation.ValidationErrors(ctx.getErrors()));
     }

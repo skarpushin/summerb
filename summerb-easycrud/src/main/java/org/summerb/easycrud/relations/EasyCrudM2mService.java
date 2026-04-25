@@ -34,7 +34,10 @@ import org.summerb.easycrud.row.HasId;
  * @param <T2Row> referencee row. The one is referenced by many referencers
  */
 public interface EasyCrudM2mService<
-        T1Id, T1Row extends HasId<T1Id>, T2Id, T2Row extends HasId<T2Id>>
+        T1Id extends Comparable<T1Id>,
+        T1Row extends HasId<T1Id>,
+        T2Id extends Comparable<T2Id>,
+        T2Row extends HasId<T2Id>>
     extends EasyCrudService<Long, ManyToManyRow<T1Id, T2Id>> {
 
   List<T2Row> findReferenceeByReferencer(T1Id referencerId);

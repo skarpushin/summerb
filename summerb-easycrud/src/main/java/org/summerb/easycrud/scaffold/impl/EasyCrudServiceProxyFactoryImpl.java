@@ -32,7 +32,10 @@ public class EasyCrudServiceProxyFactoryImpl implements EasyCrudServiceProxyFact
 
   @Override
   @SuppressWarnings("unchecked")
-  public <TId, TDto extends HasId<TId>, TService extends EasyCrudService<TId, TDto>>
+  public <
+          TId extends Comparable<TId>,
+          TDto extends HasId<TId>,
+          TService extends EasyCrudService<TId, TDto>>
       TService createProxy(
           Class<TService> serviceInterface,
           EasyCrudService<TId, TDto> service,

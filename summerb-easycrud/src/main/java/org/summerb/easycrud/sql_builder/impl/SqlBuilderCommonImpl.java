@@ -172,16 +172,17 @@ public class SqlBuilderCommonImpl implements SqlBuilder {
   }
 
   /** Subclass can override this to add some other columns after all selection columns are added */
-  protected <TId, TRow extends HasId<TId>> void appendAdditionalColumnsSelectionIfNeeded(
-      Class<?> rowClass,
-      JoinQuery<?, ?> optionalJoinQuery,
-      Query<TId, TRow> optionalQuery,
-      OrderBy[] orderBy,
-      boolean wildcardAllowed,
-      boolean prefixColumnsWhenReferencing,
-      boolean selectAsPrefixedAliasedNames,
-      StringBuilder outSql,
-      List<ColumnsSelection> outColumns) {
+  protected <TId extends Comparable<TId>, TRow extends HasId<TId>>
+      void appendAdditionalColumnsSelectionIfNeeded(
+          Class<?> rowClass,
+          JoinQuery<?, ?> optionalJoinQuery,
+          Query<TId, TRow> optionalQuery,
+          OrderBy[] orderBy,
+          boolean wildcardAllowed,
+          boolean prefixColumnsWhenReferencing,
+          boolean selectAsPrefixedAliasedNames,
+          StringBuilder outSql,
+          List<ColumnsSelection> outColumns) {
 
     // If deduplication is used and order by includes fields from tables which are not selected,
     // those fields must be included in the query
@@ -691,7 +692,7 @@ public class SqlBuilderCommonImpl implements SqlBuilder {
     };
   }
 
-  protected <TId, TRow extends HasId<TId>> void appendColumnsSelection(
+  protected <TId extends Comparable<TId>, TRow extends HasId<TId>> void appendColumnsSelection(
       Class<?> rowClass,
       JoinQuery<?, ?> optionalJoinQuery,
       Query<TId, TRow> optionalQuery,
