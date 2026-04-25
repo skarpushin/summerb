@@ -29,6 +29,8 @@ import org.summerb.easycrud.dao.EasyCrudDao;
 import org.summerb.easycrud.dao.EasyCrudDaoInjections;
 import org.summerb.easycrud.exceptions.EasyCrudExceptionStrategy;
 import org.summerb.easycrud.exceptions.EasyCrudExceptionStrategyDefaultImpl;
+import org.summerb.easycrud.exceptions.EasyCrudExceptionStrategyFactory;
+import org.summerb.easycrud.exceptions.EasyCrudExceptionStrategyFactoryImpl;
 import org.summerb.easycrud.exceptions.EntityNotFoundException;
 import org.summerb.easycrud.join_query.JoinQuery;
 import org.summerb.easycrud.join_query.JoinQueryFactory;
@@ -86,6 +88,7 @@ public class EasyCrudServiceImpl<
   protected Class<TRow> rowClass;
   protected String rowMessageCode;
   protected EasyCrudExceptionStrategy<TId, TRow> exceptionStrategy;
+  protected EasyCrudExceptionStrategyFactory easyCrudExceptionStrategyFactory;
   protected EasyCrudWireTap<TRow> wireTap;
   protected CurrentUserUuidResolver currentUserUuidResolver;
   protected StringIdGenerator stringIdGenerator;
@@ -133,6 +136,10 @@ public class EasyCrudServiceImpl<
       wireTap = buildDefaultWireTap();
     }
 
+    if (easyCrudExceptionStrategyFactory == null) {
+      easyCrudExceptionStrategyFactory = new EasyCrudExceptionStrategyFactoryImpl();
+    }
+
     if (exceptionStrategy == null) {
       exceptionStrategy = buildDefaultEasyCrudExceptionStrategy(this.rowMessageCode);
     }
@@ -170,9 +177,9 @@ public class EasyCrudServiceImpl<
     return new StringIdGeneratorUuidImpl();
   }
 
-  protected EasyCrudExceptionStrategyDefaultImpl<TId, TRow> buildDefaultEasyCrudExceptionStrategy(
+  protected EasyCrudExceptionStrategy<TId, TRow> buildDefaultEasyCrudExceptionStrategy(
       String rowMessageCode) {
-    return new EasyCrudExceptionStrategyDefaultImpl<>(rowMessageCode);
+    return easyCrudExceptionStrategyFactory.create(rowMessageCode);
   }
 
   @Override
@@ -213,7 +220,7 @@ public class EasyCrudServiceImpl<
       }
       return ret;
     } catch (Throwable t) {
-      throw exceptionStrategy.handleExceptionAtCreate(t, ret == null ? row : ret);
+      throw exceptionStrategy.exceptionAtCreate(t, ret == null ? row : ret);
     }
   }
 
@@ -233,7 +240,7 @@ public class EasyCrudServiceImpl<
       if (requiresOnUpdate == EasyCrudWireTapMode.FULL_DTO_AND_CURRENT_VERSION_NEEDED) {
         currentVersion = dao.findById(newVersion.getId());
         if (currentVersion == null) {
-          throw exceptionStrategy.buildNotFoundException(rowMessageCode, newVersion.getId());
+          throw exceptionStrategy.buildNotFoundException(newVersion.getId());
         }
       }
 
@@ -255,9 +262,9 @@ public class EasyCrudServiceImpl<
       }
       return ret;
     } catch (JdbcUpdateAffectedIncorrectNumberOfRowsException t) {
-      throw exceptionStrategy.handleAffectedIncorrectNumberOfRowsOnUpdate(t, ret);
+      throw exceptionStrategy.affectedIncorrectNumberOfRowsOnUpdate(t, ret);
     } catch (Throwable t) {
-      throw exceptionStrategy.handleExceptionAtUpdate(t, ret == null ? newVersion : ret);
+      throw exceptionStrategy.exceptionAtUpdate(t, ret == null ? newVersion : ret);
     }
   }
 
@@ -283,7 +290,7 @@ public class EasyCrudServiceImpl<
       if (requiresOnDelete.isDtoNeeded()) {
         existing = dao.findById(id);
         if (existing == null) {
-          throw exceptionStrategy.buildNotFoundException(rowMessageCode, id);
+          throw exceptionStrategy.buildNotFoundException(id);
         }
       }
 
@@ -294,14 +301,14 @@ public class EasyCrudServiceImpl<
 
       int affected = dao.delete(id);
       if (affected != 1) {
-        throw exceptionStrategy.buildNotFoundException(rowMessageCode, id);
+        throw exceptionStrategy.buildNotFoundException(id);
       }
 
       if (requiresOnDeleteNeeded) {
         wireTap.afterDelete(existing);
       }
     } catch (Throwable t) {
-      throw exceptionStrategy.handleExceptionAtDelete(t, id, existing);
+      throw exceptionStrategy.exceptionAtDelete(t, id, existing);
     }
   }
 
@@ -319,7 +326,7 @@ public class EasyCrudServiceImpl<
       if (requiresOnDelete.isDtoNeeded()) {
         existing = dao.findById(id);
         if (existing == null) {
-          throw exceptionStrategy.buildNotFoundException(rowMessageCode, id);
+          throw exceptionStrategy.buildNotFoundException(id);
         }
       }
       boolean requiresOnDeleteNeeded = requiresOnDelete.isNeeded();
@@ -333,9 +340,9 @@ public class EasyCrudServiceImpl<
         wireTap.afterDelete(existing);
       }
     } catch (JdbcUpdateAffectedIncorrectNumberOfRowsException t) {
-      throw exceptionStrategy.handleAffectedIncorrectNumberOfRowsOnDelete(t, existing);
+      throw exceptionStrategy.affectedIncorrectNumberOfRowsOnDelete(t, existing);
     } catch (Throwable t) {
-      throw exceptionStrategy.handleExceptionAtDelete(t, id, existing);
+      throw exceptionStrategy.exceptionAtDelete(t, id, existing);
     }
   }
 
@@ -363,7 +370,7 @@ public class EasyCrudServiceImpl<
         return deleteByQueryWireTapIterative(query, requiresOnDelete);
       }
     } catch (Throwable t) {
-      throw exceptionStrategy.handleExceptionAtDeleteByQuery(t);
+      throw exceptionStrategy.exceptionAtDeleteByQuery(t, query);
     }
   }
 
@@ -428,7 +435,7 @@ public class EasyCrudServiceImpl<
       }
       return ret;
     } catch (Throwable t) {
-      throw exceptionStrategy.handleExceptionAtFind(t);
+      throw exceptionStrategy.exceptionAtFind(t, id);
     }
   }
 
@@ -460,7 +467,7 @@ public class EasyCrudServiceImpl<
       }
       return ret;
     } catch (Throwable t) {
-      throw exceptionStrategy.handleExceptionAtFind(t);
+      throw exceptionStrategy.exceptionAtFind(t, query);
     }
   }
 
@@ -511,7 +518,7 @@ public class EasyCrudServiceImpl<
       }
       return ret;
     } catch (Throwable t) {
-      throw exceptionStrategy.handleExceptionAtFind(t);
+      throw exceptionStrategy.exceptionAtFind(t, optionalQuery);
     }
   }
 
@@ -536,7 +543,7 @@ public class EasyCrudServiceImpl<
       }
       return ret;
     } catch (Throwable t) {
-      throw exceptionStrategy.handleExceptionAtFind(t);
+      throw exceptionStrategy.exceptionAtFind(t, optionalQuery);
     }
   }
 
@@ -721,6 +728,18 @@ public class EasyCrudServiceImpl<
   @Override
   public Class<TRow> getRowClass() {
     return rowClass;
+  }
+
+  public EasyCrudExceptionStrategyFactory getEasyCrudExceptionStrategyFactory() {
+    return easyCrudExceptionStrategyFactory;
+  }
+
+  @Autowired(required = false)
+  public void setEasyCrudExceptionStrategyFactory(
+      EasyCrudExceptionStrategyFactory easyCrudExceptionStrategyFactory) {
+    Preconditions.checkArgument(
+        easyCrudExceptionStrategyFactory != null, "easyCrudExceptionStrategyFactory required");
+    this.easyCrudExceptionStrategyFactory = easyCrudExceptionStrategyFactory;
   }
 
   @Override

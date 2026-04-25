@@ -64,7 +64,7 @@ public class JoinedSelectImpl extends SelectTemplate implements JoinedSelect {
 
       IncorrectResultSizeDataAccessException t =
           new IncorrectResultSizeDataAccessException(1, result.getItems().size());
-      throw exceptionStrategy.handleExceptionAtFind(t);
+      throw exceptionStrategy.exceptionAtFind(t, joinQuery);
     }
 
     return result.getItems().get(0);
@@ -130,7 +130,7 @@ public class JoinedSelectImpl extends SelectTemplate implements JoinedSelect {
       // pick the first query
       EasyCrudExceptionStrategy<?, ?> exceptionStrategy =
           querySpecificsResolver.getExceptionStrategy(joinQuery.getPrimaryQuery());
-      throw exceptionStrategy.handleExceptionAtFind(t);
+      throw exceptionStrategy.exceptionAtFind(t, joinQuery);
     }
   }
 
@@ -207,7 +207,7 @@ public class JoinedSelectImpl extends SelectTemplate implements JoinedSelect {
       // pick the first query
       EasyCrudExceptionStrategy<?, ?> exceptionStrategy =
           querySpecificsResolver.getExceptionStrategy(joinQuery.getPrimaryQuery());
-      throw exceptionStrategy.handleExceptionAtFind(t);
+      throw exceptionStrategy.exceptionAtFind(t, joinQuery);
     }
   }
 

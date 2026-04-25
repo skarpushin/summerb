@@ -8,6 +8,8 @@ import org.summerb.easycrud.dao.NamedParameterJdbcTemplateEx;
 import org.summerb.easycrud.dao.SqlTypeOverrides;
 import org.summerb.easycrud.dao.SqlTypeOverridesDefaultImpl;
 import org.summerb.easycrud.exceptions.DaoExceptionTranslator;
+import org.summerb.easycrud.exceptions.EasyCrudExceptionStrategyFactory;
+import org.summerb.easycrud.exceptions.EasyCrudExceptionStrategyFactoryImpl;
 import org.summerb.easycrud.impl.EasyCrudServiceResolverSpringImpl;
 import org.summerb.easycrud.join_query.JoinQueryFactory;
 import org.summerb.easycrud.join_query.QuerySpecificsResolver;
@@ -119,5 +121,10 @@ public abstract class EasyCrudConfigAbstract {
   @Bean
   protected RowCloner rowCloner() {
     return new RowClonerReflectionImpl();
+  }
+
+  @Bean
+  protected EasyCrudExceptionStrategyFactory easyCrudExceptionStrategyFactory() {
+    return new EasyCrudExceptionStrategyFactoryImpl();
   }
 }

@@ -236,7 +236,7 @@ public class ScaffoldedQueryMethodImpl<TMethodParameter extends ScaffoldedMethod
       }
       return ret;
     } catch (Throwable t) {
-      throw service.getExceptionStrategy().handleExceptionAtFind(t);
+      throw service.getExceptionStrategy().exceptionAtFind(t, query);
     }
   }
 

@@ -17,34 +17,44 @@ package org.summerb.easycrud.exceptions;
 
 import org.springframework.jdbc.JdbcUpdateAffectedIncorrectNumberOfRowsException;
 import org.summerb.easycrud.EasyCrudService;
+import org.summerb.easycrud.query.Query;
 import org.summerb.easycrud.row.HasId;
 
 /**
- * Exception handling strategy. Rarely but you might need to override how exceptions are handled
- * during {@link EasyCrudService} operations.
+ * Exception translation strategy. Whenever exception happens during one of the operations served by
+ * {@link EasyCrudService}, this strategy is used to translate them.
  *
  * <p>Default implementation {@link EasyCrudExceptionStrategyDefaultImpl} supposed to be enough in
- * most cases
+ * most cases.
+ *
+ * <p>In case you need to override it, you might directly inject it into {@link EasyCrudService} if
+ * you need to override it for specific case, or you can override {@link
+ * EasyCrudExceptionStrategyFactory} if you want to override it for all cases.
  *
  * @author sergey.karpushin
  */
 public interface EasyCrudExceptionStrategy<TId extends Comparable<TId>, TRow extends HasId<TId>> {
 
-  EntityNotFoundException buildNotFoundException(String subjectTypeMessageCode, TId identity);
+  EntityNotFoundException buildNotFoundException(TId identity);
 
-  RuntimeException handleExceptionAtCreate(Throwable t, TRow row);
+  RuntimeException exceptionAtCreate(Throwable t, TRow row);
 
-  RuntimeException handleExceptionAtDelete(Throwable t, TId id, TRow rowOptional);
+  RuntimeException exceptionAtDelete(Throwable t, TId id, TRow rowOptional);
 
-  RuntimeException handleAffectedIncorrectNumberOfRowsOnDelete(
+  RuntimeException affectedIncorrectNumberOfRowsOnDelete(
       JdbcUpdateAffectedIncorrectNumberOfRowsException t, TRow rowOptional);
 
-  RuntimeException handleExceptionAtUpdate(Throwable t, TRow row);
+  RuntimeException exceptionAtUpdate(Throwable t, TRow row);
 
-  RuntimeException handleAffectedIncorrectNumberOfRowsOnUpdate(
+  RuntimeException affectedIncorrectNumberOfRowsOnUpdate(
       JdbcUpdateAffectedIncorrectNumberOfRowsException t, TRow rowOptional);
 
-  RuntimeException handleExceptionAtFind(Throwable t);
+  /**
+   * @param criteria the criteria used for this operation. Could be an ID (in case of regular
+   *     getById invocation), could be SQL (in case of SqlQuery annotation usage), could be Query,
+   *     JoinQuery, or even null in case no filtering criteria was provided
+   */
+  RuntimeException exceptionAtFind(Throwable t, Object criteria);
 
-  RuntimeException handleExceptionAtDeleteByQuery(Throwable t);
+  RuntimeException exceptionAtDeleteByQuery(Throwable t, Query<TId, TRow> query);
 }

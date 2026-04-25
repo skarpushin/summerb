@@ -61,7 +61,7 @@ public class SelectImpl<TId extends Comparable<TId>, TRow extends HasId<TId>> ex
 
       IncorrectResultSizeDataAccessException t =
           new IncorrectResultSizeDataAccessException(1, result.getItems().size());
-      throw exceptionStrategy.handleExceptionAtFind(t);
+      throw exceptionStrategy.exceptionAtFind(t, joinQuery);
     }
 
     return result.getItems().get(0);
@@ -102,7 +102,7 @@ public class SelectImpl<TId extends Comparable<TId>, TRow extends HasId<TId>> ex
     } catch (Throwable t) {
       EasyCrudExceptionStrategy<TId, TRow> exceptionStrategy =
           querySpecificsResolver.getExceptionStrategy(entityToSelect);
-      throw exceptionStrategy.handleExceptionAtFind(t);
+      throw exceptionStrategy.exceptionAtFind(t, joinQuery);
     }
   }
 
@@ -188,7 +188,7 @@ public class SelectImpl<TId extends Comparable<TId>, TRow extends HasId<TId>> ex
     } catch (Throwable t) {
       EasyCrudExceptionStrategy<TId, TRow> exceptionStrategy =
           querySpecificsResolver.getExceptionStrategy(entityToSelect);
-      throw exceptionStrategy.handleExceptionAtFind(t);
+      throw exceptionStrategy.exceptionAtFind(t, joinQuery);
     }
   }
 

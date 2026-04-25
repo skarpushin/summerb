@@ -16,12 +16,12 @@
 package org.summerb.easycrud.exceptions;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Throwables;
 import java.sql.SQLIntegrityConstraintViolationException;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.jdbc.JdbcUpdateAffectedIncorrectNumberOfRowsException;
 import org.springframework.util.StringUtils;
 import org.summerb.easycrud.EasyCrudMessageCodes;
+import org.summerb.easycrud.query.Query;
 import org.summerb.easycrud.row.HasId;
 import org.summerb.easycrud.row.HasTimestamps;
 import org.summerb.easycrud.validation.errors.ReferencedRowCannotBeDeletedValidationError;
@@ -35,33 +35,41 @@ import org.summerb.validation.ValidationException;
 public class EasyCrudExceptionStrategyDefaultImpl<
         TId extends Comparable<TId>, TRow extends HasId<TId>>
     implements EasyCrudExceptionStrategy<TId, TRow> {
-  protected String entityCode;
+  protected String rowMessageCode;
 
-  public EasyCrudExceptionStrategyDefaultImpl(String entityTypeMessageCode) {
-    Preconditions.checkArgument(StringUtils.hasText(entityTypeMessageCode));
-    this.entityCode = entityTypeMessageCode;
+  public EasyCrudExceptionStrategyDefaultImpl(String rowMessageCode) {
+    Preconditions.checkArgument(StringUtils.hasText(rowMessageCode));
+    this.rowMessageCode = rowMessageCode;
   }
 
   @Override
-  public EntityNotFoundException buildNotFoundException(
-      String subjectTypeMessageCode, TId identity) {
-    return new EntityNotFoundException(subjectTypeMessageCode, identity);
+  public EntityNotFoundException buildNotFoundException(TId identity) {
+    return new EntityNotFoundException(rowMessageCode, identity);
   }
 
   @Override
-  public RuntimeException handleExceptionAtCreate(Throwable t, TRow row) {
-    Throwables.throwIfInstanceOf(t, ValidationException.class);
-    Throwables.throwIfInstanceOf(t, NotAuthorizedException.class);
+  public RuntimeException exceptionAtCreate(Throwable t, TRow row) {
+    if (t instanceof NotAuthorizedException nae) {
+      return nae;
+    }
+    if (t instanceof ValidationException vexc) {
+      return vexc;
+    }
 
     return new EasyCrudUnexpectedException(
-        EasyCrudMessageCodes.UNEXPECTED_FAILED_TO_CREATE, entityCode, t);
+        EasyCrudMessageCodes.UNEXPECTED_FAILED_TO_CREATE, rowMessageCode, t);
   }
 
   @Override
-  public RuntimeException handleExceptionAtDelete(Throwable t, TId id, TRow rowOptional)
+  public RuntimeException exceptionAtDelete(Throwable t, TId id, TRow rowOptional)
       throws NotAuthorizedException, EntityNotFoundException {
-    Throwables.throwIfInstanceOf(t, NotAuthorizedException.class);
-    Throwables.throwIfInstanceOf(t, EntityNotFoundException.class);
+
+    if (t instanceof NotAuthorizedException nae) {
+      return nae;
+    }
+    if (t instanceof EntityNotFoundException enfe) {
+      return enfe;
+    }
 
     ValidationException fve = tryExtractConstraintViolation(t);
     if (fve != null) {
@@ -69,7 +77,7 @@ public class EasyCrudExceptionStrategyDefaultImpl<
     }
 
     return new EasyCrudUnexpectedException(
-        EasyCrudMessageCodes.UNEXPECTED_FAILED_TO_DELETE, entityCode, t);
+        EasyCrudMessageCodes.UNEXPECTED_FAILED_TO_DELETE, rowMessageCode, t);
   }
 
   /**
@@ -95,22 +103,29 @@ public class EasyCrudExceptionStrategyDefaultImpl<
   }
 
   @Override
-  public RuntimeException handleExceptionAtDeleteByQuery(Throwable t)
+  public RuntimeException exceptionAtDeleteByQuery(Throwable t, Query<TId, TRow> query)
       throws NotAuthorizedException {
-    Throwables.throwIfInstanceOf(t, NotAuthorizedException.class);
+
+    if (t instanceof NotAuthorizedException nae) {
+      return nae;
+    }
+    if (t instanceof EntityNotFoundException enfe) {
+      return enfe;
+    }
+
     return new EasyCrudUnexpectedException(
-        EasyCrudMessageCodes.UNEXPECTED_FAILED_TO_DELETE, entityCode, t);
+        EasyCrudMessageCodes.UNEXPECTED_FAILED_TO_DELETE, rowMessageCode, t);
   }
 
   @Override
-  public RuntimeException handleAffectedIncorrectNumberOfRowsOnDelete(
+  public RuntimeException affectedIncorrectNumberOfRowsOnDelete(
       JdbcUpdateAffectedIncorrectNumberOfRowsException t, TRow rowOptional) {
     return new OptimisticLockingFailureException(
         "Optimistic lock failed, record was already concurrently updated", t);
   }
 
   @Override
-  public RuntimeException handleAffectedIncorrectNumberOfRowsOnUpdate(
+  public RuntimeException affectedIncorrectNumberOfRowsOnUpdate(
       JdbcUpdateAffectedIncorrectNumberOfRowsException t, TRow rowOptional) {
     if (rowOptional instanceof HasTimestamps) {
       return new OptimisticLockingFailureException(
@@ -120,18 +135,29 @@ public class EasyCrudExceptionStrategyDefaultImpl<
   }
 
   @Override
-  public RuntimeException handleExceptionAtUpdate(Throwable t, TRow row) {
-    Throwables.throwIfInstanceOf(t, ValidationException.class);
-    Throwables.throwIfInstanceOf(t, NotAuthorizedException.class);
-    Throwables.throwIfInstanceOf(t, EntityNotFoundException.class);
+  public RuntimeException exceptionAtUpdate(Throwable t, TRow row) {
+    if (t instanceof NotAuthorizedException nae) {
+      return nae;
+    }
+    if (t instanceof EntityNotFoundException enfe) {
+      return enfe;
+    }
+    if (t instanceof ValidationException vexc) {
+      return vexc;
+    }
+
     return new EasyCrudUnexpectedException(
-        EasyCrudMessageCodes.UNEXPECTED_FAILED_TO_UPDATE, entityCode, t);
+        EasyCrudMessageCodes.UNEXPECTED_FAILED_TO_UPDATE, rowMessageCode, t);
   }
 
   @Override
-  public RuntimeException handleExceptionAtFind(Throwable t) throws NotAuthorizedException {
-    Throwables.throwIfInstanceOf(t, NotAuthorizedException.class);
+  public RuntimeException exceptionAtFind(Throwable t, Object criteria)
+      throws NotAuthorizedException {
+    if (t instanceof NotAuthorizedException nae) {
+      return nae;
+    }
+
     return new EasyCrudUnexpectedException(
-        EasyCrudMessageCodes.UNEXPECTED_FAILED_TO_FIND, entityCode, t);
+        EasyCrudMessageCodes.UNEXPECTED_FAILED_TO_FIND, rowMessageCode, t);
   }
 }
