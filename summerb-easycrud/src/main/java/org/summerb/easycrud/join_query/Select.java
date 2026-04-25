@@ -9,7 +9,8 @@ import org.summerb.utils.easycrud.api.dto.PaginatedList;
 /**
  * Represents selection of single Row type
  *
- * @param <TRow>
+ * @param <TId> type of row ID
+ * @param <TRow> type of row
  */
 public interface Select<TId extends Comparable<TId>, TRow extends HasId<TId>> {
   TRow findOne();

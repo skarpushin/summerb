@@ -31,7 +31,10 @@ import org.summerb.validation.errors.DuplicateRecord;
  * @author sergeyk
  */
 public class DaoExceptionTranslatorMySqlImpl implements DaoExceptionTranslator {
+  /** Primary key constraint name in MySQL */
   public static final String MYSQL_CONSTRAINT_PRIMARY = "PRIMARY";
+
+  /** Unique constraint suffix in MySQL */
   public static final String MYSQL_CONSTRAINT_UNIQUE = "_UNIQUE";
 
   @Override
@@ -40,6 +43,11 @@ public class DaoExceptionTranslatorMySqlImpl implements DaoExceptionTranslator {
     throwIfTruncationError(t);
   }
 
+  /**
+   * Throw ValidationException if the error is a duplicate record error.
+   *
+   * @param t throwable
+   */
   protected void throwIfDuplicate(Throwable t) {
     DuplicateKeyException dke = ExceptionUtils.findExceptionOfType(t, DuplicateKeyException.class);
     if (dke == null) {

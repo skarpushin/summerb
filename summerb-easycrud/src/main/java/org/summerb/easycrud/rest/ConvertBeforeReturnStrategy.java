@@ -22,10 +22,21 @@ import org.summerb.easycrud.row.HasId;
 
 /** Use this to alter response right before it gets returned to consumer */
 public class ConvertBeforeReturnStrategy<TId extends Comparable<TId>, TDto extends HasId<TId>> {
+  /**
+   * Check if conversion is required.
+   *
+   * @return true if conversion is required
+   */
   protected boolean isConvertionRequired() {
     return false;
   }
 
+  /**
+   * Convert multiple items result.
+   *
+   * @param ret result to convert
+   * @return converted result
+   */
   public MultipleItemsResult<TId, TDto> convert(MultipleItemsResult<TId, TDto> ret) {
     if (!isConvertionRequired()) {
       return ret;
@@ -35,6 +46,12 @@ public class ConvertBeforeReturnStrategy<TId extends Comparable<TId>, TDto exten
     return ret;
   }
 
+  /**
+   * Convert single item result.
+   *
+   * @param ret result to convert
+   * @return converted result
+   */
   public SingleItemResult<TId, TDto> convert(SingleItemResult<TId, TDto> ret) {
     if (!isConvertionRequired()) {
       return ret;
@@ -43,6 +60,12 @@ public class ConvertBeforeReturnStrategy<TId extends Comparable<TId>, TDto exten
     return ret;
   }
 
+  /**
+   * Convert a single row.
+   *
+   * @param row row to convert
+   * @return converted row
+   */
   protected TDto convert(TDto row) {
     return row;
   }

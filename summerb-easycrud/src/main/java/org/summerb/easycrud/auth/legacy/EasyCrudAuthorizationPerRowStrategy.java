@@ -54,51 +54,129 @@ import org.summerb.spring.security.api.CurrentUserRolesResolver;
 public abstract class EasyCrudAuthorizationPerRowStrategy<TRow>
     extends EasyCrudWireTapAbstract<TRow> implements InitializingBean {
 
+  /** Constant for allowed result */
   protected static final NotAuthorizedResult ALLOW = null;
 
+  /** Current user roles resolver */
   @Autowired protected CurrentUserRolesResolver currentUserRolesResolver;
+
+  /** Current user UUID resolver */
   @Autowired protected CurrentUserUuidResolver currentUserUuidResolver;
 
+  /**
+   * Get authorization result for creation.
+   *
+   * @param row row being created
+   * @return authorization result
+   */
   public NotAuthorizedResult getForCreate(TRow row) {
     return getForUpdate(row, row);
   }
 
+  /**
+   * Helper to build denied result for creation.
+   *
+   * @param row row being created
+   * @return denied result
+   */
   protected NotAuthorizedResult denyCreate(TRow row) {
     return new NotAuthorizedResult(getUserIdentifierForException(), Permissions.CREATE, getId(row));
   }
 
+  /**
+   * Get authorization result for read.
+   *
+   * @param row row being read
+   * @return authorization result
+   */
   public abstract NotAuthorizedResult getForRead(TRow row);
 
+  /**
+   * Helper to build denied result for read.
+   *
+   * @param row row being read
+   * @return denied result
+   */
   protected NotAuthorizedResult denyRead(TRow row) {
     return new NotAuthorizedResult(getUserIdentifierForException(), Permissions.READ, getId(row));
   }
 
+  /**
+   * Get authorization result for update.
+   *
+   * @param persistedVersion original row version
+   * @param row updated row version
+   * @return authorization result
+   */
   public abstract NotAuthorizedResult getForUpdate(TRow persistedVersion, TRow row);
 
+  /**
+   * Helper to build denied result for update.
+   *
+   * @param row row being updated
+   * @return denied result
+   */
   protected NotAuthorizedResult denyUpdate(TRow row) {
     return new NotAuthorizedResult(getUserIdentifierForException(), Permissions.UPDATE, getId(row));
   }
 
+  /**
+   * Get authorization result for deletion.
+   *
+   * @param row row being deleted
+   * @return authorization result
+   */
   public NotAuthorizedResult getForDelete(TRow row) {
     return getForUpdate(row, row);
   }
 
+  /**
+   * Helper to build denied result for deletion.
+   *
+   * @param row row being deleted
+   * @return denied result
+   */
   protected NotAuthorizedResult denyDelete(TRow row) {
     return new NotAuthorizedResult(getUserIdentifierForException(), Permissions.DELETE, getId(row));
   }
 
+  /**
+   * Check if user is authorized to read row.
+   *
+   * @param row row to check
+   * @return true if authorized
+   */
   public boolean isAuthorizedToRead(TRow row) {
     return getForRead(row) == ALLOW;
   }
 
+  /**
+   * Check if user is authorized to update row.
+   *
+   * @param persistedVersion original row version
+   * @param row updated row version
+   * @return true if authorized
+   */
   public boolean isAuthorizedToUpdate(TRow persistedVersion, TRow row) {
     return getForUpdate(persistedVersion, row) == ALLOW;
   }
 
+  /**
+   * Check if user is authorized to create row.
+   *
+   * @param row row to check
+   * @return true if authorized
+   */
   public boolean isAuthorizedToCreate(TRow row) {
     return getForCreate(row) == ALLOW;
   }
 
+  /**
+   * Check if user is authorized to delete row.
+   *
+   * @param row row to check
+   * @return true if authorized
+   */
   public boolean isAuthorizedToDelete(TRow row) {
     return getForDelete(row) == ALLOW;
   }
@@ -167,12 +245,23 @@ public abstract class EasyCrudAuthorizationPerRowStrategy<TRow>
     throw new NotAuthorizedException(result);
   }
 
+  /**
+   * Get user identifier for exception.
+   *
+   * @return user identifier
+   */
   protected String getUserIdentifierForException() {
     Preconditions.checkArgument(
         currentUserUuidResolver != null, "currentUserUuidResolver required");
     return currentUserUuidResolver.getUserUuid();
   }
 
+  /**
+   * Get row ID string for logging/exception.
+   *
+   * @param row row
+   * @return row ID string
+   */
   @SuppressWarnings("rawtypes")
   protected String getId(TRow row) {
     if (row == null) {

@@ -66,6 +66,7 @@ public abstract class AbstractJdbcUpdate {
   /** The SQL type information for the declared columns */
   protected int[] columnTypes;
 
+  /** Strategy for enlisting columns for update */
   protected UpdateColumnsEnlisterStrategy updateColumnsEnlisterStrategy;
 
   /**
@@ -352,6 +353,12 @@ public abstract class AbstractJdbcUpdate {
     return executeUpdateInternal(values);
   }
 
+  /**
+   * Internal method to execute the update.
+   *
+   * @param values values to be used in update
+   * @return number of rows affected
+   */
   protected int executeUpdateInternal(List<Object> values) {
     if (logger.isDebugEnabled()) {
       logger.debug(
@@ -426,12 +433,18 @@ public abstract class AbstractJdbcUpdate {
     return updateStatement.toString();
   }
 
+  /** Reconcile the columns to be updated. */
   protected void reconcileUpdatingColumns() {
     reconciledUpdatingColumns.clear();
     reconciledUpdatingColumns.addAll(
         getUpdateColumnsEnlisterStrategy().getColumnsForUpdate(tableMetaDataContext));
   }
 
+  /**
+   * Build the default strategy for enlisting columns for update.
+   *
+   * @return the default strategy
+   */
   protected UpdateColumnsEnlisterStrategy buildDefaultUpdateColumnsEnlisterStrategy() {
     return new UpdateColumnsEnlisterStrategy() {
       @Override
@@ -446,6 +459,11 @@ public abstract class AbstractJdbcUpdate {
     };
   }
 
+  /**
+   * Get the strategy for enlisting columns for update.
+   *
+   * @return the strategy
+   */
   public UpdateColumnsEnlisterStrategy getUpdateColumnsEnlisterStrategy() {
     if (updateColumnsEnlisterStrategy == null) {
       updateColumnsEnlisterStrategy = buildDefaultUpdateColumnsEnlisterStrategy();
@@ -453,6 +471,11 @@ public abstract class AbstractJdbcUpdate {
     return updateColumnsEnlisterStrategy;
   }
 
+  /**
+   * Set the strategy for enlisting columns for update.
+   *
+   * @param updateColumnsEnlisterStrategy the strategy
+   */
   public void setUpdateColumnsEnlisterStrategy(
       UpdateColumnsEnlisterStrategy updateColumnsEnlisterStrategy) {
     this.updateColumnsEnlisterStrategy = updateColumnsEnlisterStrategy;

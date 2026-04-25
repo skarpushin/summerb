@@ -53,6 +53,11 @@ public interface EasyCrudWireTap<T> {
    */
   boolean requiresOnCreate();
 
+  /**
+   * Called before row creation.
+   *
+   * @param row row being created
+   */
   void beforeCreate(T row);
 
   void afterCreate(T row);
@@ -66,6 +71,11 @@ public interface EasyCrudWireTap<T> {
 
   void beforeRead();
 
+  /**
+   * Called after row is read.
+   *
+   * @param row row that was read
+   */
   void afterRead(T row);
 
   /**
@@ -86,6 +96,7 @@ public interface EasyCrudWireTap<T> {
    * afterRead(row) for each row in the list. If you do not need such behavior, do NOT call base
    * implementation.
    *
+   * @param rows list of rows that were read
    * @since 8.1.0
    */
   default void afterRead(List<T> rows) {
@@ -102,6 +113,12 @@ public interface EasyCrudWireTap<T> {
    */
   EasyCrudWireTapMode requiresOnUpdate();
 
+  /**
+   * Called before row update.
+   *
+   * @param from original row
+   * @param to updated row
+   */
   void beforeUpdate(T from, T to);
 
   void afterUpdate(T from, T to);
@@ -114,6 +131,11 @@ public interface EasyCrudWireTap<T> {
    */
   EasyCrudWireTapMode requiresOnDelete();
 
+  /**
+   * Called before row deletion.
+   *
+   * @param row row being deleted
+   */
   void beforeDelete(T row);
 
   void afterDelete(T row);

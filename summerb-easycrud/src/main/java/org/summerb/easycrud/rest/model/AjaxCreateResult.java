@@ -15,13 +15,25 @@
  ******************************************************************************/
 package org.summerb.easycrud.rest.model;
 
+/**
+ * Result of AJAX create operation.
+ *
+ * @param <T> type of created object
+ */
 public class AjaxCreateResult<T> {
+  /** Created object */
   protected T ajaxCreatedObj;
 
+  /**
+   * @return created object
+   */
   public T getAjaxCreatedObj() {
     return ajaxCreatedObj;
   }
 
+  /**
+   * @param ajaxCreatedObj created object
+   */
   public void setAjaxCreatedObj(T ajaxCreatedObj) {
     this.ajaxCreatedObj = ajaxCreatedObj;
   }

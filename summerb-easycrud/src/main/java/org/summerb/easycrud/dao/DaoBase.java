@@ -25,7 +25,10 @@ import org.springframework.beans.factory.InitializingBean;
  * @author sergey.karpushin
  */
 public abstract class DaoBase implements InitializingBean {
+  /** Data source */
   protected DataSource dataSource;
+
+  /** JDBC template */
   protected NamedParameterJdbcTemplateEx jdbc;
 
   /**
@@ -37,6 +40,11 @@ public abstract class DaoBase implements InitializingBean {
   @SuppressWarnings("DeprecatedIsStillUsed")
   public DaoBase() {}
 
+  /**
+   * Constructor for DaoBase.
+   *
+   * @param dataSource data source
+   */
   public DaoBase(DataSource dataSource) {
     this.dataSource = dataSource;
   }

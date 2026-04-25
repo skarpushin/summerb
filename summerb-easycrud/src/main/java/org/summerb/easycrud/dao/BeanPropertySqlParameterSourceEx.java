@@ -15,10 +15,23 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
  * @param <TRow> row type
  */
 public class BeanPropertySqlParameterSourceEx<TRow> extends BeanPropertySqlParameterSource {
+  /** Cache for mapping column names to field names */
   protected LoadingCache<String, String> columnNameToFieldNameCache;
+
+  /** Cache for mapping field names to SQL type overrides */
   protected LoadingCache<String, SqlTypeOverride> fieldNameToOverrideCache;
+
+  /** Property names */
   protected final String[] propertyNames;
 
+  /**
+   * Constructor for BeanPropertySqlParameterSourceEx.
+   *
+   * @param row row object
+   * @param columnNameToFieldNameCache cache for column name to field name mapping
+   * @param fieldNameToOverrideCache cache for field name to SQL type override mapping
+   * @param propertyNames property names
+   */
   public BeanPropertySqlParameterSourceEx(
       TRow row,
       LoadingCache<String, String> columnNameToFieldNameCache,

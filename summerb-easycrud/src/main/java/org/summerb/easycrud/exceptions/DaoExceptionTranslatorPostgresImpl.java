@@ -37,6 +37,11 @@ public class DaoExceptionTranslatorPostgresImpl implements DaoExceptionTranslato
     // DaoExceptionUtils#findTruncatedFieldNameIfAny
   }
 
+  /**
+   * Throw ValidationException if the error is a duplicate record error.
+   *
+   * @param t throwable
+   */
   protected void throwIfDuplicate(Throwable t) {
     DuplicateKeyException dke = ExceptionUtils.findExceptionOfType(t, DuplicateKeyException.class);
     if (dke == null) {

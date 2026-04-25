@@ -17,13 +17,26 @@ package org.summerb.easycrud.rest.model;
 
 import org.summerb.easycrud.row.HasId;
 
+/**
+ * Result of a CRUD query.
+ *
+ * @param <TId> type of row ID
+ * @param <TRow> type of row
+ */
 public class CrudQueryResult<TId extends Comparable<TId>, TRow extends HasId<TId>> {
+  /** Message code for the entity */
   protected String entityMessageCode;
 
+  /**
+   * @return message code for the entity
+   */
   public String getEntityMessageCode() {
     return entityMessageCode;
   }
 
+  /**
+   * @param entityMessageCode message code for the entity
+   */
   public void setEntityMessageCode(String entityMessageCode) {
     this.entityMessageCode = entityMessageCode;
   }

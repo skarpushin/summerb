@@ -33,7 +33,7 @@ import org.summerb.easycrud.sql_builder.mysql.QueryToSqlMySqlImpl;
  * This is the exact copy of Spring jdbc BeanPropertyRowMapper with eliminated slight design flaws
  * which prevents this class to be adjusted as/if/when needed
  *
- * @param <T>
+ * @param <T> the target class
  */
 public class BeanPropertyRowMapperEx<T> implements RowMapper<T> {
 
@@ -88,7 +88,11 @@ public class BeanPropertyRowMapperEx<T> implements RowMapper<T> {
     initialize();
   }
 
-  /** Get the class that we are mapping to. */
+  /**
+   * Get the class that we are mapping to.
+   *
+   * @return the mapped class
+   */
   @Nullable
   public final Class<T> getMappedClass() {
     return this.mappedClass;
@@ -97,6 +101,8 @@ public class BeanPropertyRowMapperEx<T> implements RowMapper<T> {
   /**
    * Return whether we're strictly validating that all bean properties have been mapped from
    * corresponding database columns.
+   *
+   * @return true if strictly validating
    */
   public boolean isCheckFullyPopulated() {
     return this.checkFullyPopulated;
@@ -114,6 +120,9 @@ public class BeanPropertyRowMapperEx<T> implements RowMapper<T> {
    * initial value (potentially Java's default value for the respective primitive type), or it may
    * be some other value set for the property in the default constructor (or initialization block)
    * or as a side effect of setting some other property in the mapped bean.
+   *
+   * @param primitivesDefaultedForNullValue whether to use default values for primitives when
+   *     database value is null
    */
   public void setPrimitivesDefaultedForNullValue(boolean primitivesDefaultedForNullValue) {
     this.primitivesDefaultedForNullValue = primitivesDefaultedForNullValue;
@@ -122,6 +131,7 @@ public class BeanPropertyRowMapperEx<T> implements RowMapper<T> {
   /**
    * Get the value of the {@code primitivesDefaultedForNullValue} flag.
    *
+   * @return true if default values for primitives are used for null database values
    * @see #setPrimitivesDefaultedForNullValue(boolean)
    */
   public boolean isPrimitivesDefaultedForNullValue() {
@@ -137,6 +147,7 @@ public class BeanPropertyRowMapperEx<T> implements RowMapper<T> {
    *
    * @since 4.3
    * @see #initBeanWrapper(BeanWrapper)
+   * @param conversionService the conversion service to use
    */
   public void setConversionService(@Nullable ConversionService conversionService) {
     this.conversionService = conversionService;
@@ -146,6 +157,7 @@ public class BeanPropertyRowMapperEx<T> implements RowMapper<T> {
    * Return a {@link ConversionService} for binding JDBC values to bean properties, or {@code null}
    * if none.
    *
+   * @return the conversion service
    * @since 4.3
    */
   @Nullable
@@ -165,6 +177,11 @@ public class BeanPropertyRowMapperEx<T> implements RowMapper<T> {
     }
   }
 
+  /**
+   * Initialize the mapping for a single property.
+   *
+   * @param pd the property descriptor
+   */
   protected void initializeMappingFor(PropertyDescriptor pd) {
     String lowerCaseName = lowerCaseName(pd.getName());
     mappedProperties.put(lowerCaseName, pd);
@@ -248,6 +265,18 @@ public class BeanPropertyRowMapperEx<T> implements RowMapper<T> {
     return mappedObject;
   }
 
+  /**
+   * Map a single column value to a bean property.
+   *
+   * @param rs the ResultSet
+   * @param rowNumber the current row number
+   * @param column the column name
+   * @param index the column index
+   * @param bw the BeanWrapper
+   * @param mappedObject the object being mapped
+   * @param populatedProperties set of populated properties
+   * @throws SQLException if a database access error occurs
+   */
   protected void mapColumn(
       ResultSet rs,
       int rowNumber,

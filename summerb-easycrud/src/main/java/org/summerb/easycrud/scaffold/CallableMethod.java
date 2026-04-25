@@ -15,7 +15,15 @@
  ******************************************************************************/
 package org.summerb.easycrud.scaffold;
 
+/** Interface for callable methods. */
 public interface CallableMethod {
 
+  /**
+   * Call the method.
+   *
+   * @param args arguments
+   * @return result
+   * @throws Exception if an error occurs
+   */
   Object call(Object[] args) throws Exception;
 }

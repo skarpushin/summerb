@@ -1,5 +1,6 @@
 package org.summerb.easycrud.join_query;
 
+/** Enum for conditions location in JOIN queries. */
 public enum ConditionsLocation {
   /** Conditions for this query, if any, will be placed in JOIN clause */
   JOIN,

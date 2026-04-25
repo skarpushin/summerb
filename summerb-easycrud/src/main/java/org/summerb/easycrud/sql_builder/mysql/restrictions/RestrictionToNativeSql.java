@@ -7,6 +7,16 @@ import org.summerb.easycrud.query.restrictions.base.Restriction;
 
 public interface RestrictionToNativeSql<T extends Restriction> {
 
+  /**
+   * Convert restriction to native SQL.
+   *
+   * @param restriction restriction
+   * @param params parameters
+   * @param nextParameterIndex next parameter index supplier
+   * @param underscoredFieldName underscored field name
+   * @param sqlTypeOverrides SQL type overrides
+   * @return native SQL string
+   */
   String convert(
       T restriction,
       MapSqlParameterSource params,

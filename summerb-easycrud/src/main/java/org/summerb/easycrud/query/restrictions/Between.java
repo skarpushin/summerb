@@ -3,10 +3,20 @@ package org.summerb.easycrud.query.restrictions;
 import com.google.common.base.Preconditions;
 import org.summerb.easycrud.query.restrictions.base.NegateableRestriction;
 
+/** Restriction for BETWEEN clause. */
 public class Between extends NegateableRestriction<Between> {
+  /** Lower boundary */
   protected Object lowerBoundary;
+
+  /** Upper boundary */
   protected Object upperBoundary;
 
+  /**
+   * Constructor for Between restriction.
+   *
+   * @param lowerBoundary lower boundary
+   * @param upperBoundary upper boundary
+   */
   @SuppressWarnings({"rawtypes", "unchecked"})
   public Between(Object lowerBoundary, Object upperBoundary) {
     Preconditions.checkArgument(lowerBoundary != null, "lowerBoundary required");
@@ -25,18 +35,30 @@ public class Between extends NegateableRestriction<Between> {
     this.upperBoundary = upperBoundary;
   }
 
+  /**
+   * @return lower boundary
+   */
   public Object getLowerBoundary() {
     return lowerBoundary;
   }
 
+  /**
+   * @param lowerBoundary lower boundary
+   */
   public void setLowerBoundary(Object lowerBoundary) {
     this.lowerBoundary = lowerBoundary;
   }
 
+  /**
+   * @return upper boundary
+   */
   public Object getUpperBoundary() {
     return upperBoundary;
   }
 
+  /**
+   * @param upperBoundary upper boundary
+   */
   public void setUpperBoundary(Object upperBoundary) {
     this.upperBoundary = upperBoundary;
   }

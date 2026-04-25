@@ -77,6 +77,7 @@ public interface EasyCrudService<TId extends Comparable<TId>, TRow extends HasId
    * alias, but you can override this
    *
    * @param alias - an alias to use when referring to fields of this table
+   * @return new instance of {@link Query}
    */
   Query<TId, TRow> query(String alias);
 
@@ -86,6 +87,7 @@ public interface EasyCrudService<TId extends Comparable<TId>, TRow extends HasId
   int count();
 
   /**
+   * @param optionalQuery optional query
    * @return count of all rows matching a given query
    */
   int count(Query<TId, TRow> optionalQuery);
@@ -120,12 +122,18 @@ public interface EasyCrudService<TId extends Comparable<TId>, TRow extends HasId
    * <p>NOTE: This is intended for simple queries only (as opposed to {@link JoinQuery}). When
    * building the latter, use respective methods {@link JoinQuery}, i.e. {@link
    * JoinQuery#parseOrderBy(String[])} or {@link JoinQuery#parseOrderBy(String)}
+   *
+   * @param semicolonSeparatedValues semi-colon separated values
+   * @return array of {@link OrderBy}
    */
   OrderBy[] parseOrderBy(String semicolonSeparatedValues);
 
   /**
    * Parse {@link OrderBy} array from individual order by statements ["karma,asc", "title,asc",
    * "comment,asc"]
+   *
+   * @param orderByStr individual order by statements
+   * @return array of {@link OrderBy}
    */
   OrderBy[] parseOrderBy(String[] orderByStr);
 

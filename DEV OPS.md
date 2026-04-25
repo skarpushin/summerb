@@ -64,11 +64,3 @@ Once ready, do: `mvn clean deploy -Prelease`
 Deployments can be viewed here: https://central.sonatype.com/publishing/deployments
 
 **!!! IMPORTANT !!!** In case of an error DO NOT resume maven build. Start all over again, otherwise only part of your artifacts will be released. 
-
-## Other stuff
-### Setup local environment to run integration tests
-Do:
-
- * `$ cd summerb_tests_db`
- * `$ docker-compose up`
- * Now you can run tests

@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.summerb.easycrud.dao.SqlTypeOverrides;
 import org.summerb.easycrud.query.restrictions.Between;
 
+/** Converter for BETWEEN restriction to native SQL. */
 public class BetweenRestrictionToNativeSql extends RestrictionToNativeSqlTemplate<Between> {
 
   @Override

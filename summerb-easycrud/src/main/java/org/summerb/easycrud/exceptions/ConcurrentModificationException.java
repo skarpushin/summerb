@@ -37,10 +37,15 @@ import org.summerb.i18n.MessageCodeMessageArgConverter;
 public class ConcurrentModificationException extends Exception
     implements HasMessageCode, HasMessageArgs, HasMessageArgsConverters {
   @Serial private static final long serialVersionUID = -8553908925129274626L;
+
+  /** Message argument converters */
   protected static final MessageArgConverter[] MESSAGE_ARG_CONVERTERS =
       new MessageArgConverter[] {MessageCodeMessageArgConverter.INSTANCE, null};
 
+  /** Object type name */
   protected String objectTypeName;
+
+  /** Object identifier */
   protected String objectIdentifier;
 
   /**
@@ -49,6 +54,12 @@ public class ConcurrentModificationException extends Exception
   @Deprecated
   public ConcurrentModificationException() {}
 
+  /**
+   * Constructor for ConcurrentModificationException.
+   *
+   * @param objectTypeName object type name
+   * @param objectIdentifier object identifier
+   */
   public ConcurrentModificationException(String objectTypeName, String objectIdentifier) {
     this.objectTypeName = objectTypeName;
     this.objectIdentifier = objectIdentifier;
@@ -69,10 +80,16 @@ public class ConcurrentModificationException extends Exception
     return MESSAGE_ARG_CONVERTERS;
   }
 
+  /**
+   * @return object type name
+   */
   public String getObjectTypeName() {
     return objectTypeName;
   }
 
+  /**
+   * @return object identifier
+   */
   public String getObjectIdentifier() {
     return objectIdentifier;
   }
